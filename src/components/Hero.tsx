@@ -21,7 +21,7 @@ const Hero = () => {
             A student-led initiative at Rice University pioneering innovative solutions for sustainable development in Africa
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8 animate-fade-in">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8 animate-fade-in">
             <Button
               size="lg"
               className="bg-raade-gold hover:bg-raade-gold/90 text-raade-navy font-semibold text-lg"
