@@ -21,8 +21,8 @@ const Navigation = () => {
   return (
     <nav
       className={cn(
-        "fixed w-full z-50 transition-all duration-300",
-        isScrolled ? "bg-white shadow-md" : "bg-transparent"
+        "fixed w-full z-50 transition-all duration-300 shadow-md bg-transparent backdrop-blur-sm",
+        isScrolled ? "bg-white/5" : "bg-transparent"
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

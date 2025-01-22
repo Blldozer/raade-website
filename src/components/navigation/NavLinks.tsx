@@ -52,9 +52,11 @@ const NavLinks = ({ className = "", onClick }: NavLinksProps) => (
       {navItems.map((item) =>
         item.dropdownItems ? (
           <NavigationMenuItem key={item.name}>
-            <NavigationMenuTrigger className="bg-transparent text-raade-navy hover:text-raade-gold transition-colors duration-200">
-              {item.name}
-            </NavigationMenuTrigger>
+            <Link to={item.href} className="inline-block">
+              <NavigationMenuTrigger className="bg-transparent text-raade-navy hover:text-raade-gold transition-colors duration-200">
+                {item.name}
+              </NavigationMenuTrigger>
+            </Link>
             <NavigationMenuContent>
               <ul className="grid w-[200px] gap-2 p-4 bg-white/90 backdrop-blur-sm">
                 {item.dropdownItems.map((dropdownItem) => (
