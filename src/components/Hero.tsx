@@ -9,15 +9,15 @@ const Hero = () => {
   ];
 
   return (
-    <div className="relative min-h-[90vh] flex items-center bg-raade-navy">
+    <div className="relative min-h-[90vh] flex items-center bg-white">
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 py-12 text-white">
+      <div className="relative z-10 container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto text-center space-y-8">
-          <h1 className="text-4xl md:text-6xl font-bold leading-tight animate-fade-in">
+          <h1 className="text-4xl md:text-6xl font-bold leading-tight animate-fade-in text-raade-navy">
             Transforming African Development Through Innovation
           </h1>
           
-          <p className="text-xl md:text-2xl text-gray-200 animate-fade-in opacity-90">
+          <p className="text-xl md:text-2xl text-gray-600 animate-fade-in">
             A student-led initiative at Rice University pioneering innovative solutions for sustainable development in Africa
           </p>
 
@@ -40,13 +40,13 @@ const Hero = () => {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 pt-8 border-t border-white/20">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 pt-8 border-t border-gray-200">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
                 <div className="text-3xl md:text-4xl font-bold text-raade-gold">
                   {stat.value}
                 </div>
-                <div className="text-sm md:text-base text-gray-200 mt-2">
+                <div className="text-sm md:text-base text-gray-600 mt-2">
                   {stat.label}
                 </div>
               </div>
