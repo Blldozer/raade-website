@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,9 +20,8 @@ const Navigation = () => {
 
   const navItems = [
     { name: "About", href: "#about" },
-    { name: "Innovation Studios", href: "#studios" },
-    { name: "Conference", href: "#conference" },
-    { name: "Projects", href: "#projects" },
+    { name: "Innovation Studios", href: "/studios" },
+    { name: "Conference", href: "/conference" },
   ];
 
   return (
@@ -35,23 +35,35 @@ const Navigation = () => {
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <img
-              className="h-12 w-auto"
-              src="/lovable-uploads/bcc47310-6fc2-4473-804d-7f5f0620d040.png"
-              alt="RAADE Logo"
-            />
+            <Link to="/">
+              <img
+                className="h-12 w-auto"
+                src="/lovable-uploads/bcc47310-6fc2-4473-804d-7f5f0620d040.png"
+                alt="RAADE Logo"
+              />
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="text-raade-navy hover:text-raade-gold transition-colors duration-200"
-              >
-                {item.name}
-              </a>
+              item.href.startsWith('#') ? (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  className="text-raade-navy hover:text-raade-gold transition-colors duration-200"
+                >
+                  {item.name}
+                </a>
+              ) : (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className="text-raade-navy hover:text-raade-gold transition-colors duration-200"
+                >
+                  {item.name}
+                </Link>
+              )
             ))}
             <a
               href="#join"
@@ -81,14 +93,25 @@ const Navigation = () => {
         >
           <div className="px-2 pt-2 pb-3 space-y-1 bg-white rounded-b-lg shadow-lg animate-fade-in">
             {navItems.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="block px-3 py-2 text-raade-navy hover:text-raade-gold transition-colors duration-200"
-                onClick={() => setIsOpen(false)}
-              >
-                {item.name}
-              </a>
+              item.href.startsWith('#') ? (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  className="block px-3 py-2 text-raade-navy hover:text-raade-gold transition-colors duration-200"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {item.name}
+                </a>
+              ) : (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className="block px-3 py-2 text-raade-navy hover:text-raade-gold transition-colors duration-200"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              )
             ))}
             <a
               href="#join"
