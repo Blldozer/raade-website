@@ -36,7 +36,6 @@ const Hero = () => {
                   className="w-full h-full bg-cover bg-center"
                   style={{
                     backgroundImage: `url(${image})`,
-                    filter: "brightness(0.3)",
                   }}
                 />
               </CarouselItem>
