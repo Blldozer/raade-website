@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import TeamProfiles from "@/components/TeamProfiles";
 import { Building, Users, Handshake, BookOpen, Globe } from "lucide-react";
 
 const About = () => {
@@ -38,8 +39,13 @@ const About = () => {
           </div>
         </section>
 
+        {/* Team Section */}
+        <section id="team" className="mb-16">
+          <TeamProfiles />
+        </section>
+
         {/* Team Structure */}
-        <section className="mb-16">
+        <section id="mentors" className="mb-16">
           <h2 className="text-3xl font-bold text-raade-navy mb-6">Team Structure</h2>
           <div className="bg-white p-6 rounded-lg shadow-md">
             <Users className="w-8 h-8 text-raade-gold mb-4" />
@@ -72,7 +78,6 @@ const About = () => {
               ensuring academic rigor in our approach to development challenges.
             </p>
             <div className="grid md:grid-cols-2 gap-6">
-              {/* Add actual faculty mentor information here */}
               <div className="p-4 border rounded-lg">
                 <h3 className="font-semibold mb-1">Dr. Sarah Johnson</h3>
                 <p className="text-gray-600">International Development Studies</p>
@@ -86,7 +91,7 @@ const About = () => {
         </section>
 
         {/* Partner Organizations */}
-        <section className="mb-16">
+        <section id="partners" className="mb-16">
           <h2 className="text-3xl font-bold text-raade-navy mb-6">Partner Organizations</h2>
           <div className="bg-white p-6 rounded-lg shadow-md">
             <Handshake className="w-8 h-8 text-raade-gold mb-4" />
@@ -95,7 +100,6 @@ const About = () => {
               sustainable development solutions.
             </p>
             <div className="grid md:grid-cols-3 gap-6">
-              {/* Add actual partner organization information here */}
               <div className="p-4 border rounded-lg text-center">
                 <h3 className="font-semibold">Tech4Africa</h3>
                 <p className="text-gray-600">Technology Education</p>
