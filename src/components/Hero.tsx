@@ -31,11 +31,11 @@ const Hero = () => {
       <div className="relative z-10 container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <div className="space-y-4">
-            <h1 className="text-4xl md:text-6xl font-bold leading-tight animate-fade-in bg-clip-text text-transparent bg-gradient-to-r from-raade-navy to-raade-gold">
+            <h1 className="font-display text-4xl md:text-6xl font-bold leading-tight animate-fade-in bg-clip-text text-transparent bg-gradient-to-r from-raade-navy to-raade-gold">
               Transforming African Development Through Innovation
             </h1>
             
-            <p className="text-xl md:text-2xl text-gray-600 animate-fade-in max-w-3xl mx-auto">
+            <p className="font-sans text-xl md:text-2xl text-gray-600 animate-fade-in max-w-3xl mx-auto">
               A student-led initiative at Rice University pioneering innovative solutions 
               for sustainable development in Africa
             </p>
@@ -66,10 +66,10 @@ const Hero = () => {
                 key={index} 
                 className="text-center p-6 rounded-lg bg-white/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
               >
-                <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-raade-navy to-raade-gold bg-clip-text text-transparent">
+                <div className="font-display text-3xl md:text-4xl font-bold bg-gradient-to-r from-raade-navy to-raade-gold bg-clip-text text-transparent">
                   {stat.value}
                 </div>
-                <div className="text-sm md:text-base text-gray-600 mt-2 font-medium">
+                <div className="font-sans text-sm md:text-base text-gray-600 mt-2 font-medium">
                   {stat.label}
                 </div>
               </div>
