@@ -5,7 +5,7 @@ const NavLogo = () => (
     <Link to="/">
       <img
         className="h-12 w-auto"
-        src="/lovable-uploads/ea70dd62-188f-483f-b286-c31c1e137ceb.png"
+        src="/lovable-uploads/5f474a9c-ca13-4875-b29c-a91ae8f15738.png"
         alt="RAADE Logo"
       />
     </Link>
