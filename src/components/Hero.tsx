@@ -1,11 +1,4 @@
 import { Button } from "@/components/ui/button";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 
 const Hero = () => {
   const stats = [
@@ -15,37 +8,8 @@ const Hero = () => {
     { value: "10+", label: "African Countries" },
   ];
 
-  const images = [
-    "/lovable-uploads/e94065dc-60d5-469d-8ea2-6657f57bb00b.png",
-    "/lovable-uploads/b5ad6ef6-d0dc-473a-a096-05bf5c57449e.png",
-    "/lovable-uploads/9c6ceb51-936a-4146-a252-1051ae86534a.png",
-    "/lovable-uploads/57a9d290-224d-44e7-b284-7715e6f4f3fd.png",
-    "/lovable-uploads/01329b6e-7667-47f0-9c6c-d308158644e8.png",
-    "/lovable-uploads/ea70dd62-188f-483f-b286-c31c1e137ceb.png",
-  ];
-
   return (
-    <div className="relative min-h-[90vh] flex items-center">
-      {/* Background Carousel */}
-      <div className="absolute inset-0 z-0">
-        <Carousel className="w-full h-full" opts={{ loop: true }}>
-          <CarouselContent className="h-full">
-            {images.map((image, index) => (
-              <CarouselItem key={index} className="h-full">
-                <div
-                  className="w-full h-full bg-cover bg-center"
-                  style={{
-                    backgroundImage: `url(${image})`,
-                  }}
-                />
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="left-4" />
-          <CarouselNext className="right-4" />
-        </Carousel>
-      </div>
-
+    <div className="relative min-h-[90vh] flex items-center bg-raade-navy">
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 py-12 text-white">
         <div className="max-w-4xl mx-auto text-center space-y-8">
