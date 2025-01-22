@@ -3,7 +3,6 @@ import {
   NavigationMenu,
   NavigationMenuContent,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
@@ -29,7 +28,17 @@ export const navItems = [
       { name: "Apply", href: "/studios#apply" },
     ],
   },
-  { name: "Conference", href: "/conference" },
+  {
+    name: "Conference",
+    href: "/conference",
+    dropdownItems: [
+      { name: "Overview", href: "/conference" },
+      { name: "Speakers", href: "/conference#speakers" },
+      { name: "Schedule", href: "/conference#schedule" },
+      { name: "Registration", href: "/conference#registration" },
+      { name: "Sponsorship", href: "/conference#sponsorship" },
+    ],
+  },
 ];
 
 interface NavLinksProps {
