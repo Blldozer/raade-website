@@ -5,10 +5,13 @@ import { cn } from "@/lib/utils";
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isPastHero, setIsPastHero] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
+      const heroHeight = window.innerHeight * 0.9; // 90vh
       setIsScrolled(window.scrollY > 20);
+      setIsPastHero(window.scrollY > heroHeight);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -25,7 +28,7 @@ const Navigation = () => {
     <nav
       className={cn(
         "fixed w-full z-50 transition-all duration-300",
-        isScrolled ? "bg-white shadow-md" : "bg-transparent"
+        isPastHero || isScrolled ? "bg-white shadow-md" : "bg-transparent"
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -45,14 +48,24 @@ const Navigation = () => {
               <a
                 key={item.name}
                 href={item.href}
-                className="text-raade-navy hover:text-raade-gold transition-colors duration-200"
+                className={cn(
+                  "transition-colors duration-200",
+                  isPastHero || isScrolled
+                    ? "text-raade-navy hover:text-raade-gold"
+                    : "text-white hover:text-raade-gold"
+                )}
               >
                 {item.name}
               </a>
             ))}
             <a
               href="#join"
-              className="bg-raade-navy text-white hover:bg-raade-gold px-6 py-2 rounded-md transition-colors duration-200"
+              className={cn(
+                "px-6 py-2 rounded-md transition-colors duration-200",
+                isPastHero || isScrolled
+                  ? "bg-raade-navy text-white hover:bg-raade-gold"
+                  : "bg-white text-raade-navy hover:bg-raade-gold"
+              )}
             >
               Join Us
             </a>
@@ -62,7 +75,12 @@ const Navigation = () => {
           <div className="md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-raade-navy hover:text-raade-gold p-2"
+              className={cn(
+                "p-2 transition-colors duration-200",
+                isPastHero || isScrolled
+                  ? "text-raade-navy hover:text-raade-gold"
+                  : "text-white hover:text-raade-gold"
+              )}
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
