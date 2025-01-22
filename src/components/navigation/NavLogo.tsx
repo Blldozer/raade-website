@@ -54,7 +54,7 @@ const NavLogo = () => {
     <div className="flex-shrink-0 flex items-center">
       <Link to="/">
         <img
-          className="h-12 w-auto"
+          className="h-16 w-auto transition-all duration-300 hover:scale-105" // Increased height from h-12 to h-16
           src={processedImageUrl}
           alt="RAADE Logo"
         />
