@@ -52,16 +52,16 @@ const NavLinks = ({ className = "", onClick }: NavLinksProps) => (
       {navItems.map((item) =>
         item.dropdownItems ? (
           <NavigationMenuItem key={item.name}>
-            <NavigationMenuTrigger className="text-raade-navy hover:text-raade-gold transition-colors duration-200">
+            <NavigationMenuTrigger className="bg-transparent text-raade-navy hover:text-raade-gold transition-colors duration-200">
               {item.name}
             </NavigationMenuTrigger>
             <NavigationMenuContent>
-              <ul className="grid w-[200px] gap-2 p-4 bg-white">
+              <ul className="grid w-[200px] gap-2 p-4 bg-white/90 backdrop-blur-sm">
                 {item.dropdownItems.map((dropdownItem) => (
                   <li key={dropdownItem.name}>
                     <Link
                       to={dropdownItem.href}
-                      className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground text-raade-navy hover:text-raade-gold"
+                      className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent/50 hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground text-raade-navy hover:text-raade-gold"
                       onClick={onClick}
                     >
                       {dropdownItem.name}
@@ -86,7 +86,7 @@ const NavLinks = ({ className = "", onClick }: NavLinksProps) => (
       <NavigationMenuItem>
         <a
           href="#join"
-          className="px-6 py-2 rounded-md transition-colors duration-200 bg-raade-navy text-white hover:bg-raade-gold"
+          className="px-6 py-2 rounded-md transition-colors duration-200 border-2 border-raade-navy text-raade-navy hover:bg-raade-navy hover:text-white"
           onClick={onClick}
         >
           Join Us
