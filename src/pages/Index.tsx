@@ -1,8 +1,6 @@
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
 import CountdownTimer from "@/components/CountdownTimer";
-import TeamProfiles from "@/components/TeamProfiles";
-import PartnerShowcase from "@/components/PartnerShowcase";
 
 const Index = () => {
   return (
@@ -10,8 +8,6 @@ const Index = () => {
       <Navigation />
       <Hero />
       <CountdownTimer />
-      <TeamProfiles />
-      <PartnerShowcase />
     </div>
   );
 };
