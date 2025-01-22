@@ -27,8 +27,7 @@ const Navigation = () => {
   return (
     <nav
       className={cn(
-        "fixed w-full z-50 transition-all duration-300",
-        isPastHero || isScrolled ? "bg-white shadow-md" : "bg-transparent"
+        "fixed w-full z-50 transition-all duration-300 bg-white shadow-md"
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -48,24 +47,14 @@ const Navigation = () => {
               <a
                 key={item.name}
                 href={item.href}
-                className={cn(
-                  "transition-colors duration-200",
-                  isPastHero || isScrolled
-                    ? "text-raade-navy hover:text-raade-gold"
-                    : "text-white hover:text-raade-gold"
-                )}
+                className="text-raade-navy hover:text-raade-gold transition-colors duration-200"
               >
                 {item.name}
               </a>
             ))}
             <a
               href="#join"
-              className={cn(
-                "px-6 py-2 rounded-md transition-colors duration-200",
-                isPastHero || isScrolled
-                  ? "bg-raade-navy text-white hover:bg-raade-gold"
-                  : "bg-white text-raade-navy hover:bg-raade-gold"
-              )}
+              className="px-6 py-2 rounded-md transition-colors duration-200 bg-raade-navy text-white hover:bg-raade-gold"
             >
               Join Us
             </a>
@@ -75,12 +64,7 @@ const Navigation = () => {
           <div className="md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className={cn(
-                "p-2 transition-colors duration-200",
-                isPastHero || isScrolled
-                  ? "text-raade-navy hover:text-raade-gold"
-                  : "text-white hover:text-raade-gold"
-              )}
+              className="text-raade-navy hover:text-raade-gold transition-colors duration-200"
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>

@@ -32,7 +32,7 @@ const Hero = () => {
             <Button
               variant="outline"
               size="lg"
-              className="border-white text-white hover:bg-white/10 font-semibold text-lg"
+              className="bg-raade-navy border-white text-white hover:bg-raade-gold hover:border-raade-gold hover:text-raade-navy font-semibold text-lg"
               onClick={() => window.location.href = "#conference"}
             >
               Learn About Our Conference
