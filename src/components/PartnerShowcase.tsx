@@ -30,31 +30,43 @@ const partners = [
 
 const PartnerShowcase = () => {
   return (
-    <section className="py-12 bg-white">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-center gap-2 mb-8">
-          <Building2 className="w-6 h-6 text-raade-navy" />
-          <h2 className="text-3xl font-bold text-center text-raade-navy">
+    <section className="py-24 px-6 bg-design-surface">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col items-center justify-center gap-4 mb-16">
+          <Building2 className="w-8 h-8 text-design-accent" />
+          <h2 className="text-4xl font-display font-bold text-design-primary text-center">
             Our Partners
           </h2>
+          <p className="text-lg text-design-text-secondary max-w-2xl text-center">
+            Collaborating with leading organizations across Africa to drive innovation
+            and sustainable development.
+          </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {partners.map((partner) => (
             <Card 
               key={partner.name} 
-              className="hover:shadow-lg transition-shadow border-t-4 border-t-raade-gold"
+              className="group hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 bg-design-background-glass backdrop-blur-sm border border-white/20"
             >
               <CardHeader>
-                <CardTitle className="text-lg text-center">{partner.name}</CardTitle>
+                <CardTitle className="text-xl font-display text-center text-design-primary">
+                  {partner.name}
+                </CardTitle>
               </CardHeader>
-              <CardContent className="text-center">
-                <img 
-                  src={partner.logo} 
-                  alt={partner.name} 
-                  className="w-24 h-24 mx-auto mb-4 object-contain"
-                />
-                <p className="text-raade-navy font-medium">{partner.country}</p>
-                <p className="text-gray-600 text-sm">{partner.focus}</p>
+              <CardContent className="text-center space-y-6">
+                <div className="relative w-24 h-24 mx-auto">
+                  <img 
+                    src={partner.logo} 
+                    alt={partner.name} 
+                    className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-design-accent/5 rounded-full -z-10" />
+                </div>
+                <div className="space-y-2">
+                  <p className="font-medium text-design-text-primary">{partner.country}</p>
+                  <p className="text-sm text-design-text-secondary">{partner.focus}</p>
+                </div>
               </CardContent>
             </Card>
           ))}
