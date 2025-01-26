@@ -6,13 +6,10 @@ import MobileNav from "./navigation/MobileNav";
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isPastHero, setIsPastHero] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      const heroHeight = window.innerHeight * 0.9; // 90vh
       setIsScrolled(window.scrollY > 20);
-      setIsPastHero(window.scrollY > heroHeight);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -23,12 +20,12 @@ const Navigation = () => {
       className={cn(
         "fixed w-full z-50 transition-all duration-300",
         isScrolled
-          ? "bg-white/5 backdrop-blur-[2px] shadow-md"
+          ? "bg-white/70 backdrop-blur-sm shadow-sm"
           : "bg-transparent"
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
+        <div className="flex justify-between items-center h-16 md:h-20">
           <NavLogo />
           <DesktopNav />
           <MobileNav />

@@ -12,7 +12,13 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: {
+        DEFAULT: '1rem',
+        sm: '2rem',
+        lg: '4rem',
+        xl: '5rem',
+        '2xl': '6rem',
+      },
       screens: {
         "2xl": "1400px",
       },
@@ -26,6 +32,16 @@ export default {
         raade: {
           navy: "#1B365D",
           gold: "#F4B942",
+        },
+        design: {
+          background: "#F8F9FA",
+          surface: "#FFFFFF",
+          border: "#E5E7EB",
+          text: {
+            primary: "#111827",
+            secondary: "#4B5563",
+          },
+          accent: "#F4B942",
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -60,6 +76,9 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+      },
+      backdropBlur: {
+        xs: '2px',
       },
       keyframes: {
         "accordion-down": {
