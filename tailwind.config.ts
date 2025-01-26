@@ -18,14 +18,28 @@ export default {
       },
     },
     extend: {
-      fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
-      },
       colors: {
         raade: {
           navy: "#1B365D",
           gold: "#F4B942",
+        },
+        design: {
+          primary: "#141413",
+          surface: "#FAFAF8",
+          muted: "#828179",
+          accent: "#8989DE",
+          warm: "#EBDBBC",
+          text: {
+            primary: "#141413",
+            secondary: "#605F5B",
+            muted: "#A3A299",
+          },
+          background: {
+            light: "#F0EFEA",
+            lighter: "#FAFAF8",
+            glass: "#fffffff2",
+          },
+          border: "#E6E4DD",
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -60,6 +74,13 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+      },
+      backdropBlur: {
+        xs: '2px',
       },
       keyframes: {
         "accordion-down": {
