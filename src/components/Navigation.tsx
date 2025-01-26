@@ -21,14 +21,14 @@ const Navigation = () => {
   return (
     <nav
       className={cn(
-        "fixed w-full z-50 transition-all duration-500",
+        "fixed w-full z-50 transition-all duration-300",
         isScrolled
-          ? "bg-design-background-glass backdrop-blur-md shadow-sm border-b border-white/20"
+          ? "bg-white/5 backdrop-blur-[2px] shadow-md"
           : "bg-transparent"
       )}
     >
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex justify-between items-center h-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-20">
           <NavLogo />
           <DesktopNav />
           <MobileNav />

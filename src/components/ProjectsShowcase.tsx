@@ -45,6 +45,22 @@ const projects: Project[] = [
     sector: "Technology",
     image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80",
   },
+  {
+    name: "Remote Health Monitoring",
+    partner: "TechCare Solutions",
+    challenge: "Limited access to healthcare in remote areas",
+    impact: "Monitoring 2,000+ patients remotely",
+    sector: "Healthcare",
+    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80",
+  },
+  {
+    name: "Smart Agriculture",
+    partner: "AgriTech Ghana",
+    challenge: "Inefficient farming practices",
+    impact: "Increased crop yield by 40% for 200 farmers",
+    sector: "Technology",
+    image: "https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&q=80",
+  },
 ];
 
 const sectors = ["All", "Healthcare", "Technology", "Education", "Energy"] as const;
@@ -57,79 +73,56 @@ const ProjectsShowcase = () => {
   );
 
   return (
-    <section className="py-24 px-6 bg-design-background-light">
+    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 animate-fade-in">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16 space-y-4">
-          <h2 className="text-4xl font-display font-bold text-design-primary">
-            Our Projects
-          </h2>
-          <p className="text-lg text-design-text-secondary max-w-2xl mx-auto">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold text-raade-navy mb-4">Our Projects</h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Explore our portfolio of innovative solutions developed in partnership with
             African organizations.
           </p>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-3 mb-12">
+        {/* Filter Buttons */}
+        <div className="flex flex-wrap justify-center gap-2 mb-8">
           {sectors.map((sector) => (
             <Button
               key={sector}
               variant={selectedSector === sector ? "default" : "outline"}
               onClick={() => setSelectedSector(sector)}
-              className={`
-                rounded-full px-6 transition-all duration-300
-                ${selectedSector === sector 
-                  ? "bg-design-primary text-white shadow-lg" 
-                  : "border-2 border-design-primary text-design-primary hover:bg-design-primary hover:text-white"
-                }
-              `}
+              className={selectedSector === sector ? "bg-raade-navy" : ""}
             >
               {sector}
             </Button>
           ))}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+        {/* Projects Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredProjects.map((project) => (
-            <Card 
-              key={project.name} 
-              className="overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 bg-design-background-glass backdrop-blur-sm border border-white/20"
-            >
-              <div className="relative h-64 overflow-hidden">
-                <img
-                  src={project.image}
-                  alt={project.name}
-                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-              </div>
-              <CardHeader className="relative">
+            <Card key={project.name} className="overflow-hidden hover:shadow-lg transition-shadow">
+              <img
+                src={project.image}
+                alt={project.name}
+                className="w-full h-48 object-cover"
+              />
+              <CardHeader>
                 <div className="flex justify-between items-start">
-                  <CardTitle className="text-2xl font-display text-design-primary">
-                    {project.name}
-                  </CardTitle>
-                  <Badge 
-                    variant="secondary"
-                    className="bg-design-accent/10 text-design-accent font-medium"
-                  >
-                    {project.sector}
-                  </Badge>
+                  <CardTitle className="text-xl text-raade-navy">{project.name}</CardTitle>
+                  <Badge variant="secondary">{project.sector}</Badge>
                 </div>
-                <CardDescription className="font-medium text-design-text-secondary">
+                <CardDescription className="font-medium">
                   Partner: {project.partner}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-2">
                 <div>
-                  <h4 className="font-semibold text-sm text-design-text-secondary mb-1">
-                    Challenge:
-                  </h4>
-                  <p className="text-design-text-primary">{project.challenge}</p>
+                  <h4 className="font-semibold text-sm text-gray-600">Challenge:</h4>
+                  <p className="text-sm">{project.challenge}</p>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-sm text-design-text-secondary mb-1">
-                    Impact:
-                  </h4>
-                  <p className="text-design-text-primary">{project.impact}</p>
+                  <h4 className="font-semibold text-sm text-gray-600">Impact:</h4>
+                  <p className="text-sm">{project.impact}</p>
                 </div>
               </CardContent>
             </Card>
