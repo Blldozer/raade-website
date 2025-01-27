@@ -4,7 +4,6 @@ import { Suspense, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import * as THREE from "three";
 
-// Fallback component when 3D context fails
 const FallbackComponent = () => (
   <div className="w-full h-full flex items-center justify-center bg-gray-100 rounded-lg">
     <div className="text-center p-4">
@@ -14,7 +13,6 @@ const FallbackComponent = () => (
   </div>
 );
 
-// Loading component while 3D context initializes
 const LoadingComponent = () => (
   <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
     <div className="text-center p-4">
@@ -48,10 +46,15 @@ const Scene: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           <Suspense fallback={<primitive object={new THREE.Object3D()} />}>
             {isCanvasReady && (
               <>
-                <ambientLight intensity={0.2} />
+                <ambientLight intensity={0.4} />
                 <directionalLight 
                   position={[10, 10, 5]} 
                   intensity={1.5}
+                  castShadow
+                />
+                <directionalLight 
+                  position={[-10, -10, -5]} 
+                  intensity={0.8}
                   castShadow
                 />
                 <pointLight 
