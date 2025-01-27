@@ -5,16 +5,19 @@ import { Suspense } from "react";
 const Scene: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div className="w-full h-[600px] relative">
-      <Canvas>
+      <Canvas
+        camera={{ position: [0, 0, 5], fov: 75 }}
+        style={{ background: '#f0f0f0' }}
+      >
         <Suspense fallback={null}>
           <ambientLight intensity={0.5} />
           <directionalLight position={[10, 10, 5]} intensity={1} />
           <OrbitControls
-            enableZoom={true}
+            enableZoom={false}
             enablePan={false}
             enableRotate={true}
-            minDistance={3}
-            maxDistance={8}
+            minPolarAngle={Math.PI / 2}
+            maxPolarAngle={Math.PI / 2}
           />
           {children}
         </Suspense>

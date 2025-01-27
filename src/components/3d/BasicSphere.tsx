@@ -5,20 +5,16 @@ import { Mesh } from "three";
 const BasicSphere = () => {
   const meshRef = useRef<Mesh>(null!);
 
-  useFrame((state, delta) => {
+  useFrame(() => {
     if (meshRef.current) {
-      meshRef.current.rotation.y += delta * 0.2;
+      meshRef.current.rotation.y += 0.01;
     }
   });
 
   return (
-    <mesh ref={meshRef} position={[0, 0, 0]}>
-      <sphereGeometry args={[1, 32, 32]} />
-      <meshStandardMaterial 
-        color="#1B365D"
-        metalness={0.4}
-        roughness={0.7}
-      />
+    <mesh ref={meshRef}>
+      <sphereGeometry args={[1, 16, 16]} />
+      <meshNormalMaterial />
     </mesh>
   );
 };
