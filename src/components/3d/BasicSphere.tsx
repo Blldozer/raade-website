@@ -12,14 +12,12 @@ const BasicSphere = () => {
   });
 
   return (
-    <mesh ref={meshRef} position={[0, 0, 0]} castShadow receiveShadow>
+    <mesh ref={meshRef} position={[0, 0, 0]}>
       <sphereGeometry args={[1, 32, 32]} />
       <meshStandardMaterial 
         color="#1B365D"
         metalness={0.4}
         roughness={0.7}
-        transparent
-        opacity={1}
       />
     </mesh>
   );
