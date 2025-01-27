@@ -6,11 +6,15 @@ const Scene: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div className="w-full h-[600px] relative">
       <Canvas
-        shadows
+        gl={{
+          antialias: true,
+          alpha: true,
+          powerPreference: "high-performance",
+        }}
         dpr={[1, 2]}
-        gl={{ antialias: true }}
         camera={{ position: [0, 0, 5], fov: 45 }}
       >
+        <color attach="background" args={['#ffffff']} />
         <Suspense fallback={null}>
           <ambientLight intensity={0.5} />
           <directionalLight position={[10, 10, 5]} intensity={1} />
