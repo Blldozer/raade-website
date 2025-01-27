@@ -38,8 +38,8 @@ const Scene: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }}
       >
         <Canvas
-          camera={{ position: [0, 0, 5], fov: 75 }}
-          style={{ background: '#f0f0f0' }}
+          camera={{ position: [0, 0, 6], fov: 45 }}
+          style={{ background: '#000814' }}
           onCreated={() => {
             console.log("Canvas created successfully");
             setCanvasReady(true);
@@ -48,14 +48,25 @@ const Scene: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           <Suspense fallback={<primitive object={new THREE.Object3D()} />}>
             {isCanvasReady && (
               <>
-                <ambientLight intensity={0.5} />
-                <directionalLight position={[10, 10, 5]} intensity={1} />
+                <ambientLight intensity={0.2} />
+                <directionalLight 
+                  position={[10, 10, 5]} 
+                  intensity={1.5}
+                  castShadow
+                />
+                <pointLight 
+                  position={[-10, -10, -5]} 
+                  intensity={0.5} 
+                  color="#ffffff"
+                />
                 <OrbitControls
-                  enableZoom={false}
+                  enableZoom={true}
                   enablePan={false}
                   enableRotate={true}
-                  minPolarAngle={Math.PI / 2}
-                  maxPolarAngle={Math.PI / 2}
+                  minDistance={4}
+                  maxDistance={10}
+                  minPolarAngle={Math.PI / 4}
+                  maxPolarAngle={Math.PI * 3/4}
                 />
                 {children}
               </>
