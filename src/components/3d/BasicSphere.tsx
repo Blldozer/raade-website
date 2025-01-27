@@ -8,7 +8,6 @@ const BasicSphere = () => {
 
   console.log("BasicSphere component rendering, ready state:", isReady);
 
-  // Safe animation frame handling
   useFrame(() => {
     if (meshRef.current && isReady) {
       meshRef.current.rotation.y += 0.01;
@@ -16,7 +15,7 @@ const BasicSphere = () => {
   });
 
   return (
-    <mesh 
+    <mesh
       ref={meshRef}
       onAfterRender={() => {
         if (!isReady) {
@@ -25,8 +24,8 @@ const BasicSphere = () => {
         }
       }}
     >
-      <sphereGeometry args={[1, 16, 16]} />
-      <meshNormalMaterial />
+      <sphereGeometry args={[1, 32, 32]} />
+      <meshStandardMaterial color="#2a4774" roughness={0.5} metalness={0.5} />
     </mesh>
   );
 };
