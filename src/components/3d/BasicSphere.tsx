@@ -4,11 +4,12 @@ import { Mesh, TextureLoader, Texture } from "three";
 
 const BasicSphere = () => {
   const meshRef = useRef<Mesh>(null!);
-  const [isReady, setIsReady] = useState(false);
   const [globeTexture, setGlobeTexture] = useState<Texture | null>(null);
 
   useEffect(() => {
     const textureLoader = new TextureLoader();
+    console.log("Loading globe texture...");
+    
     textureLoader.load(
       '/assets/textures/earth-texture.jpg',
       (texture) => {
@@ -22,26 +23,21 @@ const BasicSphere = () => {
     );
   }, []);
 
-  console.log("BasicSphere component rendering, ready state:", isReady);
-
   useFrame(() => {
-    if (meshRef.current && isReady) {
+    if (meshRef.current) {
       meshRef.current.rotation.y += 0.001;
     }
   });
 
+  if (!globeTexture) {
+    console.log("Waiting for globe texture...");
+    return null;
+  }
+
   return (
-    <mesh
-      ref={meshRef}
-      onAfterRender={() => {
-        if (!isReady) {
-          console.log("Sphere mesh initialized successfully");
-          setIsReady(true);
-        }
-      }}
-    >
+    <mesh ref={meshRef}>
       <sphereGeometry args={[2, 64, 64]} />
-      <meshStandardMaterial 
+      <meshStandardMaterial
         map={globeTexture}
         metalness={0.1}
         roughness={0.7}

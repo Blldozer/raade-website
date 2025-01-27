@@ -1,6 +1,6 @@
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import { Suspense, useState } from "react";
+import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import * as THREE from "three";
 
@@ -23,10 +23,6 @@ const LoadingComponent = () => (
 );
 
 const Scene: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isCanvasReady, setCanvasReady] = useState(false);
-  
-  console.log("Scene component rendering, Canvas ready:", isCanvasReady);
-
   return (
     <div className="w-full h-[600px] relative">
       <ErrorBoundary
@@ -38,46 +34,37 @@ const Scene: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <Canvas
           camera={{ position: [0, 0, 6], fov: 45 }}
           style={{ background: '#000814' }}
-          onCreated={() => {
-            console.log("Canvas created successfully");
-            setCanvasReady(true);
-          }}
         >
           <Suspense fallback={<primitive object={new THREE.Object3D()} />}>
-            {isCanvasReady && (
-              <>
-                <ambientLight intensity={0.4} />
-                <directionalLight 
-                  position={[10, 10, 5]} 
-                  intensity={1.5}
-                  castShadow
-                />
-                <directionalLight 
-                  position={[-10, -10, -5]} 
-                  intensity={0.8}
-                  castShadow
-                />
-                <pointLight 
-                  position={[-10, -10, -5]} 
-                  intensity={0.5} 
-                  color="#ffffff"
-                />
-                <OrbitControls
-                  enableZoom={true}
-                  enablePan={false}
-                  enableRotate={true}
-                  minDistance={4}
-                  maxDistance={10}
-                  minPolarAngle={Math.PI / 4}
-                  maxPolarAngle={Math.PI * 3/4}
-                />
-                {children}
-              </>
-            )}
+            <ambientLight intensity={0.4} />
+            <directionalLight 
+              position={[10, 10, 5]} 
+              intensity={1.5}
+              castShadow
+            />
+            <directionalLight 
+              position={[-10, -10, -5]} 
+              intensity={0.8}
+              castShadow
+            />
+            <pointLight 
+              position={[-10, -10, -5]} 
+              intensity={0.5} 
+              color="#ffffff"
+            />
+            <OrbitControls
+              enableZoom={true}
+              enablePan={false}
+              enableRotate={true}
+              minDistance={4}
+              maxDistance={10}
+              minPolarAngle={Math.PI / 4}
+              maxPolarAngle={Math.PI * 3/4}
+            />
+            {children}
           </Suspense>
         </Canvas>
       </ErrorBoundary>
-      {!isCanvasReady && <LoadingComponent />}
     </div>
   );
 };
