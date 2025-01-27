@@ -2,6 +2,7 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { Suspense, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import * as THREE from "three";
 
 // Fallback component when 3D context fails
 const FallbackComponent = () => (
