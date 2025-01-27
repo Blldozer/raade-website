@@ -3,7 +3,7 @@ import { useRef } from "react";
 import { Mesh } from "three";
 
 const BasicSphere = () => {
-  const meshRef = useRef<Mesh>(null);
+  const meshRef = useRef<Mesh>(null!);
 
   useFrame((state, delta) => {
     if (meshRef.current) {
@@ -12,9 +12,13 @@ const BasicSphere = () => {
   });
 
   return (
-    <mesh ref={meshRef}>
+    <mesh ref={meshRef} position={[0, 0, 0]}>
       <sphereGeometry args={[1, 32, 32]} />
-      <meshStandardMaterial color="#1B365D" metalness={0.4} roughness={0.7} />
+      <meshStandardMaterial 
+        color="#1B365D"
+        metalness={0.4}
+        roughness={0.7}
+      />
     </mesh>
   );
 };

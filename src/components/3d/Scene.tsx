@@ -6,7 +6,9 @@ const Scene: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div className="w-full h-[600px] relative">
       <Canvas
-        className="bg-gradient-to-b from-gray-50 to-gray-100"
+        shadows
+        dpr={[1, 2]}
+        gl={{ antialias: true }}
         camera={{ position: [0, 0, 5], fov: 45 }}
       >
         <Suspense fallback={null}>
