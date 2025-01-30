@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 
 const Hero = () => {
   return (
-    <div className="relative min-h-screen flex items-center bg-gradient-to-br from-[#4361EE] via-[#3F8CFF] to-[#FFA726]">
+    <div className="relative min-h-screen flex items-center bg-gradient-to-br from-raade-red to-raade-orange">
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto text-center space-y-8">
@@ -19,7 +19,7 @@ const Hero = () => {
           <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8 animate-fade-in">
             <Button
               size="lg"
-              className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white font-semibold text-lg rounded-full px-8 transition-all duration-300 transform hover:-translate-y-1"
+              className="bg-white hover:bg-white/90 text-raade-red font-semibold text-lg rounded-full px-8 transition-all duration-300 transform hover:-translate-y-1"
               onClick={() => window.location.href = "#studios"}
             >
               Join Our Next Studio
@@ -27,7 +27,7 @@ const Hero = () => {
             <Button
               variant="outline"
               size="lg"
-              className="bg-transparent border-2 border-white text-white hover:bg-white/10 font-semibold text-lg rounded-full px-8 transition-all duration-300 transform hover:-translate-y-1"
+              className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-raade-red font-semibold text-lg rounded-full px-8 transition-all duration-300 transform hover:-translate-y-1"
               onClick={() => window.location.href = "#conference"}
             >
               Learn More
