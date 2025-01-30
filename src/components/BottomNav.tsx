@@ -81,7 +81,7 @@ const BottomNav = () => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 p-2 z-50">
-      <nav className="max-w-sm mx-auto rounded-4xl bg-white/10 backdrop-blur-md border border-white/20 shadow-lg">
+      <nav className="max-w-sm mx-auto rounded-4xl bg-raade-red shadow-lg">
         <div className="flex justify-around items-center h-12">
           {navItems.map((item) => (
             <div
@@ -91,15 +91,29 @@ const BottomNav = () => {
               onMouseEnter={() => handleNavItemHover(item)}
               onMouseLeave={handleNavItemLeave}
             >
-              {/* Dropdown Menu */}
+              {/* Dynamic Dropdown Menu */}
               {item.dropdownItems && activeDropdown === item.name && (
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 min-w-[200px] p-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-lg animate-slide-up">
-                  <div className="flex flex-col space-y-1">
+                <div 
+                  className={cn(
+                    "absolute bottom-full left-1/2 -translate-x-1/2 mb-2",
+                    "min-w-[200px] bg-raade-red rounded-2xl shadow-lg",
+                    "animate-fade-in origin-bottom"
+                  )}
+                  style={{
+                    transformOrigin: "bottom center",
+                  }}
+                >
+                  <div className="py-3 px-2">
                     {item.dropdownItems.map((dropItem) => (
                       <Link
                         key={dropItem.href}
                         to={dropItem.href}
-                        className="px-4 py-2 text-sm text-white hover:bg-white/10 rounded-lg transition-colors duration-300"
+                        className={cn(
+                          "block px-4 py-2 text-sm text-white/90",
+                          "hover:text-white hover:bg-white/10",
+                          "rounded-lg transition-colors duration-300",
+                          location.pathname === dropItem.href && "bg-white/10 text-white"
+                        )}
                         onClick={(e) => {
                           if (isMobile && activeDropdown !== item.name) {
                             e.preventDefault();
@@ -110,6 +124,15 @@ const BottomNav = () => {
                       </Link>
                     ))}
                   </div>
+                  {/* Triangle Pointer */}
+                  <div 
+                    className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-[8px] w-0 h-0"
+                    style={{
+                      borderLeft: '8px solid transparent',
+                      borderRight: '8px solid transparent',
+                      borderTop: '8px solid #F73B20'
+                    }}
+                  />
                 </div>
               )}
 
