@@ -22,11 +22,6 @@ export default {
         raade: {
           red: "#F73B20",
           orange: "#FFA726",
-          gold: {
-            start: "#FFA726",
-            middle: "#FF9848",
-            end: "#FF8A6A",
-          },
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -83,9 +78,6 @@ export default {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.3s ease-out",
-      },
-      backdropBlur: {
-        xs: '2px',
       },
     },
   },

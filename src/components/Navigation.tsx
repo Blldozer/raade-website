@@ -23,7 +23,7 @@ const Navigation = () => {
       className={cn(
         "fixed w-full z-50 transition-all duration-300",
         isScrolled
-          ? "bg-white/10 backdrop-blur-md shadow-lg"
+          ? "bg-white/5 backdrop-blur-[2px] shadow-md"
           : "bg-transparent"
       )}
     >
