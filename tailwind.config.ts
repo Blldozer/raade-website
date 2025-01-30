@@ -18,14 +18,10 @@ export default {
       },
     },
     extend: {
-      fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
-      },
       colors: {
         raade: {
-          navy: "#1B365D",
-          gold: "#F4B942",
+          red: "#F73B20",
+          orange: "#FFA726",
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -60,6 +56,9 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+      },
+      borderRadius: {
+        '4xl': '2rem',
       },
       keyframes: {
         "accordion-down": {
