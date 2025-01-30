@@ -27,7 +27,7 @@ const Hero = () => {
             <Button
               variant="outline"
               size="lg"
-              className="border-2 border-white text-white hover:bg-white hover:text-raade-red font-semibold text-lg rounded-full px-8 transition-all duration-300 transform hover:-translate-y-1"
+              className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-raade-red font-semibold text-lg rounded-full px-8 transition-all duration-300 transform hover:-translate-y-1"
               onClick={() => window.location.href = "#conference"}
             >
               Learn More
