@@ -22,6 +22,11 @@ export default {
         raade: {
           red: "#F73B20",
           orange: "#FFA726",
+          gold: {
+            start: "#FFA726",
+            middle: "#FF9848",
+            end: "#FF8A6A",
+          },
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
