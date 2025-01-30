@@ -53,7 +53,7 @@ const NavLinks = ({ className = "", onClick }: NavLinksProps) => (
         item.dropdownItems ? (
           <NavigationMenuItem key={item.name}>
             <Link to={item.href} className="inline-block">
-              <NavigationMenuTrigger className="bg-transparent text-raade-navy hover:text-raade-gold transition-colors duration-200">
+              <NavigationMenuTrigger className="bg-transparent text-white hover:text-white/80 transition-colors duration-200">
                 {item.name}
               </NavigationMenuTrigger>
             </Link>
@@ -77,7 +77,7 @@ const NavLinks = ({ className = "", onClick }: NavLinksProps) => (
           <NavigationMenuItem key={item.name}>
             <Link
               to={item.href}
-              className={`text-raade-navy hover:text-raade-gold transition-colors duration-200 ${className}`}
+              className={`text-white hover:text-white/80 transition-colors duration-200 ${className}`}
               onClick={onClick}
             >
               {item.name}
@@ -88,7 +88,7 @@ const NavLinks = ({ className = "", onClick }: NavLinksProps) => (
       <NavigationMenuItem>
         <a
           href="#join"
-          className="px-6 py-2 rounded-md transition-colors duration-200 border-2 border-raade-navy text-raade-navy hover:bg-raade-navy hover:text-white"
+          className="px-6 py-2 rounded-md transition-colors duration-200 border-2 border-white text-white hover:bg-white hover:text-raade-red"
           onClick={onClick}
         >
           Join Us

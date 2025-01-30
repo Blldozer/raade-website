@@ -19,7 +19,7 @@ const Hero = () => {
           <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8 animate-fade-in">
             <Button
               size="lg"
-              className="bg-white hover:bg-white/90 text-raade-red font-semibold text-lg rounded-full px-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+              className="bg-white hover:bg-white/90 text-raade-red font-semibold text-lg rounded-full px-8 transition-all duration-300 transform hover:-translate-y-1"
               onClick={() => window.location.href = "#studios"}
             >
               Join Our Next Studio
