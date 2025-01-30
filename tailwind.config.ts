@@ -82,12 +82,17 @@ export default {
           from: { transform: "translateY(100%)", opacity: "0" },
           to: { transform: "translateY(0)", opacity: "1" },
         },
+        "expand-up": {
+          from: { height: "0", opacity: "0" },
+          to: { height: "var(--content-height)", opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.3s ease-out",
         "slide-up": "slide-up 0.3s ease-out",
+        "expand-up": "expand-up 0.3s ease-out",
       },
     },
   },
