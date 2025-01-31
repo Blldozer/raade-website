@@ -9,27 +9,22 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   plugins: [
-    react({
-      jsxRuntime: 'automatic',
-      jsxImportSource: 'react'
-    }),
+    react(),
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "three": path.resolve(__dirname, "./node_modules/three"),
-      "react": path.resolve(__dirname, "./node_modules/react"),
-      "react/jsx-runtime": path.resolve(__dirname, "./node_modules/react/jsx-runtime")
+      "three": path.resolve(__dirname, "./node_modules/three")
     },
   },
   optimizeDeps: {
-    include: ['three', 'react', 'react/jsx-runtime']
+    include: ['three']
   },
   build: {
     commonjsOptions: {
-      include: [/three/, /react/]
+      include: [/three/]
     }
   }
 }));
