@@ -1,25 +1,25 @@
-import { Action, State, ToasterToast } from "@/types/toast.types"
+import { Action, State, ToasterToast } from "@/types/toast.types";
 
-const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1000000
+const TOAST_LIMIT = 1;
+const TOAST_REMOVE_DELAY = 1000000;
 
-export const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>()
+export const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
 
-const addToRemoveQueue = (toastId: string, dispatch: (action: Action) => void) => {
+const addToRemoveQueue = (toastId: string, dispatchFn: (action: Action) => void) => {
   if (toastTimeouts.has(toastId)) {
-    return
+    return;
   }
 
   const timeout = setTimeout(() => {
-    toastTimeouts.delete(toastId)
-    dispatch({
+    toastTimeouts.delete(toastId);
+    dispatchFn({
       type: "REMOVE_TOAST",
       toastId: toastId,
-    })
-  }, TOAST_REMOVE_DELAY)
+    });
+  }, TOAST_REMOVE_DELAY);
 
-  toastTimeouts.set(toastId, timeout)
-}
+  toastTimeouts.set(toastId, timeout);
+};
 
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -27,7 +27,7 @@ export const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
-      }
+      };
 
     case "UPDATE_TOAST":
       return {
@@ -35,21 +35,21 @@ export const reducer = (state: State, action: Action): State => {
         toasts: state.toasts.map((t) =>
           t.id === action.toast.id ? { ...t, ...action.toast } : t
         ),
-      }
+      };
 
     case "DISMISS_TOAST": {
-      const { toastId } = action
+      const { toastId } = action;
 
       if (toastId) {
         addToRemoveQueue(toastId, (action) => {
-          state = reducer(state, action)
-        })
+          state = reducer(state, action);
+        });
       } else {
         state.toasts.forEach((toast) => {
           addToRemoveQueue(toast.id, (action) => {
-            state = reducer(state, action)
-          })
-        })
+            state = reducer(state, action);
+          });
+        });
       }
 
       return {
@@ -62,18 +62,18 @@ export const reducer = (state: State, action: Action): State => {
               }
             : t
         ),
-      }
+      };
     }
     case "REMOVE_TOAST":
       if (action.toastId === undefined) {
         return {
           ...state,
           toasts: [],
-        }
+        };
       }
       return {
         ...state,
         toasts: state.toasts.filter((t) => t.id !== action.toastId),
-      }
+      };
   }
-}
+};
