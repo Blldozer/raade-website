@@ -67,7 +67,6 @@ const BottomNav = () => {
   }, []);
 
   const handleMouseEnter = (label: string) => {
-    // Clear any existing timeout to prevent animation conflicts
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
@@ -77,26 +76,21 @@ const BottomNav = () => {
       setHoverItem(label);
       const menu = menuRefs.current[label];
       if (menu) {
-        // Kill any existing animations
         gsap.killTweensOf(menu);
         
-        // Show menu immediately
         gsap.set(menu, { 
           display: "block",
           height: "auto",
           opacity: 0
         });
 
-        // Get the natural height
         const height = menu.offsetHeight;
         
-        // Set back to 0 and animate
         gsap.set(menu, { 
           height: 0,
           opacity: 0
         });
         
-        // Animate to full height
         gsap.to(menu, {
           height: height,
           opacity: 1,
@@ -111,7 +105,6 @@ const BottomNav = () => {
     if (hoverItem) {
       const menu = menuRefs.current[hoverItem];
       if (menu) {
-        // Kill any existing animations
         gsap.killTweensOf(menu);
         
         gsap.to(menu, {
@@ -121,7 +114,6 @@ const BottomNav = () => {
           ease: "power2.in",
           onComplete: () => {
             gsap.set(menu, { display: "none" });
-            // Add a small delay before resetting hover state
             timeoutRef.current = setTimeout(() => {
               setHoverItem(null);
             }, 100);
@@ -153,7 +145,7 @@ const BottomNav = () => {
                   <div
                     key={item.label}
                     onMouseEnter={() => handleMouseEnter(item.label)}
-                    className="h-full flex items-center"
+                    className="h-full flex items-center relative z-10"
                   >
                     <Link
                       to={isHome && isCurrentPath ? "#" : item.path}
@@ -188,7 +180,7 @@ const BottomNav = () => {
               <div 
                 key={`menu-${item.label}`}
                 ref={(el) => (menuRefs.current[item.label] = el)}
-                className="absolute bottom-0 left-0 right-0 rounded-t-4xl bg-gradient-to-r from-[#FFA726] via-[#FF9848] to-[#FF8A6A] origin-bottom"
+                className="absolute bottom-0 left-0 right-0 rounded-t-4xl bg-gradient-to-r from-[#FFA726] via-[#FF9848] to-[#FF8A6A] transform translate-y-[-100%]"
               >
                 <div className="p-4 pt-16">
                   {item.subItems?.map((subItem, index) => (
