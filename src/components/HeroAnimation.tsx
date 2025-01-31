@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import * as THREE from 'three';
 import { useThrottle } from '@/hooks/use-throttle';
 
@@ -13,6 +13,19 @@ const HeroAnimation = () => {
   // Colors from RAADE's palette
   const NAVY = new THREE.Color('#2a4774');
   const GOLD = new THREE.Color('#e6cb96');
+
+  const handleResize = useCallback(() => {
+    if (!containerRef.current || !cameraRef.current || !rendererRef.current) return;
+
+    const width = containerRef.current.clientWidth;
+    const height = containerRef.current.clientHeight;
+
+    cameraRef.current.aspect = width / height;
+    cameraRef.current.updateProjectionMatrix();
+    rendererRef.current.setSize(width, height);
+  }, []);
+
+  const throttledResize = useThrottle(handleResize, 100);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -94,22 +107,11 @@ const HeroAnimation = () => {
     animate();
 
     // Handle resize
-    const handleResize = useThrottle(() => {
-      if (!containerRef.current || !camera || !renderer) return;
-
-      const width = containerRef.current.clientWidth;
-      const height = containerRef.current.clientHeight;
-
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-      renderer.setSize(width, height);
-    }, 100);
-
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', throttledResize);
 
     // Cleanup
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('resize', throttledResize);
       if (frameIdRef.current) {
         cancelAnimationFrame(frameIdRef.current);
       }
@@ -122,7 +124,7 @@ const HeroAnimation = () => {
         containerRef.current.removeChild(renderer.domElement);
       }
     };
-  }, []);
+  }, [throttledResize]);
 
   return (
     <div 
