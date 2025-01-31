@@ -1,9 +1,9 @@
-import Hero from "@/components/Hero";
+import HeroSection from "@/components/hero/HeroSection";
 
 const Index = () => {
   return (
     <div className="min-h-screen">
-      <Hero />
+      <HeroSection />
     </div>
   );
 };
