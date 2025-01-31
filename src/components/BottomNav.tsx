@@ -1,6 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import { Home, Users, Lightbulb, Calendar, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef, useLayoutEffect } from "react";
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
 
 type NavItem = {
   icon: JSX.Element;
@@ -51,15 +53,53 @@ const BottomNav = () => {
   const [hoverItem, setHoverItem] = useState<string | null>(null);
   const location = useLocation();
   const currentPath = location.pathname;
+  const navRef = useRef<HTMLDivElement>(null);
+  const menuRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+
+  useGSAP(() => {
+    // Set initial states
+    gsap.set(Object.values(menuRefs.current), {
+      height: 0,
+      opacity: 0,
+      display: "none",
+    });
+  }, []);
 
   const handleMouseEnter = (label: string) => {
     if (currentPath !== "/" || label !== "Home") {
       setHoverItem(label);
+      const menu = menuRefs.current[label];
+      if (menu) {
+        // First, make sure the menu is displayed
+        gsap.set(menu, { display: "block" });
+        
+        // Then animate it
+        gsap.to(menu, {
+          height: "auto",
+          opacity: 1,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      }
     }
   };
 
   const handleMouseLeave = () => {
-    setHoverItem(null);
+    if (hoverItem) {
+      const menu = menuRefs.current[hoverItem];
+      if (menu) {
+        gsap.to(menu, {
+          height: 0,
+          opacity: 0,
+          duration: 0.2,
+          ease: "power2.in",
+          onComplete: () => {
+            gsap.set(menu, { display: "none" });
+            setHoverItem(null);
+          },
+        });
+      }
+    }
   };
 
   const showMenu = (item: NavItem) => 
@@ -67,8 +107,7 @@ const BottomNav = () => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 p-2">
-      <div className="relative max-w-sm mx-auto">
-        {/* Navigation Bar with Expandable Content */}
+      <div className="relative max-w-sm mx-auto" ref={navRef}>
         <nav className="relative">
           {/* Base Navigation Bar */}
           <div className="rounded-4xl bg-gradient-to-r from-[#FFA726] via-[#FF9848] to-[#FF8A6A] overflow-hidden">
@@ -82,7 +121,7 @@ const BottomNav = () => {
                   <Link
                     key={item.label}
                     to={isHome && isCurrentPath ? "#" : item.path}
-                    className={`flex flex-col items-center transition-all duration-300 ${
+                    className={`flex items-center justify-center transition-all duration-300 ${
                       isHome && isCurrentPath
                         ? "text-white/50 cursor-default pointer-events-none"
                         : "text-white/70 hover:text-white"
@@ -90,13 +129,13 @@ const BottomNav = () => {
                     onMouseEnter={() => handleMouseEnter(item.label)}
                     onMouseLeave={handleMouseLeave}
                   >
-                    <div className="relative flex flex-col items-center">
+                    <div className="relative flex items-center gap-1">
                       {item.icon}
-                      <span className="text-[10px] mt-0.5">{item.label}</span>
+                      <span className="text-[10px]">{item.label}</span>
                       {hasSubItems && (
                         <ChevronDown 
                           size={12} 
-                          className={`absolute -right-4 top-1.5 transition-transform duration-300 ${
+                          className={`ml-0.5 transition-transform duration-300 ${
                             showMenu(item) ? 'rotate-180' : ''
                           }`}
                         />
@@ -110,10 +149,11 @@ const BottomNav = () => {
 
           {/* Expandable Content */}
           {navItems.map((item) => (
-            showMenu(item) && (
+            item.subItems && (
               <div 
                 key={`menu-${item.label}`}
-                className="absolute bottom-0 left-0 right-0 rounded-t-4xl bg-gradient-to-r from-[#FFA726] via-[#FF9848] to-[#FF8A6A] animate-expand-up origin-bottom"
+                ref={(el) => (menuRefs.current[item.label] = el)}
+                className="absolute bottom-0 left-0 right-0 rounded-t-4xl bg-gradient-to-r from-[#FFA726] via-[#FF9848] to-[#FF8A6A] origin-bottom"
               >
                 <div className="p-4 pt-16">
                   {item.subItems?.map((subItem, index) => (
