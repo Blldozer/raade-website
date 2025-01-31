@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Home, Users, Lightbulb, Calendar, ChevronDown } from "lucide-react";
-import { useState, useRef, useLayoutEffect } from "react";
+import { useState, useRef } from "react";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 
@@ -55,6 +55,7 @@ const BottomNav = () => {
   const currentPath = location.pathname;
   const navRef = useRef<HTMLDivElement>(null);
   const menuRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useGSAP(() => {
     // Set initial states
@@ -66,19 +67,41 @@ const BottomNav = () => {
   }, []);
 
   const handleMouseEnter = (label: string) => {
+    // Clear any existing timeout to prevent animation conflicts
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+
     if (currentPath !== "/" || label !== "Home") {
       setHoverItem(label);
       const menu = menuRefs.current[label];
       if (menu) {
-        // First, make sure the menu is displayed
-        gsap.set(menu, { display: "block" });
+        // Kill any existing animations
+        gsap.killTweensOf(menu);
         
-        // Then animate it
-        gsap.to(menu, {
+        // Show menu immediately
+        gsap.set(menu, { 
+          display: "block",
           height: "auto",
+          opacity: 0
+        });
+
+        // Get the natural height
+        const height = menu.offsetHeight;
+        
+        // Set back to 0 and animate
+        gsap.set(menu, { 
+          height: 0,
+          opacity: 0
+        });
+        
+        // Animate to full height
+        gsap.to(menu, {
+          height: height,
           opacity: 1,
           duration: 0.3,
-          ease: "power2.out",
+          ease: "power2.out"
         });
       }
     }
@@ -88,6 +111,9 @@ const BottomNav = () => {
     if (hoverItem) {
       const menu = menuRefs.current[hoverItem];
       if (menu) {
+        // Kill any existing animations
+        gsap.killTweensOf(menu);
+        
         gsap.to(menu, {
           height: 0,
           opacity: 0,
@@ -95,8 +121,11 @@ const BottomNav = () => {
           ease: "power2.in",
           onComplete: () => {
             gsap.set(menu, { display: "none" });
-            setHoverItem(null);
-          },
+            // Add a small delay before resetting hover state
+            timeoutRef.current = setTimeout(() => {
+              setHoverItem(null);
+            }, 100);
+          }
         });
       }
     }
@@ -106,7 +135,10 @@ const BottomNav = () => {
     hoverItem === item.label && item.subItems;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 p-2">
+    <div 
+      className="fixed bottom-0 left-0 right-0 p-2 z-50"
+      onMouseLeave={handleMouseLeave}
+    >
       <div className="relative max-w-sm mx-auto" ref={navRef}>
         <nav className="relative">
           {/* Base Navigation Bar */}
@@ -118,30 +150,33 @@ const BottomNav = () => {
                 const hasSubItems = !!item.subItems;
                 
                 return (
-                  <Link
+                  <div
                     key={item.label}
-                    to={isHome && isCurrentPath ? "#" : item.path}
-                    className={`flex items-center justify-center transition-all duration-300 ${
-                      isHome && isCurrentPath
-                        ? "text-white/50 cursor-default pointer-events-none"
-                        : "text-white/70 hover:text-white"
-                    }`}
                     onMouseEnter={() => handleMouseEnter(item.label)}
-                    onMouseLeave={handleMouseLeave}
+                    className="h-full flex items-center"
                   >
-                    <div className="relative flex items-center gap-1">
-                      {item.icon}
-                      <span className="text-[10px]">{item.label}</span>
-                      {hasSubItems && (
-                        <ChevronDown 
-                          size={12} 
-                          className={`ml-0.5 transition-transform duration-300 ${
-                            showMenu(item) ? 'rotate-180' : ''
-                          }`}
-                        />
-                      )}
-                    </div>
-                  </Link>
+                    <Link
+                      to={isHome && isCurrentPath ? "#" : item.path}
+                      className={`flex items-center justify-center transition-all duration-300 ${
+                        isHome && isCurrentPath
+                          ? "text-white/50 cursor-default pointer-events-none"
+                          : "text-white/70 hover:text-white"
+                      }`}
+                    >
+                      <div className="relative flex items-center gap-1">
+                        {item.icon}
+                        <span className="text-[10px]">{item.label}</span>
+                        {hasSubItems && (
+                          <ChevronDown 
+                            size={12} 
+                            className={`ml-0.5 transition-transform duration-300 ${
+                              showMenu(item) ? 'rotate-180' : ''
+                            }`}
+                          />
+                        )}
+                      </div>
+                    </Link>
+                  </div>
                 );
               })}
             </div>
