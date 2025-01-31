@@ -13,10 +13,15 @@ export default tseslint.config(
       ecmaVersion: 2020,
       globals: {
         ...globals.browser,
-        React: "readonly",
-        JSX: "readonly"
+        React: true,
+        JSX: true
       },
       parserOptions: {
+        ecmaFeatures: {
+          jsx: true
+        },
+        jsxPragma: null,
+        jsxFragmentPragma: null,
         jsx: true,
         jsxRuntime: "automatic"
       }
@@ -33,5 +38,10 @@ export default tseslint.config(
       ],
       "@typescript-eslint/no-unused-vars": "off",
     },
+    settings: {
+      react: {
+        version: "detect"
+      }
+    }
   }
 );
