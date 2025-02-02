@@ -8,22 +8,28 @@ const HeroSection = () => {
 
   useEffect(() => {
     const tl = gsap.timeline({
-      delay: 0.5,
+      delay: 0.2,
     });
-
-    // Animate to the original gradient
+  
+    // Start with opening scene gradient
+    gsap.set(gradientRef.current, {
+      backgroundImage: "linear-gradient(45deg, #1A365D, #0A1829)",
+      opacity: 1
+    });
+  
+    // Single, smooth transition to final state
     tl.to(gradientRef.current, {
       backgroundImage: "linear-gradient(to bottom right, rgba(26, 54, 93, 0.8), rgba(251, 176, 59, 0.8))",
       duration: 1.5,
       ease: "power2.inOut"
     });
-
+  
     return () => {
       tl.kill();
     };
   }, []);
 
-  return (
+return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
       {/* Line Animation */}
       <LineAnimation />

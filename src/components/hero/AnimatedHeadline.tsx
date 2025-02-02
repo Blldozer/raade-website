@@ -17,22 +17,34 @@ const AnimatedHeadline = ({ className }: AnimatedHeadlineProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const tl = gsap.timeline();
-
+    const tl = gsap.timeline({
+      delay: 1.8 // Match the scene transition delay
+    });
+  
     // Set initial states
     gsap.set([line1Ref.current, line2Ref.current, line3Ref.current], {
       opacity: 1,
       text: ""
     });
-
-    // Create cursor blink
+    gsap.set(cursorRef.current, { opacity: 0 }); // Start hidden
+  
+    // Create cursor blink but pause it initially
     const cursorBlink = gsap.to(cursorRef.current, {
       opacity: 0,
       duration: 0.5,
       repeat: -1,
       yoyo: true,
-      ease: "steps(1)"
+      ease: "steps(1)",
+      paused: true // Important!
     });
+  
+    tl
+      // Fade in cursor first
+      .to(cursorRef.current, {
+        opacity: 1,
+        duration: 0.3,
+        onComplete: () => { void cursorBlink.play(); } // Start blinking after fade in
+      })
 
     // Function to update cursor position
     const updateCursorPosition = (textElement: HTMLElement | null) => {

@@ -21,7 +21,7 @@ const LineAnimation = () => {
     });
 
     const tl = gsap.timeline({
-      delay: 0.5
+      delay: 0.8
     });
 
     // Increase opacity for better visibility
