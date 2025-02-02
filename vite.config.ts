@@ -11,9 +11,7 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     glsl(),
-    react({
-      jsxImportSource: "react"
-    }),
+    react(),
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
@@ -29,6 +27,10 @@ export default defineConfig(({ mode }) => ({
   build: {
     commonjsOptions: {
       include: [/three/, /node_modules/]
-    }
+    },
+    target: 'esnext'
+  },
+  esbuild: {
+    jsxInject: `import React from 'react'`
   }
 }));
