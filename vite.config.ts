@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import glsl from 'vite-plugin-glsl';
 import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
@@ -10,6 +11,7 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   plugins: [
+    glsl(),
     react(),
     mode === 'development' &&
     componentTagger(),
