@@ -11,15 +11,16 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     glsl(),
-    react(),
+    react({
+      jsxImportSource: "react"
+    }),
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "three": path.resolve(__dirname, "./node_modules/three"),
-      "react/jsx-runtime": "react/jsx-runtime.js"
+      "three": path.resolve(__dirname, "./node_modules/three")
     },
   },
   optimizeDeps: {
