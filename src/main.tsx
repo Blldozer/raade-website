@@ -1,11 +1,11 @@
-import React from "react";
+import { StrictMode } from "react";  // Only import what we need
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import "./config/gsapConfig.ts";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
+  <StrictMode>
     <App />
-  </React.StrictMode>
+  </StrictMode>
 );
