@@ -27,19 +27,12 @@ export default {
             middle: "#FF9848",
             end: "#FF8A6A",
           },
-          navy: "#2a4774",
         },
-        border: {
-          DEFAULT: "hsl(var(--border))",
-        },
+        border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: {
-          DEFAULT: "hsl(var(--background))",
-        },
-        foreground: {
-          DEFAULT: "hsl(var(--foreground))",
-        },
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
