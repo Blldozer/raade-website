@@ -19,11 +19,20 @@ export default {
     },
     extend: {
       colors: {
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        raade: {
+          red: "#F73B20",
+          orange: "#FFA726",
+          gold: {
+            start: "#FFA726",
+            middle: "#FF9848",
+            end: "#FF8A6A",
+          },
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -51,15 +60,6 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
-        },
-        raade: {
-          red: "#F73B20",
-          orange: "#FFA726",
-          gold: {
-            start: "#FFA726",
-            middle: "#FF9848",
-            end: "#FF8A6A",
-          },
         },
       },
       borderRadius: {
