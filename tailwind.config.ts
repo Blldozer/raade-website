@@ -1,8 +1,7 @@
 import type { Config } from "tailwindcss";
-import tailwindAnimate from "tailwindcss-animate";
 
 export default {
-  darkMode: "class",
+  darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -29,11 +28,11 @@ export default {
             end: "#FF8A6A",
           },
         },
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -64,10 +63,7 @@ export default {
         },
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-        "4xl": "2rem",
+        '4xl': '2rem',
       },
       keyframes: {
         "accordion-down": {
@@ -83,22 +79,22 @@ export default {
           to: { opacity: "1" },
         },
         "slide-up": {
-          from: { transform: "translateY(100%)" },
-          to: { transform: "translateY(0)" },
+          from: { transform: "translateY(100%)", opacity: "0" },
+          to: { transform: "translateY(0)", opacity: "1" },
         },
         "expand-up": {
-          from: { transform: "scaleY(0)", transformOrigin: "bottom" },
-          to: { transform: "scaleY(1)", transformOrigin: "bottom" },
+          from: { height: "3rem", opacity: "0" },
+          to: { height: "var(--content-height)", opacity: "1" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fade-in 1s ease-out",
-        "slide-up": "slide-up 0.5s ease-out",
-        "expand-up": "expand-up 0.5s ease-out",
+        "fade-in": "fade-in 0.3s ease-out",
+        "slide-up": "slide-up 0.3s ease-out",
+        "expand-up": "expand-up 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
       },
     },
   },
-  plugins: [tailwindAnimate],
+  plugins: [require("tailwindcss-animate")],
 } satisfies Config;

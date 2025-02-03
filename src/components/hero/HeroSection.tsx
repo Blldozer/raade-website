@@ -10,51 +10,44 @@ const HeroSection = () => {
     const tl = gsap.timeline({
       delay: 0.2,
     });
-
-    // Set initial gradient state
+  
+    // Start with opening scene gradient
     gsap.set(gradientRef.current, {
-      background: "linear-gradient(45deg, #1A365D, #0A1829)",
+      backgroundImage: "linear-gradient(45deg, #1A365D, #0A1829)",
       opacity: 1
     });
-
-    // Animate to final gradient state
+  
+    // Single, smooth transition to final state
     tl.to(gradientRef.current, {
-      background: "linear-gradient(to bottom right, #1A365D, #FBB03B)",
+      backgroundImage: "linear-gradient(to bottom right, rgba(26, 54, 93, 0.8), rgba(251, 176, 59, 0.8))",
       duration: 1.5,
       ease: "power2.inOut"
     });
-
+  
     return () => {
       tl.kill();
     };
   }, []);
 
-  return (
-    <section className="relative h-screen w-screen flex items-center justify-center overflow-hidden">
+return (
+    <section className="relative min-h-screen flex items-center overflow-hidden">
       {/* Line Animation */}
       <LineAnimation />
       
-      {/* Gradient Background Layer */}
+      {/* Gradient Background with original gradient as base */}
       <div
         ref={gradientRef}
-        className="absolute inset-0 opacity-80"
-        style={{
-          background: "linear-gradient(45deg, #1A365D, #0A1829)",
-        }}
-        aria-hidden="true"
-      />
-      
-      {/* Optional Overlay for Additional Color Control */}
-      <div 
-        className="absolute inset-0 bg-gradient-to-br from-raade-orange/10 to-transparent mix-blend-overlay"
+        className="absolute inset-0 bg-gradient-to-br from-raade-orange via-[#FFA726] to-[#FF8A6A] opacity-50"
         aria-hidden="true"
       />
       
       {/* Content Container */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col justify-center h-full">
-          <div className="w-full lg:w-3/4">
-            <AnimatedHeadline />
+      <div className="relative z-10 w-full h-full grid grid-rows-[1fr_auto_1fr] py-8">
+        <div className="row-start-2 w-full px-4 sm:px-6 md:px-8">
+          <div className="container mx-auto">
+            <div className="w-full md:w-2/3 max-w-3xl">
+              <AnimatedHeadline />
+            </div>
           </div>
         </div>
       </div>
