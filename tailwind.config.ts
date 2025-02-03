@@ -20,6 +20,15 @@ export default {
     },
     extend: {
       colors: {
+        raade: {
+          red: "#F73B20",
+          orange: "#FFA726",
+          gold: {
+            start: "#FFA726",
+            middle: "#FF9848",
+            end: "#FF8A6A",
+          },
+        },
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         border: "hsl(var(--border))",
@@ -58,6 +67,7 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        "4xl": "2rem",
       },
       keyframes: {
         "accordion-down": {
@@ -68,10 +78,25 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "fade-in": {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
+        "slide-up": {
+          from: { transform: "translateY(100%)" },
+          to: { transform: "translateY(0)" },
+        },
+        "expand-up": {
+          from: { transform: "scaleY(0)", transformOrigin: "bottom" },
+          to: { transform: "scaleY(1)", transformOrigin: "bottom" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "fade-in": "fade-in 1s ease-out",
+        "slide-up": "slide-up 0.5s ease-out",
+        "expand-up": "expand-up 0.5s ease-out",
       },
     },
   },
