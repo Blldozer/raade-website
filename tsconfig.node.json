@@ -12,11 +12,10 @@
 
     "allowSyntheticDefaultImports": true,
 
-    "noEmit": false, // Change this to true
+    "noEmit": false, // Ensure this is not set to true
 
-    
     "resolveJsonModule": true,
-    
+
     "esModuleInterop": true
 
   },

@@ -22,11 +22,12 @@ export default defineConfig(({ mode }) => ({
     },
   },
   optimizeDeps: {
-    include: ['three']
+    include: ['three', 'react', 'react-dom', 'gsap'],
   },
   build: {
     commonjsOptions: {
-      include: [/three/]
-    }
+      include: [/three/,/node_modules/]
+    },
+    target: 'esnext'
   }
 }));
