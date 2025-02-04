@@ -1,4 +1,5 @@
 import { Home, Users, Lightbulb, Calendar } from "lucide-react";
+import React from 'react';
 
 export interface NavItem {
   icon: JSX.Element;
