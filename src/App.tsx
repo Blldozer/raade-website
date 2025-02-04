@@ -10,12 +10,12 @@ import About from "./pages/About";
 import Footer from "./components/Footer";
 import BottomNav from "./components/BottomNav";
 import Navigation from "./components/Navigation";
-import { useMediaQuery } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const queryClient = new QueryClient();
 
 const App = () => {
-  const isMobile = useMediaQuery("(max-width: 768px)");
+  const isMobile = useIsMobile();
 
   return (
     <QueryClientProvider client={queryClient}>
