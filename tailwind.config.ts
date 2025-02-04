@@ -1,7 +1,8 @@
 import type { Config } from "tailwindcss";
+import animate from "tailwindcss-animate";
 
-export default {
-  darkMode: ["class"],
+const config = {
+  darkMode: 'class',
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -62,6 +63,9 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
       },
+      borderColor: {
+        DEFAULT: 'hsl(var(--border))'
+      },
       borderRadius: {
         '4xl': '2rem',
       },
@@ -96,5 +100,7 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
-} satisfies Config;
+  plugins: [animate],
+} satisfies Config
+
+export default config;

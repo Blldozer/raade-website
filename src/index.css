@@ -92,7 +92,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-[hsl(var(--border))]; /* Changed from border-border */
   }
 
   body {
