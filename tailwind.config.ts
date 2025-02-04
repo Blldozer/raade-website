@@ -63,11 +63,11 @@ const config = {
           foreground: "hsl(var(--card-foreground))",
         },
       },
-      borderColor: {
-        DEFAULT: 'hsl(var(--border))'
-      },
       borderRadius: {
-        '4xl': '2rem',
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+        "4xl": "2rem",
       },
       keyframes: {
         "accordion-down": {
@@ -101,6 +101,6 @@ const config = {
     },
   },
   plugins: [animate],
-} satisfies Config
+} satisfies Config;
 
 export default config;
