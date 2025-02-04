@@ -1,202 +1,57 @@
-import { Link, useLocation } from "react-router-dom";
-import { Home, Users, Lightbulb, Calendar, ChevronDown } from "lucide-react";
-import { useState, useRef } from "react";
-import { gsap } from "gsap";
-import { useGSAP } from "@gsap/react";
-
-type NavItem = {
-  icon: JSX.Element;
-  label: string;
-  path: string;
-  subItems?: { label: string; path: string }[];
-};
-
-const navItems: NavItem[] = [
-  {
-    icon: <Home size={20} />,
-    label: "Home",
-    path: "/",
-  },
-  {
-    icon: <Users size={20} />,
-    label: "About",
-    path: "/about",
-    subItems: [
-      { label: "Our Team", path: "/about#team" },
-      { label: "Mission", path: "/about#mission" },
-    ],
-  },
-  {
-    icon: <Lightbulb size={20} />,
-    label: "Studios",
-    path: "/studios",
-    subItems: [
-      { label: "Current Projects", path: "/studios#projects" },
-      { label: "Get Involved", path: "/studios#involve" },
-      { label: "Past Success", path: "/studios#success" },
-    ],
-  },
-  {
-    icon: <Calendar size={20} />,
-    label: "Conference",
-    path: "/conference",
-    subItems: [
-      { label: "Schedule", path: "/conference#schedule" },
-      { label: "Speakers", path: "/conference#speakers" },
-      { label: "Register", path: "/conference#register" },
-      { label: "Location", path: "/conference#location" },
-    ],
-  },
-];
+import { useState } from "react";
+import { useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
+import NavItem from "./bottom-nav/NavItem";
+import SubMenu from "./bottom-nav/SubMenu";
+import { navItems } from "./bottom-nav/navigation-config";
 
 const BottomNav = () => {
-  const [hoverItem, setHoverItem] = useState<string | null>(null);
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const location = useLocation();
   const currentPath = location.pathname;
-  const navRef = useRef<HTMLDivElement>(null);
-  const menuRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  useGSAP(() => {
-    // Set initial states
-    gsap.set(Object.values(menuRefs.current), {
-      height: 0,
-      opacity: 0,
-      display: "none",
-    });
-  }, []);
 
   const handleMouseEnter = (label: string) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-
     if (currentPath !== "/" || label !== "Home") {
-      setHoverItem(label);
-      const menu = menuRefs.current[label];
-      if (menu) {
-        gsap.killTweensOf(menu);
-        
-        gsap.set(menu, { 
-          display: "block",
-          height: "auto",
-          opacity: 0
-        });
-
-        const height = menu.offsetHeight;
-        
-        gsap.set(menu, { 
-          height: 0,
-          opacity: 0
-        });
-        
-        gsap.to(menu, {
-          height: height,
-          opacity: 1,
-          duration: 0.3,
-          ease: "power2.out"
-        });
-      }
+      setActiveMenu(label);
     }
   };
 
   const handleMouseLeave = () => {
-    if (hoverItem) {
-      const menu = menuRefs.current[hoverItem];
-      if (menu) {
-        gsap.killTweensOf(menu);
-        
-        gsap.to(menu, {
-          height: 0,
-          opacity: 0,
-          duration: 0.2,
-          ease: "power2.in",
-          onComplete: () => {
-            gsap.set(menu, { display: "none" });
-            timeoutRef.current = setTimeout(() => {
-              setHoverItem(null);
-            }, 100);
-          }
-        });
-      }
-    }
+    setActiveMenu(null);
   };
-
-  const showMenu = (item: NavItem) => 
-    hoverItem === item.label && item.subItems;
 
   return (
     <div 
       className="fixed bottom-0 left-0 right-0 p-2 z-50"
       onMouseLeave={handleMouseLeave}
     >
-      <div className="relative max-w-sm mx-auto" ref={navRef}>
+      <div className="relative max-w-sm mx-auto">
         <nav className="relative">
-          {/* Base Navigation Bar */}
-          <div className="rounded-4xl bg-gradient-to-r from-[#FFA726] via-[#FF9848] to-[#FF8A6A] overflow-hidden">
+          <div className="rounded-4xl bg-gradient-to-r from-raade-orange via-[#FF9848] to-raade-red overflow-hidden">
             <div className="flex justify-around items-center h-12">
-              {navItems.map((item) => {
-                const isHome = item.path === "/";
-                const isCurrentPath = currentPath === item.path;
-                const hasSubItems = !!item.subItems;
-                
-                return (
-                  <div
-                    key={item.label}
-                    onMouseEnter={() => handleMouseEnter(item.label)}
-                    className="h-full flex items-center relative z-10"
-                  >
-                    <Link
-                      to={isHome && isCurrentPath ? "#" : item.path}
-                      className={`flex items-center justify-center transition-all duration-300 ${
-                        isHome && isCurrentPath
-                          ? "text-white/50 cursor-default pointer-events-none"
-                          : "text-white/70 hover:text-white"
-                      }`}
-                    >
-                      <div className="relative flex items-center gap-1">
-                        {item.icon}
-                        <span className="text-[10px]">{item.label}</span>
-                        {hasSubItems && (
-                          <ChevronDown 
-                            size={12} 
-                            className={`ml-0.5 transition-transform duration-300 ${
-                              showMenu(item) ? 'rotate-180' : ''
-                            }`}
-                          />
-                        )}
-                      </div>
-                    </Link>
-                  </div>
-                );
-              })}
+              {navItems.map((item) => (
+                <NavItem
+                  key={item.label}
+                  {...item}
+                  isCurrentPath={currentPath === item.path}
+                  onMouseEnter={() => handleMouseEnter(item.label)}
+                />
+              ))}
             </div>
           </div>
 
-          {/* Expandable Content */}
-          {navItems.map((item) => (
-            item.subItems && (
-              <div 
-                key={`menu-${item.label}`}
-                ref={(el) => (menuRefs.current[item.label] = el)}
-                className="absolute bottom-0 left-0 right-0 rounded-t-4xl bg-gradient-to-r from-[#FFA726] via-[#FF9848] to-[#FF8A6A] transform translate-y-[-100%]"
-              >
-                <div className="p-4 pt-16">
-                  {item.subItems?.map((subItem, index) => (
-                    <Link
-                      key={index}
-                      to={subItem.path}
-                      className="block text-white/70 hover:text-white py-2 text-left transition-colors duration-300"
-                      onClick={() => setHoverItem(null)}
-                    >
-                      {subItem.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )
-          ))}
+          <AnimatePresence>
+            {navItems.map((item) => (
+              item.subItems && (
+                <SubMenu
+                  key={item.label}
+                  items={item.subItems}
+                  isVisible={activeMenu === item.label}
+                  onClose={() => setActiveMenu(null)}
+                />
+              )
+            ))}
+          </AnimatePresence>
         </nav>
       </div>
     </div>
