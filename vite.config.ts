@@ -29,8 +29,5 @@ export default defineConfig(({ mode }) => ({
       include: [/three/, /node_modules/]
     },
     target: 'esnext'
-  },
-  esbuild: {
-    jsxInject: `import React from 'react'`
   }
 }));
