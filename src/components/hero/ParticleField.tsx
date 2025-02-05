@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { motion, MouseEvent as FramerMouseEvent } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 // African-inspired symbols
 const symbols = ['◆', '●', '■', '▲', '○', '□', '△'];
@@ -64,11 +64,13 @@ const ParticleField = () => {
               opacity: 1,
               transition: { duration: 0.2 }
             }}
-            onHoverStart={(e: FramerMouseEvent) => {
-              (e.target as HTMLDivElement).style.pointerEvents = 'auto';
+            onHoverStart={(e) => {
+              const target = e.currentTarget as HTMLDivElement;
+              target.style.pointerEvents = 'auto';
             }}
-            onHoverEnd={(e: FramerMouseEvent) => {
-              (e.target as HTMLDivElement).style.pointerEvents = 'none';
+            onHoverEnd={(e) => {
+              const target = e.currentTarget as HTMLDivElement;
+              target.style.pointerEvents = 'none';
             }}
           >
             {symbol}
