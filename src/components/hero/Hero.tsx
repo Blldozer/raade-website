@@ -15,9 +15,9 @@ const Hero = () => {
       <Navigation />
       
       {/* Main content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 py-20 sm:px-6 lg:px-8 min-h-screen flex flex-col justify-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 py-10 sm:px-6 lg:px-8 min-h-screen flex flex-col justify-center">
         <motion.div
-          className="space-y-8 max-w-3xl"
+          className="space-y-4 md:space-y-8 max-w-3xl"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
@@ -27,7 +27,7 @@ const Hero = () => {
 
           {/* Supporting text */}
           <motion.p 
-            className="text-xl md:text-2xl text-white/80 max-w-3xl"
+            className="text-lg sm:text-xl md:text-2xl text-white/80 max-w-3xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1 }}
@@ -37,11 +37,11 @@ const Hero = () => {
           </motion.p>
 
           {/* Call-to-action buttons */}
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             <motion.button 
               onClick={() => window.location.href = "#studios"}
-              className="px-8 py-4 bg-[#FBB03B] text-[#1A365D] rounded-lg font-semibold 
-                shadow-lg transition-all duration-300"
+              className="w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 bg-[#FBB03B] text-[#1A365D] rounded-lg font-semibold 
+                shadow-lg transition-all duration-300 text-sm md:text-base"
               whileHover={{ 
                 scale: 1.05, 
                 boxShadow: "0 20px 40px rgba(251, 176, 59, 0.3)",
@@ -56,8 +56,8 @@ const Hero = () => {
             </motion.button>
             <motion.button 
               onClick={() => window.location.href = "#conference"}
-              className="px-8 py-4 border-2 border-white/20 text-white rounded-lg font-semibold 
-                transition-all duration-300"
+              className="w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 border-2 border-white/20 text-white rounded-lg 
+                font-semibold transition-all duration-300 text-sm md:text-base"
               whileHover={{ 
                 scale: 1.05,
                 boxShadow: "0 20px 40px rgba(255, 255, 255, 0.1)",
