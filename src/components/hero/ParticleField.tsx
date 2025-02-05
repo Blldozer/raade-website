@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
@@ -27,13 +28,14 @@ const ParticleField = () => {
         return (
           <motion.div
             key={i}
-            className="absolute text-[#FBB03B] opacity-0"
+            className="absolute text-[#FBB03B] cursor-grab active:cursor-grabbing hover:opacity-100 group"
             style={{
               fontSize: `${size}px`,
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
               textShadow: `0 0 ${isLarge ? 20 : 10}px rgba(251, 176, 59, 0.4)`
             }}
+            initial={{ opacity: 0 }}
             animate={{
               opacity: [0, isLarge ? 0.3 : 0.15, 0],
               scale: [0.8, 1.2, 0.8],
@@ -53,8 +55,26 @@ const ParticleField = () => {
               ease: "linear",
               delay: Math.random() * 5,
             }}
+            drag
+            dragConstraints={{ left: -100, right: 100, top: -100, bottom: 100 }}
+            dragElastic={0.1}
+            dragTransition={{ bounceStiffness: 300, bounceDamping: 10 }}
+            whileHover={{
+              scale: 1.2,
+              opacity: 1,
+              transition: { duration: 0.2 }
+            }}
+            onHoverStart={(e) => {
+              e.currentTarget.style.pointerEvents = 'auto';
+            }}
+            onHoverEnd={(e) => {
+              e.currentTarget.style.pointerEvents = 'none';
+            }}
           >
             {symbol}
+            <div className="absolute left-1/2 -translate-x-1/2 whitespace-nowrap bottom-full mb-2 px-2 py-1 text-xs bg-black/75 text-white rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+              Click and drag me!
+            </div>
           </motion.div>
         );
       })}
