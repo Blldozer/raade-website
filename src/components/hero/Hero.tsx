@@ -30,19 +30,13 @@ const Hero = () => {
         });
       }
 
-      // Reveal animation for content on scroll
+      // Simple fade in animation for content
       if (contentRef.current) {
         gsap.from(contentRef.current.children, {
           y: 100,
           opacity: 0,
           duration: 1,
           stagger: 0.2,
-          scrollTrigger: {
-            trigger: contentRef.current,
-            start: "top center+=200",
-            end: "+=300",
-            toggleActions: "play none none none" // Changed from "play none none reverse"
-          }
         });
       }
     }, heroRef);
