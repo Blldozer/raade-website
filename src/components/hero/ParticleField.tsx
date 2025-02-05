@@ -7,6 +7,7 @@ const symbols = ['◆', '●', '■', '▲', '○', '□', '△'];
 
 const ParticleField = () => {
   const [particleCount, setParticleCount] = useState(20);
+  const [hoveredId, setHoveredId] = useState<number | null>(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -28,12 +29,14 @@ const ParticleField = () => {
         return (
           <motion.div
             key={i}
-            className="absolute text-[#FBB03B] cursor-grab active:cursor-grabbing hover:opacity-100 group"
+            className="absolute cursor-grab active:cursor-grabbing"
             style={{
               fontSize: `${size}px`,
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              textShadow: `0 0 ${isLarge ? 20 : 10}px rgba(251, 176, 59, 0.4)`
+              color: '#FBB03B',
+              textShadow: `0 0 ${isLarge ? 20 : 10}px rgba(251, 176, 59, 0.4)`,
+              pointerEvents: 'auto'
             }}
             initial={{ opacity: 0 }}
             animate={{
@@ -64,19 +67,15 @@ const ParticleField = () => {
               opacity: 1,
               transition: { duration: 0.2 }
             }}
-            onHoverStart={(e) => {
-              const target = e.currentTarget as HTMLDivElement;
-              target.style.pointerEvents = 'auto';
-            }}
-            onHoverEnd={(e) => {
-              const target = e.currentTarget as HTMLDivElement;
-              target.style.pointerEvents = 'none';
-            }}
+            onHoverStart={() => setHoveredId(i)}
+            onHoverEnd={() => setHoveredId(null)}
           >
             {symbol}
-            <div className="absolute left-1/2 -translate-x-1/2 whitespace-nowrap bottom-full mb-2 px-2 py-1 text-xs bg-black/75 text-white rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-              Click and drag me!
-            </div>
+            {hoveredId === i && (
+              <div className="absolute left-1/2 -translate-x-1/2 whitespace-nowrap bottom-full mb-2 px-2 py-1 text-xs bg-black/75 text-white rounded opacity-100 pointer-events-none">
+                Click and drag me!
+              </div>
+            )}
           </motion.div>
         );
       })}
