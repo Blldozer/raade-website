@@ -1,15 +1,25 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import ParticleField from './ParticleField';
 import Navigation from '../Navigation';
 import AnimatedText from './AnimatedText';
 
 const Hero = () => {
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* Gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#1A365D] via-[#2A466D] to-[#1A365D] animate-gradient" />
+      {/* Video background */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover"
+      >
+        <source src="/hero-background.mp4" type="video/mp4" />
+      </video>
+      
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#1A365D]/90 via-[#2A466D]/90 to-[#1A365D]/90" />
       
       {/* Navigation */}
       <Navigation />
