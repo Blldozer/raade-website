@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
-// African-inspired symbols
 const symbols = ['◆', '●', '■', '▲', '○', '□', '△'];
 
 const ParticleField = () => {
@@ -20,7 +19,7 @@ const ParticleField = () => {
   }, []);
 
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+    <div className="absolute inset-0 z-30 pointer-events-auto">
       {[...Array(particleCount)].map((_, i) => {
         const isLarge = i < particleCount * 0.3;
         const size = isLarge ? 40 : 24;
@@ -36,7 +35,7 @@ const ParticleField = () => {
               top: `${Math.random() * 100}%`,
               color: '#FBB03B',
               textShadow: `0 0 ${isLarge ? 20 : 10}px rgba(251, 176, 59, 0.4)`,
-              pointerEvents: 'auto'
+              zIndex: 40
             }}
             initial={{ opacity: 0 }}
             animate={{
@@ -59,6 +58,7 @@ const ParticleField = () => {
               delay: Math.random() * 5,
             }}
             drag
+            dragMomentum={false}
             dragConstraints={{ left: -100, right: 100, top: -100, bottom: 100 }}
             dragElastic={0.1}
             dragTransition={{ bounceStiffness: 300, bounceDamping: 10 }}
