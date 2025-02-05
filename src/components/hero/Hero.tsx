@@ -30,13 +30,19 @@ const Hero = () => {
         });
       }
 
-      // Simple fade in animation for content
+      // Reveal animation for content on scroll
       if (contentRef.current) {
         gsap.from(contentRef.current.children, {
           y: 100,
           opacity: 0,
           duration: 1,
           stagger: 0.2,
+          scrollTrigger: {
+            trigger: contentRef.current,
+            start: "top center",
+            end: "bottom center",
+            toggleActions: "play none none reverse"
+          }
         });
       }
     }, heroRef);
@@ -84,6 +90,7 @@ const Hero = () => {
           <div className="flex flex-col sm:flex-row gap-4">
             <motion.button 
               onClick={() => {
+                // Smooth scroll to studios section
                 document.querySelector('#studios')?.scrollIntoView({ 
                   behavior: 'smooth',
                   block: 'start'
