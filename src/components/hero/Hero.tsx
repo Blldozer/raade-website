@@ -39,9 +39,9 @@ const Hero = () => {
           stagger: 0.2,
           scrollTrigger: {
             trigger: contentRef.current,
-            start: "top center",
-            end: "bottom center",
-            toggleActions: "play none none reverse"
+            start: "top center+=200",
+            end: "+=300",
+            toggleActions: "play none none none" // Changed from "play none none reverse"
           }
         });
       }
@@ -90,7 +90,6 @@ const Hero = () => {
           <div className="flex flex-col sm:flex-row gap-4">
             <motion.button 
               onClick={() => {
-                // Smooth scroll to studios section
                 document.querySelector('#studios')?.scrollIntoView({ 
                   behavior: 'smooth',
                   block: 'start'
