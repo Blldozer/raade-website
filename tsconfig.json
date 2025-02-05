@@ -25,7 +25,7 @@
   "src",
   "src/types/**/*.d.ts",
   "tailwind.config.cjs"
-],
+, "vite.config.ts"],
   "references": [
     { "path": "./tsconfig.node.json" }
   ]
