@@ -23,13 +23,20 @@ const AnimatedText = () => {
       });
       
       gsap.set(lineRef.current, { width: 0 });
-      gsap.set(orgNameRef.current, { x: 0, opacity: 0 });
+      // Start with organization name visible but in original position
+      gsap.set(orgNameRef.current, { x: 0, opacity: 1 });
 
       // Animation sequence
       tl.to(text1Ref.current, {
         duration: 1.2,
         text: "WE CAN'T WAIT FOR TOMORROW.",
         ease: "none"
+      })
+      // Move organization name to the right after first text completes
+      .to(orgNameRef.current, {
+        x: "100%",
+        duration: 1,
+        ease: "power2.inOut"
       })
       .to(lineRef.current, {
         width: "100%",
@@ -40,12 +47,6 @@ const AnimatedText = () => {
         duration: 1.5,
         text: "WE'RE BUILDING IT TODAY.",
         ease: "none"
-      })
-      .to(orgNameRef.current, {
-        x: "100%",
-        opacity: 1,
-        duration: 1,
-        ease: "power2.inOut"
       });
     }
 
