@@ -1,16 +1,25 @@
+
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import NavLogo from "./navigation/NavLogo";
 import DesktopNav from "./navigation/DesktopNav";
 import MobileNav from "./navigation/MobileNav";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isPastHero, setIsPastHero] = useState(false);
+  const { scrollY } = useScroll();
+
+  const navBackground = useTransform(
+    scrollY,
+    [0, 100],
+    ["rgba(255, 255, 255, 0)", "rgba(255, 255, 255, 0.05)"]
+  );
 
   useEffect(() => {
     const handleScroll = () => {
-      const heroHeight = window.innerHeight * 0.9; // 90vh
+      const heroHeight = window.innerHeight * 0.9;
       setIsScrolled(window.scrollY > 20);
       setIsPastHero(window.scrollY > heroHeight);
     };
@@ -19,13 +28,15 @@ const Navigation = () => {
   }, []);
 
   return (
-    <nav
+    <motion.nav
       className={cn(
         "fixed w-full z-50 transition-all duration-300",
-        isScrolled
-          ? "bg-white/5 backdrop-blur-[2px] shadow-md"
-          : "bg-transparent"
+        isScrolled && "backdrop-blur-[2px] shadow-md"
       )}
+      style={{ backgroundColor: navBackground }}
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
@@ -34,7 +45,7 @@ const Navigation = () => {
           <MobileNav />
         </div>
       </div>
-    </nav>
+    </motion.nav>
   );
 };
 
