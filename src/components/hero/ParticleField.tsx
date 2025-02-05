@@ -64,11 +64,11 @@ const ParticleField = () => {
               opacity: 1,
               transition: { duration: 0.2 }
             }}
-            onHoverStart={(e) => {
-              e.currentTarget.style.pointerEvents = 'auto';
+            onHoverStart={(e: React.MouseEvent<HTMLDivElement>) => {
+              (e.currentTarget as HTMLDivElement).style.pointerEvents = 'auto';
             }}
-            onHoverEnd={(e) => {
-              e.currentTarget.style.pointerEvents = 'none';
+            onHoverEnd={(e: React.MouseEvent<HTMLDivElement>) => {
+              (e.currentTarget as HTMLDivElement).style.pointerEvents = 'none';
             }}
           >
             {symbol}
