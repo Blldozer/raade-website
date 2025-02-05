@@ -19,7 +19,7 @@ const Hero = () => {
       </video>
       
       {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#1A365D]/90 via-[#2A466D]/90 to-[#1A365D]/90" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#1A365D]/75 via-[#2A466D]/80 to-[#1A365D]/85 backdrop-blur-[2px]" />
       
       {/* Navigation */}
       <Navigation />
