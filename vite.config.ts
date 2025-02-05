@@ -1,19 +1,15 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
-import glsl from 'vite-plugin-glsl';
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
+// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  css: {
-    postcss: './postcss.config.js',  // Reference external config
-  },
   server: {
     host: "::",
     port: 8080,
   },
   plugins: [
-    glsl(),
     react(),
     mode === 'development' &&
     componentTagger(),
@@ -21,16 +17,6 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "three": path.resolve(__dirname, "./node_modules/three")
     },
   },
-  optimizeDeps: {
-    include: ['three', 'react', 'react-dom', 'gsap'],
-  },
-  build: {
-    commonjsOptions: {
-      include: [/three/, /node_modules/]
-    },
-    target: 'esnext'
-  }
 }));

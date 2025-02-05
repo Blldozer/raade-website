@@ -1,11 +1,8 @@
 import { Button } from "@/components/ui/button";
-import HeroAnimation from "./HeroAnimation";
 
 const Hero = () => {
   return (
-    <div className="relative min-h-screen flex items-center bg-gradient-to-br from-raade-red to-raade-orange overflow-hidden">
-      <HeroAnimation />
-      
+    <div className="relative min-h-screen flex items-center bg-gradient-to-br from-raade-red to-raade-orange">
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto text-center space-y-8">

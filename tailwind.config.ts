@@ -1,8 +1,7 @@
 import type { Config } from "tailwindcss";
-import animate from "tailwindcss-animate";
 
-const config = {
-  darkMode: "class",
+export default {
+  darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -21,10 +20,13 @@ const config = {
     extend: {
       colors: {
         raade: {
-          navy: "#2a4774",
-          gold: "#e6cb96",
           red: "#F73B20",
           orange: "#FFA726",
+          gold: {
+            start: "#FFA726",
+            middle: "#FF9848",
+            end: "#FF8A6A",
+          },
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -61,10 +63,7 @@ const config = {
         },
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-        "4xl": "2rem",
+        '4xl': '2rem',
       },
       keyframes: {
         "accordion-down": {
@@ -75,24 +74,17 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        fadeIn: {
-          "0%": { opacity: "0" },
-          "100%": { opacity: "1" },
-        },
-        slideIn: {
-          "0%": { transform: "translateX(-100%)" },
-          "100%": { transform: "translateX(0)" },
+        "fade-in": {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fadeIn 0.5s ease-out forwards",
-        "slide-in": "slideIn 0.5s ease-out forwards",
+        "fade-in": "fade-in 0.3s ease-out",
       },
     },
   },
-  plugins: [animate],
+  plugins: [require("tailwindcss-animate")],
 } satisfies Config;
-
-export default config;
