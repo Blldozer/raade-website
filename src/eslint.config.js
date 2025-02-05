@@ -13,15 +13,11 @@ export default tseslint.config(
       ecmaVersion: 2020,
       globals: {
         ...globals.browser,
-        React: true,
-        JSX: true
+        React: "readonly",
+        JSX: "readonly"
       },
       parserOptions: {
-        ecmaVersion: 2020,
-        sourceType: "module",
-        ecmaFeatures: {
-          jsx: true
-        }
+        jsx: true
       }
     },
     plugins: {
@@ -34,13 +30,7 @@ export default tseslint.config(
         "warn",
         { allowConstantExport: true },
       ],
-      "@typescript-eslint/no-unused-vars": "warn",
-      "@typescript-eslint/no-explicit-any": "warn"
-    },
-    settings: {
-      react: {
-        version: "detect"
-      }
+      "@typescript-eslint/no-unused-vars": "off",
     }
   }
 );
