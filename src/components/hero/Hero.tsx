@@ -13,13 +13,14 @@ const Hero = () => {
         loop
         muted
         playsInline
+        preload="auto"
         className="absolute inset-0 w-full h-full object-cover"
       >
         <source src="/hero-background.mp4" type="video/mp4" />
       </video>
       
       {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#1A365D]/75 via-[#2A466D]/80 to-[#1A365D]/85 backdrop-blur-[2px]" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#1A365D]/60 via-[#2A466D]/65 to-[#1A365D]/70 backdrop-blur-[2px]" />
       
       {/* Navigation */}
       <Navigation />
