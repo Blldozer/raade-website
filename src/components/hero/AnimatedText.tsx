@@ -23,8 +23,7 @@ const AnimatedText = () => {
       });
       
       gsap.set(lineRef.current, { width: 0 });
-      // Start with organization name visible but in original position
-      gsap.set(orgNameRef.current, { x: 0, opacity: 1 });
+      gsap.set(orgNameRef.current, { opacity: 1 });
 
       // Animation sequence
       tl.to(text1Ref.current, {
@@ -42,11 +41,15 @@ const AnimatedText = () => {
         text: "WE'RE BUILDING IT TODAY.",
         ease: "none"
       })
-      // Move organization name to the right after second text completes
       .to(orgNameRef.current, {
-        x: "100%",
-        duration: 1.5, // Increased from 1 to 1.5 for slower animation
-        ease: "power2.inOut"
+        keyframes: [
+          { x: -2, duration: 0.1 },
+          { x: 2, duration: 0.1 },
+          { x: -2, duration: 0.1 },
+          { x: 2, duration: 0.1 },
+          { x: 0, duration: 0.1 }
+        ],
+        ease: "none"
       });
     }
 
@@ -57,7 +60,7 @@ const AnimatedText = () => {
 
   return (
     <div className="space-y-4 md:space-y-8">
-      {/* Organization name with sliding animation */}
+      {/* Organization name with shake animation */}
       <h1 
         ref={orgNameRef}
         className="text-[#FBB03B] text-base sm:text-lg md:text-2xl font-medium tracking-wide uppercase"
