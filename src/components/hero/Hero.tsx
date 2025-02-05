@@ -1,9 +1,9 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import ParticleField from './ParticleField';
-import TopNav from './TopNav';
+import Navigation from '../Navigation';
 import AnimatedText from './AnimatedText';
-
 
 const Hero = () => {
   return (
@@ -11,11 +11,8 @@ const Hero = () => {
       {/* Gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#1A365D] via-[#2A466D] to-[#1A365D] animate-gradient" />
       
-      {/* Subtle line pattern */}
-      
-      
       {/* Navigation */}
-      <TopNav />
+      <Navigation />
       
       {/* Main content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 py-20 sm:px-6 lg:px-8 min-h-screen flex flex-col justify-center">

@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,7 +9,6 @@ import InnovationStudios from "./pages/InnovationStudios";
 import Conference from "./pages/Conference";
 import About from "./pages/About";
 import Footer from "./components/Footer";
-import BottomNav from "./components/BottomNav";
 
 const queryClient = new QueryClient();
 
@@ -18,7 +18,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <div className="min-h-screen flex flex-col pb-16">
+        <div className="min-h-screen flex flex-col">
           <div className="flex-grow">
             <Routes>
               <Route path="/" element={<Index />} />
@@ -28,7 +28,6 @@ const App = () => (
             </Routes>
           </div>
           <Footer />
-          <BottomNav />
         </div>
       </BrowserRouter>
     </TooltipProvider>
