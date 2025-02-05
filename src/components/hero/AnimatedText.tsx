@@ -32,12 +32,6 @@ const AnimatedText = () => {
         text: "WE CAN'T WAIT FOR TOMORROW.",
         ease: "none"
       })
-      // Move organization name to the right after first text completes
-      .to(orgNameRef.current, {
-        x: "100%",
-        duration: 1,
-        ease: "power2.inOut"
-      })
       .to(lineRef.current, {
         width: "100%",
         duration: 0.8,
@@ -47,6 +41,12 @@ const AnimatedText = () => {
         duration: 1.5,
         text: "WE'RE BUILDING IT TODAY.",
         ease: "none"
+      })
+      // Move organization name to the right after second text completes
+      .to(orgNameRef.current, {
+        x: "100%",
+        duration: 1.5, // Increased from 1 to 1.5 for slower animation
+        ease: "power2.inOut"
       });
     }
 
