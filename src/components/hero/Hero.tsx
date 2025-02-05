@@ -1,26 +1,38 @@
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import Navigation from '../Navigation';
 import AnimatedText from './AnimatedText';
+import ParticleField from './ParticleField';
 
 const Hero = () => {
+  const { scrollY } = useScroll();
+  const y = useTransform(scrollY, [0, 500], [0, 150]);
+  
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* Video background */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        className="absolute inset-0 w-full h-full object-cover"
+      {/* Video background with parallax */}
+      <motion.div
+        style={{ y }}
+        className="absolute inset-0 w-full h-full"
       >
-        <source src="/hero-background.mp4" type="video/mp4" />
-      </video>
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          className="absolute inset-0 w-full h-[120%] object-cover"
+        >
+          <source src="/hero-background.mp4" type="video/mp4" />
+        </video>
+      </motion.div>
       
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#1A365D]/60 via-[#2A466D]/65 to-[#1A365D]/70 backdrop-blur-[2px]" />
+      {/* Enhanced gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#1A365D]/60 via-[#2A466D]/65 to-[#1A365D]/70 backdrop-blur-[4px]" />
+      
+      {/* Particle effect for shimmer */}
+      <ParticleField />
       
       {/* Navigation */}
       <Navigation />
@@ -38,7 +50,7 @@ const Hero = () => {
 
           {/* Supporting text */}
           <motion.p 
-            className="text-lg sm:text-xl md:text-2xl text-white/80 max-w-3xl"
+            className="text-lg sm:text-xl md:text-2xl text-white/90 max-w-3xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1 }}
@@ -47,7 +59,7 @@ const Hero = () => {
             Join Rice students pioneering innovative solutions for sustainable development in Africa.
           </motion.p>
 
-          {/* Call-to-action buttons */}
+          {/* Call-to-action buttons with enhanced hover effects */}
           <div className="flex flex-col sm:flex-row gap-4">
             <motion.button 
               onClick={() => window.location.href = "#studios"}
@@ -79,7 +91,7 @@ const Hero = () => {
               transition={{ delay: 1.4 }}
             >
               <span className="relative z-10">Learn More</span>
-              <div className="absolute inset-0 bg-[#FBB03B] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+              <div className="absolute inset-0 bg-[#FBB03B] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left opacity-20" />
             </motion.button>
           </div>
         </motion.div>
@@ -89,3 +101,4 @@ const Hero = () => {
 };
 
 export default Hero;
+
