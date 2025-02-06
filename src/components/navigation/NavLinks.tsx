@@ -45,58 +45,73 @@ export const navItems = [
 interface NavLinksProps {
   className?: string;
   onClick?: () => void;
+  isScrolled?: boolean;
+  isHeroPage?: boolean;
 }
 
-const NavLinks = ({ className = "", onClick }: NavLinksProps) => (
-  <NavigationMenu>
-    <NavigationMenuList>
-      {navItems.map((item) =>
-        item.dropdownItems ? (
-          <NavigationMenuItem key={item.name}>
-            <Link to={item.href} className="inline-block">
-              <NavigationMenuTrigger className="bg-transparent text-[#33C3F0] hover:text-white transition-all duration-300 ease-in-out transform hover:scale-105">
+const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = false }: NavLinksProps) => {
+  const getTextColor = () => {
+    if (isHeroPage && !isScrolled) return "text-white";
+    return "text-[#FBB03B]";
+  };
+
+  return (
+    <NavigationMenu>
+      <NavigationMenuList>
+        {navItems.map((item) =>
+          item.dropdownItems ? (
+            <NavigationMenuItem key={item.name}>
+              <Link to={item.href} className="inline-block">
+                <NavigationMenuTrigger 
+                  className={`bg-transparent ${getTextColor()} hover:opacity-80 transition-all duration-300 ease-in-out transform hover:scale-105`}
+                >
+                  {item.name}
+                </NavigationMenuTrigger>
+              </Link>
+              <NavigationMenuContent>
+                <ul className="grid w-[200px] gap-2 p-4 bg-white/90 backdrop-blur-sm">
+                  {item.dropdownItems.map((dropdownItem) => (
+                    <li key={dropdownItem.name}>
+                      <Link
+                        to={dropdownItem.href}
+                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-all duration-300 hover:bg-[#FBB03B]/10 hover:text-[#FBB03B] focus:bg-accent focus:text-accent-foreground text-raade-navy transform hover:scale-105"
+                        onClick={onClick}
+                      >
+                        {dropdownItem.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+          ) : (
+            <NavigationMenuItem key={item.name}>
+              <Link
+                to={item.href}
+                className={`${getTextColor()} hover:opacity-80 transition-all duration-300 ease-in-out transform hover:scale-105 ${className}`}
+                onClick={onClick}
+              >
                 {item.name}
-              </NavigationMenuTrigger>
-            </Link>
-            <NavigationMenuContent>
-              <ul className="grid w-[200px] gap-2 p-4 bg-white/90 backdrop-blur-sm">
-                {item.dropdownItems.map((dropdownItem) => (
-                  <li key={dropdownItem.name}>
-                    <Link
-                      to={dropdownItem.href}
-                      className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-all duration-300 hover:bg-[#33C3F0]/10 hover:text-[#33C3F0] focus:bg-accent focus:text-accent-foreground text-raade-navy transform hover:scale-105"
-                      onClick={onClick}
-                    >
-                      {dropdownItem.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-        ) : (
-          <NavigationMenuItem key={item.name}>
-            <Link
-              to={item.href}
-              className={`text-[#33C3F0] hover:text-white transition-all duration-300 ease-in-out transform hover:scale-105 ${className}`}
-              onClick={onClick}
-            >
-              {item.name}
-            </Link>
-          </NavigationMenuItem>
-        )
-      )}
-      <NavigationMenuItem>
-        <a
-          href="#join"
-          className="px-6 py-2 rounded-md transition-all duration-300 border-2 border-[#33C3F0] text-[#33C3F0] hover:bg-[#33C3F0] hover:text-white transform hover:scale-105 hover:shadow-lg"
-          onClick={onClick}
-        >
-          Join Us
-        </a>
-      </NavigationMenuItem>
-    </NavigationMenuList>
-  </NavigationMenu>
-);
+              </Link>
+            </NavigationMenuItem>
+          )
+        )}
+        <NavigationMenuItem>
+          <a
+            href="#join"
+            className={`px-6 py-2 rounded-md transition-all duration-300 border-2 ${
+              isHeroPage && !isScrolled 
+                ? "border-white text-white hover:bg-white/10" 
+                : "border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white"
+            } transform hover:scale-105 hover:shadow-lg`}
+            onClick={onClick}
+          >
+            Join Us
+          </a>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    </NavigationMenu>
+  );
+};
 
 export default NavLinks;

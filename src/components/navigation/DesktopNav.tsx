@@ -1,8 +1,14 @@
+
 import NavLinks from "./NavLinks";
 
-const DesktopNav = () => (
+interface DesktopNavProps {
+  isScrolled?: boolean;
+  isHeroPage?: boolean;
+}
+
+const DesktopNav = ({ isScrolled = false, isHeroPage = false }: DesktopNavProps) => (
   <div className="hidden md:flex items-center space-x-8">
-    <NavLinks />
+    <NavLinks isScrolled={isScrolled} isHeroPage={isHeroPage} />
   </div>
 );
 

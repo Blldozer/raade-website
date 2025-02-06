@@ -1,16 +1,25 @@
+
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import NavLinks from "./NavLinks";
 import { useState } from "react";
 
-const MobileNav = () => {
+interface MobileNavProps {
+  isScrolled?: boolean;
+  isHeroPage?: boolean;
+}
+
+const MobileNav = ({ isScrolled = false, isHeroPage = false }: MobileNavProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="md:hidden">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="text-raade-navy hover:text-raade-gold transition-colors duration-200"
+        className={cn(
+          "transition-colors duration-200",
+          isHeroPage && !isScrolled ? "text-white" : "text-[#FBB03B]"
+        )}
       >
         {isOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
@@ -25,6 +34,8 @@ const MobileNav = () => {
           <NavLinks
             className="block px-3 py-2"
             onClick={() => setIsOpen(false)}
+            isScrolled={isScrolled}
+            isHeroPage={isHeroPage}
           />
         </div>
       </div>
