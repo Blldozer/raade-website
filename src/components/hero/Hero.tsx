@@ -3,7 +3,7 @@ import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import Navigation from '../Navigation';
 import AnimatedText from './AnimatedText';
-import ParticleField from './ParticleField';
+import { ParticleField } from '../particles/ParticleField';
 
 const Hero = () => {
   const { scrollY } = useScroll();
@@ -103,5 +103,4 @@ const Hero = () => {
     </div>
   );
 };
-
 export default Hero;
