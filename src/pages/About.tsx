@@ -5,7 +5,6 @@ import { Building, Users, Handshake, BookOpen, Globe } from "lucide-react";
 const About = () => {
   return (
     <div>
-      <Navigation />
       <div className="pt-20 px-4 md:px-8 max-w-7xl mx-auto">
         {/* Mission Statement */}
         <section className="mb-16">

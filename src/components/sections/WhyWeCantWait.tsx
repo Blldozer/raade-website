@@ -54,17 +54,17 @@ const WhyWeCantWait = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="flex flex-col items-center text-center p-6 rounded-lg hover:bg-[#1A365D] transition-colors bg-[#1A365D]/95"
+              className="flex flex-col items-center text-center p-6 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <motion.div 
-                className="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-4"
+                className="w-16 h-16 rounded-full bg-[#FBB03B]/10 flex items-center justify-center mb-4"
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
                 <reason.icon className="w-8 h-8 text-[#FBB03B]" />
               </motion.div>
-              <h3 className="text-xl font-semibold text-white mb-3">{reason.title}</h3>
-              <p className="text-white">{reason.description}</p>
+              <h3 className="text-xl font-semibold text-[#1A365D] mb-3">{reason.title}</h3>
+              <p className="text-gray-600">{reason.description}</p>
             </motion.div>
           ))}
         </div>
