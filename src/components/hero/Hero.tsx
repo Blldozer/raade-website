@@ -54,7 +54,7 @@ const Hero = () => {
 
             {/* Supporting text */}
             <motion.p 
-              className="text-lg sm:text-xl md:text-2xl text-white/90 max-w-3xl"
+              className="text-lg sm:text-xl md:text-2xl text-white/90 max-w-3xl font-opensans"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1 }}

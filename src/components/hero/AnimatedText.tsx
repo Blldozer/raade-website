@@ -67,7 +67,7 @@ const AnimatedText = () => {
         Rice Association for African Development
       </h1>
 
-      <h2 className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-wide">
+      <h2 className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-wide font-hammersmith">
         <div ref={text1Ref}></div>
         <div className="relative inline-block">
           <div ref={text2Ref} className="text-[#FBB03B]"></div>

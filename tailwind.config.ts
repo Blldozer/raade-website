@@ -19,6 +19,10 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        hammersmith: ["Hammersmith One", "serif"],
+        opensans: ["Open Sans", "serif"],
+      },
       colors: {
         raade: {
           red: "#F73B20",
