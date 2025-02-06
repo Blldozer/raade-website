@@ -63,7 +63,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
             <NavigationMenuItem key={item.name}>
               <Link to={item.href} className="inline-block">
                 <NavigationMenuTrigger 
-                  className={`bg-transparent hover:bg-transparent ${getTextColor()} transition-colors duration-300`}
+                  className={`group bg-transparent hover:bg-transparent ${getTextColor()} transition-colors duration-300`}
                 >
                   {item.name}
                 </NavigationMenuTrigger>
