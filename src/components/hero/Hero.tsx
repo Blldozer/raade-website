@@ -31,8 +31,10 @@ const Hero = () => {
       {/* Enhanced gradient overlay */}
       <div className="absolute inset-0 z-10 bg-gradient-to-br from-[#1A365D]/60 via-[#2A466D]/65 to-[#1A365D]/70 backdrop-blur-[4px]" />
       
-      {/* Particle effect */}
-      <ParticleField />
+      {/* Particle effect - moved to lower z-index */}
+      <div className="relative z-20">
+        <ParticleField />
+      </div>
       
       {/* Navigation */}
       <div className="relative z-50">
@@ -40,11 +42,10 @@ const Hero = () => {
       </div>
       
       {/* Main content */}
-      <div className="relative z-20 pointer-events-none">
+      <div className="relative z-30">
         <div className="max-w-7xl mx-auto px-4 py-10 sm:px-6 lg:px-8 min-h-screen flex flex-col justify-center">
           <motion.div
-               className="space-y-4 md:space-y-8 max-w-3xl pointer-events-auto pt-12"
-            
+            className="space-y-4 md:space-y-8 max-w-3xl pointer-events-auto pt-12"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8 }}
@@ -83,8 +84,8 @@ const Hero = () => {
               </motion.button>
               <motion.button 
                 onClick={() => window.location.href = "#conference"}
-                className="group w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 border-2 border-white/20 text-white rounded-lg 
-                  font-semibold transition-all duration-300 text-sm md:text-base hover:border-[#FBB03B] relative overflow-hidden"
+                className="group w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 border-2 border-[#FBB03B] text-[#FBB03B] rounded-lg 
+                  font-semibold transition-all duration-300 text-sm md:text-base hover:bg-[#FBB03B] hover:text-white relative overflow-hidden"
                 whileHover={{ 
                   scale: 1.05,
                   y: -2
@@ -95,7 +96,7 @@ const Hero = () => {
                 transition={{ delay: 1.4 }}
               >
                 <span className="relative z-10">Learn More</span>
-                <div className="absolute inset-0 bg-[#FBB03B] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left opacity-20" />
+                <div className="absolute inset-0 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left opacity-20" />
               </motion.button>
             </div>
           </motion.div>

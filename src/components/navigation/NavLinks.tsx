@@ -54,7 +54,7 @@ const NavLinks = ({ className = "", onClick }: NavLinksProps) => (
         item.dropdownItems ? (
           <NavigationMenuItem key={item.name}>
             <Link to={item.href} className="inline-block">
-              <NavigationMenuTrigger className="bg-transparent text-white hover:text-[#FBB03B] transition-all duration-300 ease-in-out transform hover:scale-105">
+              <NavigationMenuTrigger className="bg-transparent text-[#FBB03B] hover:text-white transition-all duration-300 ease-in-out transform hover:scale-105">
                 {item.name}
               </NavigationMenuTrigger>
             </Link>
@@ -78,7 +78,7 @@ const NavLinks = ({ className = "", onClick }: NavLinksProps) => (
           <NavigationMenuItem key={item.name}>
             <Link
               to={item.href}
-              className={`text-white hover:text-[#FBB03B] transition-all duration-300 ease-in-out transform hover:scale-105 ${className}`}
+              className={`text-[#FBB03B] hover:text-white transition-all duration-300 ease-in-out transform hover:scale-105 ${className}`}
               onClick={onClick}
             >
               {item.name}
@@ -89,7 +89,7 @@ const NavLinks = ({ className = "", onClick }: NavLinksProps) => (
       <NavigationMenuItem>
         <a
           href="#join"
-          className="px-6 py-2 rounded-md transition-all duration-300 border-2 border-white text-white hover:bg-[#FBB03B] hover:border-[#FBB03B] hover:text-white transform hover:scale-105 hover:shadow-lg"
+          className="px-6 py-2 rounded-md transition-all duration-300 border-2 border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white transform hover:scale-105 hover:shadow-lg"
           onClick={onClick}
         >
           Join Us
