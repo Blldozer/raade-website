@@ -30,9 +30,9 @@ const AnimatedText = () => {
         left: 0
       });
 
-      // Animation sequence
+      // Animation sequence with more natural typing speed
       tl.to(text1Ref.current, {
-        duration: 1.2,
+        duration: 2.5, // Slower typing speed
         text: "WE CAN'T WAIT FOR TOMORROW.",
         ease: "none"
       })
@@ -42,7 +42,7 @@ const AnimatedText = () => {
         ease: "power2.inOut"
       })
       .to(text2Ref.current, {
-        duration: 1.5,
+        duration: 3, // Slower typing speed
         text: "WE'RE BUILDING IT TODAY.",
         ease: "none",
         onUpdate: () => {
