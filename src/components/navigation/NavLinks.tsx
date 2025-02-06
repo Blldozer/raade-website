@@ -63,7 +63,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
             <NavigationMenuItem key={item.name}>
               <Link to={item.href} className="inline-block">
                 <NavigationMenuTrigger 
-                  className={`bg-transparent ${getTextColor()} transition-colors duration-300`}
+                  className={`bg-transparent hover:bg-transparent ${getTextColor()} transition-colors duration-300`}
                 >
                   {item.name}
                 </NavigationMenuTrigger>
@@ -99,9 +99,9 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
         <NavigationMenuItem>
           <a
             href="#join"
-            className={`px-6 py-2 rounded-md transition-colors duration-300 border-2 ${
+            className={`px-6 py-2 rounded-md transition-all duration-300 border-2 ${
               isHeroPage && !isScrolled 
-                ? "border-white text-white hover:border-[#FBB03B] hover:text-[#FBB03B]" 
+                ? "border-white text-white hover:bg-[#FBB03B] hover:border-[#FBB03B] hover:text-white" 
                 : "border-[#FBB03B] text-[#FBB03B]"
             }`}
             onClick={onClick}
@@ -115,3 +115,4 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
 };
 
 export default NavLinks;
+
