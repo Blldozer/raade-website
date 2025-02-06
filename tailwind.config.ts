@@ -23,6 +23,9 @@ export default {
         hammersmith: ["Hammersmith One", "serif"],
         opensans: ["Open Sans", "serif"],
         zillaslab: ["Zilla Slab Highlight", "serif"],
+        merriweather: ["Merriweather Sans", "serif"],
+        taviraj: ["Taviraj", "serif"],
+        alegreyasans: ["Alegreya Sans", "serif"],
       },
       colors: {
         raade: {
