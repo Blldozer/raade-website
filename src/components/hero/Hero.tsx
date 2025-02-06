@@ -59,8 +59,8 @@ const Hero = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1 }}
             >
-              Every day without action is a missed opportunity for change. 
-              Join Rice students pioneering innovative solutions for sustainable development in Africa.
+              The future of Africa isn't a distant dream - it's being built today, by innovators and changemakers
+              like you. Join a community of students and partners creating sustainable solutions through market-driven innovation.
             </motion.p>
 
             {/* Call-to-action buttons */}
@@ -78,7 +78,7 @@ const Hero = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.2 }}
               >
-                <span className="relative z-10">Join Our Mission</span>
+                <span className="relative z-10">Start Building Today</span>
                 <div className="absolute inset-0 bg-[#FBB03B] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </motion.button>
               <motion.button 
@@ -94,7 +94,7 @@ const Hero = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.4 }}
               >
-                <span className="relative z-10">Learn More</span>
+                <span className="relative z-10">Explore Our Impact</span>
               </motion.button>
             </div>
           </motion.div>
