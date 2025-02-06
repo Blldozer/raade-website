@@ -37,10 +37,10 @@ const WhyWeCantWait = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold text-[#1A365D] mb-6">
+          <h2 className="text-4xl font-bold text-[#1A365D] mb-6 font-zillaslab">
             Why We Can't Wait For Tomorrow
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto font-merriweather">
             The challenges facing African development demand immediate action. 
             Here's why we believe in taking action today.
           </p>
@@ -63,8 +63,8 @@ const WhyWeCantWait = () => {
               >
                 <reason.icon className="w-8 h-8 text-[#FBB03B]" />
               </motion.div>
-              <h3 className="text-xl font-semibold text-[#1A365D] mb-3">{reason.title}</h3>
-              <p className="text-gray-600">{reason.description}</p>
+              <h3 className="text-xl font-semibold text-[#1A365D] mb-3 font-alegreyasans">{reason.title}</h3>
+              <p className="text-gray-600 font-merriweather">{reason.description}</p>
             </motion.div>
           ))}
         </div>
