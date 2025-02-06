@@ -22,6 +22,7 @@ export default {
       fontFamily: {
         hammersmith: ["Hammersmith One", "serif"],
         opensans: ["Open Sans", "serif"],
+        zillaslab: ["Zilla Slab Highlight", "serif"],
       },
       colors: {
         raade: {

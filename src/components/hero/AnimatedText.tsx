@@ -28,7 +28,7 @@ const AnimatedText = () => {
       // Animation sequence with more natural typing speed
       tl.to(text1Ref.current, {
         duration: 2.5,
-        text: "WE CAN'T WAIT FOR TOMORROW.",
+        text: "We can't wait for tomorrow.",
         ease: "none"
       })
       .to(lineRef.current, {
@@ -38,7 +38,7 @@ const AnimatedText = () => {
       })
       .to(text2Ref.current, {
         duration: 3,
-        text: "WE'RE BUILDING IT TODAY.",
+        text: "We're building it today.",
         ease: "none"
       })
       .to(orgNameRef.current, {
@@ -67,7 +67,7 @@ const AnimatedText = () => {
         Rice Association for African Development
       </h1>
 
-      <h2 className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-wide font-hammersmith">
+      <h2 className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-wide font-zillaslab">
         <div ref={text1Ref}></div>
         <div className="relative inline-block">
           <div ref={text2Ref} className="text-[#FBB03B]"></div>
