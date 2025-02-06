@@ -4,7 +4,6 @@ import Navigation from "@/components/Navigation";
 const Conference = () => {
   return (
     <div>
-      <Navigation />
       <div className="pt-20">
         <ConferenceSection />
       </div>

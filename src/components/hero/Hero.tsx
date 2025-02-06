@@ -3,7 +3,7 @@ import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import Navigation from '../Navigation';
 import AnimatedText from './AnimatedText';
-import ParticleField from './ParticleField';
+import { ParticleField } from '../particles/ParticleField';
 
 const Hero = () => {
   const { scrollY } = useScroll();
@@ -32,18 +32,17 @@ const Hero = () => {
       <div className="absolute inset-0 z-10 bg-gradient-to-br from-[#1A365D]/60 via-[#2A466D]/65 to-[#1A365D]/70 backdrop-blur-[4px]" />
       
       {/* Particle effect */}
-      <ParticleField />
+      {/* <ParticleField /> */}
       
       {/* Navigation */}
       <div className="relative z-50">
-        <Navigation />
       </div>
       
       {/* Main content */}
       <div className="relative z-20 pointer-events-none">
         <div className="max-w-7xl mx-auto px-4 py-10 sm:px-6 lg:px-8 min-h-screen flex flex-col justify-center">
           <motion.div
-            className="space-y-4 md:space-y-8 max-w-3xl pointer-events-auto"
+            className="space-y-4 md:space-y-8 max-w-3xl pointer-events-auto pt-12"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8 }}
@@ -103,5 +102,4 @@ const Hero = () => {
     </div>
   );
 };
-
 export default Hero;

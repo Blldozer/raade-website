@@ -5,7 +5,6 @@ import Navigation from "@/components/Navigation";
 const InnovationStudios = () => {
   return (
     <div>
-      <Navigation />
       <div className="pt-20">
         <InnovationStudiosSection />
         <ProjectsShowcase />

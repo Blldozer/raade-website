@@ -9,6 +9,10 @@ import InnovationStudios from "./pages/InnovationStudios";
 import Conference from "./pages/Conference";
 import About from "./pages/About";
 import Footer from "./components/Footer";
+import Navigation from "./components/Navigation";
+
+// import { ParticleField } from './components/particles/ParticleField';
+
 
 const queryClient = new QueryClient();
 
@@ -20,14 +24,18 @@ const App = () => (
       <BrowserRouter>
         <div className="min-h-screen flex flex-col">
           <div className="flex-grow">
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/studios" element={<InnovationStudios />} />
-              <Route path="/conference" element={<Conference />} />
-            </Routes>
+            <div className="relative min-h-screen">
+              <Navigation />
+              {/* <ParticleField /> */}
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/studios" element={<InnovationStudios />} />
+                <Route path="/conference" element={<Conference />} />
+              </Routes>
+            </div>
+            <Footer />
           </div>
-          <Footer />
         </div>
       </BrowserRouter>
     </TooltipProvider>
