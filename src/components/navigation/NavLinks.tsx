@@ -51,7 +51,7 @@ interface NavLinksProps {
 
 const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = false }: NavLinksProps) => {
   const getTextColor = () => {
-    if (isHeroPage && !isScrolled) return "text-white";
+    if (isHeroPage && !isScrolled) return "text-white hover:text-[#FBB03B]";
     return "text-[#FBB03B]";
   };
 
@@ -63,7 +63,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
             <NavigationMenuItem key={item.name}>
               <Link to={item.href} className="inline-block">
                 <NavigationMenuTrigger 
-                  className={`bg-transparent ${getTextColor()} hover:opacity-80 transition-all duration-300 ease-in-out transform hover:scale-105`}
+                  className={`bg-transparent ${getTextColor()} transition-colors duration-300`}
                 >
                   {item.name}
                 </NavigationMenuTrigger>
@@ -74,7 +74,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
                     <li key={dropdownItem.name}>
                       <Link
                         to={dropdownItem.href}
-                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-all duration-300 hover:bg-[#FBB03B]/10 hover:text-[#FBB03B] focus:bg-accent focus:text-accent-foreground text-raade-navy transform hover:scale-105"
+                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors duration-300 hover:bg-[#FBB03B]/10 hover:text-[#FBB03B] focus:bg-accent focus:text-accent-foreground text-raade-navy"
                         onClick={onClick}
                       >
                         {dropdownItem.name}
@@ -88,7 +88,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
             <NavigationMenuItem key={item.name}>
               <Link
                 to={item.href}
-                className={`${getTextColor()} hover:opacity-80 transition-all duration-300 ease-in-out transform hover:scale-105 ${className}`}
+                className={`${getTextColor()} transition-colors duration-300 ${className}`}
                 onClick={onClick}
               >
                 {item.name}
@@ -99,11 +99,11 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
         <NavigationMenuItem>
           <a
             href="#join"
-            className={`px-6 py-2 rounded-md transition-all duration-300 border-2 ${
+            className={`px-6 py-2 rounded-md transition-colors duration-300 border-2 ${
               isHeroPage && !isScrolled 
-                ? "border-white text-white hover:bg-white/10" 
-                : "border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white"
-            } transform hover:scale-105 hover:shadow-lg`}
+                ? "border-white text-white hover:border-[#FBB03B] hover:text-[#FBB03B]" 
+                : "border-[#FBB03B] text-[#FBB03B]"
+            }`}
             onClick={onClick}
           >
             Join Us
