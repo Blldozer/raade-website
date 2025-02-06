@@ -7,8 +7,8 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <Hero />
-      <WhyWeCantWait />
       <WhatWeAreBuilding />
+      <WhyWeCantWait />
     </div>
   );
 };

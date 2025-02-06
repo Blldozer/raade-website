@@ -43,7 +43,8 @@ const Hero = () => {
       <div className="relative z-20 pointer-events-none">
         <div className="max-w-7xl mx-auto px-4 py-10 sm:px-6 lg:px-8 min-h-screen flex flex-col justify-center">
           <motion.div
-            className="space-y-4 md:space-y-8 max-w-3xl pointer-events-auto"
+               className="space-y-4 md:space-y-8 max-w-3xl pointer-events-auto pt-12"
+            
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8 }}

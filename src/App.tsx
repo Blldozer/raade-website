@@ -9,6 +9,7 @@ import InnovationStudios from "./pages/InnovationStudios";
 import Conference from "./pages/Conference";
 import About from "./pages/About";
 import Footer from "./components/Footer";
+import Navigation from "./components/Navigation";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
               <Route path="/about" element={<About />} />
               <Route path="/studios" element={<InnovationStudios />} />
               <Route path="/conference" element={<Conference />} />
+              <Navigation />
             </Routes>
           </div>
           <Footer />
