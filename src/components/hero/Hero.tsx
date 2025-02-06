@@ -21,7 +21,6 @@ const Hero = () => {
           loop
           muted
           playsInline
-          preload="auto"
           className="absolute inset-0 w-full h-[120%] object-cover"
         >
           <source src="/hero-background.mp4" type="video/mp4" />
@@ -80,7 +79,7 @@ const Hero = () => {
                 transition={{ delay: 1.2 }}
               >
                 <span className="relative z-10">Join Our Mission</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-[#FBB03B] via-[#FFD700] to-[#FBB03B] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-[#FBB03B] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </motion.button>
               <motion.button 
                 onClick={() => window.location.href = "#conference"}
@@ -96,7 +95,6 @@ const Hero = () => {
                 transition={{ delay: 1.4 }}
               >
                 <span className="relative z-10">Learn More</span>
-                <div className="absolute inset-0 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left opacity-20" />
               </motion.button>
             </div>
           </motion.div>

@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const symbols = ['◆', '●', '■', '▲', '○', '□', '△'];
@@ -12,35 +12,38 @@ interface Particle {
 }
 
 const ParticleField = () => {
-  const [particleCount, setParticleCount] = useState(20);
+  const [particleCount, setParticleCount] = useState(12); // Reduced initial count
   const [particles, setParticles] = useState<Particle[]>([]);
   const [hoveredId, setHoveredId] = useState<number | null>(null);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setParticleCount(window.innerWidth < 768 ? 12 : 20);
-    };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+  // Memoize the resize handler
+  const handleResize = useCallback(() => {
+    setParticleCount(window.innerWidth < 768 ? 8 : 12); // Further reduced counts
   }, []);
 
   useEffect(() => {
-    setParticles([...Array(particleCount)].map((_, i) => ({
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [handleResize]);
+
+  // Memoize particle initialization
+  useEffect(() => {
+    const newParticles = Array.from({ length: particleCount }, (_, i) => ({
       id: i,
       symbol: symbols[Math.floor(Math.random() * symbols.length)],
       isLarge: i < particleCount * 0.3,
       isPopped: false
-    })));
+    }));
+    setParticles(newParticles);
   }, [particleCount]);
 
-  const handlePop = (id: number) => {
+  // Memoize pop handler
+  const handlePop = useCallback((id: number) => {
     setParticles(prev => 
       prev.map(p => p.id === id ? { ...p, isPopped: true } : p)
     );
     
-    // Respawn particle after animation
     setTimeout(() => {
       setParticles(prev =>
         prev.map(p =>
@@ -48,7 +51,17 @@ const ParticleField = () => {
         )
       );
     }, 800);
-  };
+  }, []);
+
+  // Memoize particle styles
+  const getParticleStyle = useCallback((particle: Particle) => ({
+    fontSize: `${particle.isLarge ? 40 : 24}px`,
+    left: `${Math.random() * 100}%`,
+    top: `${Math.random() * 100}%`,
+    color: '#FBB03B',
+    textShadow: `0 0 ${particle.isLarge ? 20 : 10}px rgba(251, 176, 59, 0.4)`,
+    zIndex: 40
+  }), []);
 
   return (
     <div className="absolute inset-0 z-30 pointer-events-auto">
@@ -57,14 +70,7 @@ const ParticleField = () => {
           <motion.div
             key={particle.id}
             className="absolute cursor-pointer"
-            style={{
-              fontSize: `${particle.isLarge ? 40 : 24}px`,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              color: '#FBB03B',
-              textShadow: `0 0 ${particle.isLarge ? 20 : 10}px rgba(251, 176, 59, 0.4)`,
-              zIndex: 40
-            }}
+            style={getParticleStyle(particle)}
             initial={{ opacity: 0 }}
             animate={
               particle.isPopped 
@@ -115,7 +121,6 @@ const ParticleField = () => {
               </div>
             )}
             
-            {/* Pop effect particles */}
             {particle.isPopped && (
               <motion.div
                 className="absolute inset-0"
