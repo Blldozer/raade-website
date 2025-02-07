@@ -27,7 +27,7 @@ const initiatives = [
 
 const WhatWeAreBuilding = () => {
   return (
-    <section className="py-20 bg-secondary">
+    <section className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -36,10 +36,10 @@ const WhatWeAreBuilding = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold text-[#FBB03B] mb-6 font-zillaslab">
+          <h2 className="text-4xl font-bold text-[#1A365D] mb-6 font-zillaslab">
             What We're Building Today
           </h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto font-merriweather">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto font-merriweather">
             Through our key initiatives, we're actively creating sustainable solutions 
             for African development challenges.
           </p>
@@ -54,15 +54,15 @@ const WhatWeAreBuilding = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="h-full hover:bg-muted/50 transition-colors bg-secondary/50 border-gray-800">
+              <Card className="h-full hover:shadow-lg transition-shadow">
                 <CardContent className="p-6">
-                  <h3 className="text-2xl font-semibold text-[#FBB03B] mb-4 font-alegreyasans">{initiative.title}</h3>
-                  <p className="text-gray-300 mb-6 font-merriweather">{initiative.description}</p>
+                  <h3 className="text-2xl font-semibold text-[#1A365D] mb-4 font-alegreyasans">{initiative.title}</h3>
+                  <p className="text-gray-600 mb-6 font-merriweather">{initiative.description}</p>
                   <div className="flex items-center justify-between">
                     <span className="text-[#FBB03B] font-semibold font-alegreyasans">{initiative.metric}</span>
                     <a 
                       href={initiative.link} 
-                      className="text-gray-300 hover:text-[#FBB03B] transition-colors flex items-center gap-2 font-merriweather"
+                      className="text-[#1A365D] hover:text-[#FBB03B] transition-colors flex items-center gap-2 font-merriweather"
                     >
                       Learn More <ArrowRight className="w-4 h-4" />
                     </a>
