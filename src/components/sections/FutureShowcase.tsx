@@ -1,8 +1,12 @@
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import gsap from 'gsap';
+import ScrollTrigger from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const projects = [
   {
@@ -10,30 +14,34 @@ const projects = [
     image: "/Cozy-Sunlit-Rustic-Kitchen.jpeg",
     description: "Empowering local ingredients, enriching communities",
     slug: "kitchen-project",
-    category: "SUSTAINABLE LIVING"
+    category: "SUSTAINABLE LIVING",
+    gradient: "linear-gradient(90deg, hsla(39, 100%, 77%, 1) 0%, hsla(22, 90%, 57%, 1) 100%)"
   },
   {
     title: "LIGHTS THAT NEVER GO OUT",
     image: "/Cozy-Café-Interior.jpeg",
     description: "Sustainable power for unstoppable progress",
     slug: "lights-project",
-    category: "ENERGY SOLUTIONS"
+    category: "ENERGY SOLUTIONS",
+    gradient: "linear-gradient(90deg, hsla(277, 75%, 84%, 1) 0%, hsla(297, 50%, 51%, 1) 100%)"
   },
   {
     title: "YOUR CHILDREN WILL DO BETTER",
     image: "/Mother-and-Newborn-Intimacy.jpeg",
     description: "Building generational prosperity through innovation",
     slug: "prosperity-project",
-    category: "COMMUNITY DEVELOPMENT"
+    category: "COMMUNITY DEVELOPMENT",
+    gradient: "linear-gradient(90deg, hsla(46, 73%, 75%, 1) 0%, hsla(176, 73%, 88%, 1) 100%)"
   }
 ];
 
-const ProjectCard = ({ title, image, description, slug, category }: { 
+const ProjectCard = ({ title, image, description, slug, category, gradient }: { 
   title: string, 
   image: string, 
   description: string,
   slug: string,
-  category: string
+  category: string,
+  gradient: string
 }) => {
   return (
     <Link to={`/projects/${slug}`}>
@@ -45,14 +53,22 @@ const ProjectCard = ({ title, image, description, slug, category }: {
         transition={{ duration: 0.5 }}
       >
         <div className="relative rounded-lg overflow-hidden">
+          <div 
+            className="w-full h-full absolute inset-0 z-10"
+            style={{ 
+              background: gradient,
+              mixBlendMode: 'overlay',
+              opacity: 0.6
+            }}
+          />
           <img
             src={image}
             alt={title}
-            className="w-full h-auto max-w-full"
+            className="w-full h-auto max-w-full relative z-0"
             style={{ display: 'block' }}
           />
           
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-20">
             <div className="absolute bottom-0 left-0 p-8 w-full">
               <p className="text-sm font-medium text-white/80 tracking-wider mb-2">
                 {category}
@@ -78,41 +94,38 @@ const ProjectCard = ({ title, image, description, slug, category }: {
 
 const FutureShowcase = () => {
   const sectionRef = useRef<HTMLElement>(null);
-  const [bgColor, setBgColor] = useState('#FBB03B');
 
   useEffect(() => {
-    const options = {
-      threshold: [0, 0.25, 0.5, 0.75, 1],
-      rootMargin: "0px"
-    };
+    const section = sectionRef.current;
+    if (!section) return;
 
-    const handleIntersect = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const ratio = entry.intersectionRatio;
-          if (ratio < 0.25) {
-            setBgColor('#FBB03B'); // Gold at top
-          } else if (ratio < 0.5) {
-            setBgColor('#E59835'); // Transition color
-          } else if (ratio < 0.75) {
-            setBgColor('#1A365D'); // Navy in middle
-          } else {
-            setBgColor('#F8F7F4'); // Light cream at bottom
-          }
-        }
-      });
-    };
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: "top center",
+        end: "bottom center",
+        scrub: 1,
+        markers: false,
+      }
+    });
 
-    const observer = new IntersectionObserver(handleIntersect, options);
-    
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
+    tl.fromTo(section, {
+      backgroundColor: "#FBB03B",
+    }, {
+      backgroundColor: "#1A365D",
+      duration: 1,
+      ease: "none"
+    });
+
+    tl.to(section, {
+      backgroundColor: "#F8F7F4",
+      duration: 1,
+      ease: "none"
+    });
 
     return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
+      tl.kill();
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
   }, []);
 
@@ -120,10 +133,6 @@ const FutureShowcase = () => {
     <section 
       ref={sectionRef}
       className="relative py-24 min-h-screen"
-      style={{ 
-        backgroundColor: bgColor,
-        transition: 'background-color 0.6s ease'
-      }}
     >
       <div className="relative z-10 max-w-[90vw] xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
@@ -161,3 +170,4 @@ const FutureShowcase = () => {
 };
 
 export default FutureShowcase;
+
