@@ -38,21 +38,20 @@ const ProjectCard = ({ title, image, description, slug, category }: {
   return (
     <Link to={`/projects/${slug}`}>
       <motion.div
-        className="group relative w-full h-full"
+        className="group relative"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
       >
         {/* Image Container */}
-        <div className="relative w-full h-full overflow-hidden rounded-lg">
-          <div className="h-full">
-            <motion.img
-              src={image}
-              alt={title}
-              className="w-full h-full object-contain"
-            />
-          </div>
+        <div className="relative rounded-lg overflow-hidden">
+          <img
+            src={image}
+            alt={title}
+            className="w-full h-auto max-w-full"
+            style={{ display: 'block' }}
+          />
           
           {/* Overlay with Content - Always visible */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
@@ -110,19 +109,19 @@ const FutureShowcase = () => {
         </motion.div>
 
         {/* Staggered Grid Layout */}
-        <div className="grid grid-cols-12 gap-6 max-h-[80vh]">
+        <div className="grid grid-cols-12 gap-8">
           {/* First Project - Top Left */}
-          <div className="col-span-12 md:col-span-6 h-[350px]">
+          <div className="col-span-12 md:col-span-6">
             <ProjectCard {...projects[0]} />
           </div>
           
           {/* Second Project - Top Right */}
-          <div className="col-span-12 md:col-span-6 md:translate-y-12 h-[350px]">
+          <div className="col-span-12 md:col-span-6 md:translate-y-12">
             <ProjectCard {...projects[1]} />
           </div>
           
           {/* Third Project - Bottom Center */}
-          <div className="col-span-12 md:col-span-8 md:col-start-3 h-[350px]">
+          <div className="col-span-12 md:col-span-8 md:col-start-3 mt-8">
             <ProjectCard {...projects[2]} />
           </div>
         </div>
@@ -132,3 +131,4 @@ const FutureShowcase = () => {
 };
 
 export default FutureShowcase;
+
