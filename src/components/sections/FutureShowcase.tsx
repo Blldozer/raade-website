@@ -9,61 +9,68 @@ const projects = [
     title: "YOUR KITCHEN IS ENOUGH",
     image: "/Cozy-Sunlit-Rustic-Kitchen.jpeg",
     description: "Empowering local ingredients, enriching communities",
-    slug: "kitchen-project"
+    slug: "kitchen-project",
+    category: "SUSTAINABLE LIVING"
   },
   {
     title: "LIGHTS THAT NEVER GO OUT",
     image: "/Cozy-Café-Interior.jpeg",
     description: "Sustainable power for unstoppable progress",
-    slug: "lights-project"
+    slug: "lights-project",
+    category: "ENERGY SOLUTIONS"
   },
   {
     title: "YOUR CHILDREN WILL DO BETTER",
     image: "/Mother-and-Newborn-Intimacy.jpeg",
     description: "Building generational prosperity through innovation",
-    slug: "prosperity-project"
+    slug: "prosperity-project",
+    category: "COMMUNITY DEVELOPMENT"
   }
 ];
 
-const ProjectCard = ({ title, image, description, slug }: { 
+const ProjectCard = ({ title, image, description, slug, category }: { 
   title: string, 
   image: string, 
   description: string,
-  slug: string 
+  slug: string,
+  category: string 
 }) => {
   return (
     <Link to={`/projects/${slug}`}>
       <motion.div
-        className="relative aspect-video lg:h-[400px] rounded-xl overflow-hidden shadow-lg transition-all duration-300 group hover:shadow-2xl hover:ring-2 hover:ring-white/20 cursor-pointer"
-        whileHover={{ scale: 1.02 }}
+        className="group relative w-full mb-16 last:mb-0"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
       >
-        {/* Background Image */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
-          style={{ backgroundImage: `url(${image})` }}
-        />
-        
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+        {/* Image Container */}
+        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg">
+          <motion.img
+            src={image}
+            alt={title}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+          
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        </div>
         
         {/* Content */}
-        <div className="absolute inset-0 p-6 flex flex-col justify-end">
-          <div className="space-y-2">
-            <h3 className="text-xl md:text-2xl font-bold text-white font-zillaslab">
-              {title}
-            </h3>
-            <p className="text-white/80 font-merriweather text-sm md:text-base transform translate-y-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-              {description}
-            </p>
-          </div>
+        <div className="mt-6 space-y-2">
+          <p className="text-sm font-medium text-gray-500 tracking-wider">
+            {category}
+          </p>
+          <h3 className="text-2xl font-bold text-[#1A365D] font-zillaslab group-hover:text-[#2a4774] transition-colors">
+            {title}
+          </h3>
+          <p className="text-gray-600 font-merriweather">
+            {description}
+          </p>
           
           {/* Learn More Link */}
-          <div className="flex justify-end mt-4">
-            <span className="inline-flex items-center text-white/90 text-sm font-merriweather transform translate-y-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+          <div className="pt-2">
+            <span className="inline-flex items-center text-[#2a4774] text-sm font-merriweather group-hover:translate-x-1 transition-transform">
               Learn More 
               <ArrowRight className="ml-2 h-4 w-4" />
             </span>
@@ -77,7 +84,7 @@ const ProjectCard = ({ title, image, description, slug }: {
 const FutureShowcase = () => {
   return (
     <section className="relative py-24">
-      {/* Gradient background */}
+      {/* Background */}
       <div 
         className="absolute inset-0" 
         style={{
@@ -92,7 +99,7 @@ const FutureShowcase = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-center mb-20"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-[#1A365D] mb-6 font-zillaslab">
             What We're Building Today
@@ -103,8 +110,8 @@ const FutureShowcase = () => {
           </p>
         </motion.div>
 
-        {/* Project Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        {/* Project Stack */}
+        <div className="max-w-5xl mx-auto">
           {projects.map((project, index) => (
             <ProjectCard key={index} {...project} />
           ))}
