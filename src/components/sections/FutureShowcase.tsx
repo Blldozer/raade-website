@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -77,7 +76,7 @@ const ProjectCard = ({ title, image, description, slug, category }: {
 
 const FutureShowcase = () => {
   return (
-    <section className="relative py-12">
+    <section className="relative pb-32 pt-12">
       <div 
         className="absolute inset-0" 
         style={{
@@ -102,7 +101,7 @@ const FutureShowcase = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-12 gap-6 h-[70vh]">
+        <div className="grid grid-cols-12 gap-6 h-[60vh] mb-16">
           <div className="col-span-12 md:col-span-6 h-full">
             <ProjectCard {...projects[0]} />
           </div>
@@ -121,4 +120,3 @@ const FutureShowcase = () => {
 };
 
 export default FutureShowcase;
-
