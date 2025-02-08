@@ -36,26 +36,26 @@ const ProjectCard = ({ title, image, description, slug, category }: {
   category: string
 }) => {
   return (
-    <Link to={`/projects/${slug}`} className="block w-full mb-8 last:mb-0">
+    <Link to={`/projects/${slug}`}>
       <motion.div
-        className="group relative w-full"
+        className="group relative w-full h-full"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
       >
         {/* Image Container */}
-        <div className="relative w-full overflow-hidden rounded-lg transition-all duration-500 ease-in-out group-hover:z-10 group-hover:scale-105 group-hover:shadow-2xl">
-          <div className="aspect-[16/9]">
+        <div className="relative w-full h-full overflow-hidden rounded-lg">
+          <div className="h-full">
             <motion.img
               src={image}
               alt={title}
-              className="h-full w-full object-cover object-top"
+              className="w-full h-full object-contain"
             />
           </div>
           
-          {/* Overlay with Content */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          {/* Overlay with Content - Always visible */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
             <div className="absolute bottom-0 left-0 p-8 w-full">
               <p className="text-sm font-medium text-white/80 tracking-wider mb-2">
                 {category}
@@ -82,7 +82,7 @@ const ProjectCard = ({ title, image, description, slug, category }: {
 
 const FutureShowcase = () => {
   return (
-    <section className="relative py-24">
+    <section className="relative py-12">
       {/* Background */}
       <div 
         className="absolute inset-0" 
@@ -98,7 +98,7 @@ const FutureShowcase = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-20"
+          className="text-center mb-12"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-[#1A365D] mb-6 font-zillaslab">
             What We're Building Today
@@ -109,11 +109,22 @@ const FutureShowcase = () => {
           </p>
         </motion.div>
 
-        {/* Vertically Stacked Projects */}
-        <div className="space-y-6">
-          {projects.map((project, index) => (
-            <ProjectCard key={index} {...project} />
-          ))}
+        {/* Staggered Grid Layout */}
+        <div className="grid grid-cols-12 gap-6 max-h-[80vh]">
+          {/* First Project - Top Left */}
+          <div className="col-span-12 md:col-span-6 h-[350px]">
+            <ProjectCard {...projects[0]} />
+          </div>
+          
+          {/* Second Project - Top Right */}
+          <div className="col-span-12 md:col-span-6 md:translate-y-12 h-[350px]">
+            <ProjectCard {...projects[1]} />
+          </div>
+          
+          {/* Third Project - Bottom Center */}
+          <div className="col-span-12 md:col-span-8 md:col-start-3 h-[350px]">
+            <ProjectCard {...projects[2]} />
+          </div>
         </div>
       </div>
     </section>
@@ -121,4 +132,3 @@ const FutureShowcase = () => {
 };
 
 export default FutureShowcase;
-
