@@ -28,35 +28,34 @@ const projects = [
   }
 ];
 
-const ProjectCard = ({ title, image, description, slug, category, className }: { 
+const ProjectCard = ({ title, image, description, slug, category }: { 
   title: string, 
   image: string, 
   description: string,
   slug: string,
-  category: string,
-  className?: string
+  category: string
 }) => {
   return (
-    <Link to={`/projects/${slug}`} className={className}>
+    <Link to={`/projects/${slug}`} className="block w-full mb-8 last:mb-0">
       <motion.div
-        className="group relative w-full h-full"
+        className="group relative w-full"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
       >
         {/* Image Container */}
-        <div className="relative w-full overflow-hidden rounded-lg">
-          <div className="aspect-[16/10]">
+        <div className="relative w-full overflow-hidden rounded-lg transition-all duration-500 ease-in-out group-hover:z-10 group-hover:scale-105 group-hover:shadow-2xl">
+          <div className="aspect-[16/9]">
             <motion.img
               src={image}
               alt={title}
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover object-top"
             />
           </div>
           
           {/* Overlay with Content */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-100">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <div className="absolute bottom-0 left-0 p-8 w-full">
               <p className="text-sm font-medium text-white/80 tracking-wider mb-2">
                 {category}
@@ -93,7 +92,7 @@ const FutureShowcase = () => {
       />
       
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 max-w-[90vw] xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -110,22 +109,11 @@ const FutureShowcase = () => {
           </p>
         </motion.div>
 
-        {/* Staggered Project Grid */}
-        <div className="max-w-[1400px] mx-auto grid grid-cols-12 gap-6">
-          {/* First Project - Top Left */}
-          <div className="col-span-12 md:col-span-7 md:translate-y-12">
-            <ProjectCard {...projects[0]} />
-          </div>
-          
-          {/* Second Project - Top Right */}
-          <div className="col-span-12 md:col-span-5">
-            <ProjectCard {...projects[1]} />
-          </div>
-          
-          {/* Third Project - Bottom Center */}
-          <div className="col-span-12 md:col-span-8 md:col-start-3 mt-6 md:mt-0">
-            <ProjectCard {...projects[2]} />
-          </div>
+        {/* Vertically Stacked Projects */}
+        <div className="space-y-6">
+          {projects.map((project, index) => (
+            <ProjectCard key={index} {...project} />
+          ))}
         </div>
       </div>
     </section>
