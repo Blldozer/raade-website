@@ -28,52 +28,52 @@ const projects = [
   }
 ];
 
-const ProjectCard = ({ title, image, description, slug, category }: { 
+const ProjectCard = ({ title, image, description, slug, category, className }: { 
   title: string, 
   image: string, 
   description: string,
   slug: string,
-  category: string 
+  category: string,
+  className?: string
 }) => {
   return (
-    <Link to={`/projects/${slug}`}>
+    <Link to={`/projects/${slug}`} className={className}>
       <motion.div
-        className="group relative w-full mb-16 last:mb-0"
+        className="group relative w-full h-full"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
       >
         {/* Image Container */}
-        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg">
-          <motion.img
-            src={image}
-            alt={title}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
+        <div className="relative w-full overflow-hidden rounded-lg">
+          <div className="aspect-[16/10]">
+            <motion.img
+              src={image}
+              alt={title}
+              className="h-full w-full object-cover"
+            />
+          </div>
           
-          {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-        </div>
-        
-        {/* Content */}
-        <div className="mt-6 space-y-2">
-          <p className="text-sm font-medium text-gray-500 tracking-wider">
-            {category}
-          </p>
-          <h3 className="text-2xl font-bold text-[#1A365D] font-zillaslab group-hover:text-[#2a4774] transition-colors">
-            {title}
-          </h3>
-          <p className="text-gray-600 font-merriweather">
-            {description}
-          </p>
-          
-          {/* Learn More Link */}
-          <div className="pt-2">
-            <span className="inline-flex items-center text-[#2a4774] text-sm font-merriweather group-hover:translate-x-1 transition-transform">
-              Learn More 
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </span>
+          {/* Overlay with Content */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-100">
+            <div className="absolute bottom-0 left-0 p-8 w-full">
+              <p className="text-sm font-medium text-white/80 tracking-wider mb-2">
+                {category}
+              </p>
+              <h3 className="text-3xl font-bold text-white font-zillaslab mb-4">
+                {title}
+              </h3>
+              <p className="text-white/90 font-merriweather mb-4">
+                {description}
+              </p>
+              
+              {/* Learn More Link */}
+              <span className="inline-flex items-center text-white text-sm font-merriweather group-hover:translate-x-1 transition-transform">
+                Learn More 
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </span>
+            </div>
           </div>
         </div>
       </motion.div>
@@ -110,11 +110,22 @@ const FutureShowcase = () => {
           </p>
         </motion.div>
 
-        {/* Project Stack */}
-        <div className="max-w-5xl mx-auto">
-          {projects.map((project, index) => (
-            <ProjectCard key={index} {...project} />
-          ))}
+        {/* Staggered Project Grid */}
+        <div className="max-w-[1400px] mx-auto grid grid-cols-12 gap-6">
+          {/* First Project - Top Left */}
+          <div className="col-span-12 md:col-span-7 md:translate-y-12">
+            <ProjectCard {...projects[0]} />
+          </div>
+          
+          {/* Second Project - Top Right */}
+          <div className="col-span-12 md:col-span-5">
+            <ProjectCard {...projects[1]} />
+          </div>
+          
+          {/* Third Project - Bottom Center */}
+          <div className="col-span-12 md:col-span-8 md:col-start-3 mt-6 md:mt-0">
+            <ProjectCard {...projects[2]} />
+          </div>
         </div>
       </div>
     </section>
@@ -122,3 +133,4 @@ const FutureShowcase = () => {
 };
 
 export default FutureShowcase;
+
