@@ -7,19 +7,19 @@ import { ArrowRight } from 'lucide-react';
 const projects = [
   {
     title: "YOUR KITCHEN IS ENOUGH",
-    image: "/lovable-uploads/53c3e0e3-e1ae-42a9-bdb8-6854c8b646ba.png",
+    image: "/Cozy Sunlit Rustic Kitchen.jpeg",
     description: "Empowering local ingredients, enriching communities",
     slug: "kitchen-project"
   },
   {
     title: "LIGHTS THAT NEVER GO OUT",
-    image: "/lovable-uploads/57a9d290-224d-44e7-b284-7715e6f4f3fd.png",
+    image: "/Cozy Café Interior.jpeg",
     description: "Sustainable power for unstoppable progress",
     slug: "lights-project"
   },
   {
     title: "YOUR CHILDREN WILL DO BETTER",
-    image: "/lovable-uploads/5f474a9c-ca13-4875-b29c-a91ae8f15738.png",
+    image: "/Mother and Newborn Intimacy.jpeg",
     description: "Building generational prosperity through innovation",
     slug: "prosperity-project"
   }
