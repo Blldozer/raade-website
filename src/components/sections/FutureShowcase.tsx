@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 
@@ -77,17 +77,53 @@ const ProjectCard = ({ title, image, description, slug, category }: {
 };
 
 const FutureShowcase = () => {
-  const { scrollYProgress } = useScroll();
-  const backgroundColor = useTransform(
-    scrollYProgress,
-    [0, 0.5, 1],
-    ["#FBB03B", "#1A365D", "#F8F7F4"]
-  );
+  const sectionRef = useRef<HTMLElement>(null);
+  const [bgColor, setBgColor] = useState('#FBB03B');
+
+  useEffect(() => {
+    const options = {
+      threshold: [0, 0.25, 0.5, 0.75, 1],
+      rootMargin: "0px"
+    };
+
+    const handleIntersect = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const ratio = entry.intersectionRatio;
+          if (ratio < 0.25) {
+            setBgColor('#FBB03B'); // Gold at top
+          } else if (ratio < 0.5) {
+            setBgColor('#E59835'); // Transition color
+          } else if (ratio < 0.75) {
+            setBgColor('#1A365D'); // Navy in middle
+          } else {
+            setBgColor('#F8F7F4'); // Light cream at bottom
+          }
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(handleIntersect, options);
+    
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+    };
+  }, []);
 
   return (
     <section 
-      className="relative py-24 min-h-screen transition-colors duration-600 ease-in-out"
-      style={{ backgroundColor: backgroundColor as any }}
+      ref={sectionRef}
+      className="relative py-24 min-h-screen"
+      style={{ 
+        backgroundColor: bgColor,
+        transition: 'background-color 0.6s ease'
+      }}
     >
       <div className="relative z-10 max-w-[90vw] xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
@@ -125,4 +161,3 @@ const FutureShowcase = () => {
 };
 
 export default FutureShowcase;
-
