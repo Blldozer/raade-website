@@ -36,10 +36,10 @@ const WhatWeAreBuilding = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold text-[#1A365D] mb-6">
+          <h2 className="text-4xl font-bold text-[#1A365D] mb-6 font-zillaslab">
             What We're Building Today
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto font-merriweather">
             Through our key initiatives, we're actively creating sustainable solutions 
             for African development challenges.
           </p>
@@ -56,13 +56,13 @@ const WhatWeAreBuilding = () => {
             >
               <Card className="h-full hover:shadow-lg transition-shadow">
                 <CardContent className="p-6">
-                  <h3 className="text-2xl font-semibold text-[#1A365D] mb-4">{initiative.title}</h3>
-                  <p className="text-gray-600 mb-6">{initiative.description}</p>
+                  <h3 className="text-2xl font-semibold text-[#1A365D] mb-4 font-alegreyasans">{initiative.title}</h3>
+                  <p className="text-gray-600 mb-6 font-merriweather">{initiative.description}</p>
                   <div className="flex items-center justify-between">
-                    <span className="text-[#FBB03B] font-semibold">{initiative.metric}</span>
+                    <span className="text-[#FBB03B] font-semibold font-alegreyasans">{initiative.metric}</span>
                     <a 
                       href={initiative.link} 
-                      className="text-[#1A365D] hover:text-[#FBB03B] transition-colors flex items-center gap-2"
+                      className="text-[#1A365D] hover:text-[#FBB03B] transition-colors flex items-center gap-2 font-merriweather"
                     >
                       Learn More <ArrowRight className="w-4 h-4" />
                     </a>

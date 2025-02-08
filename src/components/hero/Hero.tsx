@@ -30,7 +30,7 @@ const Hero = () => {
       {/* Enhanced gradient overlay */}
       <div className="absolute inset-0 z-10 bg-gradient-to-br from-[#1A365D]/60 via-[#2A466D]/65 to-[#1A365D]/70 backdrop-blur-[4px]" />
       
-      {/* Particle effect - moved to lower z-index */}
+      {/* Particle effect */}
       <div className="relative z-20">
         <ParticleField />
       </div>
@@ -52,9 +52,9 @@ const Hero = () => {
             {/* Animated text component */}
             <AnimatedText />
 
-            {/* Supporting text */}
+            {/* Supporting text with new font */}
             <motion.p 
-              className="text-lg sm:text-xl md:text-2xl text-white/90 max-w-3xl font-opensans"
+              className="text-lg sm:text-xl md:text-2xl text-white/90 max-w-3xl font-merriweather"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1 }}

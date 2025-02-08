@@ -62,7 +62,7 @@ const AnimatedText = () => {
     <div className="space-y-4 md:space-y-8">
       <h1 
         ref={orgNameRef}
-        className="text-[#FBB03B] text-base sm:text-lg md:text-2xl font-medium tracking-wide uppercase"
+        className="text-[#FBB03B] text-base sm:text-lg md:text-2xl font-medium tracking-wide uppercase font-alegreyasans"
       >
         Rice Association for African Development
       </h1>
