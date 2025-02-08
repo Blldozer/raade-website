@@ -1,54 +1,76 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 
 const projects = [
   {
     title: "YOUR KITCHEN IS ENOUGH",
-    image: "/lovable-uploads/53c3e0e3-e1ae-42a9-bdb8-6854c8b646ba.png", // Mother cooking image
-    description: "Empowering local ingredients, enriching communities"
+    image: "/lovable-uploads/53c3e0e3-e1ae-42a9-bdb8-6854c8b646ba.png",
+    description: "Empowering local ingredients, enriching communities",
+    slug: "kitchen-project"
   },
   {
     title: "LIGHTS THAT NEVER GO OUT",
-    image: "/lovable-uploads/57a9d290-224d-44e7-b284-7715e6f4f3fd.png", // Night business image
-    description: "Sustainable power for unstoppable progress"
+    image: "/lovable-uploads/57a9d290-224d-44e7-b284-7715e6f4f3fd.png",
+    description: "Sustainable power for unstoppable progress",
+    slug: "lights-project"
   },
   {
     title: "YOUR CHILDREN WILL DO BETTER",
-    image: "/lovable-uploads/5f474a9c-ca13-4875-b29c-a91ae8f15738.png", // Entrepreneur image
-    description: "Building generational prosperity through innovation"
+    image: "/lovable-uploads/5f474a9c-ca13-4875-b29c-a91ae8f15738.png",
+    description: "Building generational prosperity through innovation",
+    slug: "prosperity-project"
   }
 ];
 
-const ProjectCard = ({ title, image, description }: { title: string, image: string, description: string }) => {
+const ProjectCard = ({ title, image, description, slug }: { 
+  title: string, 
+  image: string, 
+  description: string,
+  slug: string 
+}) => {
   return (
-    <motion.div
-      className="relative h-[400px] rounded-xl overflow-hidden shadow-lg transition-transform duration-300 hover:scale-102 group"
-      whileHover={{ scale: 1.02 }}
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-    >
-      {/* Background Image */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${image})` }}
-      />
-      
-      {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-      
-      {/* Content */}
-      <div className="absolute bottom-0 left-0 p-6 w-full">
-        <h3 className="text-2xl font-bold text-white font-zillaslab mb-2">
-          {title}
-        </h3>
-        <p className="text-white/80 font-merriweather text-sm transform translate-y-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-          {description}
-        </p>
-      </div>
-    </motion.div>
+    <Link to={`/projects/${slug}`}>
+      <motion.div
+        className="relative aspect-video lg:h-[400px] rounded-xl overflow-hidden shadow-lg transition-all duration-300 group hover:shadow-2xl hover:ring-2 hover:ring-white/20 cursor-pointer"
+        whileHover={{ scale: 1.02 }}
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
+          style={{ backgroundImage: `url(${image})` }}
+        />
+        
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+        
+        {/* Content */}
+        <div className="absolute inset-0 p-6 flex flex-col justify-end">
+          <div className="space-y-2">
+            <h3 className="text-xl md:text-2xl font-bold text-white font-zillaslab">
+              {title}
+            </h3>
+            <p className="text-white/80 font-merriweather text-sm md:text-base transform translate-y-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+              {description}
+            </p>
+          </div>
+          
+          {/* Learn More Link */}
+          <div className="flex justify-end mt-4">
+            <span className="inline-flex items-center text-white/90 text-sm font-merriweather transform translate-y-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+              Learn More 
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </span>
+          </div>
+        </div>
+      </motion.div>
+    </Link>
   );
 };
 
@@ -72,17 +94,17 @@ const FutureShowcase = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-5xl font-bold text-[#1A365D] mb-6 font-zillaslab">
+          <h2 className="text-4xl md:text-5xl font-bold text-[#1A365D] mb-6 font-zillaslab">
             What We're Building Today
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto font-merriweather leading-relaxed">
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto font-merriweather leading-relaxed">
             Step into the future we're creating. Each project is a window into tomorrow,
             where innovation meets impact in real time.
           </p>
         </motion.div>
 
         {/* Project Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {projects.map((project, index) => (
             <ProjectCard key={index} {...project} />
           ))}
