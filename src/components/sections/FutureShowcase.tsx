@@ -84,11 +84,15 @@ const ProjectCard = ({ title, image, description, slug, category, index }: {
     <Link to={`/projects/${slug}`}>
       <div
         ref={cardRef}
-        className={`grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 min-h-[600px] opacity-0 ${
-          index % 2 === 0 ? 'md:grid-flow-col' : 'md:grid-flow-col-dense'
-        }`}
+        className={`grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 min-h-[600px] opacity-0`}
+        style={{
+          gridTemplateAreas: index % 2 === 1 ? '"content image"' : '"image content"'
+        }}
       >
-        <div className="project-image relative overflow-hidden rounded-2xl">
+        <div 
+          className="project-image relative overflow-hidden rounded-2xl"
+          style={{ gridArea: 'image' }}
+        >
           <img
             src={image}
             alt={title}
@@ -96,7 +100,10 @@ const ProjectCard = ({ title, image, description, slug, category, index }: {
           />
         </div>
         
-        <div className="project-content flex flex-col justify-center space-y-6 p-4 md:p-8">
+        <div 
+          className="project-content flex flex-col justify-center space-y-6 p-4 md:p-8"
+          style={{ gridArea: 'content' }}
+        >
           <p className="animate-content text-sm font-medium text-[#1A365D]/80 tracking-wider">
             {category}
           </p>
@@ -125,7 +132,7 @@ const FutureShowcase = () => {
       className="relative py-32 bg-white"
     >
       <div className="max-w-[90vw] xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-24">
+        <div className="text-center mb-32">
           <h2 className="text-4xl md:text-5xl font-bold text-[#1A365D] mb-8 font-zillaslab">
             Building in Progress
           </h2>
@@ -135,7 +142,7 @@ const FutureShowcase = () => {
           </p>
         </div>
 
-        <div className="space-y-32">
+        <div className="space-y-40">
           {projects.map((project, index) => (
             <ProjectCard key={project.slug} {...project} index={index} />
           ))}
