@@ -14,8 +14,6 @@ export const navItems = [
     dropdownItems: [
       { name: "Overview", href: "/about" },
       { name: "Our Team", href: "/about#team" },
-      { name: "Faculty Mentors", href: "/about#mentors" },
-      { name: "Partner Organizations", href: "/about#partners" },
     ],
   },
   {
@@ -24,7 +22,6 @@ export const navItems = [
     dropdownItems: [
       { name: "Program Overview", href: "/studios" },
       { name: "Current Projects", href: "/studios#projects" },
-      { name: "Past Projects", href: "/studios#past-projects" },
       { name: "Apply", href: "/studios#apply" },
     ],
   },
