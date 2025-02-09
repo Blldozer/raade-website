@@ -14,44 +14,46 @@ const Index = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Get all sections except FutureShowcase
-    const sections = gsap.utils.toArray<HTMLElement>('.section').filter(
-      section => !section.classList.contains('future-showcase')
-    );
-    
-    // Create the stacking effect for each section
-    sections.forEach((section, i) => {
-      // Skip the first (hero) section
-      if (i === 0) return;
-      
-      ScrollTrigger.create({
-        trigger: section,
-        start: "top top",
-        pin: true,
-        pinSpacing: false
-      });
-
-      // Animate section coming in from bottom
-      gsap.fromTo(section,
-        {
-          y: "100vh",
-        },
-        {
-          y: 0,
-          ease: "none",
-          scrollTrigger: {
-            trigger: section,
-            start: "top bottom", // Start when the top of the section hits the bottom of the viewport
-            end: "top top", // End when the top of the section hits the top of the viewport
-            scrub: true,
-            markers: false
-          }
-        }
+    const ctx = gsap.context(() => {
+      // Get all sections except FutureShowcase
+      const sections = gsap.utils.toArray<HTMLElement>('.section').filter(
+        section => !section.classList.contains('future-showcase')
       );
-    });
+      
+      // Create the stacking effect for each section
+      sections.forEach((section, i) => {
+        // Skip the first (hero) section
+        if (i === 0) return;
+        
+        ScrollTrigger.create({
+          trigger: section,
+          start: "top top",
+          pin: true,
+          pinSpacing: false
+        });
+
+        // Animate section coming in from bottom
+        gsap.fromTo(section,
+          {
+            y: "100vh",
+          },
+          {
+            y: 0,
+            ease: "none",
+            scrollTrigger: {
+              trigger: section,
+              start: "top bottom", // Start when the top of the section hits the bottom of the viewport
+              end: "top top", // End when the top of the section hits the top of the viewport
+              scrub: true,
+              markers: false
+            }
+          }
+        );
+      });
+    }, containerRef);
 
     return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      ctx.revert(); // This will clean up all animations and ScrollTriggers created by this context
     };
   }, []);
 

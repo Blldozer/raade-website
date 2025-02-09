@@ -129,6 +129,16 @@ const ProjectCard = ({ title, image, description, category, index }: {
 const FutureShowcase = () => {
   const sectionRef = useRef<HTMLElement>(null);
 
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Any GSAP animations you want to add in the future can go here
+    }, sectionRef);
+
+    return () => {
+      ctx.revert(); // This will clean up all GSAP instances created in this context
+    };
+  }, []);
+
   return (
     <section 
       ref={sectionRef}
