@@ -2,7 +2,8 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const symbols = ['◆', '●', '■', '▲', '○', '□', '△'];
+// Updated symbols to represent innovation and development
+const symbols = ['⚡', '⚛', '⚙️', '∞', '△', '◇', '⬡'];
 
 interface Particle {
   id: number;
@@ -12,13 +13,12 @@ interface Particle {
 }
 
 const ParticleField = () => {
-  const [particleCount, setParticleCount] = useState(12); // Reduced initial count
+  const [particleCount, setParticleCount] = useState(12);
   const [particles, setParticles] = useState<Particle[]>([]);
   const [hoveredId, setHoveredId] = useState<number | null>(null);
 
-  // Memoize the resize handler
   const handleResize = useCallback(() => {
-    setParticleCount(window.innerWidth < 768 ? 8 : 12); // Further reduced counts
+    setParticleCount(window.innerWidth < 768 ? 8 : 12);
   }, []);
 
   useEffect(() => {
@@ -27,7 +27,6 @@ const ParticleField = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, [handleResize]);
 
-  // Memoize particle initialization
   useEffect(() => {
     const newParticles = Array.from({ length: particleCount }, (_, i) => ({
       id: i,
@@ -38,7 +37,6 @@ const ParticleField = () => {
     setParticles(newParticles);
   }, [particleCount]);
 
-  // Memoize pop handler
   const handlePop = useCallback((id: number) => {
     setParticles(prev => 
       prev.map(p => p.id === id ? { ...p, isPopped: true } : p)
@@ -53,7 +51,6 @@ const ParticleField = () => {
     }, 800);
   }, []);
 
-  // Memoize particle styles
   const getParticleStyle = useCallback((particle: Particle) => ({
     fontSize: `${particle.isLarge ? 40 : 24}px`,
     left: `${Math.random() * 100}%`,

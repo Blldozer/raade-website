@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import Navigation from '../Navigation';
@@ -7,6 +8,8 @@ import ParticleField from './ParticleField';
 const Hero = () => {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 500], [0, 150]);
+  const opacity = useTransform(scrollY, [0, 200], [1, 0]);
+  const scale = useTransform(scrollY, [0, 200], [1, 0.95]);
   
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -44,14 +47,15 @@ const Hero = () => {
         <div className="max-w-7xl mx-auto px-4 py-10 sm:px-6 lg:px-8 min-h-screen flex flex-col justify-center">
           <motion.div
             className="space-y-4 md:space-y-8 max-w-3xl pointer-events-auto pt-12"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            style={{ opacity, scale }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
             {/* Animated text component */}
             <AnimatedText />
 
-            {/* Supporting text with new font */}
+            {/* Supporting text with enhanced animations */}
             <motion.p 
               className="text-lg sm:text-xl md:text-2xl text-white/90 max-w-3xl font-merriweather"
               initial={{ opacity: 0, y: 20 }}
@@ -62,8 +66,13 @@ const Hero = () => {
               like you. Join a community of students and partners creating sustainable solutions through market-driven innovation.
             </motion.p>
 
-            {/* Call-to-action buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
+            {/* Call-to-action buttons with enhanced animations */}
+            <motion.div 
+              className="flex flex-col sm:flex-row gap-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.2 }}
+            >
               <motion.button 
                 onClick={() => window.location.href = "#studios"}
                 className="group w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 bg-[#FBB03B] text-[#1A365D] rounded-lg font-semibold 
@@ -73,9 +82,6 @@ const Hero = () => {
                   y: -2 
                 }}
                 whileTap={{ scale: 0.95 }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.2 }}
               >
                 <span className="relative z-10">Start Building Today</span>
                 <div className="absolute inset-0 bg-[#FBB03B] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -89,13 +95,10 @@ const Hero = () => {
                   y: -2
                 }}
                 whileTap={{ scale: 0.95 }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.4 }}
               >
                 <span className="relative z-10">Explore Our Impact</span>
               </motion.button>
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </div>
