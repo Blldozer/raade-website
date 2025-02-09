@@ -130,16 +130,25 @@ const FutureShowcase = () => {
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    // Only trigger the pin after the last project
     const section = sectionRef.current;
     if (!section) return;
 
     const lastProject = section.querySelector('.project-card:last-child');
     if (!lastProject) return;
 
+    // Create a ScrollTrigger for the last project
+    ScrollTrigger.create({
+      trigger: lastProject,
+      start: 'center center',
+      end: 'bottom top',
+      pin: true,
+      pinSpacing: false,
+    });
+
+    // Create a ScrollTrigger for the section
     ScrollTrigger.create({
       trigger: section,
-      start: () => `bottom bottom-=${window.innerHeight}`,
+      start: () => `bottom bottom`,
       end: 'bottom top',
       pin: true,
       pinSpacing: false,
