@@ -31,44 +31,85 @@ const projects = [
   }
 ];
 
-const ProjectCard = ({ title, image, description, slug, category }: { 
+const ProjectCard = ({ title, image, description, slug, category, index }: { 
   title: string, 
   image: string, 
   description: string,
   slug: string,
-  category: string
+  category: string,
+  index: number
 }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+    
+    const image = card.querySelector('.project-image img');
+    const content = card.querySelectorAll('.animate-content');
+    
+    gsap.set(card, { opacity: 0, y: 20 });
+    gsap.set(image, { scale: 1.1 });
+    gsap.set(content, { opacity: 0, y: 20 });
+    
+    ScrollTrigger.create({
+      trigger: card,
+      start: "top 80%",
+      onEnter: () => {
+        gsap.to(card, {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          ease: "power3.out"
+        });
+        
+        gsap.to(image, {
+          scale: 1,
+          duration: 1.5,
+          ease: "power3.out"
+        });
+        
+        gsap.to(content, {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          stagger: 0.2,
+          ease: "power3.out"
+        });
+      }
+    });
+  }, []);
+
   return (
     <Link to={`/projects/${slug}`}>
       <div
-        className="group relative transition-transform duration-300 ease-in-out hover:-translate-y-2"
+        ref={cardRef}
+        className={`grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 min-h-[600px] opacity-0 ${
+          index % 2 === 0 ? 'md:grid-flow-col' : 'md:grid-flow-col-dense'
+        }`}
       >
-        <div className="relative rounded-lg overflow-hidden">
+        <div className="project-image relative overflow-hidden rounded-2xl">
           <img
             src={image}
             alt={title}
-            className="w-full h-auto max-w-full relative z-0"
-            style={{ display: 'block' }}
+            className="w-full h-full object-cover"
           />
-          
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-20">
-            <div className="absolute bottom-0 left-0 p-8 w-full">
-              <p className="text-sm font-medium text-white/80 tracking-wider mb-2">
-                {category}
-              </p>
-              <h3 className="text-3xl font-bold text-white font-zillaslab mb-4">
-                {title}
-              </h3>
-              <p className="text-white/90 font-merriweather mb-4">
-                {description}
-              </p>
-              
-              <span className="inline-flex items-center text-white text-sm font-merriweather group-hover:translate-x-1 transition-transform">
-                Learn More 
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </span>
-            </div>
-          </div>
+        </div>
+        
+        <div className="project-content flex flex-col justify-center space-y-6 p-4 md:p-8">
+          <p className="animate-content text-sm font-medium text-[#1A365D]/80 tracking-wider">
+            {category}
+          </p>
+          <h3 className="animate-content text-3xl md:text-4xl font-bold text-[#1A365D] font-zillaslab">
+            {title}
+          </h3>
+          <p className="animate-content text-gray-600 font-merriweather leading-relaxed">
+            {description}
+          </p>
+          <span className="animate-content inline-flex items-center text-[#1A365D] text-sm font-merriweather group-hover:translate-x-1 transition-transform">
+            Learn More 
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </span>
         </div>
       </div>
     </Link>
@@ -78,25 +119,13 @@ const ProjectCard = ({ title, image, description, slug, category }: {
 const FutureShowcase = () => {
   const sectionRef = useRef<HTMLElement>(null);
 
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    // Remove GSAP ScrollTrigger since we're not doing background transitions anymore
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
-  }, []);
-
   return (
     <section 
       ref={sectionRef}
-      className="relative py-32 min-h-screen bg-white"
+      className="relative py-32 bg-white"
     >
-      <div className="relative z-10 max-w-[90vw] xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div
-          className="text-center mb-24"
-        >
+      <div className="max-w-[90vw] xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-24">
           <h2 className="text-4xl md:text-5xl font-bold text-[#1A365D] mb-8 font-zillaslab">
             Building in Progress
           </h2>
@@ -106,18 +135,10 @@ const FutureShowcase = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-12 gap-8">
-          <div className="col-span-12 md:col-span-6">
-            <ProjectCard {...projects[0]} />
-          </div>
-          
-          <div className="col-span-12 md:col-span-6 md:translate-y-12">
-            <ProjectCard {...projects[1]} />
-          </div>
-          
-          <div className="col-span-12 md:col-span-8 md:col-start-3 mt-8">
-            <ProjectCard {...projects[2]} />
-          </div>
+        <div className="space-y-32">
+          {projects.map((project, index) => (
+            <ProjectCard key={project.slug} {...project} index={index} />
+          ))}
         </div>
       </div>
     </section>
