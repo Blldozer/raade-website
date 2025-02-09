@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 const TransitionHook = () => {
   return (
-    <section className="min-h-screen flex flex-col justify-between py-20 bg-white">
+    <section className="min-h-screen flex flex-col justify-between py-20 bg-cream">
       <div className="flex-grow flex items-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div

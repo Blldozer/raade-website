@@ -37,7 +37,7 @@ const JoinSection = () => {
               />
             </div>
             <h3 className="text-2xl font-bold text-[#1A365D] font-zillaslab">Innovation Studios</h3>
-            <p className="text-lg text-gray-600 font-merriweather">
+            <p className="text-lg text-[#1A365D]/80 font-merriweather">
               9-week intensive programs where Rice students collaborate with African
               organizations to develop innovative solutions.
             </p>
@@ -66,7 +66,7 @@ const JoinSection = () => {
               />
             </div>
             <h3 className="text-2xl font-bold text-[#1A365D] font-zillaslab">Annual Conference</h3>
-            <p className="text-lg text-gray-600 font-merriweather">
+            <p className="text-lg text-[#1A365D]/80 font-merriweather">
               Global summit bringing together African leaders, scholars, and innovators
               to shape the future of development.
             </p>

@@ -76,9 +76,9 @@ const ProjectCard = ({ title, image, description, category, index }: {
     });
   }, []);
 
-  const textColorClass = index === 0 ? 'text-white' : 'text-[#1A365D]';
-  const textOpacityClass = index === 0 ? 'text-white/90' : 'text-[#1A365D]/90';
-  const descriptionClass = index === 0 ? 'text-white/80' : 'text-[#1A365D]/80';
+  const textColorClass = index === 0 ? 'text-[#1A365D]' : 'text-[#1A365D]';
+  const textOpacityClass = index === 0 ? 'text-[#1A365D]/90' : 'text-[#1A365D]/90';
+  const descriptionClass = index === 0 ? 'text-[#1A365D]/80' : 'text-[#1A365D]/80';
 
   return (
     <div
@@ -132,14 +132,14 @@ const FutureShowcase = () => {
   return (
     <section 
       ref={sectionRef}
-      className="relative py-40 bg-gradient-to-b from-[#1A365D] via-[#1A365D]/5 to-white"
+      className="relative py-40 bg-white"
     >
       <div className="max-w-[90vw] xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-40">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8 font-zillaslab">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#1A365D] mb-8 font-zillaslab">
             Building in Progress
           </h2>
-          <p className="text-lg md:text-xl text-white/80 max-w-3xl mx-auto font-merriweather leading-relaxed">
+          <p className="text-lg md:text-xl text-[#1A365D]/80 max-w-3xl mx-auto font-merriweather leading-relaxed">
             Step into the future we're creating. Each project is a window into tomorrow,
             where innovation meets impact in real time.
           </p>
