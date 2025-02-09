@@ -129,6 +129,23 @@ const ProjectCard = ({ title, image, description, category, index }: {
 const FutureShowcase = () => {
   const sectionRef = useRef<HTMLElement>(null);
 
+  useEffect(() => {
+    // Only trigger the pin after the last project
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const lastProject = section.querySelector('.project-card:last-child');
+    if (!lastProject) return;
+
+    ScrollTrigger.create({
+      trigger: section,
+      start: () => `bottom bottom-=${window.innerHeight}`,
+      end: 'bottom top',
+      pin: true,
+      pinSpacing: false,
+    });
+  }, []);
+
   return (
     <section 
       ref={sectionRef}
@@ -147,7 +164,9 @@ const FutureShowcase = () => {
 
         <div className="space-y-64">
           {projects.map((project, index) => (
-            <ProjectCard key={project.title} {...project} index={index} />
+            <div key={project.title} className="project-card">
+              <ProjectCard {...project} index={index} />
+            </div>
           ))}
         </div>
       </div>
