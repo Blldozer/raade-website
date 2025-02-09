@@ -70,7 +70,7 @@ const Hero = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <motion.button 
                 onClick={() => window.location.href = "#studios"}
-                className="group w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 bg-[#FBB03B] text-[#1A365D] rounded-lg font-semibold 
+                className="group w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 bg-raade-gold-start text-[#1A365D] rounded-lg font-semibold 
                   transition-all duration-300 text-lg font-alegreyasans relative overflow-hidden hover:shadow-[0_0_20px_rgba(251,176,59,0.5)]"
                 whileHover={{ 
                   scale: 1.05,
@@ -82,12 +82,12 @@ const Hero = () => {
                 transition={{ delay: 1.2 }}
               >
                 <span className="relative z-10">Start Building Today</span>
-                <div className="absolute inset-0 bg-[#FBB03B] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-r from-raade-gold-start via-raade-gold-middle to-raade-gold-end opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </motion.button>
               <motion.button 
                 onClick={() => window.location.href = "#conference"}
-                className="group w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 border-2 border-[#FBB03B] text-[#FBB03B] rounded-lg 
-                  font-semibold transition-all duration-300 text-lg font-alegreyasans hover:bg-[#FBB03B] hover:text-white relative overflow-hidden"
+                className="group w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 border-2 border-raade-gold-start text-raade-gold-start rounded-lg 
+                  font-semibold transition-all duration-300 text-lg font-alegreyasans hover:bg-raade-gold-start hover:text-white relative overflow-hidden"
                 whileHover={{ 
                   scale: 1.05,
                   y: -2

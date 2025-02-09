@@ -56,18 +56,18 @@ const AnimatedText = () => {
     <div className="space-y-4 md:space-y-8">
       <h1 
         ref={orgNameRef}
-        className="text-[#FBB03B] text-base sm:text-lg md:text-2xl font-medium tracking-wide uppercase font-alegreyasans"
+        className="text-[#FFA726] text-base sm:text-lg md:text-2xl font-medium tracking-wide uppercase font-alegreyasans"
       >
         Rice Association for African Development
       </h1>
 
-      <h2 className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-wide font-zillaslab">
+      <h2 className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-wide font-zillahighlight">
         <div>We can't wait for tomorrow.</div>
         <div className="relative inline-block">
-          <div ref={text2Ref} className="text-[#FBB03B]"></div>
+          <div ref={text2Ref} className="text-raade-gold-start"></div>
           <div 
             ref={lineRef}
-            className="absolute -bottom-2 left-0 h-1 bg-[#FBB03B]"
+            className="absolute -bottom-2 left-0 h-1 bg-raade-gold-start"
           />
         </div>
       </h2>
