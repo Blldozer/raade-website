@@ -81,9 +81,9 @@ const ProjectCard = ({ title, image, description, slug, category, index }: {
   }, []);
 
   // Determine text color based on index (position in the list)
-  const textColorClass = index < 2 ? 'text-white' : 'text-[#1A365D]';
-  const textOpacityClass = index < 2 ? 'text-white/90' : 'text-[#1A365D]/90';
-  const descriptionClass = index < 2 ? 'text-white/80' : 'text-[#1A365D]/80';
+  const textColorClass = index === 0 ? 'text-white' : 'text-[#1A365D]';
+  const textOpacityClass = index === 0 ? 'text-white/90' : 'text-[#1A365D]/90';
+  const descriptionClass = index === 0 ? 'text-white/80' : 'text-[#1A365D]/80';
 
   return (
     <Link to={`/projects/${slug}`}>
@@ -158,3 +158,4 @@ const FutureShowcase = () => {
 };
 
 export default FutureShowcase;
+
