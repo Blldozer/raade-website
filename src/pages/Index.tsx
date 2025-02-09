@@ -1,57 +1,79 @@
 
+import { useEffect, useRef } from "react";
 import Hero from "@/components/hero/Hero";
 import TransitionStat from "@/components/sections/TransitionStat";
 import FutureShowcase from "@/components/sections/FutureShowcase";
 import TransitionHook from "@/components/sections/TransitionHook";
 import JoinSection from "@/components/sections/JoinSection";
-import { motion, useScroll, useTransform } from "framer-motion";
+import gsap from "gsap";
+import ScrollTrigger from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Index = () => {
-  const { scrollY } = useScroll();
-  
-  // Create smooth parallax effects for each section
-  const statY = useTransform(scrollY, [0, 1000], [200, 0]);
-  const showcaseY = useTransform(scrollY, [500, 1500], [200, 0]);
-  const hookY = useTransform(scrollY, [1000, 2000], [200, 0]);
-  const joinY = useTransform(scrollY, [1500, 2500], [200, 0]);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Get all sections
+    const sections = gsap.utils.toArray<HTMLElement>('.section');
+    
+    // Create the stacking effect for each section
+    sections.forEach((section, i) => {
+      // Skip the first (hero) section
+      if (i === 0) return;
+      
+      ScrollTrigger.create({
+        trigger: section,
+        start: "top top",
+        pin: true,
+        pinSpacing: false
+      });
+
+      // Animate section coming in from bottom
+      gsap.fromTo(section,
+        {
+          y: "100vh",
+        },
+        {
+          y: 0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            start: "top bottom", // Start when the top of the section hits the bottom of the viewport
+            end: "top top", // End when the top of the section hits the top of the viewport
+            scrub: true,
+            markers: false // Set to true during development to see trigger points
+          }
+        }
+      );
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
+  }, []);
 
   return (
-    <div className="relative">
-      <div className="min-h-screen">
+    <div ref={containerRef} className="relative">
+      <div className="section min-h-screen">
         <Hero />
       </div>
       
-      {/* Stat Section with Pull Effect */}
-      <motion.div
-        style={{ y: statY }}
-        className="relative z-10 min-h-screen bg-[#F5F5F0]"
-      >
+      <div className="section min-h-screen bg-[#F5F5F0]">
         <TransitionStat />
-      </motion.div>
+      </div>
       
-      {/* Future Showcase with Pull Effect */}
-      <motion.div
-        style={{ y: showcaseY }}
-        className="relative z-20 min-h-screen bg-white"
-      >
+      <div className="section min-h-screen bg-white">
         <FutureShowcase />
-      </motion.div>
+      </div>
       
-      {/* Transition Hook with Pull Effect */}
-      <motion.div
-        style={{ y: hookY }}
-        className="relative z-30 min-h-screen bg-[#F5F5F0]"
-      >
+      <div className="section min-h-screen bg-[#F5F5F0]">
         <TransitionHook />
-      </motion.div>
+      </div>
       
-      {/* Join Section with Pull Effect */}
-      <motion.div
-        style={{ y: joinY }}
-        className="relative z-40 min-h-screen bg-white"
-      >
+      <div className="section min-h-screen bg-white">
         <JoinSection />
-      </motion.div>
+      </div>
     </div>
   );
 };
