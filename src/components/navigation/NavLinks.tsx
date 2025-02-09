@@ -56,7 +56,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
     <NavigationMenu>
       <NavigationMenuList className="flex space-x-6">
         {navItems.map((item) => (
-          <NavigationMenuItem key={item.name}>
+          <NavigationMenuItem key={item.name} className="relative">
             {item.dropdownItems ? (
               <>
                 <NavigationMenuTrigger 
@@ -64,7 +64,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
                 >
                   {item.name}
                 </NavigationMenuTrigger>
-                <NavigationMenuContent>
+                <NavigationMenuContent className="absolute left-0">
                   <ul className="w-[200px] gap-2 p-4 bg-white/90 backdrop-blur-sm rounded-md shadow-lg">
                     {item.dropdownItems.map((dropdownItem) => (
                       <li key={dropdownItem.name}>
