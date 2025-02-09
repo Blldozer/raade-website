@@ -61,16 +61,20 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
               <>
                 <NavigationMenuTrigger 
                   className={`group bg-transparent hover:bg-transparent ${getTextColor()} transition-colors duration-300 text-lg font-alegreyasans`}
+                  onClick={() => {
+                    if (onClick) onClick();
+                    window.location.href = item.href;
+                  }}
                 >
                   {item.name}
                 </NavigationMenuTrigger>
-                <NavigationMenuContent className="absolute left-1/2 -translate-x-1/2 top-full">
-                  <ul className="w-[200px] gap-2 p-4 bg-white/90 backdrop-blur-sm rounded-md shadow-lg">
+                <NavigationMenuContent>
+                  <ul className="min-w-[200px] gap-2 p-4 bg-white/90 backdrop-blur-sm rounded-md shadow-lg">
                     {item.dropdownItems.map((dropdownItem) => (
                       <li key={dropdownItem.name}>
                         <Link
                           to={dropdownItem.href}
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors duration-300 hover:bg-[#FBB03B]/10 hover:text-[#FBB03B] focus:bg-accent focus:text-accent-foreground text-raade-navy text-lg font-alegreyasans"
+                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-[#FBB03B]/10 hover:text-[#FBB03B] text-[#1A365D] text-lg font-alegreyasans"
                           onClick={onClick}
                         >
                           {dropdownItem.name}
@@ -110,3 +114,4 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
 };
 
 export default NavLinks;
+

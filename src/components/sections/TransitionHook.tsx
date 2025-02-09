@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 const TransitionHook = () => {
   const scrollToNextSection = () => {
-    const nextSection = document.querySelector('.future-showcase');
+    const nextSection = document.getElementById('join');
     if (nextSection) {
       nextSection.scrollIntoView({ behavior: 'smooth' });
     }
@@ -39,7 +39,7 @@ const TransitionHook = () => {
         <p className="text-lg text-[#1A365D]/60 font-merriweather mb-6">
           Here's how you can get involved
         </p>
-        <motion.div 
+        <motion.button
           animate={{ y: [0, 10, 0] }}
           transition={{ 
             duration: 2,
@@ -47,13 +47,15 @@ const TransitionHook = () => {
             ease: "easeInOut"
           }}
           onClick={scrollToNextSection}
-          className="cursor-pointer"
+          className="cursor-pointer p-4"
+          aria-label="Scroll to next section"
         >
           <div className="w-6 h-6 mx-auto border-b-2 border-r-2 border-[#1A365D]/30 rotate-45" />
-        </motion.div>
+        </motion.button>
       </motion.div>
     </section>
   );
 };
 
 export default TransitionHook;
+
