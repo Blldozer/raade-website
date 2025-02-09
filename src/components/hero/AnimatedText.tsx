@@ -20,7 +20,6 @@ const AnimatedText = () => {
     const tl = gsap.timeline();
     
     if (text2Ref.current && orgNameRef.current) {
-      // Set initial states
       gsap.set(text2Ref.current, {
         opacity: 1,
         text: ""
@@ -28,7 +27,6 @@ const AnimatedText = () => {
       
       gsap.set(orgNameRef.current, { opacity: 1 });
 
-      // Animation sequence
       tl.to(text2Ref.current, {
         duration: 3,
         text: "We're building it today.",
@@ -71,7 +69,7 @@ const AnimatedText = () => {
             width: lineWidth,
             opacity: lineOpacity
           }}
-          className="absolute -bottom-4 left-0 h-0.5 bg-raade-gold-start"
+          className="absolute -bottom-4 left-0 h-1 bg-raade-gold-start"
         />
       </div>
     </div>

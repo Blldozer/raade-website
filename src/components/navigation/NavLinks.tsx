@@ -1,10 +1,11 @@
+
 import { Link } from "react-router-dom";
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuList,
   NavigationMenuTrigger,
+  NavigationMenuContent,
 } from "@/components/ui/navigation-menu";
 
 export const navItems = [
@@ -53,10 +54,10 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
 
   return (
     <NavigationMenu>
-      <NavigationMenuList>
+      <NavigationMenuList className="flex space-x-6">
         {navItems.map((item) =>
           item.dropdownItems ? (
-            <NavigationMenuItem key={item.name}>
+            <NavigationMenuItem key={item.name} className="relative">
               <Link to={item.href} className="inline-block">
                 <NavigationMenuTrigger 
                   className={`group bg-transparent hover:bg-transparent ${getTextColor()} transition-colors duration-300 text-lg font-alegreyasans`}
@@ -65,7 +66,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
                 </NavigationMenuTrigger>
               </Link>
               <NavigationMenuContent>
-                <ul className="grid w-[200px] gap-2 p-4 bg-white/90 backdrop-blur-sm">
+                <ul className="absolute left-0 w-[200px] gap-2 p-4 bg-white/90 backdrop-blur-sm rounded-md shadow-lg">
                   {item.dropdownItems.map((dropdownItem) => (
                     <li key={dropdownItem.name}>
                       <Link

@@ -3,6 +3,13 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 const TransitionHook = () => {
+  const scrollToNextSection = () => {
+    const nextSection = document.querySelector('.future-showcase');
+    if (nextSection) {
+      nextSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section className="min-h-screen flex flex-col justify-between py-20 bg-cream">
       <div className="flex-grow flex items-center">
@@ -13,10 +20,10 @@ const TransitionHook = () => {
             viewport={{ once: true, margin: "-20%" }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1A365D] font-alegreyasans">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-alegreyasans">
               Every day we wait
               <br />
-              is another opportunity lost.
+              is another <span className="text-raade-gold-start">opportunity lost</span>.
             </h2>
           </motion.div>
         </div>
@@ -29,10 +36,21 @@ const TransitionHook = () => {
         transition={{ duration: 0.8, delay: 0.5 }}
         className="text-center pb-12"
       >
-        <p className="text-lg text-[#1A365D]/60 font-merriweather">
+        <p className="text-lg text-[#1A365D]/60 font-merriweather mb-6">
           Here's how you can get involved
         </p>
-        <div className="mt-4 w-6 h-6 mx-auto border-b-2 border-r-2 border-[#1A365D]/30 rotate-45" />
+        <motion.div 
+          animate={{ y: [0, 10, 0] }}
+          transition={{ 
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          onClick={scrollToNextSection}
+          className="cursor-pointer"
+        >
+          <div className="w-6 h-6 mx-auto border-b-2 border-r-2 border-[#1A365D]/30 rotate-45" />
+        </motion.div>
       </motion.div>
     </section>
   );
