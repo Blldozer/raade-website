@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -135,10 +134,10 @@ const FutureShowcase = () => {
   return (
     <section 
       ref={sectionRef}
-      className="relative py-32 bg-gradient-to-b from-[#1A365D] via-[#1A365D]/5 to-white"
+      className="relative py-40 bg-gradient-to-b from-[#1A365D] via-[#1A365D]/5 to-white"
     >
       <div className="max-w-[90vw] xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-32">
+        <div className="text-center mb-40">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8 font-zillaslab">
             Building in Progress
           </h2>
@@ -148,7 +147,7 @@ const FutureShowcase = () => {
           </p>
         </div>
 
-        <div className="space-y-48"> {/* Increased spacing between projects */}
+        <div className="space-y-64"> {/* Increased spacing between projects */}
           {projects.map((project, index) => (
             <ProjectCard key={project.slug} {...project} index={index} />
           ))}
@@ -159,4 +158,3 @@ const FutureShowcase = () => {
 };
 
 export default FutureShowcase;
-
