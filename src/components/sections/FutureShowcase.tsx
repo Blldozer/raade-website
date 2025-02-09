@@ -104,16 +104,16 @@ const ProjectCard = ({ title, image, description, slug, category, index }: {
           className="project-content flex flex-col justify-center space-y-6 p-4 md:p-8"
           style={{ gridArea: 'content' }}
         >
-          <p className="animate-content text-sm font-medium text-[#1A365D]/80 tracking-wider">
+          <p className="animate-content text-sm font-medium text-white/90 tracking-wider">
             {category}
           </p>
-          <h3 className="animate-content text-3xl md:text-4xl font-bold text-[#1A365D] font-zillaslab">
+          <h3 className="animate-content text-3xl md:text-4xl font-bold text-white font-zillaslab">
             {title}
           </h3>
-          <p className="animate-content text-gray-600 font-merriweather leading-relaxed">
+          <p className="animate-content text-white/80 font-merriweather leading-relaxed">
             {description}
           </p>
-          <span className="animate-content inline-flex items-center text-[#1A365D] text-sm font-merriweather group-hover:translate-x-1 transition-transform">
+          <span className="animate-content inline-flex items-center text-white text-sm font-merriweather group-hover:translate-x-1 transition-transform">
             Learn More 
             <ArrowRight className="ml-2 h-4 w-4" />
           </span>
@@ -133,10 +133,10 @@ const FutureShowcase = () => {
     >
       <div className="max-w-[90vw] xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-32">
-          <h2 className="text-4xl md:text-5xl font-bold text-[#1A365D] mb-8 font-zillaslab">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-8 font-zillaslab">
             Building in Progress
           </h2>
-          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto font-merriweather leading-relaxed">
+          <p className="text-lg md:text-xl text-white/80 max-w-3xl mx-auto font-merriweather leading-relaxed">
             Step into the future we're creating. Each project is a window into tomorrow,
             where innovation meets impact in real time.
           </p>
@@ -153,3 +153,4 @@ const FutureShowcase = () => {
 };
 
 export default FutureShowcase;
+
