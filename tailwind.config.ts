@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
 
@@ -22,7 +23,7 @@ export default {
       fontFamily: {
         hammersmith: ["Hammersmith One", "serif"],
         opensans: ["Open Sans", "serif"],
-        zillaslab: ["Zilla Slab Highlight", "serif"],
+        zillaslab: ["Zilla Slab", "serif"],
         merriweather: ["Merriweather Sans", "serif"],
         taviraj: ["Taviraj", "serif"],
         alegreyasans: ["Alegreya Sans", "serif"],
@@ -99,3 +100,4 @@ export default {
   },
   plugins: [tailwindcssAnimate],
 } satisfies Config;
+
