@@ -1,19 +1,20 @@
 
 import Hero from "@/components/hero/Hero";
-import WhyWeCantWait from "@/components/sections/WhyWeCantWait";
-import WhatWeAreBuilding from "@/components/sections/WhatWeAreBuilding";
+import TransitionStat from "@/components/sections/TransitionStat";
 import FutureShowcase from "@/components/sections/FutureShowcase";
+import TransitionHook from "@/components/sections/TransitionHook";
+import JoinSection from "@/components/sections/JoinSection";
 
 const Index = () => {
   return (
     <div className="min-h-screen">
       <Hero />
+      <TransitionStat />
       <FutureShowcase />
-      <WhyWeCantWait />
-      <WhatWeAreBuilding />
+      <TransitionHook />
+      <JoinSection />
     </div>
   );
 };
 
 export default Index;
-
