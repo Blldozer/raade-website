@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -132,7 +133,7 @@ const FutureShowcase = () => {
     >
       <div className="max-w-[90vw] xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-32">
-          <h2 className="text-4xl md:text-5xl font-bold text-[#1A365D] mb-8 font-zillaslab p-12" style={{ textShadow: '6px 6px 0px rgba(26, 54, 93, 0.1)' }}>
+          <h2 className="text-4xl md:text-5xl font-bold text-[#1A365D] mb-8 font-zillaslab tracking-wider">
             Building in Progress
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto font-merriweather leading-relaxed">
