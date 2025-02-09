@@ -14,8 +14,10 @@ const Index = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Get all sections
-    const sections = gsap.utils.toArray<HTMLElement>('.section');
+    // Get all sections except FutureShowcase
+    const sections = gsap.utils.toArray<HTMLElement>('.section').filter(
+      section => !section.classList.contains('future-showcase')
+    );
     
     // Create the stacking effect for each section
     sections.forEach((section, i) => {
@@ -42,7 +44,7 @@ const Index = () => {
             start: "top bottom", // Start when the top of the section hits the bottom of the viewport
             end: "top top", // End when the top of the section hits the top of the viewport
             scrub: true,
-            markers: false // Set to true during development to see trigger points
+            markers: false
           }
         }
       );
@@ -63,7 +65,7 @@ const Index = () => {
         <TransitionStat />
       </div>
       
-      <div className="section min-h-screen bg-white">
+      <div className="section future-showcase min-h-screen bg-white">
         <FutureShowcase />
       </div>
       

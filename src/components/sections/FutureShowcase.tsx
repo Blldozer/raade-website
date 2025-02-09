@@ -129,32 +129,6 @@ const ProjectCard = ({ title, image, description, category, index }: {
 const FutureShowcase = () => {
   const sectionRef = useRef<HTMLElement>(null);
 
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    const lastProject = section.querySelector('.project-card:last-child');
-    if (!lastProject) return;
-
-    // Create a ScrollTrigger for the last project that pins it when it reaches the top
-    ScrollTrigger.create({
-      trigger: lastProject,
-      start: 'top top',
-      end: 'bottom top',
-      pin: true,
-      pinSpacing: false,
-    });
-
-    // Create a ScrollTrigger for the section that only activates after the last project is pinned
-    ScrollTrigger.create({
-      trigger: section,
-      start: () => `bottom bottom`,
-      end: 'bottom top',
-      pin: true,
-      pinSpacing: false,
-    });
-  }, []);
-
   return (
     <section 
       ref={sectionRef}
@@ -171,16 +145,13 @@ const FutureShowcase = () => {
           </p>
         </div>
 
-        <div className="space-y-64">
+        <div className="space-y-32">
           {projects.map((project, index) => (
             <div key={project.title} className="project-card">
               <ProjectCard {...project} index={index} />
             </div>
           ))}
         </div>
-
-        {/* Add extra space after the last project for smooth transition */}
-        <div className="h-screen" />
       </div>
     </section>
   );
