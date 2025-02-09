@@ -99,7 +99,12 @@
     @apply bg-background text-foreground;
   }
 }
+
 @layer utilities {
+  .bg-cream {
+    background-color: #F5F5F0;
+  }
+
   @keyframes gradientShift {
     0% {
       background-position: 0% 50%;
