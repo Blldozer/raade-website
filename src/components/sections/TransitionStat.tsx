@@ -16,7 +16,7 @@ const TransitionStat = () => {
             className="space-y-8"
           >
             <div className="text-4xl md:text-6xl lg:text-7xl font-bold text-[#1A365D] mb-6 font-zillaslab">
-              By 2050, <CountUp end={25} duration={2.5} />% of people
+              By 2050, <span className="text-raade-gold-start"><CountUp end={25} duration={2.5} /></span>% of people
               <br />will be African.
             </div>
             <p className="text-xl md:text-2xl text-[#1A365D]/80 max-w-3xl mx-auto font-merriweather">
