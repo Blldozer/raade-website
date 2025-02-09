@@ -13,7 +13,7 @@ const TransitionHook = () => {
             viewport={{ once: true, margin: "-20%" }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1A365D] font-zillaslab">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1A365D] font-alegreyasans">
               Every day we wait
               <br />
               is another opportunity lost.

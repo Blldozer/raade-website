@@ -37,7 +37,7 @@ const WhyWeCantWait = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold text-[#1A365D] mb-6 font-zillaslab">
+          <h2 className="text-4xl font-bold text-[#1A365D] mb-6 font-alegreyasans">
             Why We Can't Wait For Tomorrow
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto font-merriweather">
