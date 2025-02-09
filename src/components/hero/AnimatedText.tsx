@@ -7,7 +7,6 @@ import TextPlugin from 'gsap/TextPlugin';
 gsap.registerPlugin(TextPlugin);
 
 const AnimatedText = () => {
-  const text1Ref = useRef<HTMLDivElement>(null);
   const text2Ref = useRef<HTMLDivElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
   const orgNameRef = useRef<HTMLHeadingElement>(null);
@@ -15,9 +14,9 @@ const AnimatedText = () => {
   useEffect(() => {
     const tl = gsap.timeline();
     
-    if (text1Ref.current && text2Ref.current && lineRef.current && orgNameRef.current) {
+    if (text2Ref.current && lineRef.current && orgNameRef.current) {
       // Set initial states
-      gsap.set([text1Ref.current, text2Ref.current], {
+      gsap.set(text2Ref.current, {
         opacity: 1,
         text: ""
       });
@@ -25,13 +24,8 @@ const AnimatedText = () => {
       gsap.set(lineRef.current, { width: 0 });
       gsap.set(orgNameRef.current, { opacity: 1 });
 
-      // Animation sequence with more natural typing speed
-      tl.to(text1Ref.current, {
-        duration: 2.5,
-        text: "We can't wait for tomorrow.",
-        ease: "none"
-      })
-      .to(lineRef.current, {
+      // Animation sequence
+      tl.to(lineRef.current, {
         width: "100%",
         duration: 0.8,
         ease: "power2.inOut"
@@ -68,7 +62,7 @@ const AnimatedText = () => {
       </h1>
 
       <h2 className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-wide font-zillaslab">
-        <div ref={text1Ref}></div>
+        <div>We can't wait for tomorrow.</div>
         <div className="relative inline-block">
           <div ref={text2Ref} className="text-[#FBB03B]"></div>
           <div 

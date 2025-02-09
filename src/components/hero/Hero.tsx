@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import Navigation from '../Navigation';
@@ -7,6 +8,8 @@ import ParticleField from './ParticleField';
 const Hero = () => {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 500], [0, 150]);
+  const supportingTextOpacity = useTransform(scrollY, [0, 200], [0, 1]);
+  const supportingTextY = useTransform(scrollY, [0, 200], [50, 0]);
   
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -51,12 +54,13 @@ const Hero = () => {
             {/* Animated text component */}
             <AnimatedText />
 
-            {/* Supporting text with new font */}
+            {/* Supporting text with scroll animation */}
             <motion.p 
+              style={{ 
+                opacity: supportingTextOpacity,
+                y: supportingTextY
+              }}
               className="text-lg sm:text-xl md:text-2xl text-white/90 max-w-3xl font-merriweather"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1 }}
             >
               The future of Africa isn't a distant dream - it's being built today, by innovators and changemakers
               like you. Join a community of students and partners creating sustainable solutions through market-driven innovation.
