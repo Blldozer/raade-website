@@ -80,6 +80,11 @@ const ProjectCard = ({ title, image, description, slug, category, index }: {
     });
   }, []);
 
+  // Determine text color based on index (position in the list)
+  const textColorClass = index < 2 ? 'text-white' : 'text-[#1A365D]';
+  const textOpacityClass = index < 2 ? 'text-white/90' : 'text-[#1A365D]/90';
+  const descriptionClass = index < 2 ? 'text-white/80' : 'text-[#1A365D]/80';
+
   return (
     <Link to={`/projects/${slug}`}>
       <div
@@ -104,16 +109,16 @@ const ProjectCard = ({ title, image, description, slug, category, index }: {
           className="project-content flex flex-col justify-center space-y-6 p-4 md:p-8"
           style={{ gridArea: 'content' }}
         >
-          <p className="animate-content text-sm font-medium text-white/90 tracking-wider">
+          <p className={`animate-content text-sm font-medium ${textOpacityClass} tracking-wider`}>
             {category}
           </p>
-          <h3 className="animate-content text-3xl md:text-4xl font-bold text-white font-zillaslab">
+          <h3 className={`animate-content text-3xl md:text-4xl font-bold ${textColorClass} font-zillaslab`}>
             {title}
           </h3>
-          <p className="animate-content text-white/80 font-merriweather leading-relaxed">
+          <p className={`animate-content ${descriptionClass} font-merriweather leading-relaxed`}>
             {description}
           </p>
-          <span className="animate-content inline-flex items-center text-white text-sm font-merriweather group-hover:translate-x-1 transition-transform">
+          <span className={`animate-content inline-flex items-center ${textColorClass} text-sm font-merriweather group-hover:translate-x-1 transition-transform`}>
             Learn More 
             <ArrowRight className="ml-2 h-4 w-4" />
           </span>
@@ -153,4 +158,3 @@ const FutureShowcase = () => {
 };
 
 export default FutureShowcase;
-
