@@ -2,8 +2,8 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Updated symbols to represent innovation and development
-const symbols = ['⚡', '⚛', '⚙️', '∞', '△', '◇', '⬡'];
+// Updated symbols focused on innovation and development (removed React symbol)
+const symbols = ['⚡', '⚙️', '∞', '△', '◇', '⬡'];
 
 interface Particle {
   id: number;
@@ -151,3 +151,4 @@ const ParticleField = () => {
 };
 
 export default ParticleField;
+
