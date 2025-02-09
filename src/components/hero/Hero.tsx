@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import Navigation from '../Navigation';
@@ -68,7 +67,7 @@ const Hero = () => {
               <motion.button 
                 onClick={() => window.location.href = "#studios"}
                 className="group w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 bg-[#FBB03B] text-[#1A365D] rounded-lg font-semibold 
-                  transition-all duration-300 text-sm md:text-base relative overflow-hidden hover:shadow-[0_0_20px_rgba(251,176,59,0.5)]"
+                  transition-all duration-300 text-lg font-alegreyasans relative overflow-hidden hover:shadow-[0_0_20px_rgba(251,176,59,0.5)]"
                 whileHover={{ 
                   scale: 1.05,
                   y: -2 
@@ -84,7 +83,7 @@ const Hero = () => {
               <motion.button 
                 onClick={() => window.location.href = "#conference"}
                 className="group w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 border-2 border-[#FBB03B] text-[#FBB03B] rounded-lg 
-                  font-semibold transition-all duration-300 text-sm md:text-base hover:bg-[#FBB03B] hover:text-white relative overflow-hidden"
+                  font-semibold transition-all duration-300 text-lg font-alegreyasans hover:bg-[#FBB03B] hover:text-white relative overflow-hidden"
                 whileHover={{ 
                   scale: 1.05,
                   y: -2

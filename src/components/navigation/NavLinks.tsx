@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import {
   NavigationMenu,
@@ -63,7 +62,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
             <NavigationMenuItem key={item.name}>
               <Link to={item.href} className="inline-block">
                 <NavigationMenuTrigger 
-                  className={`group bg-transparent hover:bg-transparent ${getTextColor()} transition-colors duration-300`}
+                  className={`group bg-transparent hover:bg-transparent ${getTextColor()} transition-colors duration-300 text-lg font-alegreyasans`}
                 >
                   {item.name}
                 </NavigationMenuTrigger>
@@ -74,7 +73,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
                     <li key={dropdownItem.name}>
                       <Link
                         to={dropdownItem.href}
-                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors duration-300 hover:bg-[#FBB03B]/10 hover:text-[#FBB03B] focus:bg-accent focus:text-accent-foreground text-raade-navy"
+                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors duration-300 hover:bg-[#FBB03B]/10 hover:text-[#FBB03B] focus:bg-accent focus:text-accent-foreground text-raade-navy text-lg font-alegreyasans"
                         onClick={onClick}
                       >
                         {dropdownItem.name}
@@ -88,7 +87,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
             <NavigationMenuItem key={item.name}>
               <Link
                 to={item.href}
-                className={`${getTextColor()} transition-colors duration-300 ${className}`}
+                className={`${getTextColor()} transition-colors duration-300 ${className} text-lg font-alegreyasans`}
                 onClick={onClick}
               >
                 {item.name}
@@ -99,7 +98,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
         <NavigationMenuItem>
           <a
             href="#join"
-            className={`px-6 py-2 rounded-md transition-all duration-300 border-2 ${
+            className={`px-6 py-2 rounded-md transition-all duration-300 border-2 text-lg font-alegreyasans ${
               isHeroPage && !isScrolled 
                 ? "border-white text-white hover:bg-[#FBB03B] hover:border-[#FBB03B] hover:text-white" 
                 : "border-[#FBB03B] text-[#FBB03B]"
@@ -115,4 +114,3 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
 };
 
 export default NavLinks;
-

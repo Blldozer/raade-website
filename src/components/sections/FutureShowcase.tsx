@@ -22,7 +22,7 @@ const projects = [
     category: "ENERGY SOLUTIONS"
   },
   {
-    title: "YOUR CHILDREN WILL DO BETTER",
+    title: "BUILDING RESILIENT FAMILIES",
     image: "/Mother-and-Newborn-Intimacy.jpeg",
     description: "Building generational prosperity through innovation",
     slug: "prosperity-project",
@@ -118,7 +118,7 @@ const ProjectCard = ({ title, image, description, slug, category, index }: {
           <p className={`animate-content ${descriptionClass} font-merriweather leading-relaxed text-lg`}>
             {description}
           </p>
-          <span className={`animate-content inline-flex items-center ${textColorClass} text-sm font-merriweather group-hover:translate-x-2 transition-all duration-300 ease-out`}>
+          <span className={`animate-content inline-flex items-center ${textColorClass} text-lg font-alegreyasans group-hover:translate-x-2 transition-all duration-300 ease-out`}>
             Learn More 
             <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
           </span>
