@@ -116,7 +116,7 @@ const ProjectCard = ({ title, image, description, category, index }: {
         </p>
         <Link 
           to="/studios"
-          className={`animate-content inline-flex items-center ${textColorClass} text-lg font-alegreyasans group-hover:translate-x-2 transition-all duration-300 ease-out`}
+          className={`animate-content inline-flex items-center text-[#FBB03B] text-lg font-alegreyasans group-hover:translate-x-2 transition-all duration-300 ease-out`}
         >
           Learn More 
           <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />

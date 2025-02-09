@@ -43,7 +43,7 @@ const JoinSection = () => {
             </p>
             <Link
               to="/studios"
-              className="inline-flex items-center text-[#1A365D] text-lg font-alegreyasans hover:translate-x-2 transition-all duration-300"
+              className="inline-flex items-center text-[#FBB03B] text-lg font-alegreyasans hover:translate-x-2 transition-all duration-300"
             >
               Join the Studios
               <ArrowRight className="ml-2 h-4 w-4" />
@@ -72,7 +72,7 @@ const JoinSection = () => {
             </p>
             <Link
               to="/conference"
-              className="inline-flex items-center text-[#1A365D] text-lg font-alegreyasans hover:translate-x-2 transition-all duration-300"
+              className="inline-flex items-center text-[#FBB03B] text-lg font-alegreyasans hover:translate-x-2 transition-all duration-300"
             >
               Learn More
               <ArrowRight className="ml-2 h-4 w-4" />
