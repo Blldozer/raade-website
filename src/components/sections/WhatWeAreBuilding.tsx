@@ -62,7 +62,7 @@ const WhatWeAreBuilding = () => {
                     <span className="text-[#FBB03B] font-semibold font-alegreyasans">{initiative.metric}</span>
                     <a 
                       href={initiative.link} 
-                      className="text-[#1A365D] hover:text-[#FBB03B] transition-colors flex items-center gap-2 font-merriweather"
+                      className="text-raade-gold-start hover:text-[#1A365D] transition-colors flex items-center gap-2 font-merriweather"
                     >
                       Learn More <ArrowRight className="w-4 h-4" />
                     </a>
