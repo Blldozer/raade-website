@@ -26,6 +26,8 @@ export default {
         merriweather: ["Merriweather Sans", "serif"],
         taviraj: ["Taviraj", "serif"],
         alegreyasans: ["Alegreya Sans", "serif"],
+        montserrat: ["Montserrat", "sans-serif"],
+        lora: ["Lora", "serif"],
       },
       colors: {
         raade: {

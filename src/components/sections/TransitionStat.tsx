@@ -15,11 +15,11 @@ const TransitionStat = () => {
             transition={{ duration: 0.8 }}
             className="space-y-8"
           >
-            <div className="text-4xl md:text-6xl lg:text-7xl font-bold text-[#1A365D] mb-6 font-zillaslab">
+            <div className="text-4xl md:text-6xl lg:text-7xl font-bold text-[#1A365D] mb-6 font-montserrat">
               By 2050, <CountUp end={25} duration={2.5} />% of people
               <br />will be African.
             </div>
-            <p className="text-xl md:text-2xl text-[#1A365D]/80 max-w-3xl mx-auto font-merriweather">
+            <p className="text-xl md:text-2xl text-[#1A365D]/80 max-w-3xl mx-auto font-lora">
               The systems we build today will shape their tomorrow.
             </p>
           </motion.div>
@@ -33,7 +33,7 @@ const TransitionStat = () => {
         transition={{ duration: 0.8, delay: 0.5 }}
         className="text-center pb-12"
       >
-        <p className="text-lg text-[#1A365D]/60 font-merriweather">
+        <p className="text-lg text-[#1A365D]/60 font-lora">
           Here's what we are building...
         </p>
         <div className="mt-4 w-6 h-6 mx-auto border-b-2 border-r-2 border-[#1A365D]/30 rotate-45" />
