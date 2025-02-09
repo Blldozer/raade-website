@@ -133,7 +133,7 @@ const FutureShowcase = () => {
     >
       <div className="max-w-[90vw] xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-32">
-          <h2 className="text-4xl md:text-5xl font-bold text-[#1A365D] mb-8 font-zillaslab">
+          <h2 className="text-4xl md:text-5xl font-bold text-[#1A365D] mb-8 p-12 font-zillaslab">
             Building in Progress
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto font-merriweather leading-relaxed">
