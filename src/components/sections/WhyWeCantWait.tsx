@@ -61,7 +61,7 @@ const WhyWeCantWait = () => {
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                <reason.icon className="w-8 h-8 text-raade-gold-start" />
+                <reason.icon className="w-8 h-8 text-[#FBB03B]" />
               </motion.div>
               <h3 className="text-xl font-semibold text-[#1A365D] mb-3 font-alegreyasans">{reason.title}</h3>
               <p className="text-gray-600 font-merriweather">{reason.description}</p>
