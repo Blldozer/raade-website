@@ -55,34 +55,32 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
   return (
     <NavigationMenu>
       <NavigationMenuList className="flex space-x-6">
-        {navItems.map((item) =>
-          item.dropdownItems ? (
-            <NavigationMenuItem key={item.name} className="relative">
-              <Link to={item.href} className="inline-block">
+        {navItems.map((item) => (
+          <NavigationMenuItem key={item.name}>
+            {item.dropdownItems ? (
+              <>
                 <NavigationMenuTrigger 
                   className={`group bg-transparent hover:bg-transparent ${getTextColor()} transition-colors duration-300 text-lg font-alegreyasans`}
                 >
                   {item.name}
                 </NavigationMenuTrigger>
-              </Link>
-              <NavigationMenuContent>
-                <ul className="absolute left-0 w-[200px] gap-2 p-4 bg-white/90 backdrop-blur-sm rounded-md shadow-lg">
-                  {item.dropdownItems.map((dropdownItem) => (
-                    <li key={dropdownItem.name}>
-                      <Link
-                        to={dropdownItem.href}
-                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors duration-300 hover:bg-[#FBB03B]/10 hover:text-[#FBB03B] focus:bg-accent focus:text-accent-foreground text-raade-navy text-lg font-alegreyasans"
-                        onClick={onClick}
-                      >
-                        {dropdownItem.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-          ) : (
-            <NavigationMenuItem key={item.name}>
+                <NavigationMenuContent>
+                  <ul className="w-[200px] gap-2 p-4 bg-white/90 backdrop-blur-sm rounded-md shadow-lg">
+                    {item.dropdownItems.map((dropdownItem) => (
+                      <li key={dropdownItem.name}>
+                        <Link
+                          to={dropdownItem.href}
+                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors duration-300 hover:bg-[#FBB03B]/10 hover:text-[#FBB03B] focus:bg-accent focus:text-accent-foreground text-raade-navy text-lg font-alegreyasans"
+                          onClick={onClick}
+                        >
+                          {dropdownItem.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              </>
+            ) : (
               <Link
                 to={item.href}
                 className={`${getTextColor()} transition-colors duration-300 ${className} text-lg font-alegreyasans`}
@@ -90,9 +88,9 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
               >
                 {item.name}
               </Link>
-            </NavigationMenuItem>
-          )
-        )}
+            )}
+          </NavigationMenuItem>
+        ))}
         <NavigationMenuItem>
           <a
             href="#join"
