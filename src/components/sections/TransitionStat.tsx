@@ -15,7 +15,7 @@ const TransitionStat = () => {
             transition={{ duration: 0.8 }}
             className="space-y-8"
           >
-            <div className="text-4xl md:text-6xl lg:text-7xl font-bold text-[#1A365D] mb-6 font-montserrat">
+            <div className="text-4xl md:text-6xl lg:text-7xl font-bold text-[#1A365D] mb-6 font-opensans italic">
               By 2050, <CountUp end={25} duration={2.5} />% of people
               <br />will be African.
             </div>
