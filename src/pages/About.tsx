@@ -1,14 +1,15 @@
 
 import { BookOpen, Globe } from "lucide-react";
+import TeamProfiles from "../components/TeamProfiles";
 
 const About = () => {
   return (
-    <div className="bg-[#F5F5F0]">
+    <div className="bg-white">
       <div className="pt-32 px-4 md:px-8 max-w-7xl mx-auto">
         {/* Mission Statement */}
-        <section className="mb-24">
+        <section className="mb-32">
           <div className="max-w-3xl">
-            <h1 className="text-4xl font-montserrat font-bold text-raade-navy mb-8">
+            <h1 className="text-[64px] font-montserrat font-bold text-black mb-8">
               Our Mission
             </h1>
             <p className="text-2xl font-lora text-gray-700 leading-relaxed">
@@ -20,33 +21,36 @@ const About = () => {
         </section>
 
         {/* Our Approach */}
-        <section className="mb-24">
-          <h2 className="text-3xl font-montserrat font-bold text-raade-navy mb-12">
+        <section className="mb-32">
+          <h2 className="text-4xl font-montserrat font-bold text-black mb-16">
             Our Approach to African Development
           </h2>
-          <div className="grid md:grid-cols-2 gap-12">
-            <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
-              <Globe className="w-12 h-12 text-raade-gold-start mb-6" />
-              <h3 className="text-xl font-montserrat font-semibold mb-4">
+          <div className="grid md:grid-cols-2 gap-16">
+            <div className="bg-white p-12 rounded-lg shadow-sm hover:shadow-md transition-all duration-300">
+              <Globe className="w-16 h-16 text-black mb-8" />
+              <h3 className="text-2xl font-montserrat font-semibold mb-4">
                 Collaborative Innovation
               </h3>
-              <p className="text-gray-700 font-opensans leading-relaxed">
+              <p className="text-lg text-gray-700 font-lora leading-relaxed">
                 We foster partnerships between students and African organizations,
                 creating sustainable solutions through our Innovation Studios program.
               </p>
             </div>
-            <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
-              <BookOpen className="w-12 h-12 text-raade-gold-start mb-6" />
-              <h3 className="text-xl font-montserrat font-semibold mb-4">
+            <div className="bg-white p-12 rounded-lg shadow-sm hover:shadow-md transition-all duration-300">
+              <BookOpen className="w-16 h-16 text-black mb-8" />
+              <h3 className="text-2xl font-montserrat font-semibold mb-4">
                 Knowledge Exchange
               </h3>
-              <p className="text-gray-700 font-opensans leading-relaxed">
+              <p className="text-lg text-gray-700 font-lora leading-relaxed">
                 Through our annual conference and ongoing projects, we facilitate
                 meaningful exchange of ideas and expertise.
               </p>
             </div>
           </div>
         </section>
+
+        {/* Team Section */}
+        <TeamProfiles />
       </div>
     </div>
   );

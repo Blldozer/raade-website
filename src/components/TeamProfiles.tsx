@@ -82,31 +82,31 @@ const teamMembers = [
 const TeamProfiles = () => {
   return (
     <section className="py-32 bg-white">
-      <div className="container mx-auto px-4 max-w-7xl">
-        <h2 className="text-[48px] font-montserrat font-bold text-center mb-6">
+      <div className="container px-4 mx-auto max-w-[1400px]">
+        <h2 className="text-[64px] font-montserrat font-bold text-center mb-8">
           Our Team
         </h2>
-        <p className="text-xl font-montserrat text-center text-gray-600 mb-24 max-w-2xl mx-auto">
-          Pioneering innovative approaches to African development through student-led initiatives
+        <p className="text-2xl font-montserrat text-center mb-32 max-w-2xl mx-auto">
+          The minds behind RAADE's mission to transform African development
         </p>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-16 gap-y-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-24 gap-y-32">
           {teamMembers.map((member) => (
             <Card 
               key={member.name}
-              className="border-none shadow-none"
+              className="border-none shadow-none transition-all duration-300"
             >
-              <div className="relative aspect-[3/4] mb-6">
+              <div className="relative aspect-square mb-8 overflow-hidden">
                 <img
                   src={member.image}
                   alt={member.name}
-                  className="w-full h-full object-cover grayscale"
+                  className="w-full h-full object-cover grayscale hover:scale-105 transition-transform duration-700"
                 />
               </div>
-              <h3 className="font-montserrat font-bold text-xl mb-1">
+              <h3 className="font-montserrat font-bold text-2xl mb-2">
                 {member.name}
               </h3>
-              <p className="font-montserrat text-gray-600">
+              <p className="font-montserrat text-gray-600 text-lg">
                 {member.role}
               </p>
             </Card>
@@ -118,4 +118,3 @@ const TeamProfiles = () => {
 };
 
 export default TeamProfiles;
-
