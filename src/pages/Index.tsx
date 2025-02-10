@@ -17,6 +17,8 @@ const Index = () => {
   useEffect(() => {
     const ctx = gsap.context(() => {
       const sections = gsap.utils.toArray<HTMLElement>('.stack-section');
+      const footer = document.querySelector('footer');
+      const footerHeight = footer?.offsetHeight || 0;
       
       sections.forEach((section, index) => {
         if (section.classList.contains('future-showcase-section')) {
@@ -29,7 +31,7 @@ const Index = () => {
             scrub: 1,
             anticipatePin: 1
           });
-        } else if (index < sections.length - 1) { // Don't pin the last section (Join)
+        } else if (index < sections.length - 1) { 
           ScrollTrigger.create({
             trigger: section,
             start: "top top",
@@ -59,6 +61,24 @@ const Index = () => {
           );
         }
       });
+
+      // Footer reveal animation
+      if (footer) {
+        gsap.set(footer, { yPercent: 100 });
+        
+        ScrollTrigger.create({
+          trigger: "#join",
+          start: "bottom bottom",
+          end: `bottom+=${footerHeight} bottom`,
+          scrub: true,
+          onUpdate: (self) => {
+            gsap.to(footer, {
+              yPercent: 100 - (self.progress * 100),
+              duration: 0
+            });
+          }
+        });
+      }
 
       ScrollTrigger.refresh();
     }, containerRef);
