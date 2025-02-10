@@ -11,6 +11,12 @@ import ScrollToPlugin from "gsap/ScrollToPlugin";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
+// Configure GSAP for better performance
+ScrollTrigger.config({
+  limitCallbacks: true,
+  ignoreMobileResize: true,
+});
+
 const Index = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -18,6 +24,18 @@ const Index = () => {
     const ctx = gsap.context(() => {
       const sections = gsap.utils.toArray<HTMLElement>('.stack-section');
       
+      // Batch animations for better performance
+      ScrollTrigger.batch(".stack-section", {
+        interval: 0.1,
+        batchMax: 3,
+        onEnter: batch => {
+          gsap.set(batch, { willChange: "transform" });
+        },
+        onLeaveBack: batch => {
+          gsap.set(batch, { willChange: "auto" });
+        }
+      });
+
       sections.forEach((section, index) => {
         if (section.classList.contains('future-showcase-section')) {
           ScrollTrigger.create({
@@ -26,8 +44,9 @@ const Index = () => {
             end: () => `+=${section.scrollHeight}`,
             pin: true,
             pinSpacing: true,
-            scrub: 1,
-            anticipatePin: 1
+            scrub: true,
+            anticipatePin: 1,
+            fastScrollEnd: true,
           });
         } else {
           ScrollTrigger.create({
@@ -36,8 +55,9 @@ const Index = () => {
             end: "bottom top",
             pin: true,
             pinSpacing: false,
-            scrub: 1,
-            anticipatePin: 1
+            scrub: true,
+            anticipatePin: 1,
+            fastScrollEnd: true,
           });
         }
 
@@ -45,15 +65,18 @@ const Index = () => {
           gsap.fromTo(section,
             {
               y: "100vh",
+              willChange: "transform",
             },
             {
               y: 0,
-              ease: "power2.inOut",
+              ease: "none",
               scrollTrigger: {
                 trigger: section,
                 start: "top bottom",
                 end: "top top",
-                scrub: 1,
+                scrub: true,
+                onEnter: () => gsap.set(section, { willChange: "transform" }),
+                onLeave: () => gsap.set(section, { willChange: "auto" }),
               }
             }
           );
@@ -94,4 +117,3 @@ const Index = () => {
 };
 
 export default Index;
-
