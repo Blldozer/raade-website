@@ -17,8 +17,6 @@ const Index = () => {
   useEffect(() => {
     const ctx = gsap.context(() => {
       const sections = gsap.utils.toArray<HTMLElement>('.stack-section');
-      const footer = document.querySelector('footer');
-      const footerHeight = footer?.offsetHeight || 0;
       
       sections.forEach((section, index) => {
         if (section.classList.contains('future-showcase-section')) {
@@ -62,25 +60,6 @@ const Index = () => {
         }
       });
 
-      // Footer reveal animation
-      if (footer) {
-        gsap.set(footer, { yPercent: 100 });
-        
-        ScrollTrigger.create({
-          trigger: "#join",
-          start: "bottom bottom",
-          end: `bottom+=${footerHeight} bottom`,
-          scrub: 0.5,
-          onUpdate: (self) => {
-            gsap.to(footer, {
-              yPercent: 100 - (self.progress * 100),
-              duration: 0,
-              ease: "power1.inOut"
-            });
-          }
-        });
-      }
-
       ScrollTrigger.refresh();
     }, containerRef);
 
@@ -90,8 +69,8 @@ const Index = () => {
   }, []);
 
   return (
-    <>
-      <div ref={containerRef} className="relative">
+    <div className="min-h-screen flex flex-col">
+      <div ref={containerRef} className="relative flex-grow">
         <div className="stack-section min-h-screen" id="hero">
           <Hero />
         </div>
@@ -112,7 +91,7 @@ const Index = () => {
           <JoinSection />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
