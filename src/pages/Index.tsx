@@ -28,9 +28,8 @@ const Index = () => {
             end: () => `+=${section.scrollHeight}`,
             pin: true,
             pinSpacing: true,
-            scrub: 0.5,  // Reduced from 1 to 0.5 for smoother scrolling
-            anticipatePin: 1,
-            smoothing: true
+            scrub: 0.5,
+            anticipatePin: 1
           });
         } else if (index < sections.length - 1) { 
           ScrollTrigger.create({
@@ -39,9 +38,8 @@ const Index = () => {
             end: "bottom top",
             pin: true,
             pinSpacing: false,
-            scrub: 0.5,  // Reduced from 1 to 0.5 for smoother scrolling
-            anticipatePin: 1,
-            smoothing: true
+            scrub: 0.5,
+            anticipatePin: 1
           });
         }
 
@@ -52,13 +50,12 @@ const Index = () => {
             },
             {
               y: 0,
-              ease: "power1.inOut", // Changed from power2 to power1 for smoother motion
+              ease: "power1.inOut",
               scrollTrigger: {
                 trigger: section,
                 start: "top bottom",
                 end: "top top",
-                scrub: 0.5, // Reduced from 1 to 0.5 for smoother scrolling
-                smoothing: true
+                scrub: 0.5
               }
             }
           );
@@ -73,13 +70,12 @@ const Index = () => {
           trigger: "#join",
           start: "bottom bottom",
           end: `bottom+=${footerHeight} bottom`,
-          scrub: 0.5, // Reduced from 1 to 0.5 for smoother scrolling
-          smoothing: true,
+          scrub: 0.5,
           onUpdate: (self) => {
             gsap.to(footer, {
               yPercent: 100 - (self.progress * 100),
               duration: 0,
-              ease: "power1.inOut" // Added ease for smoother footer reveal
+              ease: "power1.inOut"
             });
           }
         });
@@ -121,4 +117,3 @@ const Index = () => {
 };
 
 export default Index;
-
