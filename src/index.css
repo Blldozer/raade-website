@@ -91,12 +91,14 @@
 
   /* Fluid Typography Custom Properties */
   :root {
-    --fluid-h1: clamp(2.5rem, 5vw, 4rem);
-    --fluid-h2: clamp(2rem, 4vw, 3rem);
-    --fluid-h3: clamp(1.5rem, 3vw, 2rem);
-    --fluid-body: clamp(1rem, 1.5vw, 1.25rem);
-    --section-padding: clamp(2rem, 5vw, 6rem);
-    --content-width: min(90vw, 1440px);
+    --fluid-h1: clamp(2rem, 3.5vw, 3.5rem);
+    --fluid-h2: clamp(1.75rem, 2.5vw, 2.5rem);
+    --fluid-h3: clamp(1.25rem, 2vw, 1.75rem);
+    --fluid-body: clamp(0.875rem, 1vw, 1.125rem);
+    --section-padding: clamp(2rem, 4vh, 4rem);
+    --content-width: min(85vw, 1440px);
+    --nav-height: clamp(4rem, 8vh, 6rem);
+    --vertical-spacing: clamp(1rem, 2vh, 2rem);
   }
 }
 
@@ -119,13 +121,28 @@
     width: var(--content-width);
     margin-left: auto;
     margin-right: auto;
-    padding-left: clamp(1rem, 3vw, 2rem);
-    padding-right: clamp(1rem, 3vw, 2rem);
+    padding-left: clamp(1rem, 2vw, 2rem);
+    padding-right: clamp(1rem, 2vw, 2rem);
   }
 
   .section-padding {
     padding-top: var(--section-padding);
     padding-bottom: var(--section-padding);
+  }
+
+  .content-wrapper {
+    min-height: 0;
+    max-height: 70vh;
+    margin: auto 0;
+    padding: var(--vertical-spacing) 0;
+  }
+
+  .hero-container {
+    height: 100vh;
+    padding: var(--vertical-spacing) 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
 
   @keyframes gradientShift {

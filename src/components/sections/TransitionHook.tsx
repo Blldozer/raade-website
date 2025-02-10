@@ -19,8 +19,8 @@ const TransitionHook = () => {
   };
 
   return (
-    <section className="min-h-screen flex flex-col justify-between section-padding bg-cream">
-      <div className="flex-grow flex items-center">
+    <section className="hero-container bg-cream">
+      <div className="content-wrapper flex items-center">
         <div className="fluid-container text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -42,9 +42,9 @@ const TransitionHook = () => {
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8, delay: 0.5 }}
-        className="text-center pb-[clamp(2rem,4vw,3rem)]"
+        className="text-center mb-[var(--vertical-spacing)]"
       >
-        <p className="text-[length:var(--fluid-body)] text-[#1A365D]/60 font-merriweather mb-[clamp(1rem,2vw,1.5rem)]">
+        <p className="text-[length:var(--fluid-body)] text-[#1A365D]/60 font-merriweather mb-[var(--vertical-spacing)]">
           Here's how you can get involved
         </p>
         <motion.button
@@ -58,7 +58,7 @@ const TransitionHook = () => {
           className="cursor-pointer p-4 group"
           aria-label="Scroll to next section"
         >
-          <div className="w-[clamp(1.25rem,2vw,1.5rem)] h-[clamp(1.25rem,2vw,1.5rem)] mx-auto border-b-2 border-r-2 border-[#1A365D]/30 rotate-45 transition-all duration-300 group-hover:border-[#1A365D] group-hover:scale-110" />
+          <div className="w-[clamp(1rem,1.5vw,1.25rem)] h-[clamp(1rem,1.5vw,1.25rem)] mx-auto border-b-2 border-r-2 border-[#1A365D]/30 rotate-45 transition-all duration-300 group-hover:border-[#1A365D] group-hover:scale-110" />
         </motion.button>
       </motion.div>
     </section>
@@ -66,4 +66,3 @@ const TransitionHook = () => {
 };
 
 export default TransitionHook;
-
