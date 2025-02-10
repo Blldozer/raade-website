@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
@@ -14,28 +14,6 @@ interface TransitionHookProps {
 }
 
 const TransitionHook = ({ isScrollingRef }: TransitionHookProps) => {
-  const counterRef = useRef<HTMLDivElement>(null);
-  const hasAnimated = useRef(false);
-
-  useEffect(() => {
-    if (!counterRef.current) return;
-
-    const triggerAnimation = ScrollTrigger.create({
-      trigger: counterRef.current,
-      start: "top center",
-      onEnter: () => {
-        if (!hasAnimated.current) {
-          hasAnimated.current = true;
-          // Counter will start automatically due to being in view
-        }
-      }
-    });
-
-    return () => {
-      triggerAnimation.kill();
-    };
-  }, []);
-
   const scrollToNextSection = () => {
     if (isScrollingRef.current) return;
     
@@ -71,7 +49,7 @@ const TransitionHook = ({ isScrollingRef }: TransitionHookProps) => {
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1A365D] font-alegreyasans">
               Every day we wait
               <br />
-              is another <span className="text-raade-gold-start" ref={counterRef}>
+              is another <span className="text-raade-gold-start">
                 <CountUp
                   end={25}
                   duration={2.5}
