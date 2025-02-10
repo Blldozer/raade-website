@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -108,21 +107,6 @@
 
   body {
     @apply bg-background text-foreground overflow-x-hidden;
-  }
-
-  .stack-section {
-    top: 0;
-    left: 0;
-    width: 100%;
-    will-change: transform, opacity;
-    transform-style: preserve-3d;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .stack-section:first-child {
-    position: relative !important;
   }
 }
 
