@@ -69,7 +69,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
                   {item.name}
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className="min-w-[200px] gap-2 p-4">
+                  <ul className="min-w-[200px] gap-2 p-4 bg-white/90 backdrop-blur-sm rounded-md shadow-lg">
                     {item.dropdownItems.map((dropdownItem) => (
                       <li key={dropdownItem.name}>
                         <Link
@@ -114,3 +114,4 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
 };
 
 export default NavLinks;
+
