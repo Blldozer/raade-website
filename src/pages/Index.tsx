@@ -7,75 +7,86 @@ import TransitionHook from "@/components/sections/TransitionHook";
 import JoinSection from "@/components/sections/JoinSection";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
+import ScrollToPlugin from "gsap/ScrollToPlugin";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 const Index = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Get all sections except FutureShowcase
-      const sections = gsap.utils.toArray<HTMLElement>('.section').filter(
-        section => !section.classList.contains('future-showcase')
-      );
+      const sections = gsap.utils.toArray<HTMLElement>('.stack-section');
       
-      // Create the stacking effect for each section
-      sections.forEach((section, i) => {
-        // Skip the first (hero) section
-        if (i === 0) return;
-        
-        ScrollTrigger.create({
-          trigger: section,
-          start: "top top",
-          pin: true,
-          pinSpacing: false
-        });
+      sections.forEach((section, index) => {
+        if (section.classList.contains('future-showcase-section')) {
+          ScrollTrigger.create({
+            trigger: section,
+            start: "top top",
+            end: () => `+=${section.scrollHeight}`,
+            pin: true,
+            pinSpacing: true,
+            scrub: 1,
+            anticipatePin: 1
+          });
+        } else {
+          ScrollTrigger.create({
+            trigger: section,
+            start: "top top",
+            end: "bottom top",
+            pin: true,
+            pinSpacing: false,
+            scrub: 1,
+            anticipatePin: 1
+          });
+        }
 
-        // Animate section coming in from bottom
-        gsap.fromTo(section,
-          {
-            y: "100vh",
-          },
-          {
-            y: 0,
-            ease: "none",
-            scrollTrigger: {
-              trigger: section,
-              start: "top bottom", // Start when the top of the section hits the bottom of the viewport
-              end: "top top", // End when the top of the section hits the top of the viewport
-              scrub: true,
-              markers: false
+        if (index !== 0) {
+          gsap.fromTo(section,
+            {
+              y: "100vh",
+            },
+            {
+              y: 0,
+              ease: "power2.inOut",
+              scrollTrigger: {
+                trigger: section,
+                start: "top bottom",
+                end: "top top",
+                scrub: 1,
+              }
             }
-          }
-        );
+          );
+        }
       });
+
+      ScrollTrigger.refresh();
     }, containerRef);
 
     return () => {
-      ctx.revert(); // This will clean up all animations and ScrollTriggers created by this context
+      ctx.revert();
     };
   }, []);
 
   return (
     <div ref={containerRef} className="relative">
-      <div className="section min-h-screen">
+      <div className="stack-section min-h-screen" id="hero">
         <Hero />
       </div>
       
-      <div className="section min-h-screen bg-[#F5F5F0]">
+      <div className="stack-section min-h-screen bg-[#F5F5F0]" id="transition-stat">
         <TransitionStat />
       </div>
       
-      <div className="section future-showcase min-h-screen bg-white">
+      <div className="stack-section future-showcase-section min-h-screen bg-white" id="future-showcase">
         <FutureShowcase />
       </div>
       
-      <div className="section min-h-screen bg-[#F5F5F0]">
+      <div className="stack-section min-h-screen bg-[#F5F5F0]" id="transition-hook">
         <TransitionHook />
       </div>
       
-      <div className="section min-h-screen bg-white">
+      <div className="stack-section min-h-screen bg-white" id="join">
         <JoinSection />
       </div>
     </div>
@@ -83,3 +94,4 @@ const Index = () => {
 };
 
 export default Index;
+
