@@ -1,45 +1,11 @@
 
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import CountUp from 'react-countup';
 import gsap from 'gsap';
-import ScrollTrigger from 'gsap/ScrollTrigger';
-import ScrollToPlugin from 'gsap/ScrollToPlugin';
 
-// Register ScrollTrigger and ScrollToPlugin plugins
-gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
-
-interface TransitionStatProps {
-  isScrollingRef: React.MutableRefObject<boolean>;
-}
-
-const TransitionStat = ({ isScrollingRef }: TransitionStatProps) => {
-  const counterRef = useRef<HTMLSpanElement>(null);
-  const hasAnimated = useRef(false);
-
-  useEffect(() => {
-    if (!counterRef.current) return;
-
-    const triggerAnimation = ScrollTrigger.create({
-      trigger: counterRef.current,
-      start: "top center",
-      onEnter: () => {
-        if (!hasAnimated.current) {
-          hasAnimated.current = true;
-          // Counter will start automatically due to being in view
-        }
-      }
-    });
-
-    return () => {
-      triggerAnimation.kill();
-    };
-  }, []);
-
+const TransitionStat = () => {
   const scrollToNextSection = () => {
-    if (isScrollingRef.current) return;
-    
-    isScrollingRef.current = true;
     const nextSection = document.getElementById('future-showcase');
     if (nextSection) {
       gsap.to(window, {
@@ -48,12 +14,7 @@ const TransitionStat = ({ isScrollingRef }: TransitionStatProps) => {
           y: nextSection,
           offsetY: 0
         },
-        ease: "power2.inOut",
-        onComplete: () => {
-          setTimeout(() => {
-            isScrollingRef.current = false;
-          }, 100);
-        }
+        ease: "power2.inOut"
       });
     }
   };
@@ -70,15 +31,7 @@ const TransitionStat = ({ isScrollingRef }: TransitionStatProps) => {
             className="space-y-8"
           >
             <div className="text-4xl md:text-6xl lg:text-7xl font-bold text-[#1A365D] mb-6 font-zillaslab">
-              By 2050, <span className="text-raade-gold-start" ref={counterRef}>
-                <CountUp
-                  end={25}
-                  duration={2.5}
-                  suffix="%"
-                  enableScrollSpy
-                  scrollSpyOnce
-                />
-              </span> of people
+              By 2050, <span className="text-raade-gold-start"><CountUp end={25} duration={2.5} /></span>% of people
               <br />will be African.
             </div>
             <p className="text-xl md:text-2xl text-[#1A365D]/80 max-w-3xl mx-auto font-merriweather">

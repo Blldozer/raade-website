@@ -13,7 +13,6 @@ gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 const Index = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const isScrollingRef = useRef(false);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -31,9 +30,7 @@ const Index = () => {
             pin: true,
             pinSpacing: true,
             scrub: 1,
-            anticipatePin: 1,
-            onEnter: () => { isScrollingRef.current = false; },
-            onLeave: () => { isScrollingRef.current = false; }
+            anticipatePin: 1
           });
         } else {
           ScrollTrigger.create({
@@ -43,9 +40,7 @@ const Index = () => {
             pin: true,
             pinSpacing: false,
             scrub: 1,
-            anticipatePin: 1,
-            onEnter: () => { isScrollingRef.current = false; },
-            onLeave: () => { isScrollingRef.current = false; }
+            anticipatePin: 1
           });
         }
 
@@ -80,11 +75,11 @@ const Index = () => {
   return (
     <div ref={containerRef} className="relative">
       <div className="stack-section min-h-screen" id="hero">
-        <Hero isScrollingRef={isScrollingRef} />
+        <Hero />
       </div>
       
       <div className="stack-section min-h-screen bg-[#F5F5F0]" id="transition-stat">
-        <TransitionStat isScrollingRef={isScrollingRef} />
+        <TransitionStat />
       </div>
       
       <div className="stack-section future-showcase-section min-h-screen bg-white" id="future-showcase">
@@ -92,7 +87,7 @@ const Index = () => {
       </div>
       
       <div className="stack-section min-h-screen bg-[#F5F5F0]" id="transition-hook">
-        <TransitionHook isScrollingRef={isScrollingRef} />
+        <TransitionHook />
       </div>
       
       <div className="stack-section min-h-screen bg-white" id="join">

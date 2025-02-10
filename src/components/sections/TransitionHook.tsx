@@ -2,22 +2,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
-import ScrollTrigger from 'gsap/ScrollTrigger';
-import ScrollToPlugin from 'gsap/ScrollToPlugin';
-import CountUp from 'react-countup';
 
-// Register ScrollTrigger and ScrollToPlugin plugins
-gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
-
-interface TransitionHookProps {
-  isScrollingRef: React.MutableRefObject<boolean>;
-}
-
-const TransitionHook = ({ isScrollingRef }: TransitionHookProps) => {
+const TransitionHook = () => {
   const scrollToNextSection = () => {
-    if (isScrollingRef.current) return;
-    
-    isScrollingRef.current = true;
     const nextSection = document.getElementById('join');
     if (nextSection) {
       gsap.to(window, {
@@ -26,12 +13,7 @@ const TransitionHook = ({ isScrollingRef }: TransitionHookProps) => {
           y: nextSection,
           offsetY: 0
         },
-        ease: "power2.inOut",
-        onComplete: () => {
-          setTimeout(() => {
-            isScrollingRef.current = false;
-          }, 100);
-        }
+        ease: "power2.inOut"
       });
     }
   };
@@ -49,15 +31,7 @@ const TransitionHook = ({ isScrollingRef }: TransitionHookProps) => {
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1A365D] font-alegreyasans">
               Every day we wait
               <br />
-              is another <span className="text-raade-gold-start">
-                <CountUp
-                  end={25}
-                  duration={2.5}
-                  suffix="%"
-                  enableScrollSpy
-                  scrollSpyOnce
-                />
-              </span> opportunity lost.
+              is another <span className="text-raade-gold-start">opportunity lost</span>.
             </h2>
           </motion.div>
         </div>
