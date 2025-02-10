@@ -2,12 +2,20 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import CountUp from 'react-countup';
+import gsap from 'gsap';
 
 const TransitionStat = () => {
   const scrollToNextSection = () => {
-    const nextSection = document.querySelector('.future-showcase');
+    const nextSection = document.getElementById('future-showcase');
     if (nextSection) {
-      nextSection.scrollIntoView({ behavior: 'smooth' });
+      gsap.to(window, {
+        duration: 1,
+        scrollTo: {
+          y: nextSection,
+          offsetY: 0
+        },
+        ease: "power2.inOut"
+      });
     }
   };
 
@@ -43,7 +51,7 @@ const TransitionStat = () => {
         <p className="text-lg text-[#1A365D]/60 font-merriweather mb-6">
           Here's what we are building...
         </p>
-        <motion.div 
+        <motion.button 
           animate={{ y: [0, 10, 0] }}
           transition={{ 
             duration: 2,
@@ -51,10 +59,11 @@ const TransitionStat = () => {
             ease: "easeInOut"
           }}
           onClick={scrollToNextSection}
-          className="cursor-pointer"
+          className="cursor-pointer p-4 group"
+          aria-label="Scroll to next section"
         >
-          <div className="w-6 h-6 mx-auto border-b-2 border-r-2 border-[#1A365D]/30 rotate-45" />
-        </motion.div>
+          <div className="w-6 h-6 mx-auto border-b-2 border-r-2 border-[#1A365D]/30 rotate-45 transition-all duration-300 group-hover:border-[#1A365D] group-hover:scale-110" />
+        </motion.button>
       </motion.div>
     </section>
   );

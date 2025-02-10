@@ -4,11 +4,26 @@ import Navigation from '../Navigation';
 import AnimatedText from './AnimatedText';
 import ParticleField from './ParticleField';
 import gsap from 'gsap';
+import { motion } from 'framer-motion';
 
 const Hero = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   
+  const scrollToNextSection = () => {
+    const nextSection = document.getElementById('transition-stat');
+    if (nextSection) {
+      gsap.to(window, {
+        duration: 1,
+        scrollTo: {
+          y: nextSection,
+          offsetY: 0
+        },
+        ease: "power2.inOut"
+      });
+    }
+  };
+
   useEffect(() => {
     const video = videoRef.current;
     const content = contentRef.current;
@@ -101,10 +116,31 @@ const Hero = () => {
             </div>
           </div>
         </div>
+
+        {/* Down arrow navigation */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 0.8 }}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-center z-50"
+        >
+          <motion.button
+            animate={{ y: [0, 10, 0] }}
+            transition={{ 
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            onClick={scrollToNextSection}
+            className="cursor-pointer p-4 group"
+            aria-label="Scroll to next section"
+          >
+            <div className="w-6 h-6 mx-auto border-b-2 border-r-2 border-white/30 rotate-45 transition-all duration-300 group-hover:border-white group-hover:scale-110" />
+          </motion.button>
+        </motion.div>
       </div>
     </div>
   );
 };
 
 export default Hero;
-

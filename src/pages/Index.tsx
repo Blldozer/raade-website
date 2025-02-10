@@ -7,8 +7,9 @@ import TransitionHook from "@/components/sections/TransitionHook";
 import JoinSection from "@/components/sections/JoinSection";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
+import ScrollToPlugin from "gsap/ScrollToPlugin";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 const Index = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -25,7 +26,7 @@ const Index = () => {
           ScrollTrigger.create({
             trigger: section,
             start: "top top",
-            end: () => `+=${section.scrollHeight}`, // Dynamic end point based on content
+            end: () => `+=${section.scrollHeight}`,
             pin: true,
             pinSpacing: true,
             anticipatePin: 1
@@ -60,7 +61,6 @@ const Index = () => {
         }
       });
 
-      // Batch all ScrollTrigger refreshes
       ScrollTrigger.refresh();
     }, containerRef);
 
@@ -71,23 +71,23 @@ const Index = () => {
 
   return (
     <div ref={containerRef} className="relative">
-      <div className="stack-section min-h-screen">
+      <div className="stack-section min-h-screen" id="hero">
         <Hero />
       </div>
       
-      <div className="stack-section min-h-screen bg-[#F5F5F0]">
+      <div className="stack-section min-h-screen bg-[#F5F5F0]" id="transition-stat">
         <TransitionStat />
       </div>
       
-      <div className="stack-section future-showcase-section min-h-screen bg-white">
+      <div className="stack-section future-showcase-section min-h-screen bg-white" id="future-showcase">
         <FutureShowcase />
       </div>
       
-      <div className="stack-section min-h-screen bg-[#F5F5F0]">
+      <div className="stack-section min-h-screen bg-[#F5F5F0]" id="transition-hook">
         <TransitionHook />
       </div>
       
-      <div className="stack-section min-h-screen bg-white">
+      <div className="stack-section min-h-screen bg-white" id="join">
         <JoinSection />
       </div>
     </div>
