@@ -29,7 +29,7 @@ const Index = () => {
             scrub: 1,
             anticipatePin: 1
           });
-        } else {
+        } else if (index < sections.length - 1) { // Don't pin the last section (Join)
           ScrollTrigger.create({
             trigger: section,
             start: "top top",
@@ -94,4 +94,3 @@ const Index = () => {
 };
 
 export default Index;
-
