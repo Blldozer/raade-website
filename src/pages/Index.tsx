@@ -1,107 +1,42 @@
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import Hero from "@/components/hero/Hero";
 import TransitionStat from "@/components/sections/TransitionStat";
 import FutureShowcase from "@/components/sections/FutureShowcase";
 import TransitionHook from "@/components/sections/TransitionHook";
 import JoinSection from "@/components/sections/JoinSection";
-import gsap from "gsap";
-import ScrollTrigger from "gsap/ScrollTrigger";
-import ScrollToPlugin from "gsap/ScrollToPlugin";
-
-gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+import { useStackingScroll } from "@/hooks/useStackingScroll";
 
 const Index = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const scrollTriggersRef = useRef<ScrollTrigger[]>([]);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      const sections = gsap.utils.toArray<HTMLElement>('.stack-section');
-      
-      sections.forEach((section, index) => {
-        if (section.classList.contains('future-showcase-section')) {
-          const trigger = ScrollTrigger.create({
-            trigger: section,
-            start: "top top",
-            end: () => `+=${section.scrollHeight}`,
-            pin: true,
-            pinSpacing: true,
-            scrub: 0.5,
-            anticipatePin: 1
-          });
-          scrollTriggersRef.current.push(trigger);
-        } else if (index < sections.length - 1) { 
-          const trigger = ScrollTrigger.create({
-            trigger: section,
-            start: "top top",
-            end: "bottom top",
-            pin: true,
-            pinSpacing: false,
-            scrub: 0.5,
-            anticipatePin: 1
-          });
-          scrollTriggersRef.current.push(trigger);
-        }
-
-        if (index !== 0) {
-          const tween = gsap.fromTo(section,
-            {
-              y: "100vh",
-            },
-            {
-              y: 0,
-              ease: "power1.inOut",
-              scrollTrigger: {
-                trigger: section,
-                start: "top bottom",
-                end: "top top",
-                scrub: 0.5
-              }
-            }
-          );
-          // Store the ScrollTrigger instance from the tween
-          if (tween.scrollTrigger) {
-            scrollTriggersRef.current.push(tween.scrollTrigger);
-          }
-        }
-      });
-
-      ScrollTrigger.refresh();
-    }, containerRef);
-
-    return () => {
-      // Clean up all ScrollTrigger instances
-      scrollTriggersRef.current.forEach(trigger => {
-        trigger.kill();
-      });
-      scrollTriggersRef.current = [];
-      ctx.revert();
-    };
-  }, []);
+  const section1Ref = useStackingScroll();
+  const section2Ref = useStackingScroll();
+  const section3Ref = useStackingScroll();
+  const section4Ref = useStackingScroll();
+  const section5Ref = useStackingScroll();
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div ref={containerRef} className="relative flex-grow">
-        <div className="stack-section min-h-screen" id="hero">
+      <div ref={containerRef} className="relative flex-grow" style={{ height: '500vh' }}>
+        <section ref={section1Ref as any} className="stack-section fixed w-full min-h-screen" id="hero">
           <Hero />
-        </div>
+        </section>
         
-        <div className="stack-section min-h-screen bg-[#F5F5F0]" id="transition-stat">
+        <section ref={section2Ref as any} className="stack-section fixed w-full min-h-screen bg-[#F5F5F0]" id="transition-stat">
           <TransitionStat />
-        </div>
+        </section>
         
-        <div className="stack-section future-showcase-section min-h-screen bg-white" id="future-showcase">
+        <section ref={section3Ref as any} className="stack-section future-showcase-section fixed w-full min-h-screen bg-white" id="future-showcase">
           <FutureShowcase />
-        </div>
+        </section>
         
-        <div className="stack-section min-h-screen bg-[#F5F5F0]" id="transition-hook">
+        <section ref={section4Ref as any} className="stack-section fixed w-full min-h-screen bg-[#F5F5F0]" id="transition-hook">
           <TransitionHook />
-        </div>
+        </section>
         
-        <div className="stack-section min-h-screen bg-white" id="join">
+        <section ref={section5Ref as any} className="stack-section fixed w-full min-h-screen bg-white" id="join">
           <JoinSection />
-        </div>
+        </section>
       </div>
     </div>
   );
