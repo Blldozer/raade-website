@@ -15,68 +15,68 @@ const Index = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Pin the hero section
-      ScrollTrigger.create({
-        trigger: ".hero-section",
-        start: "top top",
-        pin: true,
-        pinSpacing: false
-      });
-
-      // Get all sections except hero and future showcase
-      const sections = gsap.utils.toArray<HTMLElement>('.animate-section');
+      // Get all sections including hero
+      const sections = gsap.utils.toArray<HTMLElement>('.stack-section');
       
       // Create the stacking effect for each section
-      sections.forEach((section) => {
+      sections.forEach((section, index) => {
         ScrollTrigger.create({
           trigger: section,
           start: "top top",
           pin: true,
-          pinSpacing: false
+          pinSpacing: false,
+          anticipatePin: 1
         });
 
-        // Animate section coming in from bottom
-        gsap.fromTo(section,
-          {
-            y: "100vh",
-          },
-          {
-            y: 0,
-            ease: "none",
-            scrollTrigger: {
-              trigger: section,
-              start: "top bottom",
-              end: "top top",
-              scrub: true,
-              markers: false
+        // Don't animate the first section (hero) coming in
+        if (index !== 0) {
+          gsap.fromTo(section,
+            {
+              y: "100vh",
+            },
+            {
+              y: 0,
+              ease: "none",
+              scrollTrigger: {
+                trigger: section,
+                start: "top bottom",
+                end: "top top",
+                scrub: true,
+              }
             }
-          }
-        );
+          );
+        }
       });
+
+      // Batch all ScrollTrigger refreshes
+      ScrollTrigger.refresh();
     }, containerRef);
 
-    return () => ctx.revert();
+    return () => {
+      // Clean up all ScrollTrigger instances when component unmounts
+      ctx.revert();
+    };
   }, []);
 
   return (
     <div ref={containerRef} className="relative">
-      <div className="hero-section min-h-screen">
+      <div className="stack-section min-h-screen">
         <Hero />
       </div>
       
-      <div className="animate-section min-h-screen bg-[#F5F5F0]">
+      <div className="stack-section min-h-screen bg-[#F5F5F0]">
         <TransitionStat />
       </div>
       
-      <div className="min-h-screen bg-white future-showcase">
+      <div className="stack-section min-h-screen bg-white">
         <FutureShowcase />
       </div>
       
-      <div className="animate-section min-h-screen bg-[#F5F5F0]">
+      <div className="stack-section min-h-screen bg-[#F5F5F0]">
         <TransitionHook />
       </div>
       
-      <div className="animate-section min-h-screen bg-white">
+      <div className="stack-section min-h-screen bg-white">
         <JoinSection />
       </div>
     </div>
@@ -84,3 +84,4 @@ const Index = () => {
 };
 
 export default Index;
+
