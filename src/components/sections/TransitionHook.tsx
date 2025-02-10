@@ -49,7 +49,15 @@ const TransitionHook = ({ isScrollingRef }: TransitionHookProps) => {
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1A365D] font-alegreyasans">
               Every day we wait
               <br />
-              is another <span className="text-raade-gold-start">opportunity lost</span>.
+              is another <span className="text-raade-gold-start">
+                <CountUp
+                  end={25}
+                  duration={2.5}
+                  suffix="%"
+                  enableScrollSpy
+                  scrollSpyOnce
+                />
+              </span> opportunity lost.
             </h2>
           </motion.div>
         </div>

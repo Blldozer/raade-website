@@ -103,15 +103,10 @@ const Hero = ({ isScrollingRef }: HeroProps) => {
             {/* Animated text component */}
             <AnimatedText />
 
-            <motion.p 
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="text-lg sm:text-xl md:text-2xl text-white/90 max-w-3xl font-merriweather"
-            >
-              The future of Africa isn't a distant dream - it's being built today, by innovators and changemakers like you. Join a community of students and partners creating sustainable solutions through market-driven innovation.
-            </motion.p>
+            <p className="text-lg sm:text-xl md:text-2xl text-white/90 max-w-3xl font-merriweather">
+              The future of Africa isn't a distant dream - it's being built today, by innovators and changemakers
+              like you. Join a community of students and partners creating sustainable solutions through market-driven innovation.
+            </p>
 
             {/* Call-to-action buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
