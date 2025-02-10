@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
 
@@ -33,6 +32,7 @@ export default {
       },
       colors: {
         raade: {
+          navy: "#2a4774",
           red: "#F73B20",
           orange: "#FFA726",
           gold: {
