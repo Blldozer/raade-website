@@ -16,7 +16,7 @@ const Hero = () => {
       {/* Background with parallax */}
       <motion.div
         style={{ y }}
-        className="absolute inset-0 z-0 will-change-transform"
+        className="absolute inset-0 z-0"
       >
         <video
           autoPlay
@@ -24,14 +24,6 @@ const Hero = () => {
           muted
           playsInline
           className="absolute inset-0 w-full h-full object-cover"
-          style={{
-            backfaceVisibility: 'hidden',
-            transform: 'translate3d(0, 0, 0)',
-            WebkitBackfaceVisibility: 'hidden',
-            WebkitTransform: 'translate3d(0, 0, 0)',
-            willChange: 'transform',
-            imageRendering: 'auto'
-          }}
         >
           <source src="/hero-background.mp4" type="video/mp4" />
         </video>
@@ -54,7 +46,7 @@ const Hero = () => {
       <div className="relative z-30">
         <div className="max-w-7xl mx-auto px-4 h-screen flex flex-col justify-center">
           <motion.div
-            className="space-y-4 md:space-y-8 max-w-3xl pointer-events-auto will-change-transform"
+            className="space-y-4 md:space-y-8 max-w-3xl pointer-events-auto"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8 }}
@@ -68,7 +60,7 @@ const Hero = () => {
                 opacity: supportingTextOpacity,
                 y: supportingTextY
               }}
-              className="text-lg sm:text-xl md:text-2xl text-white/90 max-w-3xl font-merriweather will-change-transform"
+              className="text-lg sm:text-xl md:text-2xl text-white/90 max-w-3xl font-merriweather"
             >
               The future of Africa isn't a distant dream - it's being built today, by innovators and changemakers
               like you. Join a community of students and partners creating sustainable solutions through market-driven innovation.

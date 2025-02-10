@@ -15,49 +15,40 @@ const Index = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Pin the hero section with smooth animation
+      // Pin the hero section
       ScrollTrigger.create({
         trigger: ".hero-section",
         start: "top top",
         pin: true,
-        pinSpacing: false,
-        fastScrollEnd: true,
-        anticipatePin: 1
+        pinSpacing: false
       });
 
       // Get all sections except hero and future showcase
       const sections = gsap.utils.toArray<HTMLElement>('.animate-section');
       
-      // Create the stacking effect for each section with optimized animations
+      // Create the stacking effect for each section
       sections.forEach((section) => {
         ScrollTrigger.create({
           trigger: section,
           start: "top top",
           pin: true,
-          pinSpacing: false,
-          fastScrollEnd: true,
-          anticipatePin: 1
+          pinSpacing: false
         });
 
         // Animate section coming in from bottom
         gsap.fromTo(section,
           {
-            y: window.innerHeight,
-            opacity: 0
+            y: "100vh",
           },
           {
             y: 0,
-            opacity: 1,
-            ease: "power2.out",
+            ease: "none",
             scrollTrigger: {
               trigger: section,
               start: "top bottom",
               end: "top top",
               scrub: true,
-              markers: false,
-              anticipatePin: 1,
-              fastScrollEnd: true,
-              preventOverlaps: true
+              markers: false
             }
           }
         );
@@ -68,24 +59,24 @@ const Index = () => {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative will-change-transform">
-      <div className="hero-section min-h-screen will-change-transform">
+    <div ref={containerRef} className="relative">
+      <div className="hero-section min-h-screen">
         <Hero />
       </div>
       
-      <div className="animate-section min-h-screen bg-[#F5F5F0] will-change-transform">
+      <div className="animate-section min-h-screen bg-[#F5F5F0]">
         <TransitionStat />
       </div>
       
-      <div className="min-h-screen bg-white future-showcase will-change-transform">
+      <div className="min-h-screen bg-white future-showcase">
         <FutureShowcase />
       </div>
       
-      <div className="animate-section min-h-screen bg-[#F5F5F0] will-change-transform">
+      <div className="animate-section min-h-screen bg-[#F5F5F0]">
         <TransitionHook />
       </div>
       
-      <div className="animate-section min-h-screen bg-white will-change-transform">
+      <div className="animate-section min-h-screen bg-white">
         <JoinSection />
       </div>
     </div>
