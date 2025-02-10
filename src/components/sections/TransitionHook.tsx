@@ -2,7 +2,11 @@
 import React, { useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
+import ScrollTrigger from 'gsap/ScrollTrigger';
 import CountUp from 'react-countup';
+
+// Register ScrollTrigger plugin
+gsap.registerPlugin(ScrollTrigger);
 
 interface TransitionHookProps {
   isScrollingRef: React.MutableRefObject<boolean>;
