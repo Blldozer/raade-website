@@ -16,12 +16,9 @@ const Index = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Get all sections including hero
       const sections = gsap.utils.toArray<HTMLElement>('.stack-section');
       
-      // Create the stacking effect for each section
       sections.forEach((section, index) => {
-        // Special handling for FutureShowcase section
         if (section.classList.contains('future-showcase-section')) {
           ScrollTrigger.create({
             trigger: section,
@@ -44,7 +41,6 @@ const Index = () => {
           });
         }
 
-        // Don't animate the first section (hero) coming in
         if (index !== 0) {
           gsap.fromTo(section,
             {
@@ -98,3 +94,4 @@ const Index = () => {
 };
 
 export default Index;
+
