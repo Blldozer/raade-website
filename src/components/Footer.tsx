@@ -1,9 +1,10 @@
+
 import { Mail, Link, Globe, Copyright, Shield } from "lucide-react";
 import { Button } from "./ui/button";
 
 const Footer = () => {
   return (
-    <footer className="bg-[#F1F0FB] mt-16">
+    <footer className="fixed bottom-0 left-0 right-0 bg-[#F1F0FB] z-10">
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Contact Information */}

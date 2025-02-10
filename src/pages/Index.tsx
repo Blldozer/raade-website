@@ -69,27 +69,29 @@ const Index = () => {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative">
-      <div className="stack-section min-h-screen" id="hero">
-        <Hero />
+    <>
+      <div ref={containerRef} className="relative">
+        <div className="stack-section min-h-screen" id="hero">
+          <Hero />
+        </div>
+        
+        <div className="stack-section min-h-screen bg-[#F5F5F0]" id="transition-stat">
+          <TransitionStat />
+        </div>
+        
+        <div className="stack-section future-showcase-section min-h-screen bg-white" id="future-showcase">
+          <FutureShowcase />
+        </div>
+        
+        <div className="stack-section min-h-screen bg-[#F5F5F0]" id="transition-hook">
+          <TransitionHook />
+        </div>
+        
+        <div className="stack-section min-h-screen bg-white" id="join">
+          <JoinSection />
+        </div>
       </div>
-      
-      <div className="stack-section min-h-screen bg-[#F5F5F0]" id="transition-stat">
-        <TransitionStat />
-      </div>
-      
-      <div className="stack-section future-showcase-section min-h-screen bg-white" id="future-showcase">
-        <FutureShowcase />
-      </div>
-      
-      <div className="stack-section min-h-screen bg-[#F5F5F0]" id="transition-hook">
-        <TransitionHook />
-      </div>
-      
-      <div className="stack-section min-h-screen bg-white mb-0" id="join">
-        <JoinSection />
-      </div>
-    </div>
+    </>
   );
 };
 
