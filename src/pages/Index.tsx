@@ -15,40 +15,50 @@ const Index = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Pin the hero section
+      // Pin the hero section with smooth animation
       ScrollTrigger.create({
         trigger: ".hero-section",
         start: "top top",
         pin: true,
-        pinSpacing: false
+        pinSpacing: false,
+        fastScrollEnd: true,
+        anticipatePin: 1
       });
 
       // Get all sections except hero and future showcase
       const sections = gsap.utils.toArray<HTMLElement>('.animate-section');
       
-      // Create the stacking effect for each section
+      // Create the stacking effect for each section with optimized animations
       sections.forEach((section) => {
         ScrollTrigger.create({
           trigger: section,
           start: "top top",
           pin: true,
-          pinSpacing: false
+          pinSpacing: false,
+          fastScrollEnd: true,
+          anticipatePin: 1
         });
 
-        // Animate section coming in from bottom
+        // Animate section coming in from bottom with improved performance
         gsap.fromTo(section,
           {
             y: "100vh",
+            opacity: 0
           },
           {
             y: 0,
-            ease: "none",
+            opacity: 1,
+            ease: "power2.out",
             scrollTrigger: {
               trigger: section,
               start: "top bottom",
               end: "top top",
-              scrub: true,
-              markers: false
+              scrub: 1,
+              markers: false,
+              anticipatePin: 1,
+              fastScrollEnd: true,
+              preventOverlaps: true,
+              overwrite: 'auto'
             }
           }
         );
@@ -59,24 +69,24 @@ const Index = () => {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative">
-      <div className="hero-section min-h-screen">
+    <div ref={containerRef} className="relative will-change-transform">
+      <div className="hero-section min-h-screen will-change-transform">
         <Hero />
       </div>
       
-      <div className="animate-section min-h-screen bg-[#F5F5F0]">
+      <div className="animate-section min-h-screen bg-[#F5F5F0] will-change-transform">
         <TransitionStat />
       </div>
       
-      <div className="min-h-screen bg-white future-showcase">
+      <div className="min-h-screen bg-white future-showcase will-change-transform">
         <FutureShowcase />
       </div>
       
-      <div className="animate-section min-h-screen bg-[#F5F5F0]">
+      <div className="animate-section min-h-screen bg-[#F5F5F0] will-change-transform">
         <TransitionHook />
       </div>
       
-      <div className="animate-section min-h-screen bg-white">
+      <div className="animate-section min-h-screen bg-white will-change-transform">
         <JoinSection />
       </div>
     </div>
@@ -84,3 +94,4 @@ const Index = () => {
 };
 
 export default Index;
+
