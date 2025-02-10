@@ -86,7 +86,7 @@ const Index = () => {
         <TransitionHook />
       </div>
       
-      <div className="stack-section min-h-screen bg-white" id="join">
+      <div className="stack-section min-h-screen bg-white mb-0" id="join">
         <JoinSection />
       </div>
     </div>
