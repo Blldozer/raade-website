@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 interface StackingScrollOptions {
   threshold?: number[];
   rootMargin?: string;
+  index?: number;
 }
 
 export const useStackingScroll = (options: StackingScrollOptions = {}) => {
@@ -20,8 +21,10 @@ export const useStackingScroll = (options: StackingScrollOptions = {}) => {
             return; // Skip transform for this section
           }
           
-          const scrollProgress = 1 - entry.intersectionRatio;
-          section.style.transform = `translateY(${scrollProgress * 100}%)`;
+          // Reverse the transform direction for proper stacking
+          const scrollProgress = entry.intersectionRatio;
+          section.style.transform = `translateY(${(1 - scrollProgress) * -100}%)`;
+          section.style.opacity = `${scrollProgress}`;
         });
       },
       {
