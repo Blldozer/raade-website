@@ -57,8 +57,7 @@ const Index = () => {
               markers: false,
               anticipatePin: 1,
               fastScrollEnd: true,
-              preventOverlaps: true,
-              overwrite: 'auto'
+              preventOverlaps: true
             }
           }
         );
@@ -94,4 +93,3 @@ const Index = () => {
 };
 
 export default Index;
-
