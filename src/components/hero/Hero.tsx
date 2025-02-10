@@ -6,11 +6,18 @@ import ParticleField from './ParticleField';
 import gsap from 'gsap';
 import { motion } from 'framer-motion';
 
-const Hero = () => {
+interface HeroProps {
+  isScrollingRef: React.MutableRefObject<boolean>;
+}
+
+const Hero = ({ isScrollingRef }: HeroProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   
   const scrollToNextSection = () => {
+    if (isScrollingRef.current) return;
+    
+    isScrollingRef.current = true;
     const nextSection = document.getElementById('transition-stat');
     if (nextSection) {
       gsap.to(window, {
@@ -19,7 +26,12 @@ const Hero = () => {
           y: nextSection,
           offsetY: 0
         },
-        ease: "power2.inOut"
+        ease: "power2.inOut",
+        onComplete: () => {
+          setTimeout(() => {
+            isScrollingRef.current = false;
+          }, 100);
+        }
       });
     }
   };

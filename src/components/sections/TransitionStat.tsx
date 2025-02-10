@@ -4,8 +4,15 @@ import { motion } from 'framer-motion';
 import CountUp from 'react-countup';
 import gsap from 'gsap';
 
-const TransitionStat = () => {
+interface TransitionStatProps {
+  isScrollingRef: React.MutableRefObject<boolean>;
+}
+
+const TransitionStat = ({ isScrollingRef }: TransitionStatProps) => {
   const scrollToNextSection = () => {
+    if (isScrollingRef.current) return;
+    
+    isScrollingRef.current = true;
     const nextSection = document.getElementById('future-showcase');
     if (nextSection) {
       gsap.to(window, {
@@ -14,7 +21,12 @@ const TransitionStat = () => {
           y: nextSection,
           offsetY: 0
         },
-        ease: "power2.inOut"
+        ease: "power2.inOut",
+        onComplete: () => {
+          setTimeout(() => {
+            isScrollingRef.current = false;
+          }, 100);
+        }
       });
     }
   };

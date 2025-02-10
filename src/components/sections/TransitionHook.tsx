@@ -1,10 +1,40 @@
 
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
+import CountUp from 'react-countup';
 
-const TransitionHook = () => {
+interface TransitionHookProps {
+  isScrollingRef: React.MutableRefObject<boolean>;
+}
+
+const TransitionHook = ({ isScrollingRef }: TransitionHookProps) => {
+  const counterRef = useRef<HTMLDivElement>(null);
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    if (!counterRef.current) return;
+
+    const triggerAnimation = ScrollTrigger.create({
+      trigger: counterRef.current,
+      start: "top center",
+      onEnter: () => {
+        if (!hasAnimated.current) {
+          hasAnimated.current = true;
+          // Counter will start automatically due to being in view
+        }
+      }
+    });
+
+    return () => {
+      triggerAnimation.kill();
+    };
+  }, []);
+
   const scrollToNextSection = () => {
+    if (isScrollingRef.current) return;
+    
+    isScrollingRef.current = true;
     const nextSection = document.getElementById('join');
     if (nextSection) {
       gsap.to(window, {
@@ -13,7 +43,12 @@ const TransitionHook = () => {
           y: nextSection,
           offsetY: 0
         },
-        ease: "power2.inOut"
+        ease: "power2.inOut",
+        onComplete: () => {
+          setTimeout(() => {
+            isScrollingRef.current = false;
+          }, 100);
+        }
       });
     }
   };
@@ -31,7 +66,15 @@ const TransitionHook = () => {
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1A365D] font-alegreyasans">
               Every day we wait
               <br />
-              is another <span className="text-raade-gold-start">opportunity lost</span>.
+              is another <span className="text-raade-gold-start" ref={counterRef}>
+                <CountUp
+                  end={25}
+                  duration={2.5}
+                  suffix="%"
+                  enableScrollSpy
+                  scrollSpyOnce
+                />
+              </span> opportunity lost.
             </h2>
           </motion.div>
         </div>
