@@ -13,6 +13,7 @@ gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 const Index = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const scrollTriggersRef = useRef<ScrollTrigger[]>([]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -20,7 +21,7 @@ const Index = () => {
       
       sections.forEach((section, index) => {
         if (section.classList.contains('future-showcase-section')) {
-          ScrollTrigger.create({
+          const trigger = ScrollTrigger.create({
             trigger: section,
             start: "top top",
             end: () => `+=${section.scrollHeight}`,
@@ -29,8 +30,9 @@ const Index = () => {
             scrub: 0.5,
             anticipatePin: 1
           });
+          scrollTriggersRef.current.push(trigger);
         } else if (index < sections.length - 1) { 
-          ScrollTrigger.create({
+          const trigger = ScrollTrigger.create({
             trigger: section,
             start: "top top",
             end: "bottom top",
@@ -39,10 +41,11 @@ const Index = () => {
             scrub: 0.5,
             anticipatePin: 1
           });
+          scrollTriggersRef.current.push(trigger);
         }
 
         if (index !== 0) {
-          gsap.fromTo(section,
+          const tween = gsap.fromTo(section,
             {
               y: "100vh",
             },
@@ -57,6 +60,10 @@ const Index = () => {
               }
             }
           );
+          // Store the ScrollTrigger instance from the tween
+          if (tween.scrollTrigger) {
+            scrollTriggersRef.current.push(tween.scrollTrigger);
+          }
         }
       });
 
@@ -64,6 +71,11 @@ const Index = () => {
     }, containerRef);
 
     return () => {
+      // Clean up all ScrollTrigger instances
+      scrollTriggersRef.current.forEach(trigger => {
+        trigger.kill();
+      });
+      scrollTriggersRef.current = [];
       ctx.revert();
     };
   }, []);
