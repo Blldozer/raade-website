@@ -15,16 +15,19 @@ const Index = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Get all sections except FutureShowcase
-      const sections = gsap.utils.toArray<HTMLElement>('.section').filter(
-        section => !section.classList.contains('future-showcase')
-      );
+      // Pin the hero section
+      ScrollTrigger.create({
+        trigger: ".hero-section",
+        start: "top top",
+        pin: true,
+        pinSpacing: false
+      });
+
+      // Get all sections except hero and future showcase
+      const sections = gsap.utils.toArray<HTMLElement>('.animate-section');
       
       // Create the stacking effect for each section
-      sections.forEach((section, i) => {
-        // Skip the first (hero) section
-        if (i === 0) return;
-        
+      sections.forEach((section) => {
         ScrollTrigger.create({
           trigger: section,
           start: "top top",
@@ -42,8 +45,8 @@ const Index = () => {
             ease: "none",
             scrollTrigger: {
               trigger: section,
-              start: "top bottom", // Start when the top of the section hits the bottom of the viewport
-              end: "top top", // End when the top of the section hits the top of the viewport
+              start: "top bottom",
+              end: "top top",
               scrub: true,
               markers: false
             }
@@ -52,30 +55,28 @@ const Index = () => {
       });
     }, containerRef);
 
-    return () => {
-      ctx.revert(); // This will clean up all animations and ScrollTriggers created by this context
-    };
+    return () => ctx.revert();
   }, []);
 
   return (
     <div ref={containerRef} className="relative">
-      <div className="section min-h-screen">
+      <div className="hero-section min-h-screen">
         <Hero />
       </div>
       
-      <div className="section min-h-screen bg-[#F5F5F0]">
+      <div className="animate-section min-h-screen bg-[#F5F5F0]">
         <TransitionStat />
       </div>
       
-      <div className="section future-showcase min-h-screen bg-white">
+      <div className="min-h-screen bg-white future-showcase">
         <FutureShowcase />
       </div>
       
-      <div className="section min-h-screen bg-[#F5F5F0]">
+      <div className="animate-section min-h-screen bg-[#F5F5F0]">
         <TransitionHook />
       </div>
       
-      <div className="section min-h-screen bg-white">
+      <div className="animate-section min-h-screen bg-white">
         <JoinSection />
       </div>
     </div>
