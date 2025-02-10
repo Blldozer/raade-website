@@ -30,7 +30,7 @@ const Index = () => {
         <section 
           ref={section2Ref as any} 
           className="stack-section fixed w-full min-h-screen bg-[#F5F5F0]" 
-          style={{ zIndex: 40 }}
+          style={{ zIndex: 40, transform: 'translateY(100%)', opacity: 0 }}
           id="transition-stat"
         >
           <TransitionStat />
@@ -38,8 +38,8 @@ const Index = () => {
         
         <section 
           ref={section3Ref as any} 
-          className="stack-section future-showcase-section fixed w-full min-h-screen bg-white" 
-          style={{ zIndex: 30 }}
+          className="stack-section fixed w-full min-h-screen bg-white" 
+          style={{ zIndex: 30, transform: 'translateY(100%)', opacity: 0 }}
           id="future-showcase"
         >
           <FutureShowcase />
@@ -48,7 +48,7 @@ const Index = () => {
         <section 
           ref={section4Ref as any} 
           className="stack-section fixed w-full min-h-screen bg-[#F5F5F0]" 
-          style={{ zIndex: 20 }}
+          style={{ zIndex: 20, transform: 'translateY(100%)', opacity: 0 }}
           id="transition-hook"
         >
           <TransitionHook />
@@ -57,7 +57,7 @@ const Index = () => {
         <section 
           ref={section5Ref as any} 
           className="stack-section fixed w-full min-h-screen bg-white" 
-          style={{ zIndex: 10 }}
+          style={{ zIndex: 10, transform: 'translateY(100%)', opacity: 0 }}
           id="join"
         >
           <JoinSection />

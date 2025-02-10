@@ -17,14 +17,23 @@ export const useStackingScroll = (options: StackingScrollOptions = {}) => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach(entry => {
-          if (section.classList.contains('future-showcase-section')) {
-            return; // Skip transform for this section
+          const scrollProgress = entry.intersectionRatio;
+          
+          // Special handling for hero section
+          if (section.id === 'hero') {
+            section.style.transform = 'translateY(0)';
+            section.style.opacity = '1';
+            return;
           }
           
-          // Reverse the transform direction for proper stacking
-          const scrollProgress = entry.intersectionRatio;
-          section.style.transform = `translateY(${(1 - scrollProgress) * -100}%)`;
-          section.style.opacity = `${scrollProgress}`;
+          // For all other sections
+          if (!entry.isIntersecting && scrollProgress === 0) {
+            section.style.transform = `translateY(100%)`;
+            section.style.opacity = '0';
+          } else {
+            section.style.transform = `translateY(${(1 - scrollProgress) * 100}%)`;
+            section.style.opacity = `${scrollProgress}`;
+          }
         });
       },
       {

@@ -118,7 +118,7 @@
     transform-style: preserve-3d;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
-    transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .stack-section:first-child {
