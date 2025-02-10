@@ -39,10 +39,10 @@ const Index = () => {
           anticipatePin: 1
         });
 
-        // Animate section coming in from bottom with improved performance
+        // Animate section coming in from bottom
         gsap.fromTo(section,
           {
-            y: "100vh",
+            y: window.innerHeight,
             opacity: 0
           },
           {
@@ -53,7 +53,7 @@ const Index = () => {
               trigger: section,
               start: "top bottom",
               end: "top top",
-              scrub: 1,
+              scrub: true,
               markers: false,
               anticipatePin: 1,
               fastScrollEnd: true,

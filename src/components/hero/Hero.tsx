@@ -23,12 +23,15 @@ const Hero = () => {
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-cover will-change-transform"
+          className="absolute inset-0 w-full h-full object-cover"
           style={{
             backfaceVisibility: 'hidden',
             transform: 'translate3d(0, 0, 0)',
             WebkitBackfaceVisibility: 'hidden',
-            WebkitTransform: 'translate3d(0, 0, 0)'
+            WebkitTransform: 'translate3d(0, 0, 0)',
+            willChange: 'transform',
+            imageRendering: 'high-quality',
+            playbackQuality: 'high'
           }}
         >
           <source src="/hero-background.mp4" type="video/mp4" />
