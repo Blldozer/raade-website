@@ -83,35 +83,38 @@ const ProjectCard = ({ title, image, description, category, index }: {
   return (
     <div
       ref={cardRef}
-      className={`grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 min-h-[600px] opacity-0 group`}
+      className={`grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 lg:gap-16 h-[clamp(400px,80vh,800px)] opacity-0 group`}
       style={{
         gridTemplateAreas: index % 2 === 1 ? '"content image"' : '"image content"'
       }}
     >
       <Link 
         to="/studios"
-        className="project-image relative overflow-hidden rounded-2xl shadow-lg transform transition-transform duration-700 group-hover:scale-[1.02]"
-        style={{ gridArea: 'image' }}
+        className="project-image relative overflow-hidden rounded-2xl shadow-lg transform transition-transform duration-700 group-hover:scale-[1.02] h-full max-h-[70vh] aspect-[4/3]"
+        style={{ 
+          gridArea: 'image',
+          maxHeight: 'clamp(300px, 70vh, 800px)'
+        }}
       >
         <img
           src={image}
           alt={title}
-          className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
+          className="w-full h-full object-cover object-center transform transition-transform duration-700 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       </Link>
       
       <div 
-        className="project-content flex flex-col justify-center space-y-8 p-6 md:p-10"
+        className="project-content flex flex-col justify-center space-y-4 md:space-y-6 lg:space-y-8 p-4 md:p-6 lg:p-10"
         style={{ gridArea: 'content' }}
       >
         <p className={`animate-content text-sm font-medium ${textOpacityClass} tracking-wider`}>
           {category}
         </p>
-        <h3 className={`animate-content text-3xl md:text-4xl lg:text-5xl font-bold ${textColorClass} font-zillaslab leading-tight`}>
+        <h3 className={`animate-content text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold ${textColorClass} font-zillaslab leading-tight`}>
           {title}
         </h3>
-        <p className={`animate-content ${descriptionClass} font-merriweather leading-relaxed text-lg`}>
+        <p className={`animate-content ${descriptionClass} font-merriweather leading-relaxed text-base md:text-lg`}>
           {description}
         </p>
         <Link 
@@ -142,21 +145,20 @@ const FutureShowcase = () => {
   return (
     <section 
       ref={sectionRef}
-      className="relative py-40 bg-white overflow-y-auto"
-      style={{ height: 'auto', minHeight: '100vh' }}
+      className="relative py-20 md:py-32 lg:py-40 bg-white overflow-y-auto"
     >
       <div className="max-w-[90vw] xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-40">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#1A365D] mb-8 font-zillaslab">
+        <div className="text-center mb-20 md:mb-32 lg:mb-40">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-[#1A365D] mb-6 md:mb-8 font-zillaslab">
             Building in Progress
           </h2>
-          <p className="text-lg md:text-xl text-[#1A365D]/80 max-w-3xl mx-auto font-merriweather leading-relaxed">
+          <p className="text-base md:text-lg lg:text-xl text-[#1A365D]/80 max-w-3xl mx-auto font-merriweather leading-relaxed">
             Step into the future we're creating. Each project is a window into tomorrow,
             where innovation meets impact in real time.
           </p>
         </div>
 
-        <div className="space-y-32">
+        <div className="space-y-20 md:space-y-24 lg:space-y-32">
           {projects.map((project, index) => (
             <div key={project.title} className="project-card">
               <ProjectCard {...project} index={index} />
@@ -169,3 +171,4 @@ const FutureShowcase = () => {
 };
 
 export default FutureShowcase;
+
