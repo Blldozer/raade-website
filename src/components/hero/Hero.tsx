@@ -54,7 +54,7 @@ const Hero = () => {
   }, []);
   
   return (
-    <div className="relative hero-container overflow-hidden">
+    <div className="relative h-screen overflow-hidden">
       <div className="absolute inset-0 z-0">
         <video
           ref={videoRef}
@@ -78,9 +78,9 @@ const Hero = () => {
         <Navigation />
       </div>
       
-      <div className="relative z-30 content-wrapper" ref={contentRef}>
-        <div className="fluid-container h-full flex flex-col justify-center">
-          <div className="space-y-[var(--vertical-spacing)] max-w-[min(85%,1200px)] mx-auto pointer-events-auto">
+      <div className="relative z-30" ref={contentRef}>
+        <div className="fluid-container h-screen flex flex-col justify-center">
+          <div className="space-y-[clamp(1rem,2vw,2rem)] max-w-[min(90%,1200px)] mx-auto pointer-events-auto">
             <AnimatedText />
 
             <p className="text-[length:var(--fluid-body)] text-white/90 max-w-[min(100%,800px)] font-merriweather">
@@ -88,10 +88,10 @@ const Hero = () => {
               like you. Join a community of students and partners creating sustainable solutions through market-driven innovation.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-[var(--vertical-spacing)]">
+            <div className="flex flex-col sm:flex-row gap-[clamp(0.5rem,1vw,1rem)]">
               <button 
                 onClick={() => window.location.href = "#studios"}
-                className="group w-full sm:w-auto px-[clamp(1.25rem,1.5vw,1.75rem)] py-[clamp(0.6rem,1vw,0.875rem)] bg-raade-gold-start text-[#1A365D] rounded-lg font-semibold 
+                className="group w-full sm:w-auto px-[clamp(1.5rem,2vw,2rem)] py-[clamp(0.75rem,1.5vw,1rem)] bg-raade-gold-start text-[#1A365D] rounded-lg font-semibold 
                   transition-all duration-300 text-[length:var(--fluid-body)] font-alegreyasans relative overflow-hidden hover:shadow-[0_0_20px_rgba(251,176,59,0.5)]"
               >
                 <span className="relative z-10">Start Building Today</span>
@@ -99,38 +99,39 @@ const Hero = () => {
               </button>
               <button 
                 onClick={() => window.location.href = "#conference"}
-                className="group w-full sm:w-auto px-[clamp(1.25rem,1.5vw,1.75rem)] py-[clamp(0.6rem,1vw,0.875rem)] border-2 border-raade-gold-start text-raade-gold-start rounded-lg 
-                  font-semibold transition-all duration-300 text-[length:var--fluid-body)] font-alegreyasans hover:bg-raade-gold-start hover:text-white relative overflow-hidden"
+                className="group w-full sm:w-auto px-[clamp(1.5rem,2vw,2rem)] py-[clamp(0.75rem,1.5vw,1rem)] border-2 border-raade-gold-start text-raade-gold-start rounded-lg 
+                  font-semibold transition-all duration-300 text-[length:var(--fluid-body)] font-alegreyasans hover:bg-raade-gold-start hover:text-white relative overflow-hidden"
               >
                 <span className="relative z-10">Explore Our Impact</span>
               </button>
             </div>
           </div>
         </div>
-      </div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1, duration: 0.8 }}
-        className="relative z-50 mb-[var(--vertical-spacing)] text-center"
-      >
-        <motion.button
-          animate={{ y: [0, 10, 0] }}
-          transition={{ 
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          onClick={scrollToNextSection}
-          className="cursor-pointer p-4 group"
-          aria-label="Scroll to next section"
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 0.8 }}
+          className="absolute bottom-[clamp(2rem,4vw,3rem)] left-1/2 transform -translate-x-1/2 text-center z-50"
         >
-          <div className="w-[clamp(1rem,1.5vw,1.25rem)] h-[clamp(1rem,1.5vw,1.25rem)] mx-auto border-b-2 border-r-2 border-white/30 rotate-45 transition-all duration-300 group-hover:border-white group-hover:scale-110" />
-        </motion.button>
-      </motion.div>
+          <motion.button
+            animate={{ y: [0, 10, 0] }}
+            transition={{ 
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            onClick={scrollToNextSection}
+            className="cursor-pointer p-4 group"
+            aria-label="Scroll to next section"
+          >
+            <div className="w-[clamp(1.25rem,2vw,1.5rem)] h-[clamp(1.25rem,2vw,1.5rem)] mx-auto border-b-2 border-r-2 border-white/30 rotate-45 transition-all duration-300 group-hover:border-white group-hover:scale-110" />
+          </motion.button>
+        </motion.div>
+      </div>
     </div>
   );
 };
 
 export default Hero;
+
