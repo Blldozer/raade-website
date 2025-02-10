@@ -35,7 +35,7 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 pb-16 border-b border-gray-200">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 pb-16 border-b border-gray-200">
           {/* Contact Information */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-800 mb-6">Contact Us</h3>
@@ -98,20 +98,6 @@ const Footer = () => {
                 </a>
               ))}
             </div>
-          </div>
-
-          {/* Rice University Affiliation */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-800 mb-6">Affiliation</h3>
-            <a
-              href="https://rice.edu"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors duration-200"
-            >
-              <Globe className="h-4 w-4" />
-              Rice University
-            </a>
           </div>
         </div>
 
