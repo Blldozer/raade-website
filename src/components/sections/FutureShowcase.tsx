@@ -131,18 +131,19 @@ const FutureShowcase = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Any GSAP animations you want to add in the future can go here
+      ScrollTrigger.refresh();
     }, sectionRef);
 
     return () => {
-      ctx.revert(); // This will clean up all GSAP instances created in this context
+      ctx.revert();
     };
   }, []);
 
   return (
     <section 
       ref={sectionRef}
-      className="relative py-40 bg-white"
+      className="relative py-40 bg-white overflow-y-auto"
+      style={{ height: 'auto', minHeight: '100vh' }}
     >
       <div className="max-w-[90vw] xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-40">

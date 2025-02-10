@@ -20,13 +20,25 @@ const Index = () => {
       
       // Create the stacking effect for each section
       sections.forEach((section, index) => {
-        ScrollTrigger.create({
-          trigger: section,
-          start: "top top",
-          pin: true,
-          pinSpacing: false,
-          anticipatePin: 1
-        });
+        // Special handling for FutureShowcase section
+        if (section.classList.contains('future-showcase-section')) {
+          ScrollTrigger.create({
+            trigger: section,
+            start: "top top",
+            end: () => `+=${section.scrollHeight}`, // Dynamic end point based on content
+            pin: true,
+            pinSpacing: true,
+            anticipatePin: 1
+          });
+        } else {
+          ScrollTrigger.create({
+            trigger: section,
+            start: "top top",
+            pin: true,
+            pinSpacing: false,
+            anticipatePin: 1
+          });
+        }
 
         // Don't animate the first section (hero) coming in
         if (index !== 0) {
@@ -53,7 +65,6 @@ const Index = () => {
     }, containerRef);
 
     return () => {
-      // Clean up all ScrollTrigger instances when component unmounts
       ctx.revert();
     };
   }, []);
@@ -68,7 +79,7 @@ const Index = () => {
         <TransitionStat />
       </div>
       
-      <div className="stack-section min-h-screen bg-white">
+      <div className="stack-section future-showcase-section min-h-screen bg-white">
         <FutureShowcase />
       </div>
       
@@ -84,4 +95,3 @@ const Index = () => {
 };
 
 export default Index;
-
