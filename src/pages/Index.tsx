@@ -29,14 +29,17 @@ const Index = () => {
             end: () => `+=${section.scrollHeight}`,
             pin: true,
             pinSpacing: true,
+            scrub: 1,
             anticipatePin: 1
           });
         } else {
           ScrollTrigger.create({
             trigger: section,
             start: "top top",
+            end: "bottom top",
             pin: true,
             pinSpacing: false,
+            scrub: 1,
             anticipatePin: 1
           });
         }
@@ -49,12 +52,12 @@ const Index = () => {
             },
             {
               y: 0,
-              ease: "none",
+              ease: "power2.inOut",
               scrollTrigger: {
                 trigger: section,
                 start: "top bottom",
                 end: "top top",
-                scrub: true,
+                scrub: 1,
               }
             }
           );
