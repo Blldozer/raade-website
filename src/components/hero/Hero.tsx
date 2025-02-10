@@ -30,8 +30,7 @@ const Hero = () => {
             WebkitBackfaceVisibility: 'hidden',
             WebkitTransform: 'translate3d(0, 0, 0)',
             willChange: 'transform',
-            imageRendering: 'high-quality',
-            playbackQuality: 'high'
+            imageRendering: 'auto'
           }}
         >
           <source src="/hero-background.mp4" type="video/mp4" />
