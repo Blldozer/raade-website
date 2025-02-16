@@ -1,17 +1,20 @@
 
 import { BookOpen, Globe } from "lucide-react";
 import TeamProfiles from "../components/TeamProfiles";
+import AboutHero from "../components/about/AboutHero";
 
 const About = () => {
   return (
     <div className="bg-white">
+      <AboutHero />
+      
       <div className="pt-32 px-4 md:px-8 max-w-7xl mx-auto">
         {/* Mission Statement */}
         <section className="mb-32">
           <div className="max-w-3xl">
-            <h1 className="text-[64px] font-montserrat font-bold text-black mb-8">
+            <h2 className="text-[64px] font-montserrat font-bold text-black mb-8">
               Our Mission
-            </h1>
+            </h2>
             <p className="text-2xl font-lora text-gray-700 leading-relaxed">
               RAADE pioneers innovative approaches to African development by connecting
               students with African organizations to create scalable solutions for pressing
