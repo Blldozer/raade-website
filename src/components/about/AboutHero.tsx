@@ -21,7 +21,7 @@ const AboutHero = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.2 + 0.3, duration: 0.5 }}
               >
-                <h1 className="text-6xl md:text-8xl font-simula text-white">
+                <h1 className="text-7xl md:text-9xl font-simula text-white">
                   {word}
                 </h1>
               </motion.div>
