@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 const AboutHero = () => {
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row items-center bg-white">
+    <div className="min-h-screen flex flex-col lg:flex-row items-center bg-cream">
       {/* Left Side - Text */}
       <motion.div 
         initial={{ opacity: 0, x: -20 }}
@@ -29,7 +29,7 @@ const AboutHero = () => {
         className="w-full lg:w-1/2 h-[500px] lg:h-screen relative overflow-hidden"
       >
         <img
-          src="/raade-eboard-wb.jpg"
+          src="raade-eboard-wb.jpg"
           alt="RAADE Team at Baker Institute"
           className="w-full h-full object-cover object-center"
         />
