@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 const AboutHero = () => {
   return <div className="min-h-screen relative bg-raade-navy overflow-hidden flex items-center">
-      <div className="absolute inset-0 from-black/50 via-transparent to-transparent z-10 bg-[2b212e]" />
+      <div className="absolute inset-0 from-black/50 via-transparent to-transparent z-10 bg-[2b212e] bg-[#2b212e]" />
       
       <div className="container mx-auto px-4 relative z-20">
         <div className="max-w-4xl mx-auto">
