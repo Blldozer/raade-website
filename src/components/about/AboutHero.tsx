@@ -3,47 +3,38 @@ import { motion } from "framer-motion";
 
 const AboutHero = () => {
   return (
-    <div className="min-h-screen relative bg-raade-navy overflow-hidden flex items-center">
-      <div className="absolute inset-0 from-black/50 via-transparent to-transparent z-10 bg-[2b212e] bg-[#2b212e]" />
-      
-      <div className="container mx-auto px-4 relative z-20">
-        <div className="max-w-4xl mx-auto">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="space-y-6"
-          >
-            {["Design.", "Build.", "Scale."].map((word, index) => (
-              <motion.div
-                key={word}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.2 + 0.3, duration: 0.5 }}
-              >
-                <h1 className="text-7xl md:text-9xl font-simula text-white">
-                  {word}
-                </h1>
-              </motion.div>
-            ))}
-          </motion.div>
-          
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.2, duration: 0.5 }}
-            className="mt-12 text-xl md:text-2xl text-white/90 font-lora max-w-2xl"
-          >
-            We're a project-driven innovation studio creating market-based solutions for Africa's most pressing challenges.
-          </motion.p>
-        </div>
-      </div>
+    <div className="min-h-screen flex flex-col lg:flex-row items-center bg-white">
+      {/* Left Side - Text */}
+      <motion.div 
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+        className="w-full lg:w-1/2 p-8 lg:p-16 flex flex-col justify-center"
+      >
+        <h1 className="text-6xl lg:text-7xl font-simula text-black mb-8">
+          Who we are
+        </h1>
+        <p className="text-xl lg:text-2xl text-gray-700 font-lora max-w-xl">
+          RAADE pioneers innovative approaches to African development by connecting
+          students with African organizations to create scalable solutions for pressing
+          challenges.
+        </p>
+      </motion.div>
 
-      <div className="absolute inset-0 z-0 bg-gradient-to-b from-raade-navy via-raade-navy to-black">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-raade-gold-start/30 via-transparent to-transparent" />
-        </div>
-      </div>
+      {/* Right Side - Image */}
+      <motion.div 
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+        className="w-full lg:w-1/2 h-[500px] lg:h-screen relative"
+      >
+        <img
+          src="/raade-eboard-baker-institute.jpg"
+          alt="RAADE Team at Baker Institute"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/10" /> {/* Subtle overlay */}
+      </motion.div>
     </div>
   );
 };
