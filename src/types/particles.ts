@@ -1,7 +1,5 @@
 
 export interface Particle {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
+  position: [number, number, number];  // [x, y, z]
+  velocity: [number, number, number];  // [vx, vy, vz]
 }
