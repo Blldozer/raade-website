@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
 
@@ -29,6 +30,7 @@ export default {
         alegreyasans: ["Alegreya Sans", "serif"],
         montserrat: ["Montserrat", "sans-serif"],
         lora: ["Lora", "serif"],
+        simula: ["Simula Book", "serif"],
       },
       colors: {
         raade: {
