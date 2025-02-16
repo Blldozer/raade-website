@@ -26,12 +26,12 @@ const AboutHero = () => {
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
-        className="w-full lg:w-1/2 h-[500px] lg:h-screen relative"
+        className="w-full lg:w-1/2 h-[500px] lg:h-screen relative overflow-hidden"
       >
         <img
-          src="/raade-eboard-baker-institute.jpg"
+          src="/raade-eboard-wb.jpg"
           alt="RAADE Team at Baker Institute"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover object-center"
         />
         <div className="absolute inset-0 bg-black/10" /> {/* Subtle overlay */}
       </motion.div>
