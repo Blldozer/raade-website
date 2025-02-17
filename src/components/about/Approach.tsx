@@ -14,7 +14,7 @@ const Approach = () => {
           className="max-w-3xl mb-16"
         >
           <h2 className="text-[48px] font-simula text-black mb-8">
-            Our Approach to Change
+            Our approach to change
           </h2>
           <p className="text-xl font-lora text-gray-700 leading-relaxed">
             We've built our model on three core principles that guide everything we do:
