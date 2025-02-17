@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 
 const AboutHero = () => {
@@ -8,16 +9,13 @@ const AboutHero = () => {
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
-        className="w-full lg:w-[39%] flex flex-col justify-center bg-[#3C403A] relative" 
-        // 3C403A, 2A332E
+        className="w-full lg:w-[39%] flex flex-col justify-center bg-[#3C403A] relative"
       >
         <div className="px-8 lg:px-12 py-16 lg:py-24 max-w-[600px] mx-auto">
-          {/* Single line heading */}
-          <h1 className="text-[clamp(2.5rem,5vw,4.5rem)] whitespace-nowrap font-simula text-[#FFFDD0] mb-8">
+          <h1 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-[#FFFDD0] mb-8">
             Who we are
           </h1>
           
-          {/* Description with consistent line height */}
           <p className="text-[clamp(1rem,1.2vw,1.25rem)] leading-relaxed text-white font-lora">
             RAADE pioneers innovative approaches to African development by connecting
             students with African organizations to create scalable solutions for
