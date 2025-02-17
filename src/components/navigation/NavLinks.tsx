@@ -12,10 +12,6 @@ export const navItems = [
   {
     name: "About",
     href: "/about",
-    dropdownItems: [
-      { name: "Overview", href: "/about" },
-      { name: "Our Team", href: "/about#team" },
-    ],
   },
   {
     name: "Innovation Studios",
@@ -114,4 +110,3 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
 };
 
 export default NavLinks;
-
