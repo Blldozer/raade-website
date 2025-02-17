@@ -6,11 +6,11 @@ const Reality = () => {
   return (
     <section className="py-24 bg-cream">
       <div className="max-w-[1600px] mx-auto px-6 md:px-12">
-        {/* Title Section with 39/61 split */}
-        <div className="flex flex-col lg:flex-row">
+        {/* Title Section with 39/61 split - Title on left, spacer on right */}
+        <div className="flex flex-col lg:flex-row mb-12">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
             className="w-full lg:w-[39%]"
@@ -19,6 +19,12 @@ const Reality = () => {
               The Reality We're Addressing
             </h2>
           </motion.div>
+          <div className="lg:w-[61%]"></div> {/* Spacer div */}
+        </div>
+
+        {/* Content Section with 39/61 split - Spacer on left, content on right */}
+        <div className="flex flex-col lg:flex-row mb-16">
+          <div className="lg:w-[39%]"></div> {/* Spacer div */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -35,7 +41,7 @@ const Reality = () => {
         </div>
 
         {/* Statistics Grid */}
-        <div className="grid md:grid-cols-3 gap-8 mt-16 mb-16">
+        <div className="grid md:grid-cols-3 gap-8 mb-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -82,7 +88,7 @@ const Reality = () => {
           </motion.div>
         </div>
 
-        {/* Bottom Content with 39/61 split */}
+        {/* Bottom Content with 39/61 split - Spacer on left, content on right */}
         <div className="flex flex-col lg:flex-row">
           <div className="lg:w-[39%]"></div> {/* Spacer div */}
           <motion.div
