@@ -16,7 +16,7 @@ const Approach = () => {
             className="w-full lg:w-[39%]"
           >
             <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-black">
-              Our approach to change
+              Our approach to <span className="font-['Simula_Book_Italic']">change</span>
             </h2>
           </motion.div>
           <div className="lg:w-[61%]"></div>
