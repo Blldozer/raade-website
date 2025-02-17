@@ -35,7 +35,7 @@ const AboutHero = () => {
       >
         <img
           src="raade-innov-team-core.jpg"
-          alt="RAADE Innovation Studio Team at Baker Instittute"
+          alt="RAADE Innovation Studio Team at Rice Business School"
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-black/10" />
