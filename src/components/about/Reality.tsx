@@ -4,7 +4,7 @@ import CountUp from "react-countup";
 
 const Reality = () => {
   return (
-    <section className="py-24 bg-cream">
+    <section className="py-24 bg-white">
       <div className="max-w-[1600px] mx-auto px-6 md:px-12">
         {/* Title Section with 39/61 split - Title on left, spacer on right */}
         <div className="flex flex-col lg:flex-row mb-12">
@@ -16,7 +16,7 @@ const Reality = () => {
             className="w-full lg:w-[39%]"
           >
             <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-black">
-              The Reality We're Addressing
+              The <span className="font-['Simula_Book_Italic']">reality</span> We're Addressing
             </h2>
           </motion.div>
           <div className="lg:w-[61%]"></div> {/* Spacer div */}
@@ -47,7 +47,7 @@ const Reality = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="bg-white p-8 rounded-xl shadow-sm"
+            className="bg-cream p-8 rounded-xl shadow-sm"
           >
             <div className="text-5xl font-simula text-raade-navy mb-4">
               <CountUp end={70} suffix="%" duration={2.5} />
@@ -62,7 +62,7 @@ const Reality = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.4 }}
-            className="bg-white p-8 rounded-xl shadow-sm"
+            className="bg-cream p-8 rounded-xl shadow-sm"
           >
             <div className="text-5xl font-simula text-raade-navy mb-4">
               <CountUp prefix="$" end={4.5} suffix="B" decimals={1} duration={2.5} />
@@ -77,7 +77,7 @@ const Reality = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.6 }}
-            className="bg-white p-8 rounded-xl shadow-sm"
+            className="bg-cream p-8 rounded-xl shadow-sm"
           >
             <div className="text-5xl font-simula text-raade-navy mb-4">
               <CountUp end={80} suffix="%" duration={2.5} />
