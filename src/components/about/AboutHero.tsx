@@ -34,7 +34,7 @@ const AboutHero = () => {
         className="w-full lg:w-[61%] h-screen relative"
       >
         <img
-          src="raade-innov-team-core.jpg"
+          src="raade-innov-team-core-2.jpg"
           alt="RAADE Innovation Studio Team at Rice Business School"
           className="absolute inset-0 w-full h-full object-cover"
         />
