@@ -13,7 +13,7 @@ const NewModel = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="w-full lg:w-[39%] pl-4 md:pl-8 pr-8"
+            className="w-full lg:w-[39%] pl-1 md:pl-1 pr-1"
           >
             <h2 className="text-[clamp(2.5rem,5vw,3.5rem)] leading-[1.1] font-simula text-black mb-8">
               A <span className="font-['Simula_Book_Italic']">new</span> Model for African Development

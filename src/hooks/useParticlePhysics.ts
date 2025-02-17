@@ -1,4 +1,3 @@
-
 // hooks/useParticlePhysics.ts
 import { useFrame } from '@react-three/fiber';
 import { useMemo, useRef } from 'react';
