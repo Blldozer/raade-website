@@ -2,40 +2,44 @@ import { motion } from "framer-motion";
 
 const AboutHero = () => {
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row items-stretch bg-cream">
+    <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left Side - Text */}
       <motion.div 
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
-        className="w-full lg:w-[38%] p-8 lg:p-16 flex flex-col justify-center"
+        className="w-full lg:w-[39%] flex flex-col justify-center bg-[#3C403A] relative" 
+        // 3C403A, 2A332E
       >
-        <h1 className="text-6xl lg:text-7xl font-simula text-black mb-8">
-          Who we are
-        </h1>
-        <p className="text-xl lg:text-2xl text-gray-700 font-lora max-w-xl">
-          RAADE pioneers innovative approaches to African development by connecting
-          students with African organizations to create scalable solutions for pressing
-          challenges.
-        </p>
+        <div className="px-8 lg:px-12 py-16 lg:py-24 max-w-[600px] mx-auto">
+          {/* Single line heading */}
+          <h1 className="text-[clamp(2.5rem,5vw,4.5rem)] whitespace-nowrap font-simula text-[#FFFDD0] mb-8">
+            Who we are
+          </h1>
+          
+          {/* Description with consistent line height */}
+          <p className="text-[clamp(1rem,1.2vw,1.25rem)] leading-relaxed text-white font-lora">
+            RAADE pioneers innovative approaches to African development by connecting
+            students with African organizations to create scalable solutions for
+            pressing challenges.
+          </p>
+        </div>
       </motion.div>
 
-    {/* Right Side - Image */}
-<motion.div 
-  initial={{ opacity: 0, x: 20 }}
-  animate={{ opacity: 1, x: 0 }}
-  transition={{ duration: 0.6 }}
-  className="w-full lg:w-[62%] min-h-screen relative bg-[#F5F5F5]"
->
-  <div className="absolute inset-0 flex items-center justify-center">
-    <img
-      src="raade-eboard-wb.jpg"
-      alt="RAADE Team at Baker Institute"
-      className="w-full h-full object-cover"
-    />
-  </div>
-  <div className="absolute inset-0 bg-black/10" />
-</motion.div>
+      {/* Right Side - Image */}
+      <motion.div 
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+        className="w-full lg:w-[61%] h-screen relative"
+      >
+        <img
+          src="raade-innov-team-core.jpg"
+          alt="RAADE Innovation Studio Team at Baker Instittute"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/10" />
+      </motion.div>
     </div>
   );
 };

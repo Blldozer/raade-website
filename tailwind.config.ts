@@ -13,12 +13,18 @@ export default {
   prefix: "",
   theme: {
     container: {
-      center: true,
-      padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
-    },
+  center: true,
+  padding: "2rem",
+  screens: {
+    'xs': '375px',    // Small phones
+    'sm': '640px',    // Large phones
+    'md': '768px',    // Tablets
+    'lg': '1024px',   // Laptops
+    'xl': '1280px',   // Desktop
+    '2xl': '1400px',  // Large Desktop
+    '3xl': '1920px'   // Extra Large Screens
+  },
+},
     extend: {
       fontFamily: {
         hammersmith: ["Hammersmith One", "serif"],
@@ -34,9 +40,13 @@ export default {
       },
       colors: {
         raade: {
-          navy: "#2a4774",
+          navy: "#274675",
           red: "#F73B20",
           orange: "#FFA726",
+          "Athens gray": "#F4F5F4",
+          "Oslo gray": "3C403A",
+          "Thunder": "2B212E",
+          "yellow-orange": "#FBB03B",
           gold: {
             start: "#FFA726",
             middle: "#FF9848",
