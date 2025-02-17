@@ -11,6 +11,9 @@ import About from "./pages/About";
 import Footer from "./components/Footer";
 import Navigation from "./components/Navigation";
 
+// Initialize the QueryClient
+const queryClient = new QueryClient();
+
 const NavigationWrapper = () => {
   const location = useLocation();
   // Don't show the main navigation on the About page
