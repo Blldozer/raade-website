@@ -45,7 +45,7 @@ interface NavLinksProps {
 const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = false }: NavLinksProps) => {
   const getTextColor = () => {
     if (isHeroPage && !isScrolled) return "text-white hover:text-[#FBB03B]";
-    return "text-[#FBB03B]";
+    return "text-[#274675] hover:text-[#FBB03B]";
   };
 
   return (
@@ -97,7 +97,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
             className={`px-6 py-2 rounded-md transition-all duration-300 border-2 text-lg font-alegreyasans ${
               isHeroPage && !isScrolled 
                 ? "border-white text-white hover:bg-[#FBB03B] hover:border-[#FBB03B] hover:text-white" 
-                : "border-[#FBB03B] text-[#FBB03B]"
+                : "border-[#FBB03B] bg-[#FBB03B] text-white hover:bg-[#274675] hover:border-[#274675] shadow-md"
             }`}
             onClick={onClick}
           >
