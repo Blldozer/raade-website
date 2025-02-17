@@ -16,7 +16,7 @@ const Reality = () => {
             className="w-full lg:w-[39%]"
           >
             <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-black">
-              The <span className="font-['Simula_Book_Italic']">reality</span> We're Addressing
+              The <span className="font-['Simula_Book_Italic']">reality</span> we're addressing
             </h2>
           </motion.div>
           <div className="lg:w-[61%]"></div> {/* Spacer div */}

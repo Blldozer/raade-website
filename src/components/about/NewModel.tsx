@@ -16,7 +16,7 @@ const NewModel = () => {
             className="w-full lg:w-[39%]"
           >
             <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-black max-w-[700px]">
-              A <span className="font-['Simula_Book_Italic']">new</span> Model for African Development
+              A <span className="font-['Simula_Book_Italic']">new</span> model for African development
             </h2>
           </motion.div>
           <div className="lg:w-[61%]"></div> {/* Spacer div for maintaining the split */}
