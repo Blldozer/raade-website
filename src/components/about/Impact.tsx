@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import CountUp from "react-countup";
 
@@ -50,7 +49,7 @@ const Impact = () => {
               className="border-t border-gray-200 pt-8"
             >
               <div className="text-[8rem] font-montserrat font-black text-black leading-none tracking-tighter">
-                8<span className="text-gray-300">+</span>
+                8
               </div>
               <p className="text-xl text-gray-600 mt-2">
                 Active projects transforming communities
@@ -65,7 +64,7 @@ const Impact = () => {
               className="border-t border-gray-200 pt-8"
             >
               <div className="text-[8rem] font-montserrat font-black text-black leading-none tracking-tighter">
-                6<span className="text-gray-300">+</span>
+                6
               </div>
               <p className="text-xl text-gray-600 mt-2">
                 African partner organizations
@@ -98,7 +97,7 @@ const Impact = () => {
               className="border-t border-gray-200 pt-8"
             >
               <div className="text-[8rem] font-montserrat font-black text-black leading-none tracking-tighter">
-                3<span className="text-gray-300">+</span>
+                3
               </div>
               <p className="text-xl text-gray-600 mt-2">
                 Solutions ready for scaling

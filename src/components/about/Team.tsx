@@ -1,0 +1,88 @@
+
+import { motion } from "framer-motion";
+
+const teamMembers = [
+  { name: "Kene Onubogu", position: "Founder & Co-executive Director" },
+  { name: "Ife Idakolo", position: "Co-founder and Co-executive Director" },
+  { name: "Precious Akinrinmade", position: "Innovation Studio Director" },
+  { name: "Hawa Diallo", position: "Innovation Studio Head Officer" },
+  { name: "Eshe Lovely", position: "Innovation Studio Officer" },
+  { name: "Denise Lundu", position: "Innovation Studio Officer" },
+  { name: "Favour Williams", position: "Outreach Director" },
+  { name: "Nma Moghalu", position: "Outreach Officer" },
+  { name: "Kamji Mbakwe", position: "Outreach Officer" },
+  { name: "Alexander Jamu", position: "Creative Design, Branding and Marketing Director" },
+  { name: "Djenabou Boakum", position: "Creative Design, Branding and Marketing Officer" },
+  { name: "Ama Imoyo", position: "Finance Officer" },
+  { name: "Victoria Oluwasesin", position: "Logistics Manager" },
+  { name: "Rose Oyoo", position: "Logistics Manager" },
+  { name: "Kene Okereke", position: "Tech Officer" }
+];
+
+const Team = () => {
+  return (
+    <section className="py-24 bg-white">
+      <div className="max-w-[1600px] mx-auto px-6 md:px-12">
+        {/* Title Section - 39/61 split */}
+        <div className="flex flex-col lg:flex-row mb-12">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="w-full lg:w-[39%]"
+          >
+            <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula">
+              Meet the <span className="italic">team</span>
+            </h2>
+          </motion.div>
+          <div className="lg:w-[61%]"></div>
+        </div>
+
+        {/* Subtitle Section - 39/61 split */}
+        <div className="flex flex-col lg:flex-row mb-16">
+          <div className="lg:w-[39%]"></div>
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="w-full lg:w-[61%] mt-8 lg:mt-0"
+          >
+            <p className="text-xl font-lora text-gray-700 leading-relaxed">
+              Our community of doers
+            </p>
+          </motion.div>
+        </div>
+
+        {/* Team Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {teamMembers.map((member, index) => (
+            <motion.div
+              key={member.name}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              className="bg-[#3C403A] rounded-lg overflow-hidden"
+            >
+              <div className="aspect-[4/5] bg-gray-200">
+                {/* Placeholder for image */}
+              </div>
+              <div className="p-6">
+                <h3 className="text-2xl font-montserrat font-bold text-white mb-2">
+                  {member.name}
+                </h3>
+                <p className="text-gray-300 font-lora">
+                  {member.position}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Team;
