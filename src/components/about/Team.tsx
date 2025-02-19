@@ -66,7 +66,7 @@ const Team = () => {
               transition={{ delay: index * 0.1 }}
               className="relative pt-[20px] px-[20px]"
             >
-              <div className="absolute top-0 left-0 w-full h-[90%] bg-[#3C403A] rounded-lg" />
+              <div className="absolute top-0 left-0 w-full h-[95%] bg-[#3C403A] rounded-lg" />
               <div className="relative z-10">
                 <div className="aspect-[4/5] bg-gray-200 rounded-lg overflow-hidden">
                   <img 
@@ -76,10 +76,10 @@ const Team = () => {
                   />
                 </div>
                 <div className="p-6">
-                  <h3 className="text-2xl font-simula text-white mb-2">
+                  <h3 className="text-3xl font-simula text-white mb-3">
                     {member.name}
                   </h3>
-                  <p className="text-gray-300 font-lora">
+                  <p className="text-lg text-gray-300 font-lora">
                     {member.position}
                   </p>
                 </div>
