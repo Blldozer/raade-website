@@ -32,8 +32,8 @@ const Impact = () => {
             transition={{ duration: 0.6 }}
             className="w-full lg:w-[61%] mt-8 lg:mt-0"
           >
-            <p className="text-xl font-lora text-gray-700 leading-relaxed">
-              Numbers we're proud of, yet humble about:
+            <p className="text-xl font-lora text-gray-700 leading-relaxed text-center">
+              We've come a long way, in a few short months, but we are only just getting started
             </p>
           </motion.div>
         </div>
@@ -54,7 +54,7 @@ const Impact = () => {
               transition={{ delay: index * 0.2 }}
               className="text-center"
             >
-              <div className="text-5xl md:text-6xl font-montserrat text-raade-navy mb-4">
+              <div className="text-5xl md:text-6xl font-montserrat font-black text-black mb-4">
                 <CountUp end={stat.number} duration={2.5} />
                 {stat.number === 100 && "+"}
               </div>
