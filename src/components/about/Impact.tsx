@@ -38,31 +38,73 @@ const Impact = () => {
           </motion.div>
         </div>
 
-        {/* Statistics Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-          {[
-            { number: 8, label: "Active projects transforming communities" },
-            { number: 6, label: "African partner organizations" },
-            { number: 100, label: "Rice students engaged in real-world innovation" },
-            { number: 3, label: "Solutions ready for scaling" },
-          ].map((stat, index) => (
+        {/* Statistics Grid - 2x2 Layout */}
+        <div className="flex flex-col lg:flex-row gap-8 mb-16">
+          {/* Left Column */}
+          <div className="w-full lg:w-1/2 space-y-16">
             <motion.div
-              key={index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.2 }}
-              className="text-center"
+              transition={{ delay: 0.2 }}
+              className="border-t border-gray-200 pt-8"
             >
-              <div className="text-5xl md:text-6xl font-montserrat font-black text-black mb-4">
-                <CountUp end={stat.number} duration={2.5} />
-                {stat.number === 100 && "+"}
+              <div className="text-[8rem] font-montserrat font-black text-black leading-none tracking-tighter">
+                8<span className="text-gray-300">+</span>
               </div>
-              <p className="text-gray-700 text-lg">
-                {stat.label}
+              <p className="text-xl text-gray-600 mt-2">
+                Active projects transforming communities
               </p>
             </motion.div>
-          ))}
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+              className="border-t border-gray-200 pt-8"
+            >
+              <div className="text-[8rem] font-montserrat font-black text-black leading-none tracking-tighter">
+                6<span className="text-gray-300">+</span>
+              </div>
+              <p className="text-xl text-gray-600 mt-2">
+                African partner organizations
+              </p>
+            </motion.div>
+          </div>
+
+          {/* Right Column */}
+          <div className="w-full lg:w-1/2 space-y-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.6 }}
+              className="border-t border-gray-200 pt-8"
+            >
+              <div className="text-[8rem] font-montserrat font-black text-black leading-none tracking-tighter">
+                100<span className="text-gray-300">+</span>
+              </div>
+              <p className="text-xl text-gray-600 mt-2">
+                Rice students engaged in real-world innovation
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.8 }}
+              className="border-t border-gray-200 pt-8"
+            >
+              <div className="text-[8rem] font-montserrat font-black text-black leading-none tracking-tighter">
+                3<span className="text-gray-300">+</span>
+              </div>
+              <p className="text-xl text-gray-600 mt-2">
+                Solutions ready for scaling
+              </p>
+            </motion.div>
+          </div>
         </div>
 
         {/* Bottom Content - 39/61 split */}
@@ -76,7 +118,7 @@ const Impact = () => {
             className="w-full lg:w-[61%]"
           >
             <p className="text-xl font-lora text-gray-700 leading-relaxed">
-              These aren't just metrics—they're milestones in our journey to transform 
+              These are milestones in our journey to transform 
               how development happens. Each number represents real people, real solutions, 
               and real impact.
             </p>
