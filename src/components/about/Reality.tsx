@@ -19,12 +19,12 @@ const Reality = () => {
               The <span className="font-['Simula_Book_Italic']">reality</span> we're addressing
             </h2>
           </motion.div>
-          <div className="lg:w-[61%]"></div> {/* Spacer div */}
+          <div className="lg:w-[61%]"></div>
         </div>
 
         {/* Content Section with 39/61 split - Spacer on left, content on right */}
         <div className="flex flex-col lg:flex-row mb-16">
-          <div className="lg:w-[39%]"></div> {/* Spacer div */}
+          <div className="lg:w-[39%]"></div>
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -47,12 +47,12 @@ const Reality = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="bg-cream p-8 rounded-xl shadow-sm"
+            className="bg-[#3C403A] p-8 rounded-xl shadow-sm"
           >
-            <div className="text-5xl font-simula text-raade-navy mb-4">
+            <div className="text-5xl font-montserrat font-black text-white mb-4">
               <CountUp end={70} suffix="%" duration={2.5} />
             </div>
-            <p className="text-gray-700">
+            <p className="text-gray-200">
               of development projects fail to achieve their intended impact
             </p>
           </motion.div>
@@ -62,12 +62,12 @@ const Reality = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.4 }}
-            className="bg-cream p-8 rounded-xl shadow-sm"
+            className="bg-[#3C403A] p-8 rounded-xl shadow-sm"
           >
-            <div className="text-5xl font-simula text-raade-navy mb-4">
+            <div className="text-5xl font-montserrat font-black text-white mb-4">
               <CountUp prefix="$" end={4.5} suffix="B" decimals={1} duration={2.5} />
             </div>
-            <p className="text-gray-700">
+            <p className="text-gray-200">
               spent annually on solutions that don't last
             </p>
           </motion.div>
@@ -77,12 +77,12 @@ const Reality = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.6 }}
-            className="bg-cream p-8 rounded-xl shadow-sm"
+            className="bg-[#3C403A] p-8 rounded-xl shadow-sm"
           >
-            <div className="text-5xl font-simula text-raade-navy mb-4">
+            <div className="text-5xl font-montserrat font-black text-white mb-4">
               <CountUp end={80} suffix="%" duration={2.5} />
             </div>
-            <p className="text-gray-700">
+            <p className="text-gray-200">
               of initiatives designed without meaningful local input
             </p>
           </motion.div>
@@ -90,7 +90,7 @@ const Reality = () => {
 
         {/* Bottom Content with 39/61 split - Spacer on left, content on right */}
         <div className="flex flex-col lg:flex-row">
-          <div className="lg:w-[39%]"></div> {/* Spacer div */}
+          <div className="lg:w-[39%]"></div>
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}

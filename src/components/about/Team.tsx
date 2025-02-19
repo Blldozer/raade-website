@@ -33,7 +33,7 @@ const Team = () => {
             className="w-full lg:w-[39%]"
           >
             <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula">
-              Meet the <span className="italic">team</span>
+              Meet the <span className="font-['Simula_Book_Italic']">team</span>
             </h2>
           </motion.div>
           <div className="lg:w-[61%]"></div>
@@ -64,22 +64,25 @@ const Team = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="bg-[#3C403A] rounded-lg overflow-hidden"
+              className="relative pt-[20px] px-[20px]"
             >
-              <div className="aspect-[4/5] bg-gray-200">
-                <img 
-                  src={`/raade-individual-e-board-photos/${member.name.replace(" ", "-")}-raade-website-image.jpg`}
-                  alt={member.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="p-6">
-                <h3 className="text-2xl font-simula text-white mb-2">
-                  {member.name}
-                </h3>
-                <p className="text-gray-300 font-lora">
-                  {member.position}
-                </p>
+              <div className="absolute top-0 left-0 w-full h-[95%] bg-[#3C403A] rounded-lg" />
+              <div className="relative z-10">
+                <div className="aspect-[4/5] bg-gray-200 rounded-lg overflow-hidden">
+                  <img 
+                    src={`/raade-individual-e-board-photos/${member.name.replace(" ", "-")}-raade-website-image.jpg`}
+                    alt={member.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <h3 className="text-4xl font-simula text-white mb-3">
+                    {member.name}
+                  </h3>
+                  <p className="text-lg text-gray-300 font-lora">
+                    {member.position}
+                  </p>
+                </div>
               </div>
             </motion.div>
           ))}
