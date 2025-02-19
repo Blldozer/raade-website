@@ -73,11 +73,11 @@ const ProjectsShowcase = () => {
   );
 
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 animate-fade-in">
+    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-[#3C403A] animate-fade-in">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-raade-navy mb-4">Our Projects</h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <h2 className="text-4xl font-bold text-white mb-4">Our Projects</h2>
+          <p className="text-lg text-gray-200 max-w-2xl mx-auto">
             Explore our portfolio of innovative solutions developed in partnership with
             African organizations.
           </p>
@@ -90,7 +90,7 @@ const ProjectsShowcase = () => {
               key={sector}
               variant={selectedSector === sector ? "default" : "outline"}
               onClick={() => setSelectedSector(sector)}
-              className={selectedSector === sector ? "bg-raade-navy" : ""}
+              className={selectedSector === sector ? "bg-white text-[#3C403A]" : "text-white border-white hover:bg-white/20"}
             >
               {sector}
             </Button>
@@ -100,7 +100,7 @@ const ProjectsShowcase = () => {
         {/* Projects Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredProjects.map((project) => (
-            <Card key={project.name} className="overflow-hidden hover:shadow-lg transition-shadow">
+            <Card key={project.name} className="overflow-hidden hover:shadow-lg transition-shadow bg-white">
               <img
                 src={project.image}
                 alt={project.name}
@@ -108,7 +108,7 @@ const ProjectsShowcase = () => {
               />
               <CardHeader>
                 <div className="flex justify-between items-start">
-                  <CardTitle className="text-xl text-raade-navy">{project.name}</CardTitle>
+                  <CardTitle className="text-xl text-[#3C403A]">{project.name}</CardTitle>
                   <Badge variant="secondary">{project.sector}</Badge>
                 </div>
                 <CardDescription className="font-medium">

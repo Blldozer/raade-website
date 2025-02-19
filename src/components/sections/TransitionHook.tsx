@@ -19,7 +19,7 @@ const TransitionHook = () => {
   };
 
   return (
-    <section className="min-h-screen flex flex-col justify-between section-padding bg-cream">
+    <section className="min-h-screen flex flex-col justify-between section-padding bg-[#3C403A]">
       <div className="flex-grow flex items-center">
         <div className="fluid-container text-center">
           <motion.div
@@ -28,7 +28,7 @@ const TransitionHook = () => {
             viewport={{ once: true, margin: "-20%" }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="text-[length:var(--fluid-h2)] font-bold text-[#1A365D] font-alegreyasans">
+            <h2 className="text-[length:var(--fluid-h2)] font-bold text-white font-alegreyasans">
               Every day we wait
               <br />
               is another <span className="text-raade-gold-start">opportunity lost</span>.
@@ -44,7 +44,7 @@ const TransitionHook = () => {
         transition={{ duration: 0.8, delay: 0.5 }}
         className="text-center pb-[clamp(2rem,4vw,3rem)]"
       >
-        <p className="text-[length:var(--fluid-body)] text-[#1A365D]/60 font-merriweather mb-[clamp(1rem,2vw,1.5rem)]">
+        <p className="text-[length:var(--fluid-body)] text-white/80 font-merriweather mb-[clamp(1rem,2vw,1.5rem)]">
           Here's how you can get involved
         </p>
         <motion.button
@@ -58,7 +58,7 @@ const TransitionHook = () => {
           className="cursor-pointer p-4 group"
           aria-label="Scroll to next section"
         >
-          <div className="w-[clamp(1.25rem,2vw,1.5rem)] h-[clamp(1.25rem,2vw,1.5rem)] mx-auto border-b-2 border-r-2 border-[#1A365D]/30 rotate-45 transition-all duration-300 group-hover:border-[#1A365D] group-hover:scale-110" />
+          <div className="w-[clamp(1.25rem,2vw,1.5rem)] h-[clamp(1.25rem,2vw,1.5rem)] mx-auto border-b-2 border-r-2 border-white/30 rotate-45 transition-all duration-300 group-hover:border-white group-hover:scale-110" />
         </motion.button>
       </motion.div>
     </section>
@@ -66,4 +66,3 @@ const TransitionHook = () => {
 };
 
 export default TransitionHook;
-

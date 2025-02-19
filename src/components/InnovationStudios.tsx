@@ -48,8 +48,8 @@ const InnovationStudios = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-raade-navy mb-4">Innovation Studios</h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <h2 className="text-4xl font-bold text-white mb-4">Innovation Studios</h2>
+          <p className="text-lg text-gray-200 max-w-2xl mx-auto">
             A 9-week intensive program where Rice students collaborate with African organizations
             to develop innovative solutions for real-world challenges.
           </p>
@@ -58,15 +58,15 @@ const InnovationStudios = () => {
         {/* Projects Showcase */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
           {projects.map((project, index) => (
-            <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
+            <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow bg-[#3C403A]">
               <img
                 src={project.image}
                 alt={project.title}
                 className="w-full h-48 object-cover"
               />
               <CardHeader>
-                <CardTitle className="text-xl text-raade-navy">{project.title}</CardTitle>
-                <CardDescription>{project.description}</CardDescription>
+                <CardTitle className="text-xl text-white">{project.title}</CardTitle>
+                <CardDescription className="text-gray-300">{project.description}</CardDescription>
               </CardHeader>
             </Card>
           ))}
@@ -74,21 +74,21 @@ const InnovationStudios = () => {
 
         {/* Timeline */}
         <div className="mb-16">
-          <h3 className="text-2xl font-bold text-raade-navy text-center mb-8">Program Timeline</h3>
+          <h3 className="text-2xl font-bold text-white text-center mb-8">Program Timeline</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {timeline.map((phase, index) => (
-              <Card key={index} className="text-center">
+              <Card key={index} className="text-center bg-[#3C403A]">
                 <CardHeader>
-                  <div className="mx-auto mb-4 p-3 bg-raade-navy rounded-full w-12 h-12 flex items-center justify-center">
-                    {phase.icon && <phase.icon className="w-6 h-6 text-white" />}
+                  <div className="mx-auto mb-4 p-3 bg-white rounded-full w-12 h-12 flex items-center justify-center">
+                    {phase.icon && <phase.icon className="w-6 h-6 text-[#3C403A]" />}
                   </div>
-                  <CardTitle className="text-lg font-semibold">{phase.week}</CardTitle>
-                  <CardDescription className="font-medium text-raade-navy">
+                  <CardTitle className="text-lg font-semibold text-white">{phase.week}</CardTitle>
+                  <CardDescription className="font-medium text-gray-300">
                     {phase.title}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600">{phase.description}</p>
+                  <p className="text-gray-200">{phase.description}</p>
                 </CardContent>
               </Card>
             ))}
@@ -96,8 +96,8 @@ const InnovationStudios = () => {
         </div>
 
         {/* Success Metrics */}
-        <div className="bg-gray-50 rounded-lg p-8 mb-16">
-          <h3 className="text-2xl font-bold text-raade-navy text-center mb-8">Our Impact</h3>
+        <div className="bg-[#3C403A] rounded-lg p-8 mb-16">
+          <h3 className="text-2xl font-bold text-white text-center mb-8">Our Impact</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               { metric: "100+", label: "Students Engaged" },
@@ -106,8 +106,8 @@ const InnovationStudios = () => {
               { metric: "3", label: "Partner Countries" },
             ].map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="text-3xl font-bold text-raade-navy mb-2">{stat.metric}</div>
-                <div className="text-gray-600">{stat.label}</div>
+                <div className="text-3xl font-bold text-white mb-2">{stat.metric}</div>
+                <div className="text-gray-300">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -117,7 +117,7 @@ const InnovationStudios = () => {
         <div className="text-center">
           <Button
             size="lg"
-            className="bg-raade-navy text-white hover:bg-raade-gold hover:text-raade-navy transition-colors"
+            className="bg-white text-[#3C403A] hover:bg-gray-100 transition-colors"
           >
             Apply Now <ArrowRight className="ml-2" />
           </Button>
