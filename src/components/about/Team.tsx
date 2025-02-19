@@ -64,22 +64,22 @@ const Team = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="relative pt-[20px] px-[20px]"
+              className="relative"
             >
-              <div className="absolute top-0 left-0 w-full h-[95%] bg-[#3C403A] rounded-lg" />
+              <div className="absolute top-0 left-0 w-full h-full bg-[#3C403A] rounded-lg" />
               <div className="relative z-10">
-                <div className="aspect-[4/5] bg-gray-200 rounded-lg overflow-hidden">
+                <div className="rounded-t-lg overflow-hidden">
                   <img 
-                    src={`/raade-individual-e-board-photos/${member.name.replace(" ", "-")}-raade-website-image.jpg`}
+                    src={`/raade-individual-e-board-photos/${member.name.split(" ").join("-")}-raade-website-image.jpg`}
                     alt={member.name}
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="p-6">
-                  <h3 className="text-4xl font-simula text-white mb-3">
+                <div className="p-8">
+                  <h3 className="text-5xl font-simula text-white mb-4">
                     {member.name}
                   </h3>
-                  <p className="text-lg text-gray-300 font-lora">
+                  <p className="text-2xl text-gray-300 font-lora">
                     {member.position}
                   </p>
                 </div>
