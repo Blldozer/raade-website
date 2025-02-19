@@ -80,7 +80,7 @@ const Footer = () => {
             <h3 className="text-lg font-semibold text-gray-800 mb-6">Connect</h3>
             <div className="space-y-3">
               {[
-                { href: "https://linkedin.com/company/raade", text: "LinkedIn" },
+                { href: "https://www.linkedin.com/company/rice-association-for-african-development/", text: "LinkedIn" },
                 { href: "https://twitter.com/raade", text: "Twitter" }
               ].map((social) => (
                 <a
