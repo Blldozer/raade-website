@@ -12,7 +12,7 @@ const AboutHero = () => {
         className="w-full lg:w-[39%] flex flex-col justify-center bg-[#3C403A] relative"
       >
         <div className="px-8 lg:px-12 py-16 lg:py-24 max-w-[600px] mx-auto">
-          <h1 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-[#FFFDD0] mb-8">
+          <h1 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-white mb-8">
             Who we are
           </h1>
           
