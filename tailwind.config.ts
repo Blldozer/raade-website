@@ -44,8 +44,8 @@ export default {
           red: "#F73B20",
           orange: "#FFA726",
           "Athens gray": "#F4F5F4",
-          "Oslo gray": "3C403A",
-          "Thunder": "2B212E",
+          "Oslo gray": "#3C403A",
+          "Thunder": "#2B212E",
           "yellow-orange": "#FBB03B",
           gold: {
             start: "#FFA726",
