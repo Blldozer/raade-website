@@ -49,7 +49,7 @@ const Impact = () => {
               transition={{ delay: 0.2 }}
               className="border-t border-gray-200 pt-8"
             >
-              <div className="text-[8rem] font-montserrat font-black text-[#3C403A] leading-none tracking-tighter">
+              <div className="text-[8rem] font-montserrat font-black text-black leading-none tracking-tighter">
                 8
               </div>
               <p className="text-xl text-gray-600 mt-2">
@@ -64,7 +64,7 @@ const Impact = () => {
               transition={{ delay: 0.4 }}
               className="border-t border-gray-200 pt-8"
             >
-              <div className="text-[8rem] font-montserrat font-black text-[#3C403A] leading-none tracking-tighter">
+              <div className="text-[8rem] font-montserrat font-black text-black leading-none tracking-tighter">
                 6
               </div>
               <p className="text-xl text-gray-600 mt-2">
@@ -82,7 +82,7 @@ const Impact = () => {
               transition={{ delay: 0.6 }}
               className="border-t border-gray-200 pt-8"
             >
-              <div className="text-[8rem] font-montserrat font-black text-[#3C403A] leading-none tracking-tighter">
+              <div className="text-[8rem] font-montserrat font-black text-black leading-none tracking-tighter">
                 100<span className="text-gray-300">+</span>
               </div>
               <p className="text-xl text-gray-600 mt-2">
@@ -97,7 +97,7 @@ const Impact = () => {
               transition={{ delay: 0.8 }}
               className="border-t border-gray-200 pt-8"
             >
-              <div className="text-[8rem] font-montserrat font-black text-[#3C403A] leading-none tracking-tighter">
+              <div className="text-[8rem] font-montserrat font-black text-black leading-none tracking-tighter">
                 3
               </div>
               <p className="text-xl text-gray-600 mt-2">

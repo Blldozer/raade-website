@@ -57,21 +57,21 @@ const NewModel = () => {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              className="mt-24 p-12 bg-cream rounded-xl"
+              className="mt-24 p-12 bg-[#3C403A] rounded-xl"
             >
               <div className="flex flex-col md:flex-row items-center justify-between gap-12">
                 <div className="text-center md:text-left">
-                  <h3 className="text-2xl font-simula mb-6">Rice Students</h3>
-                  <ul className="space-y-3 text-gray-700">
+                  <h3 className="text-2xl font-simula mb-6 text-white">Rice Students</h3>
+                  <ul className="space-y-3 text-gray-200">
                     <li>Innovation Capacity</li>
                     <li>Technical Expertise</li>
                     <li>Fresh Perspectives</li>
                   </ul>
                 </div>
-                <ArrowLeftRight className="w-16 h-16 text-raade-navy rotate-90 md:rotate-0" />
+                <ArrowLeftRight className="w-16 h-16 text-white rotate-90 md:rotate-0" />
                 <div className="text-center md:text-right">
-                  <h3 className="text-2xl font-simula mb-6">African Partners</h3>
-                  <ul className="space-y-3 text-gray-700">
+                  <h3 className="text-2xl font-simula mb-6 text-white">African Partners</h3>
+                  <ul className="space-y-3 text-gray-200">
                     <li>Local Knowledge</li>
                     <li>Cultural Context</li>
                     <li>Implementation Expertise</li>
