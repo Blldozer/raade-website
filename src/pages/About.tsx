@@ -5,6 +5,7 @@ import NewModel from "../components/about/NewModel";
 import Reality from "../components/about/Reality";
 import Approach from "../components/about/Approach";
 import Impact from "../components/about/Impact";
+import Team from "../components/about/Team";
 
 const About = () => {
   return (
@@ -15,6 +16,7 @@ const About = () => {
       <Reality />
       <Approach />
       <Impact />
+      <Team />
     </div>
   );
 };

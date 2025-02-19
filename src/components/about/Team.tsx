@@ -70,7 +70,7 @@ const Team = () => {
                 {/* Placeholder for image */}
               </div>
               <div className="p-6">
-                <h3 className="text-2xl font-montserrat font-bold text-white mb-2">
+                <h3 className="text-2xl font-simula text-white mb-2">
                   {member.name}
                 </h3>
                 <p className="text-gray-300 font-lora">
