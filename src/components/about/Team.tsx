@@ -67,7 +67,11 @@ const Team = () => {
               className="bg-[#3C403A] rounded-lg overflow-hidden"
             >
               <div className="aspect-[4/5] bg-gray-200">
-                {/* Placeholder for image */}
+                <img 
+                  src={`/raade-individual-e-board-photos/${member.name.replace(" ", "-")}-raade-website-image.jpg`}
+                  alt={member.name}
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className="p-6">
                 <h3 className="text-2xl font-simula text-white mb-2">
