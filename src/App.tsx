@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import ComingSoon from "./pages/ComingSoon";
+import ComingSoon from "./pages/Comingsoon";
 
 // Initialize the QueryClient
 const queryClient = new QueryClient();
