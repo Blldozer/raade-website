@@ -4,7 +4,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import ComingSoon from "./pages/ComingSoon";
 
 // Original imports (uncommented to continue development)
 import Index from "./pages/Index";
@@ -20,26 +19,13 @@ const queryClient = new QueryClient();
 // A wrapper component to decide what to show based on URL params
 const AppContent = () => {
   const location = useLocation();
-  const showDev = new URLSearchParams(location.search).get('dev') === 'true';
   
-  // For the Navigation component - show it only on dev mode and not on the About page
+  // For the Navigation component - don't show it on the About page
   const shouldShowNavigation = () => {
-    if (!showDev) return false;
     return location.pathname !== '/about';
   };
 
-  if (!showDev) {
-    // Show coming soon page for regular visitors
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Routes>
-          <Route path="*" element={<ComingSoon />} />
-        </Routes>
-      </div>
-    );
-  }
-
-  // Show development site when ?dev=true is in the URL
+  // Show development site always - coming soon page is hidden
   return (
     <div className="min-h-screen flex flex-col">
       {shouldShowNavigation() && <Navigation />}
