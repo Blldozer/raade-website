@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import CountUp from "react-countup";
@@ -126,7 +127,7 @@ const ComingSoon = () => {
           >
             <img
               ref={logoRef}
-              src="/logos/RAADE-LOGO-Black-BG.png" // Dark background, so using the black BG logo with white text
+              src="/lovable-uploads/53c3e0e3-e1ae-42a9-bdb8-6854c8b646ba.png"
               alt="RAADE Logo"
               className="h-32 md:h-40 mx-auto"
             />

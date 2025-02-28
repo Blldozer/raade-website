@@ -35,11 +35,6 @@ const Navigation = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  // Determine if we should use the dark background logo
-  // Use dark background logo (with white text) when nav is transparent and on hero page
-  // because the hero has a dark overlay
-  const shouldUseDarkBgLogo = isHeroPage && !isScrolled;
-
   return (
     <nav
       className={cn(
@@ -54,7 +49,7 @@ const Navigation = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          <NavLogo isScrolled={isScrolled} isDarkBackground={shouldUseDarkBgLogo} />
+          <NavLogo />
           <DesktopNav isScrolled={isScrolled} isHeroPage={isHeroPage} />
           <MobileNav isScrolled={isScrolled} isHeroPage={isHeroPage} />
         </div>
