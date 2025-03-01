@@ -49,7 +49,7 @@ const Navigation = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          <NavLogo />
+          <NavLogo isScrolled={isScrolled} isHeroPage={isHeroPage} />
           <DesktopNav isScrolled={isScrolled} isHeroPage={isHeroPage} />
           <MobileNav isScrolled={isScrolled} isHeroPage={isHeroPage} />
         </div>
