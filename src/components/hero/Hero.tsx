@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import Navigation from '../Navigation';
 import AnimatedText from './AnimatedText';
@@ -75,8 +74,10 @@ const Hero = () => {
       {/* </div> */}
       
       <div className="relative z-50">
-        <Navigation />
+        {/* Using isHeroPage={true} ensures that the white logo will be displayed */}
+        <Navigation isHeroPage={true} />
       </div>
+      
       
       <div className="relative z-30" ref={contentRef}>
         <div className="fluid-container h-screen flex flex-col justify-center">
@@ -134,4 +135,3 @@ const Hero = () => {
 };
 
 export default Hero;
-
