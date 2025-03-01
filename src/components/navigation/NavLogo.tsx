@@ -7,8 +7,8 @@ const NavLogo = () => {
       <Link to="/">
         {/* New SVG logo (text only version without the symbol) */}
         <img
-          className="h-16 w-auto transition-all duration-300 hover:scale-105" 
-          src="/logos/RAADE-Logo-name-svg.svg"
+          className="h-32 w-auto transition-all duration-300 hover:scale-105" 
+          src="/logos/RAADE-logo-name-svg.svg"
           alt="RAADE"
         />
       </Link>
