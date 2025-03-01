@@ -2,6 +2,7 @@
 import InnovationStudiosSection from "@/components/InnovationStudios";
 import ProjectsShowcase from "@/components/ProjectsShowcase";
 import { motion } from "framer-motion";
+import Navigation from "@/components/Navigation";
 
 const InnovationStudios = () => {
   const Hero = () => {
@@ -53,6 +54,7 @@ const InnovationStudios = () => {
 
   return (
     <div>
+      <Navigation isHeroPage={true} />
       <div>
         <Hero />
         <InnovationStudiosSection />

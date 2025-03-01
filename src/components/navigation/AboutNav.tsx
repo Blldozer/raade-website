@@ -44,16 +44,16 @@ const AboutNav = () => {
         <div className="flex h-20">
           {/* Left section (39%) */}
           <div className="w-[39%] flex justify-center items-center border-r border-gray-200">
-            <NavLogo isScrolled={isScrolled} isHeroPage={false} />
+            <NavLogo isScrolled={isScrolled} isHeroPage={true} />
           </div>
           
           {/* Right section (61%) */}
           <div className="w-[61%] flex justify-end items-center pr-8">
             <div className="hidden md:block">
-              <DesktopNav isScrolled={isScrolled} isHeroPage={false} className="justify-end" />
+              <DesktopNav isScrolled={isScrolled} isHeroPage={true} className="justify-end" />
             </div>
             <div className="md:hidden">
-              <MobileNav isScrolled={isScrolled} isHeroPage={false} />
+              <MobileNav isScrolled={isScrolled} isHeroPage={true} />
             </div>
           </div>
         </div>

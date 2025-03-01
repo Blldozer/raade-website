@@ -5,7 +5,7 @@ import Navigation from "@/components/Navigation";
 const Conference = () => {
   return (
     <div>
-      <Navigation />
+      <Navigation isHeroPage={false} />
       <div className="pt-20">
         <ConferenceSection />
       </div>

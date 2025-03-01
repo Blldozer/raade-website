@@ -6,13 +6,18 @@ import NavLogo from "./navigation/NavLogo";
 import DesktopNav from "./navigation/DesktopNav";
 import MobileNav from "./navigation/MobileNav";
 
-const Navigation = () => {
+interface NavigationProps {
+  isHeroPage?: boolean;
+}
+
+const Navigation = ({ isHeroPage = false }: NavigationProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isPastHero, setIsPastHero] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const location = useLocation();
-  const isHeroPage = location.pathname === "/";
+  // If isHeroPage is explicitly passed, use that value, otherwise determine it from the path
+  const heroPage = isHeroPage !== undefined ? isHeroPage : location.pathname === "/";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -49,9 +54,9 @@ const Navigation = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          <NavLogo isScrolled={isScrolled} isHeroPage={isHeroPage} />
-          <DesktopNav isScrolled={isScrolled} isHeroPage={isHeroPage} />
-          <MobileNav isScrolled={isScrolled} isHeroPage={isHeroPage} />
+          <NavLogo isScrolled={isScrolled} isHeroPage={heroPage} />
+          <DesktopNav isScrolled={isScrolled} isHeroPage={heroPage} />
+          <MobileNav isScrolled={isScrolled} isHeroPage={heroPage} />
         </div>
       </div>
     </nav>
