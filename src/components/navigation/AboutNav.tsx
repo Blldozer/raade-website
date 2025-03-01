@@ -44,7 +44,7 @@ const AboutNav = () => {
         <div className="flex h-20">
           {/* Left section (39%) */}
           <div className="w-[39%] flex justify-center items-center border-r border-gray-200">
-            <NavLogo />
+            <NavLogo isScrolled={isScrolled} isHeroPage={false} />
           </div>
           
           {/* Right section (61%) */}

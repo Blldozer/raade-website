@@ -21,7 +21,7 @@ const NavLogo = ({ isScrolled = false, isHeroPage = false }: NavLogoProps) => {
     <div className="flex-shrink-0 flex items-center">
       <Link to="/" className="flex items-center">
         <img
-          className="h-20 w-auto transition-all duration-300" 
+          className="h-60 w-auto transition-all duration-300" 
           src={logoSrc}
           alt="RAADE"
         />
