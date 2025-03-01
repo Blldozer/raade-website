@@ -6,8 +6,8 @@ const NavLogo = () => {
     <div className="flex-shrink-0 flex items-center">
       <Link to="/" className="flex items-center">
         <img
-          className="h-16 w-auto transition-all duration-300" 
-          src="/logos/RAADE-logo-final-black.svg"
+          className="h-60 w-auto transition-all duration-300" 
+          src="/logos/RAADE-logo-final-black.png"
           alt="RAADE"
         />
       </Link>
