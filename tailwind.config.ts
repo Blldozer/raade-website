@@ -27,6 +27,7 @@ export default {
 },
     extend: {
       fontFamily: {
+        amadine: ["Amadine", "sans-serif"],
         hammersmith: ["Hammersmith One", "serif"],
         opensans: ["Open Sans", "serif"],
         zillaslab: ["Zilla Slab", "serif"],
