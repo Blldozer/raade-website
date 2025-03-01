@@ -14,7 +14,7 @@ const teamMembers = [
   { name: "Alexander Jamu", position: "Creative Design, Branding and Marketing Director" },
   { name: "Djenabou Boakum", position: "Creative Design, Branding and Marketing Officer" },
   { name: "Ama Imoyo", position: "Finance Officer" },
-  { name: "Victoria Oluwasesin", position: "Logistics Manager" },
+  { name: "Temilade Oluwasesin", position: "Logistics Manager" },
   { name: "Rose Oyoo", position: "Logistics Manager" },
   { name: "Kene Okereke", position: "Tech Officer" }
 ];
