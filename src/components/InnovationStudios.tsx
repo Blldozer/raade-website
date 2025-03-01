@@ -1,23 +1,34 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ArrowRight, Users, Calendar, Target } from "lucide-react";
+import { ArrowRight, Users, Calendar, Target, LightbulbIcon, Code, BarChart3, Rocket } from "lucide-react";
+import { motion } from "framer-motion";
 
-const projects = [
+const process = [
   {
-    title: "SunFi Energy Project",
-    description: "Developing sustainable energy solutions with SunFi to increase access to clean power in African communities.",
-    image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&q=80",
+    title: "Research & Discovery",
+    description: "We begin by deeply understanding the challenge through interviews, research, and immersion with partner organizations.",
+    icon: LightbulbIcon,
+    color: "bg-raade-gold-start/90",
   },
   {
-    title: "IPI Mothers Support Initiative",
-    description: "Creating support systems and resources for mothers in partnership with IPI to improve maternal health outcomes.",
-    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&q=80",
+    title: "Ideation & Design",
+    description: "Teams brainstorm solutions, develop concepts, and create low-fidelity prototypes for rapid testing and feedback.",
+    icon: Code,
+    color: "bg-raade-gold-middle/90",
   },
   {
-    title: "Medical Women's Association",
-    description: "Collaborating with MWA to enhance healthcare delivery systems and medical education initiatives.",
-    image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&q=80",
+    title: "Prototype & Test",
+    description: "Promising ideas are built into functional prototypes that are tested with end-users in real environments.",
+    icon: BarChart3,
+    color: "bg-raade-gold-end/90",
+  },
+  {
+    title: "Implementation & Scale",
+    description: "Final solutions are refined and deployed with a strategic plan for scaling and sustainable impact.",
+    icon: Rocket,
+    color: "bg-raade-gold-end/90",
   },
 ];
 
@@ -43,61 +54,135 @@ const timeline = [
 ];
 
 const InnovationStudios = () => {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+  
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  };
+
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 animate-fade-in">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-white mb-4">Innovation Studios</h2>
-          <p className="text-lg text-gray-200 max-w-2xl mx-auto">
-            A 9-week intensive program where Rice students collaborate with African organizations
-            to develop innovative solutions for real-world challenges.
-          </p>
-        </div>
+    <section className="py-24 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header with Studio Methodology */}
+        <div className="mb-24">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={containerVariants}
+            className="text-center mb-16"
+          >
+            <motion.p variants={itemVariants} className="text-raade-gold-middle font-medium tracking-wider mb-3">OUR APPROACH</motion.p>
+            <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-bold text-raade-Thunder mb-6">The Innovation Studios Method</motion.h2>
+            <motion.p variants={itemVariants} className="text-lg text-raade-Thunder/70 max-w-3xl mx-auto">
+              A 9-week intensive program where Rice students collaborate with African organizations
+              to develop innovative solutions for real-world challenges.
+            </motion.p>
+          </motion.div>
 
-        {/* Projects Showcase */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          {projects.map((project, index) => (
-            <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow bg-[#3C403A]">
-              <img
-                src={project.image}
-                alt={project.title}
-                className="w-full h-48 object-cover"
-              />
-              <CardHeader>
-                <CardTitle className="text-xl text-white">{project.title}</CardTitle>
-                <CardDescription className="text-gray-300">{project.description}</CardDescription>
-              </CardHeader>
-            </Card>
-          ))}
-        </div>
-
-        {/* Timeline */}
-        <div className="mb-16">
-          <h3 className="text-2xl font-bold text-white text-center mb-8">Program Timeline</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {timeline.map((phase, index) => (
-              <Card key={index} className="text-center bg-[#3C403A]">
-                <CardHeader>
-                  <div className="mx-auto mb-4 p-3 bg-white rounded-full w-12 h-12 flex items-center justify-center">
-                    {phase.icon && <phase.icon className="w-6 h-6 text-[#3C403A]" />}
-                  </div>
-                  <CardTitle className="text-lg font-semibold text-white">{phase.week}</CardTitle>
-                  <CardDescription className="font-medium text-gray-300">
-                    {phase.title}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-200">{phase.description}</p>
-                </CardContent>
-              </Card>
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={containerVariants}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+          >
+            {process.map((step, index) => (
+              <motion.div 
+                key={step.title} 
+                variants={itemVariants}
+                className="relative group"
+              >
+                <div className="absolute inset-0 bg-white rounded-2xl shadow-lg transform group-hover:-translate-y-2 transition-all duration-300"></div>
+                <Card className="relative z-10 overflow-hidden border-none bg-transparent">
+                  <CardHeader className="pb-2">
+                    <div className={`${step.color} w-12 h-12 rounded-xl flex items-center justify-center mb-4 transform transition-transform group-hover:scale-110 duration-300`}>
+                      <step.icon className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="text-xl font-bold text-raade-Thunder">{step.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-raade-Thunder/70">{step.description}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
+          </motion.div>
+        </div>
+
+        {/* Timeline Section */}
+        <div className="mb-24 bg-gray-50 rounded-3xl p-12">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
+            <p className="text-raade-gold-middle font-medium tracking-wider mb-3">PROGRAM STRUCTURE</p>
+            <h3 className="text-3xl md:text-4xl font-bold text-raade-Thunder mb-6">9-Week Innovation Sprint</h3>
+            <p className="text-lg text-raade-Thunder/70 max-w-3xl mx-auto">
+              Our structured approach ensures that teams move efficiently from problem to solution.
+            </p>
+          </motion.div>
+
+          <div className="relative">
+            {/* Timeline Line */}
+            <div className="absolute top-0 left-1/2 w-0.5 h-full bg-raade-gold-middle/30 transform -translate-x-1/2 hidden md:block"></div>
+            
+            <div className="space-y-16 relative">
+              {timeline.map((phase, index) => (
+                <motion.div 
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.2, duration: 0.6 }}
+                  className={`flex flex-col ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-center`}
+                >
+                  <div className={`w-full md:w-1/2 ${index % 2 === 0 ? 'md:pr-16 md:text-right' : 'md:pl-16'} mb-8 md:mb-0`}>
+                    <h4 className="text-xl font-bold text-raade-gold-middle mb-2">{phase.week}</h4>
+                    <h5 className="text-2xl font-bold text-raade-Thunder mb-3">{phase.title}</h5>
+                    <p className="text-raade-Thunder/70">{phase.description}</p>
+                  </div>
+                  
+                  {/* Timeline Point */}
+                  <div className="md:absolute md:left-1/2 md:transform md:-translate-x-1/2 z-10 w-12 h-12 rounded-full bg-white border-4 border-raade-gold-middle flex items-center justify-center mb-8 md:mb-0">
+                    {phase.icon && <phase.icon className="w-5 h-5 text-raade-gold-middle" />}
+                  </div>
+                  
+                  <div className="w-full md:w-1/2"></div>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Success Metrics */}
-        <div className="bg-[#3C403A] rounded-lg p-8 mb-16">
-          <h3 className="text-2xl font-bold text-white text-center mb-8">Our Impact</h3>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="mb-24"
+        >
+          <div className="text-center mb-16">
+            <p className="text-raade-gold-middle font-medium tracking-wider mb-3">OUR IMPACT</p>
+            <h3 className="text-3xl md:text-4xl font-bold text-raade-Thunder mb-6">Making a Difference</h3>
+            <p className="text-lg text-raade-Thunder/70 max-w-3xl mx-auto">
+              Our collaborative approach has delivered measurable impact across multiple projects.
+            </p>
+          </div>
+          
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               { metric: "100+", label: "Students Engaged" },
@@ -105,23 +190,40 @@ const InnovationStudios = () => {
               { metric: "6", label: "Faculty Mentors" },
               { metric: "3", label: "Partner Countries" },
             ].map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="text-3xl font-bold text-white mb-2">{stat.metric}</div>
-                <div className="text-gray-300">{stat.label}</div>
-              </div>
+              <motion.div 
+                key={index}
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1, duration: 0.5 }}
+                className="bg-white p-8 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow"
+              >
+                <div className="text-5xl font-bold text-raade-navy mb-2">{stat.metric}</div>
+                <div className="text-raade-Thunder/80 font-medium">{stat.label}</div>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* CTA */}
-        <div className="text-center">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center bg-raade-navy rounded-3xl p-16"
+        >
+          <h3 className="text-3xl md:text-4xl font-bold text-white mb-6">Ready to Innovate With Us?</h3>
+          <p className="text-lg text-white/80 max-w-3xl mx-auto mb-8">
+            Join our next Innovation Studios cohort and collaborate on solutions that make a real difference.
+          </p>
           <Button
             size="lg"
-            className="bg-white text-[#3C403A] hover:bg-gray-100 transition-colors"
+            className="bg-raade-gold-start text-raade-Thunder hover:bg-raade-gold-middle transition-colors text-lg px-8 py-6 h-auto font-medium"
           >
             Apply Now <ArrowRight className="ml-2" />
           </Button>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

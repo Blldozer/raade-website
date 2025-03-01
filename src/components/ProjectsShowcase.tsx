@@ -1,7 +1,10 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 
 type Project = {
   name: string;
@@ -72,62 +75,127 @@ const ProjectsShowcase = () => {
     (project) => selectedSector === "All" || project.sector === selectedSector
   );
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+  
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  };
+
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-[#3C403A] animate-fade-in">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-white mb-4">Our Projects</h2>
-          <p className="text-lg text-gray-200 max-w-2xl mx-auto">
+    <section className="py-24 bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <p className="text-raade-gold-middle font-medium tracking-wider mb-3">PROJECT PORTFOLIO</p>
+          <h2 className="text-4xl md:text-5xl font-bold text-raade-Thunder mb-6">Innovation in Action</h2>
+          <p className="text-lg text-raade-Thunder/70 max-w-3xl mx-auto">
             Explore our portfolio of innovative solutions developed in partnership with
-            African organizations.
+            African organizations to address real-world challenges.
           </p>
-        </div>
+        </motion.div>
 
         {/* Filter Buttons */}
-        <div className="flex flex-wrap justify-center gap-2 mb-8">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="flex flex-wrap justify-center gap-3 mb-12"
+        >
           {sectors.map((sector) => (
             <Button
               key={sector}
               variant={selectedSector === sector ? "default" : "outline"}
               onClick={() => setSelectedSector(sector)}
-              className={selectedSector === sector ? "bg-white text-[#3C403A]" : "text-white border-white hover:bg-white/20"}
+              className={selectedSector === sector 
+                ? "bg-raade-gold-middle text-white hover:bg-raade-gold-end border-none" 
+                : "text-raade-Thunder border-raade-Thunder/20 hover:bg-raade-gold-middle/10 hover:text-raade-Thunder hover:border-raade-gold-middle"
+              }
             >
               {sector}
             </Button>
           ))}
-        </div>
+        </motion.div>
 
         {/* Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProjects.map((project) => (
-            <Card key={project.name} className="overflow-hidden hover:shadow-lg transition-shadow bg-white">
-              <img
-                src={project.image}
-                alt={project.name}
-                className="w-full h-48 object-cover"
-              />
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <CardTitle className="text-xl text-[#3C403A]">{project.name}</CardTitle>
-                  <Badge variant="secondary">{project.sector}</Badge>
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
+          {filteredProjects.map((project, index) => (
+            <motion.div 
+              key={project.name}
+              variants={itemVariants}
+              className="group"
+            >
+              <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-2 border-none h-full">
+                <div className="relative h-56 overflow-hidden">
+                  <img
+                    src={project.image}
+                    alt={project.name}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-70"></div>
+                  <Badge className="absolute top-4 right-4 bg-raade-gold-middle border-none text-white">{project.sector}</Badge>
                 </div>
-                <CardDescription className="font-medium">
-                  Partner: {project.partner}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <div>
-                  <h4 className="font-semibold text-sm text-gray-600">Challenge:</h4>
-                  <p className="text-sm">{project.challenge}</p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sm text-gray-600">Impact:</h4>
-                  <p className="text-sm">{project.impact}</p>
-                </div>
-              </CardContent>
-            </Card>
+                <CardHeader className="relative -mt-20 bg-white rounded-t-3xl pt-8">
+                  <CardTitle className="text-xl text-raade-Thunder font-bold mb-1">{project.name}</CardTitle>
+                  <CardDescription className="font-medium text-raade-gold-middle">
+                    Partner: {project.partner}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4 pb-8">
+                  <div>
+                    <h4 className="font-bold text-sm text-raade-Thunder/70 uppercase tracking-wider mb-1">Challenge:</h4>
+                    <p className="text-raade-Thunder">{project.challenge}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-sm text-raade-Thunder/70 uppercase tracking-wider mb-1">Impact:</h4>
+                    <p className="text-raade-Thunder">{project.impact}</p>
+                  </div>
+                  <Button 
+                    variant="link" 
+                    className="text-raade-gold-middle hover:text-raade-gold-end p-0 h-auto flex items-center mt-2"
+                  >
+                    Learn more <ArrowRight className="ml-1 h-4 w-4" />
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
+        
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="text-center mt-16"
+        >
+          <Button
+            size="lg"
+            className="bg-raade-navy text-white hover:bg-raade-navy/90 transition-colors px-8"
+          >
+            See All Projects <ArrowRight className="ml-2" />
+          </Button>
+        </motion.div>
       </div>
     </section>
   );
