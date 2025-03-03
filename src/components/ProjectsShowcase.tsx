@@ -101,8 +101,10 @@ const ProjectsShowcase = () => {
           className="text-center mb-16"
         >
           <p className="text-raade-gold-middle font-medium tracking-wider mb-3">PROJECT PORTFOLIO</p>
-          <h2 className="text-4xl md:text-5xl font-bold text-raade-Thunder mb-6">Innovation in Action</h2>
-          <p className="text-lg text-raade-Thunder/70 max-w-3xl mx-auto">
+          <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-raade-Thunder mb-6">
+            Innovation in Action
+          </h2>
+          <p className="text-lg font-lora text-raade-Thunder/70 max-w-3xl mx-auto">
             Explore our portfolio of innovative solutions developed in partnership with
             African organizations to address real-world challenges.
           </p>
@@ -121,9 +123,10 @@ const ProjectsShowcase = () => {
               key={sector}
               variant={selectedSector === sector ? "default" : "outline"}
               onClick={() => setSelectedSector(sector)}
-              className={selectedSector === sector 
+              className={`${selectedSector === sector 
                 ? "bg-raade-gold-middle text-white hover:bg-raade-gold-end border-none" 
-                : "text-raade-Thunder border-raade-Thunder/20 hover:bg-raade-gold-middle/10 hover:text-raade-Thunder hover:border-raade-gold-middle"
+                : "text-raade-Thunder border-raade-Thunder/20 hover:bg-raade-gold-middle/10 hover:text-raade-Thunder hover:border-raade-gold-middle"} 
+                font-lora`
               }
             >
               {sector}
@@ -153,26 +156,30 @@ const ProjectsShowcase = () => {
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-70"></div>
-                  <Badge className="absolute top-4 right-4 bg-raade-gold-middle border-none text-white">{project.sector}</Badge>
+                  <Badge className="absolute top-4 right-4 bg-raade-gold-middle border-none text-white font-lora">
+                    {project.sector}
+                  </Badge>
                 </div>
                 <CardHeader className="relative -mt-20 bg-white rounded-t-3xl pt-8">
-                  <CardTitle className="text-xl text-raade-Thunder font-bold mb-1">{project.name}</CardTitle>
-                  <CardDescription className="font-medium text-raade-gold-middle">
+                  <CardTitle className="text-xl font-simula text-raade-Thunder mb-1">
+                    {project.name}
+                  </CardTitle>
+                  <CardDescription className="font-lora text-raade-gold-middle">
                     Partner: {project.partner}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 pb-8">
                   <div>
                     <h4 className="font-bold text-sm text-raade-Thunder/70 uppercase tracking-wider mb-1">Challenge:</h4>
-                    <p className="text-raade-Thunder">{project.challenge}</p>
+                    <p className="text-raade-Thunder font-lora">{project.challenge}</p>
                   </div>
                   <div>
                     <h4 className="font-bold text-sm text-raade-Thunder/70 uppercase tracking-wider mb-1">Impact:</h4>
-                    <p className="text-raade-Thunder">{project.impact}</p>
+                    <p className="text-raade-Thunder font-lora">{project.impact}</p>
                   </div>
                   <Button 
                     variant="link" 
-                    className="text-raade-gold-middle hover:text-raade-gold-end p-0 h-auto flex items-center mt-2"
+                    className="text-raade-gold-middle hover:text-raade-gold-end p-0 h-auto flex items-center mt-2 font-lora"
                   >
                     Learn more <ArrowRight className="ml-1 h-4 w-4" />
                   </Button>
@@ -191,7 +198,7 @@ const ProjectsShowcase = () => {
         >
           <Button
             size="lg"
-            className="bg-raade-navy text-white hover:bg-raade-navy/90 transition-colors px-8"
+            className="bg-raade-navy text-white hover:bg-raade-navy/90 transition-colors px-8 font-lora"
           >
             See All Projects <ArrowRight className="ml-2" />
           </Button>

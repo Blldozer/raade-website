@@ -82,8 +82,10 @@ const InnovationStudios = () => {
             className="text-center mb-16"
           >
             <motion.p variants={itemVariants} className="text-raade-gold-middle font-medium tracking-wider mb-3">OUR APPROACH</motion.p>
-            <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-bold text-raade-Thunder mb-6">The Innovation Studios Method</motion.h2>
-            <motion.p variants={itemVariants} className="text-lg text-raade-Thunder/70 max-w-3xl mx-auto">
+            <motion.h2 variants={itemVariants} className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-raade-Thunder mb-6">
+              The Innovation Studios Method
+            </motion.h2>
+            <motion.p variants={itemVariants} className="text-lg font-lora text-raade-Thunder/70 max-w-3xl mx-auto">
               A 9-week intensive program where Rice students collaborate with African organizations
               to develop innovative solutions for real-world challenges.
             </motion.p>
@@ -108,10 +110,10 @@ const InnovationStudios = () => {
                     <div className={`${step.color} w-12 h-12 rounded-xl flex items-center justify-center mb-4 transform transition-transform group-hover:scale-110 duration-300`}>
                       <step.icon className="w-6 h-6 text-white" />
                     </div>
-                    <CardTitle className="text-xl font-bold text-raade-Thunder">{step.title}</CardTitle>
+                    <CardTitle className="text-xl font-simula text-raade-Thunder">{step.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-raade-Thunder/70">{step.description}</p>
+                    <p className="text-raade-Thunder/70 font-lora">{step.description}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -129,8 +131,8 @@ const InnovationStudios = () => {
             className="text-center mb-16"
           >
             <p className="text-raade-gold-middle font-medium tracking-wider mb-3">PROGRAM STRUCTURE</p>
-            <h3 className="text-3xl md:text-4xl font-bold text-raade-Thunder mb-6">9-Week Innovation Sprint</h3>
-            <p className="text-lg text-raade-Thunder/70 max-w-3xl mx-auto">
+            <h3 className="text-3xl md:text-4xl font-simula text-raade-Thunder mb-6">9-Week Innovation Sprint</h3>
+            <p className="text-lg font-lora text-raade-Thunder/70 max-w-3xl mx-auto">
               Our structured approach ensures that teams move efficiently from problem to solution.
             </p>
           </motion.div>
@@ -150,9 +152,9 @@ const InnovationStudios = () => {
                   className={`flex flex-col ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-center`}
                 >
                   <div className={`w-full md:w-1/2 ${index % 2 === 0 ? 'md:pr-16 md:text-right' : 'md:pl-16'} mb-8 md:mb-0`}>
-                    <h4 className="text-xl font-bold text-raade-gold-middle mb-2">{phase.week}</h4>
-                    <h5 className="text-2xl font-bold text-raade-Thunder mb-3">{phase.title}</h5>
-                    <p className="text-raade-Thunder/70">{phase.description}</p>
+                    <h4 className="text-xl font-simula text-raade-gold-middle mb-2">{phase.week}</h4>
+                    <h5 className="text-2xl font-simula text-raade-Thunder mb-3">{phase.title}</h5>
+                    <p className="text-raade-Thunder/70 font-lora">{phase.description}</p>
                   </div>
                   
                   {/* Timeline Point */}
@@ -177,8 +179,8 @@ const InnovationStudios = () => {
         >
           <div className="text-center mb-16">
             <p className="text-raade-gold-middle font-medium tracking-wider mb-3">OUR IMPACT</p>
-            <h3 className="text-3xl md:text-4xl font-bold text-raade-Thunder mb-6">Making a Difference</h3>
-            <p className="text-lg text-raade-Thunder/70 max-w-3xl mx-auto">
+            <h3 className="text-3xl md:text-4xl font-simula text-raade-Thunder mb-6">Making a Difference</h3>
+            <p className="text-lg font-lora text-raade-Thunder/70 max-w-3xl mx-auto">
               Our collaborative approach has delivered measurable impact across multiple projects.
             </p>
           </div>
@@ -198,8 +200,8 @@ const InnovationStudios = () => {
                 transition={{ delay: index * 0.1, duration: 0.5 }}
                 className="bg-white p-8 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow"
               >
-                <div className="text-5xl font-bold text-raade-navy mb-2">{stat.metric}</div>
-                <div className="text-raade-Thunder/80 font-medium">{stat.label}</div>
+                <div className="text-5xl font-simula font-bold text-raade-navy mb-2">{stat.metric}</div>
+                <div className="text-raade-Thunder/80 font-lora">{stat.label}</div>
               </motion.div>
             ))}
           </div>
@@ -213,13 +215,13 @@ const InnovationStudios = () => {
           transition={{ duration: 0.6 }}
           className="text-center bg-raade-navy rounded-3xl p-16"
         >
-          <h3 className="text-3xl md:text-4xl font-bold text-white mb-6">Ready to Innovate With Us?</h3>
-          <p className="text-lg text-white/80 max-w-3xl mx-auto mb-8">
+          <h3 className="text-3xl md:text-4xl font-simula font-bold text-white mb-6">Ready to Innovate With Us?</h3>
+          <p className="text-lg font-lora text-white/80 max-w-3xl mx-auto mb-8">
             Join our next Innovation Studios cohort and collaborate on solutions that make a real difference.
           </p>
           <Button
             size="lg"
-            className="bg-raade-gold-start text-raade-Thunder hover:bg-raade-gold-middle transition-colors text-lg px-8 py-6 h-auto font-medium"
+            className="bg-raade-gold-start text-raade-Thunder hover:bg-raade-gold-middle transition-colors text-lg px-8 py-6 h-auto font-lora"
           >
             Apply Now <ArrowRight className="ml-2" />
           </Button>
