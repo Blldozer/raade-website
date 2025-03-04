@@ -7,8 +7,14 @@ import Navigation from "@/components/Navigation";
 const InnovationStudios = () => {
   const Hero = () => {
     return (
-      <div className="min-h-screen relative bg-[#2b212e] overflow-hidden flex items-center">
-        <div className="absolute inset-0 from-black/50 via-transparent to-transparent z-10 bg-[#2b212e]" />
+      <div className="min-h-screen relative overflow-hidden flex items-center">
+        {/* Animated gradient background */}
+        <div className="absolute inset-0 z-0 bg-[#2b212e]">
+          <div className="absolute inset-0 animate-gradient-x bg-gradient-to-r from-[#2b212e] via-[#3b2c40] to-[#2b212e] bg-[length:200%_100%]" />
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#9b87f5]/30 via-transparent to-transparent" />
+          </div>
+        </div>
         
         <div className="container mx-auto px-4 relative z-20">
           <div className="max-w-4xl mx-auto">
@@ -40,12 +46,6 @@ const InnovationStudios = () => {
             >
               We're a project-driven innovation studio creating market-based solutions for Africa's most pressing challenges.
             </motion.p>
-          </div>
-        </div>
-
-        <div className="absolute inset-0 z-0 bg-gradient-to-b from-[#1A1F2C] via-[#1A1F2C] to-black">
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#9b87f5]/30 via-transparent to-transparent" />
           </div>
         </div>
       </div>
