@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -100,7 +99,7 @@ const ProjectsShowcase = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <p className="text-[#9b87f5] font-medium tracking-wider mb-3">PROJECT PORTFOLIO</p>
+          <p className="text-raade-Thunder font-medium tracking-wider mb-3">PROJECT PORTFOLIO</p>
           <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-raade-Thunder mb-6">
             Innovation in Action
           </h2>
@@ -124,8 +123,8 @@ const ProjectsShowcase = () => {
               variant={selectedSector === sector ? "default" : "outline"}
               onClick={() => setSelectedSector(sector)}
               className={`${selectedSector === sector 
-                ? "bg-[#8B5CF6] text-white hover:bg-[#7E69AB] border-none" 
-                : "text-raade-Thunder border-raade-Thunder/20 hover:bg-[#9b87f5]/10 hover:text-raade-Thunder hover:border-[#9b87f5]"} 
+                ? "bg-raade-Thunder text-white hover:bg-raade-Thunder/90 border-none" 
+                : "text-raade-Thunder border-raade-Thunder/20 hover:bg-raade-Thunder/10 hover:text-raade-Thunder hover:border-raade-Thunder"} 
                 font-lora`
               }
             >
@@ -198,7 +197,7 @@ const ProjectsShowcase = () => {
         >
           <Button
             size="lg"
-            className="bg-[#1A1F2C] text-white hover:bg-[#1A1F2C]/90 transition-colors px-8 font-lora"
+            className="bg-raade-Thunder text-white hover:bg-raade-Thunder/90 transition-colors px-8 font-lora"
           >
             See All Projects <ArrowRight className="ml-2" />
           </Button>
