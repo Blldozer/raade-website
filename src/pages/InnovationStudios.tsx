@@ -7,8 +7,8 @@ import Navigation from "@/components/Navigation";
 const InnovationStudios = () => {
   const Hero = () => {
     return (
-      <div className="min-h-screen relative bg-raade-navy overflow-hidden flex items-center">
-        <div className="absolute inset-0 from-black/50 via-transparent to-transparent z-10 bg-[2b212e] bg-[#2b212e]" />
+      <div className="min-h-screen relative bg-[#1A1F2C] overflow-hidden flex items-center">
+        <div className="absolute inset-0 from-black/50 via-transparent to-transparent z-10 bg-[#1A1F2C]" />
         
         <div className="container mx-auto px-4 relative z-20">
           <div className="max-w-4xl mx-auto">
@@ -43,9 +43,9 @@ const InnovationStudios = () => {
           </div>
         </div>
 
-        <div className="absolute inset-0 z-0 bg-gradient-to-b from-raade-navy via-raade-navy to-black">
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-[#1A1F2C] via-[#1A1F2C] to-black">
           <div className="absolute inset-0 opacity-20">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-raade-gold-start/30 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#9b87f5]/30 via-transparent to-transparent" />
           </div>
         </div>
       </div>

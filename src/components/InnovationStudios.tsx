@@ -10,25 +10,25 @@ const process = [
     title: "Research & Discovery",
     description: "We begin by deeply understanding the challenge through interviews, research, and immersion with partner organizations.",
     icon: LightbulbIcon,
-    color: "bg-raade-gold-start/90",
+    color: "bg-[#9b87f5]/90",
   },
   {
     title: "Ideation & Design",
     description: "Teams brainstorm solutions, develop concepts, and create low-fidelity prototypes for rapid testing and feedback.",
     icon: Code,
-    color: "bg-raade-gold-middle/90",
+    color: "bg-[#8B5CF6]/90",
   },
   {
     title: "Prototype & Test",
     description: "Promising ideas are built into functional prototypes that are tested with end-users in real environments.",
     icon: BarChart3,
-    color: "bg-raade-gold-end/90",
+    color: "bg-[#7E69AB]/90",
   },
   {
     title: "Implementation & Scale",
     description: "Final solutions are refined and deployed with a strategic plan for scaling and sustainable impact.",
     icon: Rocket,
-    color: "bg-raade-gold-end/90",
+    color: "bg-[#6E59A5]/90",
   },
 ];
 
@@ -81,7 +81,7 @@ const InnovationStudios = () => {
             variants={containerVariants}
             className="text-center mb-16"
           >
-            <motion.p variants={itemVariants} className="text-raade-gold-middle font-medium tracking-wider mb-3">OUR APPROACH</motion.p>
+            <motion.p variants={itemVariants} className="text-[#9b87f5] font-medium tracking-wider mb-3">OUR APPROACH</motion.p>
             <motion.h2 variants={itemVariants} className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-raade-Thunder mb-6">
               The Innovation Studios Method
             </motion.h2>
@@ -130,7 +130,7 @@ const InnovationStudios = () => {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <p className="text-raade-gold-middle font-medium tracking-wider mb-3">PROGRAM STRUCTURE</p>
+            <p className="text-[#9b87f5] font-medium tracking-wider mb-3">PROGRAM STRUCTURE</p>
             <h3 className="text-3xl md:text-4xl font-simula text-raade-Thunder mb-6">9-Week Innovation Sprint</h3>
             <p className="text-lg font-lora text-raade-Thunder/70 max-w-3xl mx-auto">
               Our structured approach ensures that teams move efficiently from problem to solution.
@@ -139,7 +139,7 @@ const InnovationStudios = () => {
 
           <div className="relative">
             {/* Timeline Line */}
-            <div className="absolute top-0 left-1/2 w-0.5 h-full bg-raade-gold-middle/30 transform -translate-x-1/2 hidden md:block"></div>
+            <div className="absolute top-0 left-1/2 w-0.5 h-full bg-[#9b87f5]/30 transform -translate-x-1/2 hidden md:block"></div>
             
             <div className="space-y-16 relative">
               {timeline.map((phase, index) => (
@@ -152,14 +152,14 @@ const InnovationStudios = () => {
                   className={`flex flex-col ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-center`}
                 >
                   <div className={`w-full md:w-1/2 ${index % 2 === 0 ? 'md:pr-16 md:text-right' : 'md:pl-16'} mb-8 md:mb-0`}>
-                    <h4 className="text-xl font-simula text-raade-gold-middle mb-2">{phase.week}</h4>
+                    <h4 className="text-xl font-simula text-[#9b87f5] mb-2">{phase.week}</h4>
                     <h5 className="text-2xl font-simula text-raade-Thunder mb-3">{phase.title}</h5>
                     <p className="text-raade-Thunder/70 font-lora">{phase.description}</p>
                   </div>
                   
                   {/* Timeline Point */}
-                  <div className="md:absolute md:left-1/2 md:transform md:-translate-x-1/2 z-10 w-12 h-12 rounded-full bg-white border-4 border-raade-gold-middle flex items-center justify-center mb-8 md:mb-0">
-                    {phase.icon && <phase.icon className="w-5 h-5 text-raade-gold-middle" />}
+                  <div className="md:absolute md:left-1/2 md:transform md:-translate-x-1/2 z-10 w-12 h-12 rounded-full bg-white border-4 border-[#9b87f5] flex items-center justify-center mb-8 md:mb-0">
+                    {phase.icon && <phase.icon className="w-5 h-5 text-[#9b87f5]" />}
                   </div>
                   
                   <div className="w-full md:w-1/2"></div>
@@ -178,7 +178,7 @@ const InnovationStudios = () => {
           className="mb-24"
         >
           <div className="text-center mb-16">
-            <p className="text-raade-gold-middle font-medium tracking-wider mb-3">OUR IMPACT</p>
+            <p className="text-[#9b87f5] font-medium tracking-wider mb-3">OUR IMPACT</p>
             <h3 className="text-3xl md:text-4xl font-simula text-raade-Thunder mb-6">Making a Difference</h3>
             <p className="text-lg font-lora text-raade-Thunder/70 max-w-3xl mx-auto">
               Our collaborative approach has delivered measurable impact across multiple projects.
@@ -200,7 +200,7 @@ const InnovationStudios = () => {
                 transition={{ delay: index * 0.1, duration: 0.5 }}
                 className="bg-white p-8 rounded-2xl text-center shadow-lg hover:shadow-xl transition-shadow"
               >
-                <div className="text-5xl font-simula font-bold text-raade-navy mb-2">{stat.metric}</div>
+                <div className="text-5xl font-simula font-bold text-[#7E69AB] mb-2">{stat.metric}</div>
                 <div className="text-raade-Thunder/80 font-lora">{stat.label}</div>
               </motion.div>
             ))}
@@ -213,7 +213,7 @@ const InnovationStudios = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center bg-raade-navy rounded-3xl p-16"
+          className="text-center bg-[#1A1F2C] rounded-3xl p-16"
         >
           <h3 className="text-3xl md:text-4xl font-simula font-bold text-white mb-6">Ready to Innovate With Us?</h3>
           <p className="text-lg font-lora text-white/80 max-w-3xl mx-auto mb-8">
@@ -221,7 +221,7 @@ const InnovationStudios = () => {
           </p>
           <Button
             size="lg"
-            className="bg-raade-gold-start text-raade-Thunder hover:bg-raade-gold-middle transition-colors text-lg px-8 py-6 h-auto font-lora"
+            className="bg-[#9b87f5] text-white hover:bg-[#8B5CF6] transition-colors text-lg px-8 py-6 h-auto font-lora"
           >
             Apply Now <ArrowRight className="ml-2" />
           </Button>

@@ -100,7 +100,7 @@ const ProjectsShowcase = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <p className="text-raade-gold-middle font-medium tracking-wider mb-3">PROJECT PORTFOLIO</p>
+          <p className="text-[#9b87f5] font-medium tracking-wider mb-3">PROJECT PORTFOLIO</p>
           <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-raade-Thunder mb-6">
             Innovation in Action
           </h2>
@@ -124,8 +124,8 @@ const ProjectsShowcase = () => {
               variant={selectedSector === sector ? "default" : "outline"}
               onClick={() => setSelectedSector(sector)}
               className={`${selectedSector === sector 
-                ? "bg-raade-gold-middle text-white hover:bg-raade-gold-end border-none" 
-                : "text-raade-Thunder border-raade-Thunder/20 hover:bg-raade-gold-middle/10 hover:text-raade-Thunder hover:border-raade-gold-middle"} 
+                ? "bg-[#8B5CF6] text-white hover:bg-[#7E69AB] border-none" 
+                : "text-raade-Thunder border-raade-Thunder/20 hover:bg-[#9b87f5]/10 hover:text-raade-Thunder hover:border-[#9b87f5]"} 
                 font-lora`
               }
             >
@@ -156,7 +156,7 @@ const ProjectsShowcase = () => {
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-70"></div>
-                  <Badge className="absolute top-4 right-4 bg-raade-gold-middle border-none text-white font-lora">
+                  <Badge className="absolute top-4 right-4 bg-[#9b87f5] border-none text-white font-lora">
                     {project.sector}
                   </Badge>
                 </div>
@@ -164,7 +164,7 @@ const ProjectsShowcase = () => {
                   <CardTitle className="text-xl font-simula text-raade-Thunder mb-1">
                     {project.name}
                   </CardTitle>
-                  <CardDescription className="font-lora text-raade-gold-middle">
+                  <CardDescription className="font-lora text-[#9b87f5]">
                     Partner: {project.partner}
                   </CardDescription>
                 </CardHeader>
@@ -179,7 +179,7 @@ const ProjectsShowcase = () => {
                   </div>
                   <Button 
                     variant="link" 
-                    className="text-raade-gold-middle hover:text-raade-gold-end p-0 h-auto flex items-center mt-2 font-lora"
+                    className="text-[#9b87f5] hover:text-[#8B5CF6] p-0 h-auto flex items-center mt-2 font-lora"
                   >
                     Learn more <ArrowRight className="ml-1 h-4 w-4" />
                   </Button>
@@ -198,7 +198,7 @@ const ProjectsShowcase = () => {
         >
           <Button
             size="lg"
-            className="bg-raade-navy text-white hover:bg-raade-navy/90 transition-colors px-8 font-lora"
+            className="bg-[#1A1F2C] text-white hover:bg-[#1A1F2C]/90 transition-colors px-8 font-lora"
           >
             See All Projects <ArrowRight className="ml-2" />
           </Button>
