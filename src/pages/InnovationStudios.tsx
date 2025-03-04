@@ -7,8 +7,8 @@ import Navigation from "@/components/Navigation";
 const InnovationStudios = () => {
   const Hero = () => {
     return (
-      <div className="min-h-screen relative bg-[#1A1F2C] overflow-hidden flex items-center">
-        <div className="absolute inset-0 from-black/50 via-transparent to-transparent z-10 bg-[#1A1F2C]" />
+      <div className="min-h-screen relative bg-[#2b212e] overflow-hidden flex items-center">
+        <div className="absolute inset-0 from-black/50 via-transparent to-transparent z-10 bg-[#2b212e]" />
         
         <div className="container mx-auto px-4 relative z-20">
           <div className="max-w-4xl mx-auto">
