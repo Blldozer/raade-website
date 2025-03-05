@@ -52,7 +52,7 @@ const StudioOverview = () => {
           </motion.div>
         </div>
 
-        {/* Three Phase Cards with Image Backgrounds */}
+        {/* Three Phase Cards with Image Backgrounds - Now Square */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
           {/* Phase 1: Immersion & Discovery */}
           <motion.div
@@ -60,7 +60,7 @@ const StudioOverview = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="relative h-[450px] group overflow-hidden rounded-xl shadow-lg"
+            className="relative aspect-square group overflow-hidden rounded-xl shadow-lg"
           >
             {/* Background Image */}
             <div className="absolute inset-0 w-full h-full">
@@ -73,21 +73,24 @@ const StudioOverview = () => {
             
             {/* Title Overlay - Always Visible */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 flex items-center justify-center">
-              <div className="p-3 rounded-full bg-raade-navy text-white mb-4">
+              <div className="p-3 rounded-full bg-raade-navy text-white mb-4 group-hover:mb-0 group-hover:translate-y-[-30px] transition-all duration-300">
                 <Compass size={32} />
               </div>
-              <h3 className="text-white font-simula text-3xl font-semibold text-center absolute bottom-8">
+              <h3 className="text-white font-simula text-3xl font-semibold text-center absolute bottom-8 group-hover:translate-y-[-20px] transition-all duration-300">
                 Immersion & Discovery
               </h3>
             </div>
             
             {/* Description Overlay - Visible on Hover */}
-            <div className="absolute inset-0 bg-raade-navy/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-8">
-              <p className="text-white font-lora text-center">
-              We dive deeply into understanding the problem through ethnographic interviews, contextual research, 
-              and empathy-building exercises. Our teams carefully map stakeholder ecosystems and uncover 
-              hidden insights that reveal the true nature of each challenge.
-              </p>
+            <div className="absolute inset-0 bg-raade-navy/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-8">
+              <div className="flex flex-col items-center space-y-4">
+                <Compass size={40} className="text-white mb-2" />
+                <p className="text-white font-lora text-center">
+                We dive deeply into understanding the problem through ethnographic interviews, contextual research, 
+                and empathy-building exercises. Our teams carefully map stakeholder ecosystems and uncover 
+                hidden insights that reveal the true nature of each challenge.
+                </p>
+              </div>
             </div>
           </motion.div>
 
@@ -97,7 +100,7 @@ const StudioOverview = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="relative h-[450px] group overflow-hidden rounded-xl shadow-lg"
+            className="relative aspect-square group overflow-hidden rounded-xl shadow-lg"
           >
             {/* Background Image */}
             <div className="absolute inset-0 w-full h-full">
@@ -110,20 +113,23 @@ const StudioOverview = () => {
             
             {/* Title Overlay - Always Visible */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 flex items-center justify-center">
-              <div className="p-3 rounded-full bg-raade-yellow-orange text-white mb-4">
+              <div className="p-3 rounded-full bg-raade-yellow-orange text-white mb-4 group-hover:mb-0 group-hover:translate-y-[-30px] transition-all duration-300">
                 <Rocket size={32} />
               </div>
-              <h3 className="text-white font-simula text-3xl font-semibold text-center absolute bottom-8">
+              <h3 className="text-white font-simula text-3xl font-semibold text-center absolute bottom-8 group-hover:translate-y-[-20px] transition-all duration-300">
                 Rapid Ideation & Prototyping
               </h3>
             </div>
             
             {/* Description Overlay - Visible on Hover */}
-            <div className="absolute inset-0 bg-raade-yellow-orange/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-8">
-              <p className="text-white font-lora text-center">
-              In this phase we unleash creative thinking through structured brainstorming sessions and rapid experimentation, 
-              where teams quickly build and test low-fidelity prototypes to validate core assumptions.
-              </p>
+            <div className="absolute inset-0 bg-raade-yellow-orange/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-8">
+              <div className="flex flex-col items-center space-y-4">
+                <Rocket size={40} className="text-white mb-2" />
+                <p className="text-white font-lora text-center">
+                In this phase we unleash creative thinking through structured brainstorming sessions and rapid experimentation, 
+                where teams quickly build and test low-fidelity prototypes to validate core assumptions.
+                </p>
+              </div>
             </div>
           </motion.div>
 
@@ -133,7 +139,7 @@ const StudioOverview = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="relative h-[450px] group overflow-hidden rounded-xl shadow-lg"
+            className="relative aspect-square group overflow-hidden rounded-xl shadow-lg"
           >
             {/* Background Image */}
             <div className="absolute inset-0 w-full h-full">
@@ -146,21 +152,24 @@ const StudioOverview = () => {
             
             {/* Title Overlay - Always Visible */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 flex items-center justify-center">
-              <div className="p-3 rounded-full bg-[#2b212e] text-white mb-4">
+              <div className="p-3 rounded-full bg-[#2b212e] text-white mb-4 group-hover:mb-0 group-hover:translate-y-[-30px] transition-all duration-300">
                 <CheckCircle size={32} />
               </div>
-              <h3 className="text-white font-simula text-3xl font-semibold text-center absolute bottom-8">
+              <h3 className="text-white font-simula text-3xl font-semibold text-center absolute bottom-8 group-hover:translate-y-[-20px] transition-all duration-300">
                 Implementation
               </h3>
             </div>
             
             {/* Description Overlay - Visible on Hover */}
-            <div className="absolute inset-0 bg-[#2b212e]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-8">
-              <p className="text-white font-lora text-center">
-              Teams refine their solutions and develop comprehensive strategies 
-              for real-world application, including financial modeling, 
-              scalability planning, and user testing protocols. 
-              </p>
+            <div className="absolute inset-0 bg-[#2b212e]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-8">
+              <div className="flex flex-col items-center space-y-4">
+                <CheckCircle size={40} className="text-white mb-2" />
+                <p className="text-white font-lora text-center">
+                Teams refine their solutions and develop comprehensive strategies 
+                for real-world application, including financial modeling, 
+                scalability planning, and user testing protocols. 
+                </p>
+              </div>
             </div>
           </motion.div>
         </div>
