@@ -12,7 +12,7 @@ const SprintImage = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            className="w-full md:w-4/5"
+            className="w-full md:w-85/100"
           >
             <div className="relative overflow-hidden border-[3rem] border-[#2b212e]">
               <img 
@@ -24,7 +24,7 @@ const SprintImage = () => {
           </motion.div>
           
           {/* Empty space - 20% width */}
-          <div className="w-full md:w-1/5"></div>
+          <div className="w-full md:w-15/100"></div>
         </div>
       </div>
     </section>
