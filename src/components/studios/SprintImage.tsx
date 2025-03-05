@@ -6,6 +6,14 @@ import useEmblaCarousel from "embla-carousel-react";
 
 const carouselSlides = [
   {
+    image: "/RAADE-Design-Sprint-Gustavo-Vives.jpg",
+    alt: "RAADE Design Sprint with Gustavo Vives",
+    caption: {
+      line1: "No spectators.",
+      line2: "Active changemakers."
+    }
+  },
+  {
     image: "/RAADE-Design-Sprint-Edith-Ibeke.jpg",
     alt: "RAADE Design Sprint with Edith Ibeke",
     caption: {
@@ -22,19 +30,11 @@ const carouselSlides = [
     }
   },
   {
-    image: "/RAADE-Innovation-Studios-Izesan.jpg", // Using this as placeholder for "RAADE-Innovation-Studios-Izesan"
+    image: "/RAADE-Innovation-Studios-Izesan.jpg",
     alt: "RAADE Innovation Studios Izesan",
     caption: {
       line1: "No boundaries.",
       line2: "Limitless potential."
-    }
-  },
-  {
-    image: "/RAADE-Design-Sprint-Gustavo-Vives.jpg",
-    alt: "RAADE Design Sprint with Gustavo Vives",
-    caption: {
-      line1: "No spectators.",
-      line2: "Active changemakers."
     }
   }
 ];
@@ -71,14 +71,21 @@ const SprintImage = () => {
   }, [emblaApi, onSelect]);
 
   return (
-    <section className="w-full bg-white relative py-8">
+    <section className="w-full bg-white relative py-16">
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.7 }}
-        className="w-full max-w-[90%] mx-auto relative" // Added max-width and margins
+        className="w-full max-w-[90%] mx-auto relative"
       >
+        {/* Section Heading */}
+        <div className="text-center mb-10">
+          <h3 className="text-xl font-montserrat uppercase tracking-wider text-raade-Thunder font-medium">
+            HOW WE APPROACH INNOVATION
+          </h3>
+        </div>
+        
         {/* Carousel container */}
         <div className="relative overflow-hidden w-full">
           <div className="overflow-hidden w-full" ref={emblaRef}>
@@ -109,14 +116,14 @@ const SprintImage = () => {
           
           {/* Navigation Buttons */}
           <button 
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-[#2b212e] text-white p-6 z-10"
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-[#9b87f5] text-white p-6 z-10"
             onClick={scrollPrev}
             aria-label="Previous slide"
           >
             <ChevronLeft size={24} />
           </button>
           <button 
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-[#2b212e] text-white p-6 z-10"
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-[#9b87f5] text-white p-6 z-10"
             onClick={scrollNext}
             aria-label="Next slide"
           >
