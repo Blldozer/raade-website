@@ -4,27 +4,24 @@ import { motion } from "framer-motion";
 const SprintImage = () => {
   return (
     <section className="py-20 bg-white">
-      <div className="max-w-[1600px] mx-auto px-6 md:px-12">
-        <div className="flex flex-col lg:flex-row items-center">
-          {/* Image container - 80% */}
+      <div className="w-full mx-auto">
+        <div className="flex flex-col items-center">
+          {/* Image container - 100% width */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            className="w-full lg:w-[80%]"
+            className="w-full"
           >
-            <div className="relative overflow-hidden rounded-lg shadow-xl">
+            <div className="relative overflow-hidden border-8 border-[#2b212e]">
               <img 
-                src="RAADE-Innovation-Studio-1-edited.jpg" 
-                alt="RAADE Innovation Studio team IPI" 
+                src="RAADE-Design-Sprint-Edith-Ibeke.jpg" 
+                alt="RAADE Design Sprint with Edith Ibeke" 
                 className="w-full h-auto"
               />
             </div>
           </motion.div>
-          
-          {/* Right empty space - 20% */}
-          <div className="lg:w-[20%]"></div>
         </div>
       </div>
     </section>
