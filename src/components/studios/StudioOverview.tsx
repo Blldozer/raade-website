@@ -1,6 +1,5 @@
 
 import { motion } from "framer-motion";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Compass, Rocket, CheckCircle } from "lucide-react";
 
 const StudioOverview = () => {
@@ -53,104 +52,118 @@ const StudioOverview = () => {
           </motion.div>
         </div>
 
-        {/* Three Phase Cards */}
-        <div className="mt-16">
-          <motion.h3 
+        {/* Three Phase Cards with Image Backgrounds */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+          {/* Phase 1: Immersion & Discovery */}
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-2xl font-montserrat font-semibold text-center mb-12 text-raade-Thunder"
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="relative h-[450px] group overflow-hidden rounded-xl shadow-lg"
           >
-            OUR INNOVATION APPROACH
-          </motion.h3>
+            {/* Background Image */}
+            <div className="absolute inset-0 w-full h-full">
+              <img 
+                src="/RAADE-Design-Sprint-Edith-Ibeke.jpg" 
+                alt="Immersion & Discovery Phase" 
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+            </div>
+            
+            {/* Title Overlay - Always Visible */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 flex items-center justify-center">
+              <div className="p-3 rounded-full bg-raade-navy text-white mb-4">
+                <Compass size={32} />
+              </div>
+              <h3 className="text-white font-montserrat text-3xl font-semibold text-center absolute bottom-8">
+                Immersion & Discovery
+              </h3>
+            </div>
+            
+            {/* Description Overlay - Visible on Hover */}
+            <div className="absolute inset-0 bg-raade-navy/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-8">
+              <p className="text-white font-lora text-center">
+                We begin by deeply understanding the problem space through field research, stakeholder interviews, 
+                and empathy building. Our teams immerse themselves in the local context to uncover hidden insights 
+                and identify true user needs.
+              </p>
+            </div>
+          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-            {/* Phase 1: Immersion & Discovery */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
-              <Card className="h-full bg-[#F4F5F4] border-none hover:shadow-lg transition-shadow duration-300">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-center mb-4">
-                    <div className="p-3 rounded-full bg-raade-navy text-white">
-                      <Compass size={28} />
-                    </div>
-                  </div>
-                  <CardTitle className="text-xl font-montserrat text-center text-raade-Thunder">
-                    Immersion & Discovery
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base text-gray-700 font-lora">
-                    We begin by deeply understanding the problem space through field research, stakeholder interviews, 
-                    and empathy building. Our teams immerse themselves in the local context to uncover hidden insights 
-                    and identify true user needs rather than assumed ones.
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            </motion.div>
+          {/* Phase 2: Rapid Ideation & Prototyping */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="relative h-[450px] group overflow-hidden rounded-xl shadow-lg"
+          >
+            {/* Background Image */}
+            <div className="absolute inset-0 w-full h-full">
+              <img 
+                src="/RAADE-Design-Sprint-Gustavo-Vives.jpg" 
+                alt="Rapid Ideation & Prototyping Phase" 
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+            </div>
+            
+            {/* Title Overlay - Always Visible */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 flex items-center justify-center">
+              <div className="p-3 rounded-full bg-raade-yellow-orange text-white mb-4">
+                <Rocket size={32} />
+              </div>
+              <h3 className="text-white font-montserrat text-3xl font-semibold text-center absolute bottom-8">
+                Rapid Ideation & Prototyping
+              </h3>
+            </div>
+            
+            {/* Description Overlay - Visible on Hover */}
+            <div className="absolute inset-0 bg-raade-yellow-orange/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-8">
+              <p className="text-white font-lora text-center">
+                Our collaborative design sprints generate diverse solutions quickly. We build low-fidelity 
+                prototypes to test core assumptions, gather feedback from actual users, and iterate rapidly 
+                to refine concepts before significant investment.
+              </p>
+            </div>
+          </motion.div>
 
-            {/* Phase 2: Rapid Ideation & Prototyping */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <Card className="h-full bg-[#F4F5F4] border-none hover:shadow-lg transition-shadow duration-300">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-center mb-4">
-                    <div className="p-3 rounded-full bg-raade-yellow-orange text-white">
-                      <Rocket size={28} />
-                    </div>
-                  </div>
-                  <CardTitle className="text-xl font-montserrat text-center text-raade-Thunder">
-                    Rapid Ideation & Prototyping
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base text-gray-700 font-lora">
-                    Our collaborative design sprints generate diverse solutions quickly. We build low-fidelity 
-                    prototypes to test core assumptions, gather feedback from actual users, and iterate rapidly. 
-                    This approach allows us to fail fast, learn continuously, and refine concepts before significant 
-                    investment.
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Phase 3: Implementation */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              <Card className="h-full bg-[#F4F5F4] border-none hover:shadow-lg transition-shadow duration-300">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-center mb-4">
-                    <div className="p-3 rounded-full bg-raade-Oslo-gray text-white">
-                      <CheckCircle size={28} />
-                    </div>
-                  </div>
-                  <CardTitle className="text-xl font-montserrat text-center text-raade-Thunder">
-                    Implementation
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base text-gray-700 font-lora">
-                    We move from prototypes to minimum viable products with careful attention to sustainability and 
-                    scalability. Our implementation plans include measurable impact goals, market entry strategies, 
-                    and partnerships to ensure solutions can grow beyond initial pilots and create lasting change.
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
+          {/* Phase 3: Implementation */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="relative h-[450px] group overflow-hidden rounded-xl shadow-lg"
+          >
+            {/* Background Image */}
+            <div className="absolute inset-0 w-full h-full">
+              <img 
+                src="/RAADE-Innovation-Studio-1-Hawa-Ife-Hamza.jpg" 
+                alt="Implementation Phase" 
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+            </div>
+            
+            {/* Title Overlay - Always Visible */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 flex items-center justify-center">
+              <div className="p-3 rounded-full bg-raade-Oslo-gray text-white mb-4">
+                <CheckCircle size={32} />
+              </div>
+              <h3 className="text-white font-montserrat text-3xl font-semibold text-center absolute bottom-8">
+                Implementation
+              </h3>
+            </div>
+            
+            {/* Description Overlay - Visible on Hover */}
+            <div className="absolute inset-0 bg-raade-Oslo-gray/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-8">
+              <p className="text-white font-lora text-center">
+                We move from prototypes to minimum viable products with careful attention to sustainability and 
+                scalability. Our implementation plans include measurable impact goals, market entry strategies, 
+                and partnerships to ensure lasting change.
+              </p>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>
