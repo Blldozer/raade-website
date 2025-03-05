@@ -4,7 +4,6 @@ import TransitionStat from "@/components/sections/TransitionStat";
 import FutureShowcase from "@/components/sections/FutureShowcase";
 import TransitionHook from "@/components/sections/TransitionHook";
 import JoinSection from "@/components/sections/JoinSection";
-import SprintImage from "@/components/studios/SprintImage";
 
 const Index = () => {
   return (
@@ -28,13 +27,6 @@ const Index = () => {
         id="future-showcase"
       >
         <FutureShowcase />
-      </section>
-      
-      <section 
-        className="relative w-full min-h-screen bg-white" 
-        id="sprint-image"
-      >
-        <SprintImage />
       </section>
       
       <section 
