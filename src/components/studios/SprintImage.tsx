@@ -71,72 +71,59 @@ const SprintImage = () => {
   }, [emblaApi, onSelect]);
 
   return (
-    <section className="py-20 bg-white relative">
-      <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row">
-          {/* Main content - 80% width */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            className="w-full md:w-4/5 relative"
-          >
-            {/* Small caption above the carousel */}
-            <div className="mb-4 uppercase tracking-wide text-sm text-gray-500 font-medium">
-              WHY ARE WE DIFFERENT?
-            </div>
-            
-            {/* Carousel container */}
-            <div className="relative overflow-hidden">
-              <div className="overflow-hidden border-[3rem] border-[#2b212e]" ref={emblaRef}>
-                <div className="flex touch-pan-y">
-                  {carouselSlides.map((slide, index) => (
-                    <div key={index} className="relative flex-[0_0_100%] min-w-0">
-                      <div className="relative">
-                        <img 
-                          src={slide.image}
-                          alt={slide.alt}
-                          className="w-full h-auto object-cover"
-                        />
-                        
-                        {/* Caption overlay */}
-                        <div className="absolute inset-0 flex items-center justify-center text-white">
-                          <div className="text-center">
-                            <h2 className="text-4xl md:text-6xl lg:text-7xl font-simula leading-tight">
-                              {slide.caption.line1}<br />
-                              {slide.caption.line2}
-                            </h2>
-                          </div>
-                        </div>
+    <section className="w-full bg-white relative">
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.7 }}
+        className="w-full relative"
+      >
+        {/* Carousel container */}
+        <div className="relative overflow-hidden w-full">
+          <div className="overflow-hidden w-full" ref={emblaRef}>
+            <div className="flex touch-pan-y">
+              {carouselSlides.map((slide, index) => (
+                <div key={index} className="relative flex-[0_0_100%] min-w-0">
+                  <div className="relative h-screen">
+                    <img 
+                      src={slide.image}
+                      alt={slide.alt}
+                      className="w-full h-full object-cover"
+                    />
+                    
+                    {/* Caption overlay */}
+                    <div className="absolute inset-0 flex items-center justify-center text-white">
+                      <div className="text-center">
+                        <h2 className="text-4xl md:text-6xl lg:text-7xl font-simula leading-tight">
+                          {slide.caption.line1}<br />
+                          {slide.caption.line2}
+                        </h2>
                       </div>
                     </div>
-                  ))}
+                  </div>
                 </div>
-              </div>
-              
-              {/* Navigation Buttons */}
-              <button 
-                className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-[#2b212e] text-white p-6 z-10"
-                onClick={scrollPrev}
-                aria-label="Previous slide"
-              >
-                <ChevronLeft size={24} />
-              </button>
-              <button 
-                className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-[#2b212e] text-white p-6 z-10"
-                onClick={scrollNext}
-                aria-label="Next slide"
-              >
-                <ChevronRight size={24} />
-              </button>
+              ))}
             </div>
-          </motion.div>
+          </div>
           
-          {/* Empty space - 20% width */}
-          <div className="w-full md:w-1/5"></div>
+          {/* Navigation Buttons */}
+          <button 
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-[#2b212e] text-white p-6 z-10"
+            onClick={scrollPrev}
+            aria-label="Previous slide"
+          >
+            <ChevronLeft size={24} />
+          </button>
+          <button 
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-[#2b212e] text-white p-6 z-10"
+            onClick={scrollNext}
+            aria-label="Next slide"
+          >
+            <ChevronRight size={24} />
+          </button>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 };
