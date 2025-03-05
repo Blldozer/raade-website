@@ -2,6 +2,7 @@
 import InnovationStudiosSection from "@/components/InnovationStudios";
 import ProjectsShowcase from "@/components/ProjectsShowcase";
 import StudioOverview from "@/components/studios/StudioOverview";
+import SprintImage from "@/components/studios/SprintImage";
 import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
 
@@ -59,6 +60,7 @@ const InnovationStudios = () => {
       <div>
         <Hero />
         <StudioOverview />
+        <SprintImage />
         <InnovationStudiosSection />
         <ProjectsShowcase />
       </div>
