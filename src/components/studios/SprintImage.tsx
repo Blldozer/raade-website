@@ -71,13 +71,13 @@ const SprintImage = () => {
   }, [emblaApi, onSelect]);
 
   return (
-    <section className="w-full bg-white relative">
+    <section className="w-full bg-white relative py-8">
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.7 }}
-        className="w-full relative"
+        className="w-full max-w-[90%] mx-auto relative" // Added max-width and margins
       >
         {/* Carousel container */}
         <div className="relative overflow-hidden w-full">
