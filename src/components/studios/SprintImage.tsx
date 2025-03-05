@@ -11,7 +11,8 @@ const carouselSlides = [
     caption: {
       line1: "No spectators.",
       line2: "Active changemakers."
-    }
+    },
+    phase: "Immersion & Discovery"
   },
   {
     image: "/RAADE-Design-Sprint-Edith-Ibeke.jpg",
@@ -19,7 +20,8 @@ const carouselSlides = [
     caption: {
       line1: "No observers.",
       line2: "Only participants."
-    }
+    },
+    phase: "Rapid Ideation & Prototyping"
   },
   {
     image: "/RAADE-Innovation-Studio-1-Hawa-Ife-Hamza.jpg",
@@ -27,7 +29,8 @@ const carouselSlides = [
     caption: {
       line1: "No theoretical solutions.",
       line2: "Real-world impact."
-    }
+    },
+    phase: "Implementation"
   },
   {
     image: "/RAADE-Innovation-Studios-Izesan.jpg",
@@ -35,7 +38,8 @@ const carouselSlides = [
     caption: {
       line1: "No boundaries.",
       line2: "Limitless potential."
-    }
+    },
+    phase: "Immersion & Discovery"
   }
 ];
 
@@ -98,6 +102,13 @@ const SprintImage = () => {
                       alt={slide.alt}
                       className="w-full h-full object-cover"
                     />
+                    
+                    {/* Phase label */}
+                    <div className="absolute top-8 left-8 bg-white/80 px-6 py-3 rounded-md">
+                      <h4 className="text-lg font-montserrat font-medium text-raade-Thunder">
+                        Phase: {slide.phase}
+                      </h4>
+                    </div>
                     
                     {/* Caption overlay */}
                     <div className="absolute inset-0 flex items-center justify-center text-white">
