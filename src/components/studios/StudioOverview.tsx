@@ -73,7 +73,7 @@ const StudioOverview = () => {
             
             {/* Title Overlay - Always Visible */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 flex items-center justify-center">
-              <div className="p-3 rounded-full bg-raade-navy text-white mb-4 group-hover:mb-0 group-hover:translate-y-[-30px] transition-all duration-300">
+              <div className="p-3 rounded-full bg-raade-navy text-white mb-4 transition-all duration-300 group-hover:translate-y-[-60px]">
                 <Compass size={32} />
               </div>
               <h3 className="text-white font-simula text-3xl font-semibold text-center absolute bottom-8 group-hover:translate-y-[-20px] transition-all duration-300">
@@ -83,14 +83,11 @@ const StudioOverview = () => {
             
             {/* Description Overlay - Visible on Hover */}
             <div className="absolute inset-0 bg-raade-navy/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-8">
-              <div className="flex flex-col items-center space-y-4">
-                <Compass size={40} className="text-white mb-2" />
-                <p className="text-white font-lora text-center">
+              <p className="text-white font-lora text-center mt-8">
                 We dive deeply into understanding the problem through ethnographic interviews, contextual research, 
                 and empathy-building exercises. Our teams carefully map stakeholder ecosystems and uncover 
                 hidden insights that reveal the true nature of each challenge.
-                </p>
-              </div>
+              </p>
             </div>
           </motion.div>
 
@@ -113,7 +110,7 @@ const StudioOverview = () => {
             
             {/* Title Overlay - Always Visible */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 flex items-center justify-center">
-              <div className="p-3 rounded-full bg-raade-yellow-orange text-white mb-4 group-hover:mb-0 group-hover:translate-y-[-30px] transition-all duration-300">
+              <div className="p-3 rounded-full bg-raade-yellow-orange text-white mb-4 transition-all duration-300 group-hover:translate-y-[-60px]">
                 <Rocket size={32} />
               </div>
               <h3 className="text-white font-simula text-3xl font-semibold text-center absolute bottom-8 group-hover:translate-y-[-20px] transition-all duration-300">
@@ -123,13 +120,10 @@ const StudioOverview = () => {
             
             {/* Description Overlay - Visible on Hover */}
             <div className="absolute inset-0 bg-raade-yellow-orange/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-8">
-              <div className="flex flex-col items-center space-y-4">
-                <Rocket size={40} className="text-white mb-2" />
-                <p className="text-white font-lora text-center">
+              <p className="text-white font-lora text-center mt-8">
                 In this phase we unleash creative thinking through structured brainstorming sessions and rapid experimentation, 
                 where teams quickly build and test low-fidelity prototypes to validate core assumptions.
-                </p>
-              </div>
+              </p>
             </div>
           </motion.div>
 
@@ -152,7 +146,7 @@ const StudioOverview = () => {
             
             {/* Title Overlay - Always Visible */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 flex items-center justify-center">
-              <div className="p-3 rounded-full bg-[#2b212e] text-white mb-4 group-hover:mb-0 group-hover:translate-y-[-30px] transition-all duration-300">
+              <div className="p-3 rounded-full bg-[#2b212e] text-white mb-4 transition-all duration-300 group-hover:translate-y-[-60px]">
                 <CheckCircle size={32} />
               </div>
               <h3 className="text-white font-simula text-3xl font-semibold text-center absolute bottom-8 group-hover:translate-y-[-20px] transition-all duration-300">
@@ -162,14 +156,11 @@ const StudioOverview = () => {
             
             {/* Description Overlay - Visible on Hover */}
             <div className="absolute inset-0 bg-[#2b212e]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-8">
-              <div className="flex flex-col items-center space-y-4">
-                <CheckCircle size={40} className="text-white mb-2" />
-                <p className="text-white font-lora text-center">
+              <p className="text-white font-lora text-center mt-8">
                 Teams refine their solutions and develop comprehensive strategies 
                 for real-world application, including financial modeling, 
                 scalability planning, and user testing protocols. 
-                </p>
-              </div>
+              </p>
             </div>
           </motion.div>
         </div>
