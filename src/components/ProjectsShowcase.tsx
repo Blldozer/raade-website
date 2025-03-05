@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -91,23 +92,43 @@ const ProjectsShowcase = () => {
 
   return (
     <section className="py-24 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+      <div className="max-w-[1600px] mx-auto px-6 md:px-12">
+        {/* Title Section - 39/61 split */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="flex flex-col lg:flex-row mb-16"
         >
-          <p className="text-raade-Thunder font-medium tracking-wider mb-3">PROJECT PORTFOLIO</p>
-          <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-raade-Thunder mb-6">
-            Innovation in Action
-          </h2>
-          <p className="text-lg font-lora text-raade-Thunder/70 max-w-3xl mx-auto">
-            Explore our portfolio of innovative solutions developed in partnership with
-            African organizations to address real-world challenges.
-          </p>
+          <div className="w-full lg:w-[39%]">
+            <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-raade-Thunder">
+              Our Current Projects
+            </h2>
+          </div>
+          <div className="lg:w-[61%]"></div> {/* Filler space */}
         </motion.div>
+
+        {/* Content Section - 39/61 split reversed */}
+        <div className="flex flex-col lg:flex-row mb-20">
+          <div className="lg:w-[39%]"></div> {/* Filler space */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="w-full lg:w-[61%]"
+          >
+            <div className="space-y-8 text-xl leading-relaxed font-lora text-gray-700 max-w-[800px]">
+              <p>
+                We focus on high-impact sectors where innovative solutions can create 
+                transformative change at scale. Each project addresses challenges affecting 
+                millions of people across Africa, designed not just to solve immediate problems, 
+                but to create ripple effects that transform entire communities and markets.
+              </p>
+            </div>
+          </motion.div>
+        </div>
 
         {/* Filter Buttons */}
         <motion.div 
