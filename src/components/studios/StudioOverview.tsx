@@ -102,7 +102,7 @@ const StudioOverview = () => {
             {/* Background Image */}
             <div className="absolute inset-0 w-full h-full">
               <img 
-                src="/RAADE-Design-Sprint-Gustavo-Vives.jpg" 
+                src="/RAADE-Prototyping-Gustavo-Vives.jpg" 
                 alt="Rapid Ideation & Prototyping Phase" 
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
