@@ -76,7 +76,7 @@ const StudioOverview = () => {
               <div className="p-3 rounded-full bg-raade-navy text-white mb-4">
                 <Compass size={32} />
               </div>
-              <h3 className="text-white font-montserrat text-3xl font-semibold text-center absolute bottom-8">
+              <h3 className="text-white font-simula text-3xl font-semibold text-center absolute bottom-8">
                 Immersion & Discovery
               </h3>
             </div>
@@ -84,9 +84,9 @@ const StudioOverview = () => {
             {/* Description Overlay - Visible on Hover */}
             <div className="absolute inset-0 bg-raade-navy/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-8">
               <p className="text-white font-lora text-center">
-                We begin by deeply understanding the problem space through field research, stakeholder interviews, 
-                and empathy building. Our teams immerse themselves in the local context to uncover hidden insights 
-                and identify true user needs.
+              We dive deeply into understanding the problem through ethnographic interviews, contextual research, 
+              and empathy-building exercises. Our teams carefully map stakeholder ecosystems and uncover 
+              hidden insights that reveal the true nature of each challenge.
               </p>
             </div>
           </motion.div>
@@ -113,7 +113,7 @@ const StudioOverview = () => {
               <div className="p-3 rounded-full bg-raade-yellow-orange text-white mb-4">
                 <Rocket size={32} />
               </div>
-              <h3 className="text-white font-montserrat text-3xl font-semibold text-center absolute bottom-8">
+              <h3 className="text-white font-simula text-3xl font-semibold text-center absolute bottom-8">
                 Rapid Ideation & Prototyping
               </h3>
             </div>
@@ -121,9 +121,8 @@ const StudioOverview = () => {
             {/* Description Overlay - Visible on Hover */}
             <div className="absolute inset-0 bg-raade-yellow-orange/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-8">
               <p className="text-white font-lora text-center">
-                Our collaborative design sprints generate diverse solutions quickly. We build low-fidelity 
-                prototypes to test core assumptions, gather feedback from actual users, and iterate rapidly 
-                to refine concepts before significant investment.
+              In this phase we unleash creative thinking through structured brainstorming sessions and rapid experimentation, 
+              where teams quickly build and test low-fidelity prototypes to validate core assumptions.
               </p>
             </div>
           </motion.div>
@@ -147,20 +146,20 @@ const StudioOverview = () => {
             
             {/* Title Overlay - Always Visible */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 flex items-center justify-center">
-              <div className="p-3 rounded-full bg-raade-Oslo-gray text-white mb-4">
+              <div className="p-3 rounded-full bg-[#2b212e] text-white mb-4">
                 <CheckCircle size={32} />
               </div>
-              <h3 className="text-white font-montserrat text-3xl font-semibold text-center absolute bottom-8">
+              <h3 className="text-white font-simula text-3xl font-semibold text-center absolute bottom-8">
                 Implementation
               </h3>
             </div>
             
             {/* Description Overlay - Visible on Hover */}
-            <div className="absolute inset-0 bg-raade-Oslo-gray/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-8">
+            <div className="absolute inset-0 bg-[#2b212e]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-8">
               <p className="text-white font-lora text-center">
-                We move from prototypes to minimum viable products with careful attention to sustainability and 
-                scalability. Our implementation plans include measurable impact goals, market entry strategies, 
-                and partnerships to ensure lasting change.
+              Teams refine their solutions and develop comprehensive strategies 
+              for real-world application, including financial modeling, 
+              scalability planning, and user testing protocols. 
               </p>
             </div>
           </motion.div>
