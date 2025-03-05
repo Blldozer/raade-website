@@ -16,8 +16,8 @@ const SprintImage = () => {
           >
             <div className="relative overflow-hidden rounded-lg shadow-xl">
               <img 
-                src="/RAADE-Design-Sprint-Edith-Ibeke.jpg" 
-                alt="RAADE Design Sprint led by Edith Ibeke" 
+                src="RAADE-Innovation-Studio-1-edited.jpg" 
+                alt="RAADE Innovation Studio team IPI" 
                 className="w-full h-auto"
               />
             </div>
