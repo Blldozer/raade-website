@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 type Project = {
   name: string;
@@ -13,6 +14,7 @@ type Project = {
   impact: string;
   sector: "Healthcare" | "Technology" | "Education" | "Energy";
   image: string;
+  slug: string;
 };
 
 const projects: Project[] = [
@@ -23,6 +25,7 @@ const projects: Project[] = [
     impact: "Installed 500+ solar units, impacting 2,500+ lives",
     sector: "Energy",
     image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&q=80",
+    slug: "sunfi-solar-initiative",
   },
   {
     name: "Maternal Health Platform",
@@ -31,6 +34,7 @@ const projects: Project[] = [
     impact: "Connected 1,000+ mothers with healthcare providers",
     sector: "Healthcare",
     image: "https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&q=80",
+    slug: "maternal-health-platform",
   },
   {
     name: "Digital Learning Hub",
@@ -39,6 +43,7 @@ const projects: Project[] = [
     impact: "Reached 5,000+ students across 3 countries",
     sector: "Education",
     image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&q=80",
+    slug: "digital-learning-hub",
   },
   {
     name: "Healthcare Analytics",
@@ -47,6 +52,7 @@ const projects: Project[] = [
     impact: "Reduced reporting time by 60% across 12 facilities",
     sector: "Technology",
     image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80",
+    slug: "healthcare-analytics",
   },
   {
     name: "Remote Health Monitoring",
@@ -55,6 +61,7 @@ const projects: Project[] = [
     impact: "Monitoring 2,000+ patients remotely",
     sector: "Healthcare",
     image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80",
+    slug: "remote-health-monitoring",
   },
   {
     name: "Smart Agriculture",
@@ -63,6 +70,7 @@ const projects: Project[] = [
     impact: "Increased crop yield by 40% for 200 farmers",
     sector: "Technology",
     image: "https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&q=80",
+    slug: "smart-agriculture",
   },
 ];
 
@@ -91,7 +99,7 @@ const ProjectsShowcase = () => {
   };
 
   return (
-    <section className="py-24 bg-gray-50">
+    <section className="py-24 bg-white">
       <div className="max-w-[1600px] mx-auto px-6 md:px-12">
         {/* Title Section - 39/61 split */}
         <motion.div
@@ -197,31 +205,16 @@ const ProjectsShowcase = () => {
                     <h4 className="font-bold text-sm text-raade-Thunder/70 uppercase tracking-wider mb-1">Impact:</h4>
                     <p className="text-raade-Thunder font-lora">{project.impact}</p>
                   </div>
-                  <Button 
-                    variant="link" 
-                    className="text-[#9b87f5] hover:text-[#8B5CF6] p-0 h-auto flex items-center mt-2 font-lora"
+                  <Link 
+                    to={`/projects/${project.slug}`}
+                    className="text-[#9b87f5] hover:text-[#8B5CF6] inline-flex items-center mt-2 font-lora"
                   >
                     Learn more <ArrowRight className="ml-1 h-4 w-4" />
-                  </Button>
+                  </Link>
                 </CardContent>
               </Card>
             </motion.div>
           ))}
-        </motion.div>
-        
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="text-center mt-16"
-        >
-          <Button
-            size="lg"
-            className="bg-raade-Thunder text-white hover:bg-raade-Thunder/90 transition-colors px-8 font-lora"
-          >
-            See All Projects <ArrowRight className="ml-2" />
-          </Button>
         </motion.div>
       </div>
     </section>
