@@ -6,73 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-
-type Project = {
-  name: string;
-  partner: string;
-  challenge: string;
-  impact: string;
-  sector: "Healthcare" | "Technology" | "Education" | "Energy";
-  image: string;
-  slug: string;
-};
-
-const projects: Project[] = [
-  {
-    name: "SunFi Solar Initiative",
-    partner: "SunFi Energy",
-    challenge: "Limited access to clean energy in rural communities",
-    impact: "Installed 500+ solar units, impacting 2,500+ lives",
-    sector: "Energy",
-    image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&q=80",
-    slug: "sunfi-solar-initiative",
-  },
-  {
-    name: "Maternal Health Platform",
-    partner: "Medical Women's Association",
-    challenge: "Limited access to maternal healthcare information",
-    impact: "Connected 1,000+ mothers with healthcare providers",
-    sector: "Healthcare",
-    image: "https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&q=80",
-    slug: "maternal-health-platform",
-  },
-  {
-    name: "Digital Learning Hub",
-    partner: "EduTech Africa",
-    challenge: "Limited access to quality education resources",
-    impact: "Reached 5,000+ students across 3 countries",
-    sector: "Education",
-    image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&q=80",
-    slug: "digital-learning-hub",
-  },
-  {
-    name: "Healthcare Analytics",
-    partner: "Regional Health Network",
-    challenge: "Inefficient healthcare data management",
-    impact: "Reduced reporting time by 60% across 12 facilities",
-    sector: "Technology",
-    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80",
-    slug: "healthcare-analytics",
-  },
-  {
-    name: "Remote Health Monitoring",
-    partner: "TechCare Solutions",
-    challenge: "Limited access to healthcare in remote areas",
-    impact: "Monitoring 2,000+ patients remotely",
-    sector: "Healthcare",
-    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80",
-    slug: "remote-health-monitoring",
-  },
-  {
-    name: "Smart Agriculture",
-    partner: "AgriTech Ghana",
-    challenge: "Inefficient farming practices",
-    impact: "Increased crop yield by 40% for 200 farmers",
-    sector: "Technology",
-    image: "https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&q=80",
-    slug: "smart-agriculture",
-  },
-];
+import { projects } from "@/data/ProjectData";
 
 const sectors = ["All", "Healthcare", "Technology", "Education", "Energy"] as const;
 

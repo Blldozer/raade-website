@@ -12,6 +12,7 @@ import Conference from "./pages/Conference";
 import About from "./pages/About";
 import Footer from "./components/Footer";
 import Navigation from "./components/Navigation";
+import ProjectDetail from "./pages/ProjectDetail";
 
 // Initialize the QueryClient
 const queryClient = new QueryClient();
@@ -39,6 +40,7 @@ const App = () => (
               <Route path="/about" element={<About />} />
               <Route path="/studios" element={<InnovationStudios />} />
               <Route path="/conference" element={<Conference />} />
+              <Route path="/projects/:projectSlug" element={<ProjectDetail />} />
             </Routes>
           </div>
           <Footer />
