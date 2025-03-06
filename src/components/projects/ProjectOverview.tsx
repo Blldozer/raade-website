@@ -1,5 +1,5 @@
 
-import { Clock, Users, Target } from "lucide-react";
+import { Clock, Users, Target, ExternalLink } from "lucide-react";
 
 interface ProjectOverviewProps {
   description: string;
