@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
@@ -6,9 +5,8 @@ import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import PaymentForm from "./PaymentForm";
 
-// Initialize Stripe with a publishable key
-// Using a public key, so it's safe to include directly
-const stripePromise = loadStripe("pk_test_51OPiHSAPiPZC8VvEKZUSRt9eIzOLewAUIQQK8G6Kz1Wnlx8FbMDnpTdEzKXQo5I9NRyX5uCd0PV1sMlHqU2k0O8M00lk3XJJm1");
+// Initialize Stripe with the live publishable key
+const stripePromise = loadStripe("pk_live_51QzaGsJCmIJg645X8x5sPqhMAiH4pXBh2e6mbgdxxwgqqsCfM8N7SiOvv98N2l5kVeoAlJj3ab08VG4c6PtgVg4d004QXy2W3m");
 
 interface StripeCheckoutProps {
   ticketType: string;
