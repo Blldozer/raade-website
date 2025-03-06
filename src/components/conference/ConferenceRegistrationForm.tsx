@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -68,18 +67,16 @@ const ConferenceRegistrationForm = () => {
       // First, store registration in Supabase
       const { error: storageError } = await supabase
         .from('conference_registrations')
-        .insert([
-          { 
-            full_name: data.fullName,
-            email: data.email,
-            organization: data.organization,
-            role: data.role,
-            ticket_type: data.ticketType,
-            dietary_requirements: data.dietaryRequirements || null,
-            special_requests: data.specialRequests || null,
-            status: 'confirmed'
-          }
-        ]);
+        .insert({
+          full_name: data.fullName,
+          email: data.email,
+          organization: data.organization,
+          role: data.role,
+          ticket_type: data.ticketType,
+          dietary_requirements: data.dietaryRequirements || null,
+          special_requests: data.specialRequests || null,
+          status: 'confirmed'
+        });
       
       if (storageError) throw storageError;
       
