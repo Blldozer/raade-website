@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Handshake } from 'lucide-react';
 
 const JoinSection = () => {
   return (
@@ -65,17 +65,16 @@ const JoinSection = () => {
                 className="object-cover w-full h-full"
               />
             </div>
-            <h3 className="text-2xl font-bold text-[#1A365D] font-zillaslab">Annual Conference</h3>
+            <h3 className="text-2xl font-bold text-[#1A365D] font-zillaslab">Partner With Us</h3>
             <p className="text-lg text-[#1A365D]/80 font-merriweather">
-              Global summit bringing together African leaders, scholars, and innovators
-              to shape the future of development.
+              Have a challenge that needs solving? Bring your development challenge to our talented student teams and collaborate on innovative solutions.
             </p>
             <Link
-              to="/conference"
-              className="inline-flex items-center text-[#FBB03B] text-lg font-alegreyasans hover:translate-x-2 transition-all duration-300"
+              to="/apply/partner"
+              className="inline-flex items-center bg-[#FBB03B] text-white px-4 py-2 rounded-md hover:bg-[#FBB03B]/80 transition-all duration-300 font-alegreyasans"
             >
-              Learn More
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <Handshake className="mr-2 h-5 w-5" />
+              Submit Your Challenge
             </Link>
           </motion.div>
         </div>
