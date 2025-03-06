@@ -9,16 +9,166 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      partner_applications: {
+        Row: {
+          contact_name: string
+          country: string
+          created_at: string
+          email: string
+          expected_outcome: string | null
+          id: string
+          organization_name: string
+          organization_type: string
+          phone: string | null
+          project_idea: string
+          status: Database["public"]["Enums"]["application_status"]
+          timeline: string | null
+          updated_at: string
+        }
+        Insert: {
+          contact_name: string
+          country: string
+          created_at?: string
+          email: string
+          expected_outcome?: string | null
+          id?: string
+          organization_name: string
+          organization_type: string
+          phone?: string | null
+          project_idea: string
+          status?: Database["public"]["Enums"]["application_status"]
+          timeline?: string | null
+          updated_at?: string
+        }
+        Update: {
+          contact_name?: string
+          country?: string
+          created_at?: string
+          email?: string
+          expected_outcome?: string | null
+          id?: string
+          organization_name?: string
+          organization_type?: string
+          phone?: string | null
+          project_idea?: string
+          status?: Database["public"]["Enums"]["application_status"]
+          timeline?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      student_applications: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string
+          graduation_year: string | null
+          id: string
+          major: string
+          phone: string | null
+          portfolio_link: string | null
+          skills: string | null
+          status: Database["public"]["Enums"]["application_status"]
+          university: string
+          updated_at: string
+          why_join_raade: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name: string
+          graduation_year?: string | null
+          id?: string
+          major: string
+          phone?: string | null
+          portfolio_link?: string | null
+          skills?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+          university: string
+          updated_at?: string
+          why_join_raade: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string
+          graduation_year?: string | null
+          id?: string
+          major?: string
+          phone?: string | null
+          portfolio_link?: string | null
+          skills?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+          university?: string
+          updated_at?: string
+          why_join_raade?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
+      application_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never

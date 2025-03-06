@@ -241,6 +241,7 @@ const ProjectDetail = () => {
             <Button 
               size="lg"
               className="bg-[#FBB03B] hover:bg-[#FBB03B]/80 text-white font-lora"
+              onClick={() => navigate("/apply/student")}
             >
               Join As a Student
             </Button>
@@ -248,6 +249,7 @@ const ProjectDetail = () => {
               variant="outline"
               size="lg"
               className="border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B]/10 font-lora"
+              onClick={() => navigate("/apply/partner")}
             >
               Partner With Us
             </Button>

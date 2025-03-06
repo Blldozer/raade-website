@@ -13,6 +13,8 @@ import About from "./pages/About";
 import Footer from "./components/Footer";
 import Navigation from "./components/Navigation";
 import ProjectDetail from "./pages/ProjectDetail";
+import StudentApplication from "./pages/StudentApplication";
+import PartnerApplication from "./pages/PartnerApplication";
 
 // Initialize the QueryClient
 const queryClient = new QueryClient();
@@ -41,6 +43,8 @@ const App = () => (
               <Route path="/studios" element={<InnovationStudios />} />
               <Route path="/conference" element={<Conference />} />
               <Route path="/projects/:projectSlug" element={<ProjectDetail />} />
+              <Route path="/apply/student" element={<StudentApplication />} />
+              <Route path="/apply/partner" element={<PartnerApplication />} />
             </Routes>
           </div>
           <Footer />
