@@ -2,11 +2,34 @@
 import InnovationStudiosSection from "@/components/InnovationStudios";
 import ProjectsShowcase from "@/components/ProjectsShowcase";
 import StudioOverview from "@/components/studios/StudioOverview";
-// import SprintImage from "@/components/studios/SprintImage";
+import StudioCTA from "@/components/studios/StudioCTA";
 import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
+import { useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 
 const InnovationStudios = () => {
+  const location = useLocation();
+  const overviewRef = useRef<HTMLDivElement>(null);
+  const projectsRef = useRef<HTMLDivElement>(null);
+  const applyRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    // Handle scrolling to sections based on hash
+    if (location.hash) {
+      setTimeout(() => {
+        const hash = location.hash.replace('#', '');
+        if (hash === 'overview' && overviewRef.current) {
+          overviewRef.current.scrollIntoView({ behavior: 'smooth' });
+        } else if (hash === 'projects' && projectsRef.current) {
+          projectsRef.current.scrollIntoView({ behavior: 'smooth' });
+        } else if (hash === 'apply' && applyRef.current) {
+          applyRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [location]);
+
   const Hero = () => {
     return (
       <div className="min-h-screen relative overflow-hidden flex items-center">
@@ -59,10 +82,15 @@ const InnovationStudios = () => {
       <Navigation isHeroPage={true} />
       <div>
         <Hero />
-        <StudioOverview />
-        {/* <SprintImage /> */}
-        {/* <InnovationStudiosSection /> */}
-        <ProjectsShowcase />
+        <div ref={overviewRef} id="overview">
+          <StudioOverview />
+        </div>
+        <div ref={projectsRef} id="projects">
+          <ProjectsShowcase />
+        </div>
+        <div ref={applyRef} id="apply">
+          <StudioCTA />
+        </div>
       </div>
     </div>
   );

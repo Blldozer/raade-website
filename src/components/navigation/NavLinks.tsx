@@ -17,7 +17,7 @@ export const navItems = [
     name: "Innovation Studios",
     href: "/studios",
     dropdownItems: [
-      { name: "Program Overview", href: "/studios" },
+      { name: "Program Overview", href: "/studios#overview" },
       { name: "Current Projects", href: "/studios#projects" },
       { name: "Apply", href: "/studios#apply" },
     ],
