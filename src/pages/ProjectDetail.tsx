@@ -26,7 +26,7 @@ const ProjectDetail = () => {
   if (!project) return null;
 
   return (
-    <div className="bg-white">
+    <div className="bg-[#1A365D]/10">
       {/* Hero Section */}
       <div className="relative h-[60vh] min-h-[400px] overflow-hidden">
         <div className="absolute inset-0 bg-black/50 z-10"></div>
@@ -104,7 +104,7 @@ const ProjectDetail = () => {
 
             <section className="mb-16">
               <h2 className="text-3xl font-simula text-raade-Thunder mb-6">Challenge</h2>
-              <div className="p-6 bg-gray-50 rounded-lg border border-gray-100 mb-8">
+              <div className="p-6 bg-white rounded-lg border border-gray-100 mb-8">
                 <p className="text-xl leading-relaxed font-lora text-gray-700">
                   {project.challenge}
                 </p>
@@ -142,7 +142,7 @@ const ProjectDetail = () => {
           <div className="lg:w-1/3 space-y-8">
             {/* Impact Card - Only show if impact exists */}
             {project.impact && (
-              <Card className="border-none shadow-lg overflow-hidden bg-gradient-to-br from-raade-Thunder to-[#3b2c40]">
+              <Card className="border-none shadow-lg overflow-hidden bg-gradient-to-br from-[#1A365D] to-[#3b2c40]">
                 <CardContent className="p-8">
                   <h3 className="text-2xl font-simula text-white mb-4">Impact</h3>
                   <p className="text-xl font-lora text-white/90 leading-relaxed">{project.impact}</p>
@@ -155,7 +155,7 @@ const ProjectDetail = () => {
               <div className="space-y-6">
                 <h3 className="text-2xl font-simula text-raade-Thunder">Testimonials</h3>
                 {project.testimonials.map((testimonial, index) => (
-                  <Card key={index} className="border-none shadow-md bg-gray-50">
+                  <Card key={index} className="border-none shadow-md bg-white">
                     <CardContent className="p-6">
                       <p className="italic font-lora text-gray-700 mb-4">"{testimonial.quote}"</p>
                       <div>
@@ -209,7 +209,7 @@ const ProjectDetail = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="bg-gray-50 py-16 mt-16">
+      <div className="bg-[#1A365D]/5 py-16 mt-16">
         <div className="container mx-auto px-6 md:px-12 text-center">
           <h2 className="text-3xl font-simula text-raade-Thunder mb-6">Get Involved with Our Projects</h2>
           <p className="text-xl font-lora text-gray-700 max-w-2xl mx-auto mb-8">
