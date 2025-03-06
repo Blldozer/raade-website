@@ -6,8 +6,16 @@ import { Link } from "react-router-dom";
 
 const StudioCTA = () => {
   return (
-    <section className="py-24 bg-raade-navy" id="apply">
-      <div className="max-w-6xl mx-auto px-6 md:px-12">
+    <section className="py-24 relative overflow-hidden" id="apply">
+      {/* Animated gradient background */}
+      <div className="absolute inset-0 z-0 bg-[#2b212e]">
+        <div className="absolute inset-0 animate-gradient-x bg-gradient-to-r from-[#2b212e] via-[#3b2c40] to-[#2b212e] bg-[length:200%_100%]" />
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#9b87f5]/30 via-transparent to-transparent" />
+        </div>
+      </div>
+      
+      <div className="max-w-6xl mx-auto px-6 md:px-12 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -29,7 +37,7 @@ const StudioCTA = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="bg-white/10 p-8 rounded-xl backdrop-blur-sm"
+            className="bg-white/10 p-8 rounded-xl backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all"
           >
             <div className="flex flex-col items-center text-center space-y-4">
               <div className="p-4 rounded-full bg-raade-yellow-orange/20 mb-2">
@@ -42,7 +50,7 @@ const StudioCTA = () => {
               </p>
               <Button
                 size="lg"
-                className="mt-4 bg-raade-yellow-orange hover:bg-raade-yellow-orange/80 text-white font-lora"
+                className="mt-4 bg-raade-yellow-orange hover:bg-raade-yellow-orange/90 text-[#2b212e] font-lora transition-all duration-300 hover:shadow-[0_0_15px_rgba(251,176,59,0.4)]"
                 asChild
               >
                 <Link to="/apply/student">
@@ -58,7 +66,7 @@ const StudioCTA = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="bg-white/10 p-8 rounded-xl backdrop-blur-sm"
+            className="bg-white/10 p-8 rounded-xl backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all"
           >
             <div className="flex flex-col items-center text-center space-y-4">
               <div className="p-4 rounded-full bg-raade-yellow-orange/20 mb-2">
@@ -71,7 +79,7 @@ const StudioCTA = () => {
               </p>
               <Button
                 size="lg"
-                className="mt-4 bg-transparent border-2 border-raade-yellow-orange hover:bg-raade-yellow-orange/20 text-white font-lora"
+                className="mt-4 bg-transparent border-2 border-raade-yellow-orange hover:bg-raade-yellow-orange/20 text-white font-lora transition-all duration-300 hover:shadow-[0_0_15px_rgba(251,176,59,0.3)]"
                 asChild
               >
                 <Link to="/apply/partner">
