@@ -76,10 +76,11 @@ const StudentApplication = () => {
         navigate("/studios");
       }, 2000);
       
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "There was an error submitting your application. Please try again.";
       toast({
         title: "Submission Failed",
-        description: error.message || "There was an error submitting your application. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

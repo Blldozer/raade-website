@@ -76,10 +76,10 @@ const PartnerApplication = () => {
         navigate("/studios");
       }, 2000);
       
-    } catch (error: any) {
+    } catch (error: Error | unknown) {
       toast({
         title: "Submission Failed",
-        description: error.message || "There was an error submitting your application. Please try again.",
+        description: error instanceof Error ? error.message : "There was an error submitting your application. Please try again.",
         variant: "destructive",
       });
     } finally {
