@@ -144,9 +144,21 @@ const ProjectsShowcase = () => {
                     {project.name}
                   </h3>
                   
-                  <p className="text-[#2b212e] font-lora text-sm mb-4">
-                    Partner: {project.partner}
-                  </p>
+                  <div className="flex items-center text-[#2b212e] font-lora text-sm mb-4">
+                    <span>Partner:</span>
+                    <span className="ml-1">{project.partner}</span>
+                    {project.partnerLink && (
+                      <a 
+                        href={project.partnerLink} 
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ml-1 inline-flex items-center text-[#2b212e] hover:text-[#2b212e]/80"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      </a>
+                    )}
+                  </div>
                   
                   <div className="mt-auto">
                     <Link 

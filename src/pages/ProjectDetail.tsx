@@ -1,7 +1,7 @@
 
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Clock, Users, Target, CheckSquare, ArrowRight } from "lucide-react";
+import { ArrowLeft, Clock, Users, Target, CheckSquare, ArrowRight, ExternalLink } from "lucide-react";
 import { getProjectBySlug, getRelatedProjects } from "@/data/ProjectData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -48,9 +48,19 @@ const ProjectDetail = () => {
               <h1 className="text-4xl md:text-6xl font-simula text-white mb-4 max-w-3xl">
                 {project.name}
               </h1>
-              <p className="text-xl text-white/90 font-lora max-w-2xl">
-                Partner: {project.partner}
-              </p>
+              <div className="flex items-center text-xl text-white/90 font-lora max-w-2xl">
+                <span>Partner: {project.partner}</span>
+                {project.partnerLink && (
+                  <a 
+                    href={project.partnerLink} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="ml-2 inline-flex items-center text-white/90 hover:text-white transition-colors"
+                  >
+                    <ExternalLink className="h-5 w-5" />
+                  </a>
+                )}
+              </div>
             </motion.div>
           </div>
         </div>
@@ -89,7 +99,19 @@ const ProjectDetail = () => {
                   <Users className="h-6 w-6 text-[#9b87f5] mr-3 mt-1" />
                   <div>
                     <h3 className="font-bold text-white mb-1">Partner</h3>
-                    <p className="font-lora text-gray-200">{project.partner}</p>
+                    <div className="flex items-center font-lora text-gray-200">
+                      <span>{project.partner}</span>
+                      {project.partnerLink && (
+                        <a 
+                          href={project.partnerLink} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="ml-1 inline-flex items-center text-[#9b87f5] hover:text-[#9b87f5]/80 transition-colors"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-start">

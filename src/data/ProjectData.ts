@@ -2,6 +2,7 @@
 export type Project = {
   name: string;
   partner: string;
+  partnerLink?: string; // Adding optional partner website link
   challenge: string;
   sector: "Healthcare" | "Technology" | "Education" | "Energy" | "Business";
   image: string;
@@ -23,6 +24,7 @@ export const projects: Project[] = [
   {
     name: "SunFi Solar Initiative",
     partner: "SunFi Energy",
+    partnerLink: "https://www.sunfi.co/",
     challenge: "Limited access to clean energy in rural Nigerian communities; decentralized market with price verification challenges",
     sector: "Energy",
     image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&q=80",
@@ -45,6 +47,7 @@ export const projects: Project[] = [
   {
     name: "Maternal Health Platform",
     partner: "Medical Women's Association of Nigeria",
+    partnerLink: "https://www.mwan.org/",
     challenge: "Only 31% of rural Nigerian women have access to skilled birth attendance; significant reliance on traditional birth attendants",
     sector: "Healthcare",
     image: "https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&q=80",
@@ -68,6 +71,7 @@ export const projects: Project[] = [
   {
     name: "Child Nutrition Initiative",
     partner: "Medical Women's Association of Nigeria",
+    partnerLink: "https://www.mwan.org/",
     challenge: "Nearly 1/3 of under-five children in Nigeria are underweight or wasted; commercial options increasingly unaffordable",
     sector: "Healthcare",
     image: "https://images.unsplash.com/photo-1493770348161-369560ae357d?auto=format&fit=crop&q=80",
@@ -91,6 +95,7 @@ export const projects: Project[] = [
   {
     name: "Language Preservation Platform",
     partner: "Izesan Limited",
+    partnerLink: "https://izesan.com/",
     challenge: "UNESCO predicts many Nigerian languages may vanish by 2025; limited documentation and educational integration",
     sector: "Education",
     image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&q=80",
@@ -113,6 +118,7 @@ export const projects: Project[] = [
   {
     name: "Women's Entrepreneurship Program",
     partner: "International Peace Initiatives",
+    partnerLink: "https://ipeacei.org/",
     challenge: "Young mothers with limited education struggle to maintain small businesses; cycle of poverty persists across generations",
     sector: "Business",
     image: "https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&q=80",
