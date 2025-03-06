@@ -86,8 +86,8 @@ const ProjectsShowcase = () => {
               variant={selectedSector === sector ? "default" : "outline"}
               onClick={() => setSelectedSector(sector)}
               className={`${selectedSector === sector 
-                ? "bg-raade-Thunder text-white hover:bg-raade-Thunder/90 border-none" 
-                : "text-raade-Thunder border-raade-Thunder/20 hover:bg-raade-Thunder/10 hover:text-raade-Thunder hover:border-raade-Thunder"} 
+                ? "bg-[#2b212e] text-white hover:bg-[#2b212e]/90 border-none" 
+                : "text-[#2b212e] border-[#2b212e]/20 hover:bg-[#2b212e]/10 hover:text-[#2b212e] hover:border-[#2b212e]"} 
                 font-lora transition-all duration-300`
               }
             >
@@ -122,7 +122,7 @@ const ProjectsShowcase = () => {
                   />
                   
                   {/* Category Badge */}
-                  <Badge className="absolute top-4 right-4 bg-[#9b87f5] border-none text-white font-lora z-10">
+                  <Badge className="absolute top-4 right-4 bg-[#2b212e] border-none text-white font-lora z-10">
                     {project.sector}
                   </Badge>
                   
@@ -140,20 +140,20 @@ const ProjectsShowcase = () => {
                 
                 {/* Content */}
                 <div className="p-6 flex flex-col flex-grow">
-                  <h3 className="text-xl font-bold font-simula text-raade-Thunder mb-2 group-hover:text-[#9b87f5] transition-colors duration-300">
+                  <h3 className="text-xl font-bold font-simula text-[#2b212e] mb-2 group-hover:text-[#2b212e] transition-colors duration-300">
                     {project.name}
                   </h3>
                   
-                  <p className="text-[#9b87f5] font-lora text-sm mb-4">
+                  <p className="text-[#2b212e] font-lora text-sm mb-4">
                     Partner: {project.partner}
                   </p>
                   
                   <div className="mt-auto">
                     <Link 
                       to={`/projects/${project.slug}`}
-                      className="inline-flex items-center mt-2 text-[#9b87f5] hover:text-[#8B5CF6] transition-colors duration-300 font-lora group/link"
+                      className="inline-flex items-center mt-2 text-[#2b212e] hover:text-[#2b212e]/80 transition-colors duration-300 font-lora group/link"
                     >
-                      <span className="border-b border-transparent group-hover/link:border-[#8B5CF6] transition-all duration-300">
+                      <span className="border-b border-transparent group-hover/link:border-[#2b212e] transition-all duration-300">
                         Explore Project
                       </span>
                       <ArrowRight className="ml-2 h-4 w-4 transform group-hover/link:translate-x-1 transition-transform duration-300" />
