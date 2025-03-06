@@ -143,7 +143,7 @@ const ConferenceRegistrationForm = () => {
   };
 
   return (
-    <Card className="shadow-lg border-raade-navy/10">
+    <Card className="shadow-lg border-[#FBB03B]/10">
       <CardHeader>
         <CardTitle className="text-2xl font-simula">Registration Details</CardTitle>
         <CardDescription>Please fill out the form below to register for the conference.</CardDescription>
@@ -235,7 +235,7 @@ const ConferenceRegistrationForm = () => {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-raade-navy hover:bg-raade-navy/90 text-white"
+              className="w-full bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora"
             >
               {isSubmitting ? (
                 <>
@@ -253,11 +253,11 @@ const ConferenceRegistrationForm = () => {
         ) : (
           <div className="space-y-6">
             <div className="bg-gray-50 p-4 rounded-md">
-              <h3 className="font-medium mb-2">Registration Summary</h3>
-              <p><strong>Name:</strong> {registrationData?.fullName}</p>
-              <p><strong>Email:</strong> {registrationData?.email}</p>
-              <p><strong>Organization:</strong> {registrationData?.organization}</p>
-              <p><strong>Ticket Type:</strong> {registrationData?.ticketType} {getTicketPriceText(registrationData?.ticketType || "")}</p>
+              <h3 className="font-medium mb-2 font-simula">Registration Summary</h3>
+              <p className="font-lora"><strong>Name:</strong> {registrationData?.fullName}</p>
+              <p className="font-lora"><strong>Email:</strong> {registrationData?.email}</p>
+              <p className="font-lora"><strong>Organization:</strong> {registrationData?.organization}</p>
+              <p className="font-lora"><strong>Ticket Type:</strong> {registrationData?.ticketType} {getTicketPriceText(registrationData?.ticketType || "")}</p>
             </div>
             
             {registrationData && (
@@ -273,7 +273,7 @@ const ConferenceRegistrationForm = () => {
             <Button 
               variant="outline" 
               onClick={() => setShowPayment(false)}
-              className="w-full"
+              className="w-full border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-lora"
               disabled={isSubmitting}
             >
               Back to Registration Form

@@ -24,7 +24,7 @@ const Conference = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow">
             <CardHeader className="flex flex-row items-center space-x-4">
-              <Calendar className="h-6 w-6 text-raade-gold" />
+              <Calendar className="h-6 w-6 text-[#FBB03B]" />
               <CardTitle className="text-lg font-simula">Date</CardTitle>
             </CardHeader>
             <CardContent>
@@ -34,7 +34,7 @@ const Conference = () => {
 
           <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow">
             <CardHeader className="flex flex-row items-center space-x-4">
-              <Users className="h-6 w-6 text-raade-gold" />
+              <Users className="h-6 w-6 text-[#FBB03B]" />
               <CardTitle className="text-lg font-simula">Attendees</CardTitle>
             </CardHeader>
             <CardContent>
@@ -44,7 +44,7 @@ const Conference = () => {
 
           <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow">
             <CardHeader className="flex flex-row items-center space-x-4">
-              <Ticket className="h-6 w-6 text-raade-gold" />
+              <Ticket className="h-6 w-6 text-[#FBB03B]" />
               <CardTitle className="text-lg font-simula">Registration</CardTitle>
             </CardHeader>
             <CardContent>
@@ -54,7 +54,7 @@ const Conference = () => {
 
           <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow">
             <CardHeader className="flex flex-row items-center space-x-4">
-              <DollarSign className="h-6 w-6 text-raade-gold" />
+              <DollarSign className="h-6 w-6 text-[#FBB03B]" />
               <CardTitle className="text-lg font-simula">Sponsorship</CardTitle>
             </CardHeader>
             <CardContent>
@@ -94,7 +94,7 @@ const Conference = () => {
           </p>
           <Button
             size="lg"
-            className="bg-raade-navy hover:bg-raade-navy/90 text-white font-lora"
+            className="bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora"
             onClick={() => navigate("/conference/register")}
           >
             Register Now
@@ -113,7 +113,7 @@ const Conference = () => {
           <Button
             variant="outline"
             size="lg"
-            className="border-raade-navy text-raade-navy hover:bg-raade-navy hover:text-white font-lora"
+            className="border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-lora"
           >
             Sponsorship Opportunities
           </Button>
