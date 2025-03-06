@@ -11,7 +11,7 @@ const PartnerFormHeader = () => {
     <>
       <Button 
         variant="ghost" 
-        onClick={() => navigate("/studios")}
+        onClick={() => navigate("/studios#projects")}
         className="mb-8 text-white hover:text-[#FBB03B]"
       >
         <ArrowLeft className="mr-2 h-4 w-4" /> Back to Studios
