@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
 import InnovationStudios from "./pages/InnovationStudios";
 import Conference from "./pages/Conference";
+import ConferenceRegistration from "./pages/ConferenceRegistration";
 import About from "./pages/About";
 import Footer from "./components/Footer";
 import Navigation from "./components/Navigation";
@@ -46,6 +47,7 @@ const App = () => (
               <Route path="/about" element={<About />} />
               <Route path="/studios" element={<InnovationStudios />} />
               <Route path="/conference" element={<Conference />} />
+              <Route path="/conference/register" element={<ConferenceRegistration />} />
               <Route path="/projects/:projectSlug" element={<ProjectDetail />} />
               <Route path="/apply/student" element={<StudentApplication />} />
               <Route path="/apply/partner" element={<PartnerApplication />} />

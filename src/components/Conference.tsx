@@ -1,10 +1,13 @@
 
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Users, Ticket, DollarSign } from "lucide-react";
 
 const Conference = () => {
+  const navigate = useNavigate();
+  
   return (
     <section className="py-16 px-4 md:px-8 bg-white">
       {/* Main Conference Info */}
@@ -92,6 +95,7 @@ const Conference = () => {
           <Button
             size="lg"
             className="bg-raade-navy hover:bg-raade-navy/90 text-white font-alegreyasans"
+            onClick={() => navigate("/conference/register")}
           >
             Register Now
           </Button>
