@@ -42,7 +42,7 @@ const ProjectDetail = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <Badge className="mb-4 bg-[#2b212e] text-white border-none font-lora">
+              <Badge className="mb-4 bg-[#FBB03B] text-white border-none font-lora">
                 {project.sector}
               </Badge>
               <h1 className="text-4xl md:text-6xl font-simula text-white mb-4 max-w-3xl">
@@ -71,7 +71,7 @@ const ProjectDetail = () => {
         <Button 
           variant="ghost" 
           onClick={() => navigate("/studios")}
-          className="mb-8 text-white hover:text-[#2b212e]"
+          className="mb-8 text-white hover:text-[#FBB03B]"
         >
           <ArrowLeft className="mr-2 h-4 w-4" /> Back to Projects
         </Button>
@@ -89,14 +89,14 @@ const ProjectDetail = () => {
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
                 <div className="flex items-start">
-                  <Clock className="h-6 w-6 text-[#2b212e] mr-3 mt-1" />
+                  <Clock className="h-6 w-6 text-[#FBB03B] mr-3 mt-1" />
                   <div>
                     <h3 className="font-bold text-white mb-1">Timeline</h3>
                     <p className="font-lora text-gray-200">{project.timeline}</p>
                   </div>
                 </div>
                 <div className="flex items-start">
-                  <Users className="h-6 w-6 text-[#2b212e] mr-3 mt-1" />
+                  <Users className="h-6 w-6 text-[#FBB03B] mr-3 mt-1" />
                   <div>
                     <h3 className="font-bold text-white mb-1">Partner</h3>
                     <div className="flex items-center font-lora text-gray-200">
@@ -106,7 +106,7 @@ const ProjectDetail = () => {
                           href={project.partnerLink} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="ml-1 inline-flex items-center text-[#2b212e] hover:text-[#2b212e]/80 transition-colors"
+                          className="ml-1 inline-flex items-center text-[#FBB03B] hover:text-[#FBB03B]/80 transition-colors"
                         >
                           <ExternalLink className="h-4 w-4" />
                         </a>
@@ -115,7 +115,7 @@ const ProjectDetail = () => {
                   </div>
                 </div>
                 <div className="flex items-start">
-                  <Target className="h-6 w-6 text-[#2b212e] mr-3 mt-1" />
+                  <Target className="h-6 w-6 text-[#FBB03B] mr-3 mt-1" />
                   <div>
                     <h3 className="font-bold text-white mb-1">Sector</h3>
                     <p className="font-lora text-gray-200">{project.sector}</p>
@@ -138,7 +138,7 @@ const ProjectDetail = () => {
               <div className="space-y-4">
                 {project.goals.map((goal, index) => (
                   <div key={index} className="flex items-start">
-                    <CheckSquare className="h-6 w-6 text-[#2b212e] mr-3 mt-1 flex-shrink-0" />
+                    <CheckSquare className="h-6 w-6 text-[#FBB03B] mr-3 mt-1 flex-shrink-0" />
                     <p className="text-lg font-lora text-gray-200">{goal}</p>
                   </div>
                 ))}
@@ -151,7 +151,7 @@ const ProjectDetail = () => {
                 {project.outcomes.map((outcome, index) => (
                   <Card key={index} className="border-none shadow-md bg-[#1a1a1a] hover:shadow-lg transition-shadow">
                     <CardContent className="p-6">
-                      <div className="text-[#2b212e] text-xl font-bold mb-2">0{index + 1}</div>
+                      <div className="text-[#FBB03B] text-xl font-bold mb-2">0{index + 1}</div>
                       <p className="font-lora text-gray-200">{outcome}</p>
                     </CardContent>
                   </Card>
@@ -164,7 +164,7 @@ const ProjectDetail = () => {
           <div className="lg:w-1/3 space-y-8">
             {/* Impact Card - Only show if impact exists */}
             {project.impact && (
-              <Card className="border-none shadow-lg overflow-hidden bg-gradient-to-br from-[#2b212e] to-[#1a1a1a]">
+              <Card className="border-none shadow-lg overflow-hidden bg-gradient-to-br from-[#FBB03B] to-[#1a1a1a]">
                 <CardContent className="p-8">
                   <h3 className="text-2xl font-simula text-white mb-4">Impact</h3>
                   <p className="text-xl font-lora text-white/90 leading-relaxed">{project.impact}</p>
@@ -209,7 +209,7 @@ const ProjectDetail = () => {
                         />
                         <div className="absolute inset-0 bg-black/40"></div>
                         <div className="absolute inset-0 p-4 flex flex-col justify-end">
-                          <Badge className="self-start mb-2 bg-[#2b212e] text-white border-none">
+                          <Badge className="self-start mb-2 bg-[#FBB03B] text-white border-none">
                             {relatedProject.sector}
                           </Badge>
                           <h4 className="text-white font-semibold">{relatedProject.name}</h4>
@@ -218,7 +218,7 @@ const ProjectDetail = () => {
                       <CardContent className="p-4">
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-gray-300 font-lora">{relatedProject.partner}</span>
-                          <ArrowRight className="h-4 w-4 text-[#2b212e]" />
+                          <ArrowRight className="h-4 w-4 text-[#FBB03B]" />
                         </div>
                       </CardContent>
                     </Card>
@@ -240,14 +240,14 @@ const ProjectDetail = () => {
           <div className="flex flex-wrap gap-4 justify-center">
             <Button 
               size="lg"
-              className="bg-[#2b212e] hover:bg-[#2b212e]/80 text-white font-lora"
+              className="bg-[#FBB03B] hover:bg-[#FBB03B]/80 text-white font-lora"
             >
               Join As a Student
             </Button>
             <Button 
               variant="outline"
               size="lg"
-              className="border-[#2b212e] text-[#2b212e] hover:bg-[#2b212e]/10 font-lora"
+              className="border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B]/10 font-lora"
             >
               Partner With Us
             </Button>
