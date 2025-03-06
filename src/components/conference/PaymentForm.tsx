@@ -4,7 +4,8 @@ import {
   PaymentElement,
   LinkAuthenticationElement,
   useStripe,
-  useElements
+  useElements,
+  AddressElement
 } from "@stripe/react-stripe-js";
 
 import { Button } from "@/components/ui/button";
@@ -117,9 +118,29 @@ const PaymentForm = ({ email, onSuccess, onError, amount, currency }: PaymentFor
           <PaymentElement 
             id="payment-element" 
             options={{
-              layout: "tabs"
+              layout: "tabs",
+              defaultValues: {
+                billingDetails: {
+                  email: email
+                }
+              }
             }}
             className="mb-6 mt-4"
+          />
+          
+          <AddressElement 
+            options={{
+              mode: 'billing',
+              fields: {
+                phone: 'always',
+              },
+              validation: {
+                phone: {
+                  required: 'always',
+                },
+              },
+            }}
+            className="mb-6"
           />
           
           <Button

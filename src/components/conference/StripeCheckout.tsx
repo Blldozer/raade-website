@@ -90,7 +90,20 @@ const StripeCheckout = ({
   return (
     <div className="mt-4">
       {clientSecret && (
-        <Elements stripe={stripePromise} options={{ clientSecret }}>
+        <Elements stripe={stripePromise} options={{ 
+          clientSecret,
+          appearance: {
+            theme: 'stripe',
+            variables: {
+              colorPrimary: '#274675', // RAADE navy
+              colorBackground: '#ffffff',
+              colorText: '#30313d',
+              colorDanger: '#df1b41',
+              fontFamily: 'Merriweather, system-ui, sans-serif',
+              borderRadius: '4px',
+            }
+          }
+        }}>
           <PaymentForm 
             email={email}
             onSuccess={onSuccess}
