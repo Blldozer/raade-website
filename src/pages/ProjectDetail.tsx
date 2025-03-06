@@ -1,12 +1,17 @@
 
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Clock, Users, Target, CheckSquare, ArrowRight, ExternalLink } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { getProjectBySlug, getRelatedProjects } from "@/data/ProjectData";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { useEffect } from "react";
+import ProjectHero from "@/components/projects/ProjectHero";
+import ProjectOverview from "@/components/projects/ProjectOverview";
+import ProjectChallenge from "@/components/projects/ProjectChallenge";
+import ProjectGoals from "@/components/projects/ProjectGoals";
+import ProjectOutcomes from "@/components/projects/ProjectOutcomes";
+import ProjectSidebar from "@/components/projects/ProjectSidebar";
+import ProjectCTA from "@/components/projects/ProjectCTA";
 
 const ProjectDetail = () => {
   const { projectSlug } = useParams<{ projectSlug: string }>();
@@ -28,43 +33,13 @@ const ProjectDetail = () => {
   return (
     <div className="bg-black">
       {/* Hero Section */}
-      <div className="relative h-[60vh] min-h-[400px] overflow-hidden">
-        <div className="absolute inset-0 bg-black/50 z-10"></div>
-        <img 
-          src={project.image} 
-          alt={project.name} 
-          className="absolute inset-0 w-full h-full object-cover" 
-        />
-        <div className="absolute inset-0 z-20 flex items-end">
-          <div className="container mx-auto px-6 py-16 md:px-12">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <Badge className="mb-4 bg-[#FBB03B] text-white border-none font-lora">
-                {project.sector}
-              </Badge>
-              <h1 className="text-4xl md:text-6xl font-simula text-white mb-4 max-w-3xl">
-                {project.name}
-              </h1>
-              <div className="flex items-center text-xl text-white/90 font-lora max-w-2xl">
-                <span>Partner: {project.partner}</span>
-                {project.partnerLink && (
-                  <a 
-                    href={project.partnerLink} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="ml-2 inline-flex items-center text-white/90 hover:text-white transition-colors"
-                  >
-                    <ExternalLink className="h-5 w-5" />
-                  </a>
-                )}
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </div>
+      <ProjectHero 
+        image={project.image}
+        name={project.name}
+        sector={project.sector}
+        partner={project.partner}
+        partnerLink={project.partnerLink}
+      />
 
       {/* Back Button */}
       <div className="container mx-auto px-6 py-8 md:px-12">
@@ -82,180 +57,29 @@ const ProjectDetail = () => {
         <div className="flex flex-col lg:flex-row gap-12">
           {/* Main Column */}
           <div className="lg:w-2/3">
-            <section className="mb-16">
-              <h2 className="text-3xl font-simula text-white mb-6">Overview</h2>
-              <p className="text-xl leading-relaxed font-lora text-gray-100 mb-8">
-                {project.description}
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                <div className="flex items-start">
-                  <Clock className="h-6 w-6 text-[#FBB03B] mr-3 mt-1" />
-                  <div>
-                    <h3 className="font-bold text-white mb-1">Timeline</h3>
-                    <p className="font-lora text-gray-200">{project.timeline}</p>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <Users className="h-6 w-6 text-[#FBB03B] mr-3 mt-1" />
-                  <div>
-                    <h3 className="font-bold text-white mb-1">Partner</h3>
-                    <div className="flex items-center font-lora text-gray-200">
-                      <span>{project.partner}</span>
-                      {project.partnerLink && (
-                        <a 
-                          href={project.partnerLink} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="ml-1 inline-flex items-center text-[#FBB03B] hover:text-[#FBB03B]/80 transition-colors"
-                        >
-                          <ExternalLink className="h-4 w-4" />
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <Target className="h-6 w-6 text-[#FBB03B] mr-3 mt-1" />
-                  <div>
-                    <h3 className="font-bold text-white mb-1">Sector</h3>
-                    <p className="font-lora text-gray-200">{project.sector}</p>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section className="mb-16">
-              <h2 className="text-3xl font-simula text-white mb-6">Challenge</h2>
-              <div className="p-6 bg-[#1a1a1a] rounded-lg border border-[#333333] mb-8">
-                <p className="text-xl leading-relaxed font-lora text-gray-100">
-                  {project.challenge}
-                </p>
-              </div>
-            </section>
-
-            <section className="mb-16">
-              <h2 className="text-3xl font-simula text-white mb-6">Project Goals</h2>
-              <div className="space-y-4">
-                {project.goals.map((goal, index) => (
-                  <div key={index} className="flex items-start">
-                    <CheckSquare className="h-6 w-6 text-[#FBB03B] mr-3 mt-1 flex-shrink-0" />
-                    <p className="text-lg font-lora text-gray-200">{goal}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <section className="mb-16">
-              <h2 className="text-3xl font-simula text-white mb-6">Outcomes</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {project.outcomes.map((outcome, index) => (
-                  <Card key={index} className="border-none shadow-md bg-[#1a1a1a] hover:shadow-lg transition-shadow">
-                    <CardContent className="p-6">
-                      <div className="text-[#FBB03B] text-xl font-bold mb-2">0{index + 1}</div>
-                      <p className="font-lora text-gray-200">{outcome}</p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </section>
+            <ProjectOverview 
+              description={project.description}
+              timeline={project.timeline}
+              partner={project.partner}
+              partnerLink={project.partnerLink}
+              sector={project.sector}
+            />
+            <ProjectChallenge challenge={project.challenge} />
+            <ProjectGoals goals={project.goals} />
+            <ProjectOutcomes outcomes={project.outcomes} />
           </div>
 
           {/* Sidebar */}
-          <div className="lg:w-1/3 space-y-8">
-            {/* Impact Card - Only show if impact exists */}
-            {project.impact && (
-              <Card className="border-none shadow-lg overflow-hidden bg-gradient-to-br from-[#FBB03B] to-[#1a1a1a]">
-                <CardContent className="p-8">
-                  <h3 className="text-2xl font-simula text-white mb-4">Impact</h3>
-                  <p className="text-xl font-lora text-white/90 leading-relaxed">{project.impact}</p>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Testimonials */}
-            {project.testimonials && project.testimonials.length > 0 && (
-              <div className="space-y-6">
-                <h3 className="text-2xl font-simula text-white">Testimonials</h3>
-                {project.testimonials.map((testimonial, index) => (
-                  <Card key={index} className="border-none shadow-md bg-[#1a1a1a]">
-                    <CardContent className="p-6">
-                      <p className="italic font-lora text-gray-200 mb-4">"{testimonial.quote}"</p>
-                      <div>
-                        <p className="font-bold text-white">{testimonial.author}</p>
-                        <p className="text-sm text-gray-300">{testimonial.role}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-
-            {/* Related Projects */}
-            {relatedProjects.length > 0 && (
-              <div className="space-y-6">
-                <h3 className="text-2xl font-simula text-white">Related Projects</h3>
-                {relatedProjects.map((relatedProject) => (
-                  <Link 
-                    key={relatedProject.slug} 
-                    to={`/projects/${relatedProject.slug}`}
-                    className="block"
-                  >
-                    <Card className="border-none shadow-md hover:shadow-lg transition-shadow overflow-hidden bg-[#1a1a1a]">
-                      <div className="relative h-32">
-                        <img 
-                          src={relatedProject.image} 
-                          alt={relatedProject.name} 
-                          className="absolute inset-0 w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0 bg-black/40"></div>
-                        <div className="absolute inset-0 p-4 flex flex-col justify-end">
-                          <Badge className="self-start mb-2 bg-[#FBB03B] text-white border-none">
-                            {relatedProject.sector}
-                          </Badge>
-                          <h4 className="text-white font-semibold">{relatedProject.name}</h4>
-                        </div>
-                      </div>
-                      <CardContent className="p-4">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-300 font-lora">{relatedProject.partner}</span>
-                          <ArrowRight className="h-4 w-4 text-[#FBB03B]" />
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
+          <ProjectSidebar 
+            impact={project.impact}
+            testimonials={project.testimonials}
+            relatedProjects={relatedProjects}
+          />
         </div>
       </div>
 
       {/* CTA Section */}
-      <div className="bg-[#0d0d0d] py-16 mt-16">
-        <div className="container mx-auto px-6 md:px-12 text-center">
-          <h2 className="text-3xl font-simula text-white mb-6">Get Involved with Our Projects</h2>
-          <p className="text-xl font-lora text-gray-200 max-w-2xl mx-auto mb-8">
-            Join us in building innovative solutions that address Africa's most pressing challenges.
-          </p>
-          <div className="flex flex-wrap gap-4 justify-center">
-            <Button 
-              size="lg"
-              className="bg-[#FBB03B] hover:bg-[#FBB03B]/80 text-white font-lora"
-              onClick={() => navigate("/apply/student")}
-            >
-              Join As a Student
-            </Button>
-            <Button 
-              variant="outline"
-              size="lg"
-              className="border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B]/10 font-lora"
-              onClick={() => navigate("/apply/partner")}
-            >
-              Partner With Us
-            </Button>
-          </div>
-        </div>
-      </div>
+      <ProjectCTA />
     </div>
   );
 };
