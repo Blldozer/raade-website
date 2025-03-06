@@ -140,13 +140,15 @@ const ProjectDetail = () => {
 
           {/* Sidebar */}
           <div className="lg:w-1/3 space-y-8">
-            {/* Impact Card */}
-            <Card className="border-none shadow-lg overflow-hidden bg-gradient-to-br from-raade-Thunder to-[#3b2c40]">
-              <CardContent className="p-8">
-                <h3 className="text-2xl font-simula text-white mb-4">Impact</h3>
-                <p className="text-xl font-lora text-white/90 leading-relaxed">{project.impact}</p>
-              </CardContent>
-            </Card>
+            {/* Impact Card - Only show if impact exists */}
+            {project.impact && (
+              <Card className="border-none shadow-lg overflow-hidden bg-gradient-to-br from-raade-Thunder to-[#3b2c40]">
+                <CardContent className="p-8">
+                  <h3 className="text-2xl font-simula text-white mb-4">Impact</h3>
+                  <p className="text-xl font-lora text-white/90 leading-relaxed">{project.impact}</p>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Testimonials */}
             {project.testimonials && project.testimonials.length > 0 && (

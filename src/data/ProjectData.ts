@@ -1,3 +1,4 @@
+
 export type Project = {
   name: string;
   partner: string;
@@ -9,6 +10,7 @@ export type Project = {
   goals: string[];
   outcomes: string[];
   timeline: string;
+  impact?: string; // Add impact as an optional property
   testimonials?: {
     quote: string;
     author: string;
