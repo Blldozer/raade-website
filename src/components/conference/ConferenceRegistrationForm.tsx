@@ -34,7 +34,6 @@ const registrationSchema = z.object({
   organization: z.string().min(2, "Organization name is required"),
   role: z.string().min(2, "Your role is required"),
   ticketType: z.string().min(1, "Please select a ticket type"),
-  dietaryRequirements: z.string().optional(),
   specialRequests: z.string().optional(),
 });
 
@@ -57,7 +56,6 @@ const ConferenceRegistrationForm = () => {
     resolver: zodResolver(registrationSchema),
     defaultValues: {
       ticketType: "",
-      dietaryRequirements: "",
       specialRequests: "",
     },
   });
@@ -85,7 +83,6 @@ const ConferenceRegistrationForm = () => {
           organization: registrationData.organization,
           role: registrationData.role,
           ticket_type: registrationData.ticketType,
-          dietary_requirements: registrationData.dietaryRequirements || null,
           special_requests: registrationData.specialRequests || null,
           status: 'confirmed'
         } as any);
@@ -148,7 +145,7 @@ const ConferenceRegistrationForm = () => {
   return (
     <Card className="shadow-lg border-raade-navy/10">
       <CardHeader>
-        <CardTitle className="text-2xl font-zillaslab">Registration Details</CardTitle>
+        <CardTitle className="text-2xl font-simula">Registration Details</CardTitle>
         <CardDescription>Please fill out the form below to register for the conference.</CardDescription>
       </CardHeader>
       <CardContent>
@@ -226,15 +223,6 @@ const ConferenceRegistrationForm = () => {
               </div>
 
               <div>
-                <Label htmlFor="dietaryRequirements">Dietary Requirements</Label>
-                <Input
-                  id="dietaryRequirements"
-                  placeholder="Vegetarian, vegan, gluten-free, etc. (optional)"
-                  {...register("dietaryRequirements")}
-                />
-              </div>
-
-              <div>
                 <Label htmlFor="specialRequests">Special Requests</Label>
                 <Textarea
                   id="specialRequests"
@@ -293,7 +281,7 @@ const ConferenceRegistrationForm = () => {
           </div>
         )}
       </CardContent>
-      <CardFooter className="text-sm text-gray-500 border-t pt-4">
+      <CardFooter className="text-sm text-gray-500 border-t pt-4 font-lora">
         Your information will only be used for conference communication purposes.
       </CardFooter>
     </Card>

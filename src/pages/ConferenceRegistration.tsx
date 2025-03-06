@@ -20,7 +20,7 @@ const ConferenceRegistration = () => {
         <div className="max-w-3xl mx-auto py-12">
           <button 
             onClick={() => navigate("/conference")} 
-            className="flex items-center text-raade-navy hover:text-raade-gold mb-6 transition-colors duration-300"
+            className="flex items-center text-raade-navy hover:text-raade-gold mb-6 transition-colors duration-300 font-lora"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
@@ -33,8 +33,8 @@ const ConferenceRegistration = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-4xl font-bold text-raade-navy mb-4 font-zillaslab">Conference Registration</h1>
-            <p className="text-lg text-gray-600 mb-8 font-merriweather">
+            <h1 className="text-4xl font-bold text-raade-navy mb-4 font-simula">Conference Registration</h1>
+            <p className="text-lg text-gray-600 mb-8 font-lora">
               Register for the RAADE Annual Conference 2025, taking place on April 11-12. 
               Early bird registration is now open!
             </p>
