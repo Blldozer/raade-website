@@ -1,10 +1,9 @@
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { motion, useAnimation } from "framer-motion";
+import { ArrowRight, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { projects } from "@/data/ProjectData";
 
@@ -12,6 +11,7 @@ const sectors = ["All", "Healthcare", "Technology", "Education", "Energy"] as co
 
 const ProjectsShowcase = () => {
   const [selectedSector, setSelectedSector] = useState<typeof sectors[number]>("All");
+  const [hoveredProject, setHoveredProject] = useState<string | null>(null);
 
   const filteredProjects = projects.filter(
     (project) => selectedSector === "All" || project.sector === selectedSector
@@ -22,14 +22,14 @@ const ProjectsShowcase = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
+        staggerChildren: 0.15
       }
     }
   };
   
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
   };
 
   return (
@@ -78,7 +78,7 @@ const ProjectsShowcase = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex flex-wrap justify-center gap-3 mb-12"
+          className="flex flex-wrap justify-center gap-3 mb-16"
         >
           {sectors.map((sector) => (
             <Button
@@ -88,7 +88,7 @@ const ProjectsShowcase = () => {
               className={`${selectedSector === sector 
                 ? "bg-raade-Thunder text-white hover:bg-raade-Thunder/90 border-none" 
                 : "text-raade-Thunder border-raade-Thunder/20 hover:bg-raade-Thunder/10 hover:text-raade-Thunder hover:border-raade-Thunder"} 
-                font-lora`
+                font-lora transition-all duration-300`
               }
             >
               {sector}
@@ -96,57 +96,71 @@ const ProjectsShowcase = () => {
           ))}
         </motion.div>
 
-        {/* Projects Grid */}
+        {/* Projects Grid - New Design */}
         <motion.div 
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10"
         >
-          {filteredProjects.map((project, index) => (
-            <motion.div 
+          {filteredProjects.map((project) => (
+            <motion.div
               key={project.name}
               variants={itemVariants}
               className="group"
+              onMouseEnter={() => setHoveredProject(project.name)}
+              onMouseLeave={() => setHoveredProject(null)}
             >
-              <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-2 border-none h-full">
-                <div className="relative h-56 overflow-hidden">
+              <div className="relative h-full rounded-xl overflow-hidden shadow-lg bg-white border border-gray-100 hover:shadow-xl transition-all duration-500 flex flex-col">
+                {/* Image Container */}
+                <div className="relative h-[300px] overflow-hidden">
                   <img
                     src={project.image}
                     alt={project.name}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-70"></div>
-                  <Badge className="absolute top-4 right-4 bg-[#9b87f5] border-none text-white font-lora">
+                  
+                  {/* Category Badge */}
+                  <Badge className="absolute top-4 right-4 bg-[#9b87f5] border-none text-white font-lora z-10">
                     {project.sector}
                   </Badge>
+                  
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-80"></div>
+                  
+                  {/* Challenge Overlay - Appears on Hover */}
+                  <div className="absolute inset-0 flex items-end p-6 z-10">
+                    <div className="transition-all duration-300 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0">
+                      <h4 className="text-white/90 text-sm font-bold mb-2 uppercase tracking-wider">Challenge:</h4>
+                      <p className="text-white font-lora">{project.challenge}</p>
+                    </div>
+                  </div>
                 </div>
-                <CardHeader className="relative -mt-20 bg-white rounded-t-3xl pt-8">
-                  <CardTitle className="text-xl font-simula text-raade-Thunder mb-1">
+                
+                {/* Content */}
+                <div className="p-6 flex flex-col flex-grow">
+                  <h3 className="text-xl font-bold font-simula text-raade-Thunder mb-2 group-hover:text-[#9b87f5] transition-colors duration-300">
                     {project.name}
-                  </CardTitle>
-                  <CardDescription className="font-lora text-[#9b87f5]">
+                  </h3>
+                  
+                  <p className="text-[#9b87f5] font-lora text-sm mb-4">
                     Partner: {project.partner}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4 pb-8">
-                  <div>
-                    <h4 className="font-bold text-sm text-raade-Thunder/70 uppercase tracking-wider mb-1">Challenge:</h4>
-                    <p className="text-raade-Thunder font-lora">{project.challenge}</p>
+                  </p>
+                  
+                  <div className="mt-auto">
+                    <Link 
+                      to={`/projects/${project.slug}`}
+                      className="inline-flex items-center mt-2 text-[#9b87f5] hover:text-[#8B5CF6] transition-colors duration-300 font-lora group/link"
+                    >
+                      <span className="border-b border-transparent group-hover/link:border-[#8B5CF6] transition-all duration-300">
+                        Explore Project
+                      </span>
+                      <ArrowRight className="ml-2 h-4 w-4 transform group-hover/link:translate-x-1 transition-transform duration-300" />
+                    </Link>
                   </div>
-                  <div>
-                    <h4 className="font-bold text-sm text-raade-Thunder/70 uppercase tracking-wider mb-1">Impact:</h4>
-                    <p className="text-raade-Thunder font-lora">{project.impact}</p>
-                  </div>
-                  <Link 
-                    to={`/projects/${project.slug}`}
-                    className="text-[#9b87f5] hover:text-[#8B5CF6] inline-flex items-center mt-2 font-lora"
-                  >
-                    Learn more <ArrowRight className="ml-1 h-4 w-4" />
-                  </Link>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </motion.div>
           ))}
         </motion.div>
