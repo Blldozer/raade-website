@@ -6,9 +6,15 @@ interface NavLogoProps {
   isScrolled?: boolean;
   isHeroPage?: boolean;
   forceDarkMode?: boolean;
+  forceSize?: string;
 }
 
-const NavLogo = ({ isScrolled = false, isHeroPage = false, forceDarkMode = false }: NavLogoProps) => {
+const NavLogo = ({ 
+  isScrolled = false, 
+  isHeroPage = false, 
+  forceDarkMode = false,
+  forceSize = "h-60" 
+}: NavLogoProps) => {
   const location = useLocation();
   
   // Determine which logo to use based on the current page, scroll state, and forceDarkMode
@@ -22,7 +28,7 @@ const NavLogo = ({ isScrolled = false, isHeroPage = false, forceDarkMode = false
     <div className="flex-shrink-0 flex items-center">
       <Link to="/" className="flex items-center">
         <img
-          className="h-60 w-auto transition-all duration-300" 
+          className={`${forceSize} w-auto transition-all duration-300`}
           src={logoSrc}
           alt="RAADE"
         />

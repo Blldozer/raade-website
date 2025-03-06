@@ -8,6 +8,7 @@ import StudentPersonalInfo from "@/components/forms/StudentPersonalInfo";
 import StudentAcademicInfo from "@/components/forms/StudentAcademicInfo";
 import StudentAdditionalInfo from "@/components/forms/StudentAdditionalInfo";
 import SubmitButton from "@/components/forms/SubmitButton";
+import Navigation from "@/components/Navigation";
 
 const StudentApplication = () => {
   const navigate = useNavigate();
@@ -88,7 +89,8 @@ const StudentApplication = () => {
 
   return (
     <div className="bg-black min-h-screen">
-      <div className="container mx-auto px-6 py-12 md:px-12">
+      <Navigation forceDarkMode={true} />
+      <div className="container mx-auto px-6 py-12 md:px-12 pt-24">
         <StudentFormHeader />
 
         <form onSubmit={handleSubmit} className="space-y-8 bg-[#121212] p-8 rounded-lg border border-[#333] max-w-3xl mx-auto">
