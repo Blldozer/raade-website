@@ -6,7 +6,7 @@ const Conference = () => {
   return (
     <div>
       <Navigation isHeroPage={false} />
-      <div className="pt-20">
+      <div>
         <ConferenceSection />
       </div>
     </div>
