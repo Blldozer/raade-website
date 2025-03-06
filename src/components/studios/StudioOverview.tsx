@@ -49,12 +49,12 @@ const StudioOverview = () => {
                 solutions scale organically, reaching far beyond initial implementations.
               </p>
               <p>
-              To bring this vision to life, we've developed a structured, three-phase innovation process. 
+              To bring this vision to life, we've developed a structured, three-phase innovation process that unfolds throughout the school year. 
               We begin with Immersion & Discovery, where our teams deeply understand the problem context through 
               ethnographic research and stakeholder interviews, uncovering hidden insights that reveal true needs. 
               This leads to Rapid Ideation & Prototyping, where promising solutions are quickly developed and tested with 
               users to validate core assumptions. Finally, in the Implementation phase, we refine these solutions and develop 
-              comprehensive plans for real-world application and scaling, ensuring our innovations create lasting impact beyond initial pilots
+              comprehensive plans for real-world application and scaling, ensuring our innovations create lasting impact beyond initial pilots.
               </p>
             </div>
           </motion.div>

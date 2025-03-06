@@ -66,7 +66,7 @@ const ProjectsShowcase = () => {
                 We focus on high-impact sectors where innovative solutions can create 
                 transformative change at scale. Each project addresses challenges affecting 
                 millions of people across Africa, designed not just to solve immediate problems, 
-                but to create ripple effects that transform entire communities and markets.
+                but to create ripple effects that transform entire communities and markets. Here are our 204-2025 challenges.
               </p>
             </div>
           </motion.div>
