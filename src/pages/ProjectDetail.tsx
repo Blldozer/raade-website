@@ -26,7 +26,7 @@ const ProjectDetail = () => {
   if (!project) return null;
 
   return (
-    <div className="bg-[#2b212e]">
+    <div className="bg-black">
       {/* Hero Section */}
       <div className="relative h-[60vh] min-h-[400px] overflow-hidden">
         <div className="absolute inset-0 bg-black/50 z-10"></div>
@@ -104,7 +104,7 @@ const ProjectDetail = () => {
 
             <section className="mb-16">
               <h2 className="text-3xl font-simula text-white mb-6">Challenge</h2>
-              <div className="p-6 bg-[#3b2c40] rounded-lg border border-[#4e3d55] mb-8">
+              <div className="p-6 bg-[#1a1a1a] rounded-lg border border-[#333333] mb-8">
                 <p className="text-xl leading-relaxed font-lora text-gray-100">
                   {project.challenge}
                 </p>
@@ -127,7 +127,7 @@ const ProjectDetail = () => {
               <h2 className="text-3xl font-simula text-white mb-6">Outcomes</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {project.outcomes.map((outcome, index) => (
-                  <Card key={index} className="border-none shadow-md bg-[#3b2c40] hover:shadow-lg transition-shadow">
+                  <Card key={index} className="border-none shadow-md bg-[#1a1a1a] hover:shadow-lg transition-shadow">
                     <CardContent className="p-6">
                       <div className="text-[#9b87f5] text-xl font-bold mb-2">0{index + 1}</div>
                       <p className="font-lora text-gray-200">{outcome}</p>
@@ -155,7 +155,7 @@ const ProjectDetail = () => {
               <div className="space-y-6">
                 <h3 className="text-2xl font-simula text-white">Testimonials</h3>
                 {project.testimonials.map((testimonial, index) => (
-                  <Card key={index} className="border-none shadow-md bg-[#3b2c40]">
+                  <Card key={index} className="border-none shadow-md bg-[#1a1a1a]">
                     <CardContent className="p-6">
                       <p className="italic font-lora text-gray-200 mb-4">"{testimonial.quote}"</p>
                       <div>
@@ -178,7 +178,7 @@ const ProjectDetail = () => {
                     to={`/projects/${relatedProject.slug}`}
                     className="block"
                   >
-                    <Card className="border-none shadow-md hover:shadow-lg transition-shadow overflow-hidden bg-[#3b2c40]">
+                    <Card className="border-none shadow-md hover:shadow-lg transition-shadow overflow-hidden bg-[#1a1a1a]">
                       <div className="relative h-32">
                         <img 
                           src={relatedProject.image} 
@@ -209,7 +209,7 @@ const ProjectDetail = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="bg-[#3b2c40] py-16 mt-16">
+      <div className="bg-[#0d0d0d] py-16 mt-16">
         <div className="container mx-auto px-6 md:px-12 text-center">
           <h2 className="text-3xl font-simula text-white mb-6">Get Involved with Our Projects</h2>
           <p className="text-xl font-lora text-gray-200 max-w-2xl mx-auto mb-8">
