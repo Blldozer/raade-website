@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -64,9 +65,10 @@ const ConferenceRegistrationForm = () => {
     setIsSubmitting(true);
     
     try {
-      // First, store registration in Supabase
+      // First, store registration in Supabase using generic insert
+      // This works around TypeScript errors by using the `from` method with any type
       const { error: storageError } = await supabase
-        .from('conference_registrations')
+        .from('conference_registrations' as any)
         .insert({
           full_name: data.fullName,
           email: data.email,
@@ -76,7 +78,7 @@ const ConferenceRegistrationForm = () => {
           dietary_requirements: data.dietaryRequirements || null,
           special_requests: data.specialRequests || null,
           status: 'confirmed'
-        });
+        } as any);
       
       if (storageError) throw storageError;
       
