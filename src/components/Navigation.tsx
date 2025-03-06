@@ -8,9 +8,10 @@ import MobileNav from "./navigation/MobileNav";
 
 interface NavigationProps {
   isHeroPage?: boolean;
+  forceDarkMode?: boolean;
 }
 
-const Navigation = ({ isHeroPage = false }: NavigationProps) => {
+const Navigation = ({ isHeroPage = false, forceDarkMode = false }: NavigationProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isPastHero, setIsPastHero] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -54,9 +55,9 @@ const Navigation = ({ isHeroPage = false }: NavigationProps) => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          <NavLogo isScrolled={isScrolled} isHeroPage={heroPage} />
-          <DesktopNav isScrolled={isScrolled} isHeroPage={heroPage} />
-          <MobileNav isScrolled={isScrolled} isHeroPage={heroPage} />
+          <NavLogo isScrolled={isScrolled} isHeroPage={heroPage} forceDarkMode={forceDarkMode} />
+          <DesktopNav isScrolled={isScrolled} isHeroPage={heroPage} forceDarkMode={forceDarkMode} />
+          <MobileNav isScrolled={isScrolled} isHeroPage={heroPage} forceDarkMode={forceDarkMode} />
         </div>
       </div>
     </nav>

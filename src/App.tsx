@@ -23,7 +23,11 @@ const NavigationWrapper = () => {
   const location = useLocation();
   // Don't show the main navigation on the About page
   if (location.pathname === '/about') return null;
-  return <Navigation />;
+  
+  // Force dark mode on project detail pages
+  const isProjectDetailPage = location.pathname.startsWith('/projects/');
+  
+  return <Navigation forceDarkMode={isProjectDetailPage} />;
 };
 
 const App = () => (

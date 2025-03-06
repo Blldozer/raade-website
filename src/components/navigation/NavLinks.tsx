@@ -40,11 +40,12 @@ interface NavLinksProps {
   onClick?: () => void;
   isScrolled?: boolean;
   isHeroPage?: boolean;
+  forceDarkMode?: boolean;
 }
 
-const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = false }: NavLinksProps) => {
+const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = false, forceDarkMode = false }: NavLinksProps) => {
   const getTextColor = () => {
-    if (isHeroPage && !isScrolled) return "text-white hover:text-[#FBB03B]";
+    if ((isHeroPage && !isScrolled) || forceDarkMode) return "text-white hover:text-[#FBB03B]";
     return "text-[#274675] hover:text-[#FBB03B]";
   };
 
@@ -95,7 +96,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
           <a
             href="#join"
             className={`px-6 py-2 rounded-md transition-all duration-300 border-2 text-lg font-alegreyasans font-bold ${
-              isHeroPage && !isScrolled 
+              (isHeroPage && !isScrolled) || forceDarkMode
                 ? "border-white text-white hover:bg-[#FBB03B] hover:border-[#FBB03B] hover:text-white" 
                 : "border-[#FBB03B] bg-[#FBB03B] text-white hover:bg-[#274675] hover:border-[#274675] shadow-md"
             }`}

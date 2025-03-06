@@ -7,9 +7,10 @@ import { useState } from "react";
 interface MobileNavProps {
   isScrolled?: boolean;
   isHeroPage?: boolean;
+  forceDarkMode?: boolean;
 }
 
-const MobileNav = ({ isScrolled = false, isHeroPage = false }: MobileNavProps) => {
+const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = false }: MobileNavProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -18,7 +19,7 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false }: MobileNavProps) =
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "transition-colors duration-200",
-          isHeroPage && !isScrolled ? "text-white" : "text-[#FBB03B]"
+          (isHeroPage && !isScrolled) || forceDarkMode ? "text-white" : "text-[#FBB03B]"
         )}
       >
         {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -36,6 +37,7 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false }: MobileNavProps) =
             onClick={() => setIsOpen(false)}
             isScrolled={isScrolled}
             isHeroPage={isHeroPage}
+            forceDarkMode={forceDarkMode}
           />
         </div>
       </div>
