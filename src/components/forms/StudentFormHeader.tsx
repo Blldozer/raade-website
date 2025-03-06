@@ -11,7 +11,7 @@ const StudentFormHeader = () => {
     <>
       <Button 
         variant="ghost" 
-        onClick={() => navigate("./ui/ProjectsShowcase")}
+        onClick={() => navigate("../pages/InnovationStudio")}
         className="mb-8 text-white hover:text-[#FBB03B]"
       >
         <ArrowLeft className="mr-2 h-4 w-4" /> Back to Studios
