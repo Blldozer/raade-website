@@ -3,14 +3,14 @@ export type Project = {
   name: string;
   partner: string;
   challenge: string;
-  sector: "Healthcare" | "Technology" | "Education" | "Energy";
+  sector: "Healthcare" | "Technology" | "Education" | "Energy" | "Business";
   image: string;
   slug: string;
   description: string;
   goals: string[];
   outcomes: string[];
   timeline: string;
-  impact?: string; // Add impact as an optional property
+  impact?: string; // Optional impact property
   testimonials?: {
     quote: string;
     author: string;
@@ -23,179 +23,136 @@ export const projects: Project[] = [
   {
     name: "SunFi Solar Initiative",
     partner: "SunFi Energy",
-    challenge: "Limited access to clean energy in rural communities",
+    challenge: "Limited access to clean energy in rural Nigerian communities; decentralized market with price verification challenges",
     sector: "Energy",
     image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&q=80",
     slug: "sunfi-solar-initiative",
-    description: "The SunFi Solar Initiative addresses the critical energy gap in rural African communities by designing scalable, affordable solar systems tailored to local needs. Our student team worked with SunFi Energy to create innovative distribution models that make clean energy solutions economically viable for communities that previously relied on kerosene lamps or had no electricity at all.",
+    description: "The SunFi Solar Initiative addresses Nigeria's significant energy gap, where nearly half the population lacks reliable electricity access. In partnership with SunFi Energy, we're reimagining how distributed energy partners (DEPs) can expand solar power access across Nigeria. Our team is developing strategies to optimize this entrepreneurial distribution model, enabling more efficient deployment of affordable solar solutions to underserved communities. By enhancing the effectiveness of local energy entrepreneurs, this initiative aims to create pathways to clean energy that can scale nationwide.",
     goals: [
-      "Design affordable solar units for rural households",
-      "Create a sustainable distribution and financing model",
-      "Build local capacity for maintenance and repairs",
-      "Measure and track social impact of clean energy access"
+      "Optimize the distributed energy partner (DEP) network model",
+      "Develop strategies for more efficient solar solution deployment",
+      "Create sustainable financing models for rural communities",
+      "Build capacity among local energy entrepreneurs"
     ],
     outcomes: [
-      "Installed over 500 solar units in rural communities",
-      "Established a micro-financing system with 95% repayment rate",
-      "Trained 50 local technicians in maintenance and repairs",
-      "Reduced kerosene use by 75% in participating communities"
+      "SunFi provides 85% upfront financing to DEPs",
+      "Each DEP serves as both distributor and installation support",
+      "Developing scalable pathways to clean energy access",
+      "Working to expand reliable energy to millions of Nigerians currently off-grid"
     ],
-    timeline: "January 2023 - Present",
-    testimonials: [
-      {
-        quote: "The solar system has transformed our entire community. Children can study at night, businesses can stay open longer, and we all feel safer with proper lighting.",
-        author: "Amina Diallo",
-        role: "Community Leader, Mali"
-      }
-    ]
+    timeline: "Ongoing"
   },
   {
     name: "Maternal Health Platform",
-    partner: "Medical Women's Association",
-    challenge: "Limited access to maternal healthcare information",
+    partner: "Medical Women's Association of Nigeria",
+    challenge: "Only 31% of rural Nigerian women have access to skilled birth attendance; significant reliance on traditional birth attendants",
     sector: "Healthcare",
     image: "https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&q=80",
     slug: "maternal-health-platform",
-    description: "The Maternal Health Platform bridges critical information gaps for expectant mothers in underserved communities. Working with the Medical Women's Association, our team developed a mobile platform that delivers essential health information, facilitates appointments, and connects women with qualified healthcare providers throughout their pregnancy journey.",
+    description: "Nigeria faces one of the world's highest maternal mortality rates, with rural women particularly vulnerable due to limited access to skilled healthcare providers. Working with the Medical Women's Association of Nigeria (MWAN), our team is redesigning the maternal healthcare delivery experience to increase skilled birth attendance in rural communities. We're developing solutions that bridge traditional and modern healthcare approaches, addressing the social, cultural, and logistical barriers that prevent women from accessing life-saving care. This initiative aims to create sustainable pathways to quality maternal healthcare that respect cultural contexts while improving health outcomes.",
     goals: [
-      "Create an accessible mobile platform for maternal health information",
-      "Develop a network of qualified healthcare providers",
-      "Implement a reminder system for appointments and checkups",
-      "Build analytics to identify high-risk pregnancies"
+      "Increase skilled birth attendance in rural communities",
+      "Bridge traditional and modern healthcare approaches",
+      "Address cultural, financial, and access barriers",
+      "Design sustainable maternal healthcare pathways"
     ],
     outcomes: [
-      "Connected over 1,000 expectant mothers with healthcare providers",
-      "Reduced missed prenatal appointments by 60%",
-      "Delivered over 10,000 targeted health messages",
-      "Identified and provided early intervention for 75 high-risk pregnancies"
+      "Nigeria accounts for over 25% of maternal deaths worldwide",
+      "Creating culturally appropriate healthcare solutions",
+      "Working to reduce maternal deaths through increased skilled attendance",
+      "Developing bridges between traditional birth attendants and modern healthcare"
     ],
-    timeline: "March 2022 - Present",
-    testimonials: [
-      {
-        quote: "The platform gave me confidence during my pregnancy. I always knew what to expect and had direct access to my doctor when I needed guidance.",
-        author: "Sarah Okafor",
-        role: "Platform User, Nigeria"
-      }
-    ],
-    relatedProjects: ["healthcare-analytics", "remote-health-monitoring"]
+    timeline: "Ongoing",
+    relatedProjects: ["child-nutrition-initiative"]
   },
   {
-    name: "Digital Learning Hub",
-    partner: "EduTech Africa",
-    challenge: "Limited access to quality education resources",
-    sector: "Education",
-    image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&q=80",
-    slug: "digital-learning-hub",
-    description: "The Digital Learning Hub democratizes access to quality educational content for students across Africa. In partnership with EduTech Africa, we created a platform that delivers curriculum-aligned content, interactive learning modules, and assessment tools that work even in low-bandwidth environments.",
-    goals: [
-      "Build an offline-capable learning platform",
-      "Create curriculum-aligned content for multiple countries",
-      "Develop interactive learning modules and assessments",
-      "Implement progress tracking and analytics"
-    ],
-    outcomes: [
-      "Reached over 5,000 students across Ghana, Kenya, and Nigeria",
-      "Created 200+ hours of interactive learning content",
-      "Achieved 40% improvement in test scores among participating students",
-      "Established partnerships with 25 schools"
-    ],
-    timeline: "September 2022 - Present",
-    testimonials: [
-      {
-        quote: "The Digital Learning Hub has transformed how we teach. Our students are more engaged, and we can track their progress in real-time to provide targeted support.",
-        author: "James Mwangi",
-        role: "Headteacher, Kenya"
-      }
-    ]
-  },
-  {
-    name: "Healthcare Analytics",
-    partner: "Regional Health Network",
-    challenge: "Inefficient healthcare data management",
-    sector: "Technology",
-    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80",
-    slug: "healthcare-analytics",
-    description: "Healthcare Analytics transforms how medical facilities manage and utilize data. Working with the Regional Health Network, our team developed a comprehensive analytics platform that streamlines data collection, generates actionable insights, and improves decision-making across healthcare facilities.",
-    goals: [
-      "Streamline healthcare data collection processes",
-      "Develop predictive analytics for resource allocation",
-      "Create standardized reporting templates",
-      "Implement dashboards for real-time facility monitoring"
-    ],
-    outcomes: [
-      "Reduced reporting time by 60% across 12 healthcare facilities",
-      "Improved inventory management efficiency by 35%",
-      "Decreased patient wait times by identifying peak hours",
-      "Enhanced resource allocation based on predictive demand models"
-    ],
-    timeline: "November 2022 - Present",
-    testimonials: [
-      {
-        quote: "The analytics platform has revolutionized our operations. We've eliminated mountains of paperwork and can now make decisions based on real-time data.",
-        author: "Dr. Fatima Ibrahim",
-        role: "Medical Director, Regional Health Network"
-      }
-    ],
-    relatedProjects: ["maternal-health-platform", "remote-health-monitoring"]
-  },
-  {
-    name: "Remote Health Monitoring",
-    partner: "TechCare Solutions",
-    challenge: "Limited access to healthcare in remote areas",
+    name: "Child Nutrition Initiative",
+    partner: "Medical Women's Association of Nigeria",
+    challenge: "Nearly 1/3 of under-five children in Nigeria are underweight or wasted; commercial options increasingly unaffordable",
     sector: "Healthcare",
-    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80",
-    slug: "remote-health-monitoring",
-    description: "Remote Health Monitoring brings healthcare to underserved communities through innovative technology. In collaboration with TechCare Solutions, we developed a system that enables remote patient monitoring, virtual consultations, and health tracking using low-cost devices and mobile technology.",
+    image: "https://images.unsplash.com/photo-1493770348161-369560ae357d?auto=format&fit=crop&q=80",
+    slug: "child-nutrition-initiative",
+    description: "Malnutrition underlies over half of childhood deaths in Nigeria, with commercial complementary foods increasingly unaffordable due to rising inflation. In collaboration with the Medical Women's Association of Nigeria, our team is designing innovative, affordable nutrition solutions for children aged 6-23 months using locally available ingredients. We're developing both the food formulations and educational strategies to help caregivers prepare nutritious meals during the critical transition from exclusive breastfeeding to solid foods. By creating accessible nutrition pathways, this project aims to address a fundamental driver of child mortality and development challenges.",
     goals: [
-      "Design affordable remote monitoring devices",
-      "Create a secure platform for patient-doctor communication",
-      "Develop health tracking algorithms for early intervention",
-      "Establish protocols for emergency response"
+      "Develop affordable nutrition solutions using local ingredients",
+      "Create educational strategies for caregivers",
+      "Focus on the critical 6-23 month transition period",
+      "Design culturally appropriate complementary foods"
     ],
     outcomes: [
-      "Currently monitoring over 2,000 patients remotely",
-      "Facilitated more than 5,000 virtual consultations",
-      "Reduced emergency hospital visits by 45%",
-      "Identified 120 cases requiring early intervention"
+      "Targeting a critical developmental window after breastfeeding",
+      "Working to reduce childhood malnutrition rates",
+      "Developing both direct nutrition solutions and caregiver education",
+      "Creating accessible nutrition pathways for vulnerable children"
     ],
-    timeline: "June 2023 - Present",
-    testimonials: [
-      {
-        quote: "This system has been life-changing for our community. We now have access to doctors without traveling hours to the nearest hospital, and my chronic condition is properly managed.",
-        author: "Thomas Osei",
-        role: "Patient, Ghana"
-      }
-    ],
-    relatedProjects: ["maternal-health-platform", "healthcare-analytics"]
+    timeline: "Ongoing",
+    relatedProjects: ["maternal-health-platform"]
   },
   {
-    name: "Smart Agriculture",
-    partner: "AgriTech Ghana",
-    challenge: "Inefficient farming practices",
-    sector: "Technology",
-    image: "https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&q=80",
-    slug: "smart-agriculture",
-    description: "Smart Agriculture leverages technology to optimize farming practices and increase yields. Our team worked with AgriTech Ghana to develop a system that combines IoT sensors, weather data, and mobile technology to provide farmers with actionable insights for improved crop management.",
+    name: "Language Preservation Platform",
+    partner: "Izesan Limited",
+    challenge: "UNESCO predicts many Nigerian languages may vanish by 2025; limited documentation and educational integration",
+    sector: "Education",
+    image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&q=80",
+    slug: "language-preservation-platform",
+    description: "Nigeria is home to over 520 languages, many of which face extinction within a generation. In partnership with Izesan Limited, our team is designing digital resources to revitalize critically endangered indigenous languages in Taraba and Bayelsa states. We're developing innovative learning experiences for children aged 2-10 that incorporate indigenous languages as the medium of instruction, aligning with Nigeria's National Language Policy. By combining educational technology with community engagement strategies, this project aims to preserve cultural heritage while creating new pathways for mother-tongue education across Nigeria.",
     goals: [
-      "Design low-cost soil and weather monitoring systems",
-      "Develop a mobile platform for agricultural advice",
-      "Create predictive models for optimal planting and harvesting",
-      "Implement water management recommendations"
+      "Create digital resources for endangered indigenous languages",
+      "Develop learning experiences for children aged 2-10",
+      "Align with Nigeria's National Language Policy",
+      "Preserve cultural heritage through technology"
     ],
     outcomes: [
-      "Increased crop yield by 40% for 200 participating farmers",
-      "Reduced water usage by 30% through optimized irrigation",
-      "Decreased crop losses due to pests and diseases by 50%",
-      "Expanded to three different agricultural regions"
+      "Targeting critically endangered languages in Taraba and Bayelsa states",
+      "Developing mother-tongue education pathways",
+      "Supporting improved educational outcomes",
+      "Creating sustainable models for language preservation"
     ],
-    timeline: "April 2023 - Present",
-    testimonials: [
-      {
-        quote: "The smart farming system has transformed my business. I've doubled my yield while using less water and fertilizer, making my farm more profitable and sustainable.",
-        author: "Kwame Mensah",
-        role: "Farmer, Ghana"
-      }
-    ]
+    timeline: "Ongoing"
+  },
+  {
+    name: "Women's Entrepreneurship Program",
+    partner: "International Peace Initiatives",
+    challenge: "Young mothers with limited education struggle to maintain small businesses; cycle of poverty persists across generations",
+    sector: "Business",
+    image: "https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&q=80",
+    slug: "womens-entrepreneurship-program",
+    description: "In Meru County, Kenya, many young mothers with limited formal education struggle to maintain small businesses that could lift their families out of poverty. Partnering with International Peace Initiatives, our team is designing interventions to enhance business skills and build self-confidence among vulnerable women entrepreneurs. We're developing practical tools and support systems that address both technical business challenges and the underlying social dynamics that affect women's economic participation. This initiative aims to create sustainable pathways to financial independence that can break intergenerational cycles of poverty.",
+    goals: [
+      "Enhance business skills among vulnerable women entrepreneurs",
+      "Build self-confidence and community support systems",
+      "Address both technical and social challenges",
+      "Create sustainable pathways to financial independence"
+    ],
+    outcomes: [
+      "Targeting women with primary-level education",
+      "Supporting entrepreneurs who have attempted multiple businesses",
+      "Working to break intergenerational cycles of poverty",
+      "Creating sustainable income sources for family support"
+    ],
+    timeline: "Ongoing"
+  },
+  {
+    name: "Elect.ai Electoral Innovation",
+    partner: "Electoral technology startup",
+    challenge: "Electoral systems plagued by fraud, intimidation, disenfranchisement, and logistical inefficiencies",
+    sector: "Technology",
+    image: "https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?auto=format&fit=crop&q=80",
+    slug: "electoral-innovation",
+    description: "Electoral processes worldwide face persistent challenges with fraud, accessibility, and transparency that undermine democratic participation. In collaboration with Elect.ai, our team is developing innovations to modernize voting systems, particularly in African contexts. We're designing secure, accessible voting technology that leverages existing telecommunications infrastructure to expand democratic participation while enhancing election integrity. By addressing both technical and social aspects of the electoral process, this initiative aims to create more inclusive, transparent democratic systems that can build public trust and reduce election-day tensions.",
+    goals: [
+      "Develop secure, accessible voting technology",
+      "Enhance election transparency and integrity",
+      "Reduce barriers to democratic participation",
+      "Leverage existing telecommunications infrastructure"
+    ],
+    outcomes: [
+      "Emphasizing real-time vote tabulation and verifiable results",
+      "Working to enhance public confidence in electoral outcomes",
+      "Developing systems to reduce election-related conflicts",
+      "Creating inclusive, transparent democratic processes"
+    ],
+    timeline: "Ongoing"
   }
 ];
 

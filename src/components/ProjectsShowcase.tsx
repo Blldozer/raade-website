@@ -7,7 +7,7 @@ import { ArrowRight, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { projects } from "@/data/ProjectData";
 
-const sectors = ["All", "Healthcare", "Technology", "Education", "Energy"] as const;
+const sectors = ["All", "Healthcare", "Technology", "Education", "Energy", "Business"] as const;
 
 const ProjectsShowcase = () => {
   const [selectedSector, setSelectedSector] = useState<typeof sectors[number]>("All");
