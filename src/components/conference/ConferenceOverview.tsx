@@ -1,28 +1,26 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { Calendar, MapPin, Users } from "lucide-react";
-
 const ConferenceOverview = () => {
-  return (
-    <section className="py-16 px-4 md:px-8 bg-white">
+  return <section className="py-16 px-4 md:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12 scroll-animate">
           <h2 className="text-3xl md:text-4xl font-bold text-raade-navy mb-4 font-simula">AFRICA'S PATH TO THE FUTURE</h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto font-lora">
-            The RAADE Conference brings together innovators, thought leaders, and change-makers
-            from across the continent and diaspora to shape Africa's future.
-          </p>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto font-lora">At RAADE's Annual Conference, we will come together to translate bold ideas into continent-wide impact. This isn't just a conference—it's where change-makers like you come together to shape tomorrow. Because we know Africa's future won't be built by distant strategies, but by people in rooms like this, turning possibilities into reality.</p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          <motion.div 
-            className="scroll-animate" 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
+          <motion.div className="scroll-animate" initial={{
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }} transition={{
+          duration: 0.5
+        }}>
             <div className="h-full border-t-4 border-t-[#FBB03B] hover:shadow-lg transition-shadow bg-white rounded-lg shadow p-6">
               <div className="flex flex-col items-center">
                 <div className="h-12 w-12 text-[#FBB03B] mb-4">
@@ -45,13 +43,18 @@ const ConferenceOverview = () => {
             </div>
           </motion.div>
           
-          <motion.div 
-            className="scroll-animate" 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
+          <motion.div className="scroll-animate" initial={{
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }} transition={{
+          duration: 0.5,
+          delay: 0.2
+        }}>
             <div className="h-full border-t-4 border-t-[#FBB03B] hover:shadow-lg transition-shadow bg-white rounded-lg shadow p-6">
               <div className="flex flex-col items-center">
                 <div className="h-12 w-12 text-[#FBB03B] mb-4">
@@ -68,13 +71,18 @@ const ConferenceOverview = () => {
             </div>
           </motion.div>
           
-          <motion.div 
-            className="scroll-animate" 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
+          <motion.div className="scroll-animate" initial={{
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }} transition={{
+          duration: 0.5,
+          delay: 0.4
+        }}>
             <div className="h-full border-t-4 border-t-[#FBB03B] hover:shadow-lg transition-shadow bg-white rounded-lg shadow p-6">
               <div className="flex flex-col items-center">
                 <div className="h-12 w-12 text-[#FBB03B] mb-4">
@@ -118,8 +126,6 @@ const ConferenceOverview = () => {
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default ConferenceOverview;
