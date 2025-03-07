@@ -1,7 +1,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Calendar, MapPin, Users, Rocket, Lightbulb, Globe, Sparkles } from "lucide-react";
+import { Calendar, MapPin, Users, Rocket, Lightbulb, Globe, Star, Flame, Target } from "lucide-react";
 
 const ConferenceOverview = () => {
   return <section className="py-16 px-4 md:px-8 bg-white">
@@ -37,7 +37,7 @@ const ConferenceOverview = () => {
             <div className="relative h-40 w-full max-w-lg">
               {/* SVG path for curved journey */}
               <svg className="absolute inset-0 w-full h-full overflow-visible" xmlns="http://www.w3.org/2000/svg">
-                {/* Animated gradient path */}
+                {/* Animated gradient path with moving dash offset */}
                 <motion.path 
                   d="M10,50 C60,20 90,80 150,40 C210,0 240,70 330,50"
                   fill="none"
@@ -45,10 +45,19 @@ const ConferenceOverview = () => {
                   stroke="url(#gradientPath)"
                   strokeDasharray="5,5"
                   strokeLinecap="round"
-                  initial={{ pathLength: 0 }}
-                  whileInView={{ pathLength: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 2, ease: "easeOut" }}
+                  initial={{ pathLength: 0, strokeDashoffset: 100 }}
+                  whileInView={{ 
+                    pathLength: 1,
+                    transition: { duration: 2, ease: "easeOut" }
+                  }}
+                  animate={{ 
+                    strokeDashoffset: [100, -100], 
+                    transition: { 
+                      duration: 10, 
+                      repeat: Infinity, 
+                      ease: "linear"
+                    } 
+                  }}
                 />
                 
                 {/* Gradient definition */}
@@ -76,29 +85,50 @@ const ConferenceOverview = () => {
                   whileInView={{ scale: [0, 1.5, 1], opacity: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: pos.delay, ease: "easeOut" }}
+                  animate={{
+                    y: [pos.y - 3, pos.y + 3, pos.y - 3],
+                    transition: {
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }
+                  }}
                 />
               ))}
               
-              {/* Sparkle icons */}
+              {/* Alternative icons instead of Sparkles */}
               {[
-                { x: "15%", y: "15%", delay: 0.7, size: 16 },
-                { x: "45%", y: "60%", delay: 1.1, size: 20 },
-                { x: "65%", y: "25%", delay: 1.5, size: 18 },
-                { x: "85%", y: "45%", delay: 1.9, size: 14 },
-                { x: "30%", y: "75%", delay: 2.2, size: 12 }
-              ].map((sparkle, index) => (
-                <motion.div 
-                  key={`sparkle-${index}`} 
-                  className="absolute" 
-                  style={{ left: sparkle.x, top: sparkle.y }}
-                  initial={{ opacity: 0, scale: 0 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: sparkle.delay, duration: 0.5 }}
-                >
-                  <Sparkles className="text-[#FBB03B]" size={sparkle.size} strokeWidth={1.5} />
-                </motion.div>
-              ))}
+                { icon: Flame, x: "15%", y: "15%", delay: 0.7, size: 16 },
+                { icon: Lightbulb, x: "45%", y: "60%", delay: 1.1, size: 20 },
+                { icon: Star, x: "65%", y: "25%", delay: 1.5, size: 18 },
+                { icon: Target, x: "85%", y: "45%", delay: 1.9, size: 14 },
+                { icon: Rocket, x: "30%", y: "75%", delay: 2.2, size: 12 }
+              ].map((iconInfo, index) => {
+                const IconComponent = iconInfo.icon;
+                return (
+                  <motion.div 
+                    key={`icon-${index}`} 
+                    className="absolute" 
+                    style={{ left: iconInfo.x, top: iconInfo.y }}
+                    initial={{ opacity: 0, scale: 0, rotate: 0 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: iconInfo.delay, duration: 0.5 }}
+                    animate={{
+                      rotate: [0, 15, -15, 0],
+                      scale: [1, 1.1, 0.9, 1],
+                      transition: {
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        times: [0, 0.25, 0.75, 1]
+                      }
+                    }}
+                  >
+                    <IconComponent className="text-[#FBB03B]" size={iconInfo.size} strokeWidth={1.5} />
+                  </motion.div>
+                );
+              })}
               
               {/* Path obstruction elements */}
               {[
@@ -117,6 +147,15 @@ const ConferenceOverview = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: obstacle.delay, duration: 0.5 }}
+                  animate={{
+                    width: ["1.5rem", "1rem", "1.5rem"],
+                    opacity: [0.3, 0.5, 0.3],
+                    transition: {
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }
+                  }}
                 />
               ))}
             </div>
