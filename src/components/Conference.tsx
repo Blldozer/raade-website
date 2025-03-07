@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -661,3 +662,16 @@ const Conference = () => {
             <div className="flex items-center">
               <Calendar className="h-5 w-5 mr-2" />
               <p className="font-lora">April 11-12, 2025</p>
+            </div>
+            <div className="flex items-center">
+              <MapPin className="h-5 w-5 mr-2" />
+              <p className="font-lora">Rice University, Houston, TX</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+};
+
+export default Conference;
