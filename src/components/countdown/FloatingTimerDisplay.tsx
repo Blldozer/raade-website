@@ -1,6 +1,7 @@
 
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
+import { Progress } from "../ui/progress";
 import { Timer, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import TimerDigits from "./TimerDigits";
@@ -15,13 +16,15 @@ interface FloatingTimerDisplayProps {
   isExpanded: boolean;
   toggleExpanded: () => void;
   className?: string;
+  progressPercentage?: number;
 }
 
 const FloatingTimerDisplay = ({
   timeLeft,
   isExpanded,
   toggleExpanded,
-  className
+  className,
+  progressPercentage = 0
 }: FloatingTimerDisplayProps) => {
   const navigate = useNavigate();
 
@@ -49,6 +52,19 @@ const FloatingTimerDisplay = ({
             }}
             compact={true}
           />
+          
+          {/* Progress bar */}
+          <div className="mt-3">
+            <Progress value={progressPercentage} className="h-2 bg-white/20">
+              <div 
+                className="h-full bg-raade-gold rounded-full transition-all duration-500" 
+                style={{ width: `${progressPercentage}%` }}
+              />
+            </Progress>
+            <p className="text-xs mt-1 text-right text-white/80">
+              {progressPercentage}% to conference day
+            </p>
+          </div>
 
           {isExpanded && <div className="mt-4 text-center">
               <p className="text-xs mb-2">Join us April 11-12, 2025</p>

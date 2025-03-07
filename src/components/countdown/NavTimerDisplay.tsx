@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Timer, ChevronDown, ChevronUp } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
+import { Progress } from "../ui/progress";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import TimerDigits from "./TimerDigits";
@@ -25,9 +26,10 @@ interface NavTimerDisplayProps {
     dropdownText: string;
     dropdownBorder: string;
   };
+  progressPercentage?: number;
 }
 
-const NavTimerDisplay = ({ timeLeft, colors }: NavTimerDisplayProps) => {
+const NavTimerDisplay = ({ timeLeft, colors, progressPercentage = 0 }: NavTimerDisplayProps) => {
   const navigate = useNavigate();
   
   return (
@@ -68,6 +70,19 @@ const NavTimerDisplay = ({ timeLeft, colors }: NavTimerDisplayProps) => {
                 dropdownText: colors.dropdownText
               }}
             />
+            
+            {/* Progress bar */}
+            <div className="mt-3 mb-2">
+              <Progress value={progressPercentage} className="h-2 bg-gray-200">
+                <div 
+                  className="h-full bg-raade-gold rounded-full transition-all duration-500" 
+                  style={{ width: `${progressPercentage}%` }}
+                />
+              </Progress>
+              <p className={cn("text-xs mt-1 text-right", colors.dropdownText)}>
+                {progressPercentage}% to conference day
+              </p>
+            </div>
             
             <div className="text-center">
               <p className={cn("text-xs mb-2", colors.dropdownText)}>April 11-12, 2025</p>

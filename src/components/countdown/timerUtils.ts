@@ -20,6 +20,17 @@ export const calculateTimeLeft = (targetDate: Date) => {
   };
 };
 
+export const calculateProgress = (startDate: Date, endDate: Date): number => {
+  const now = new Date();
+  const totalDuration = endDate.getTime() - startDate.getTime();
+  const elapsedDuration = now.getTime() - startDate.getTime();
+  
+  // Ensure progress is between 0 and 100
+  const progress = Math.min(Math.max((elapsedDuration / totalDuration) * 100, 0), 100);
+  
+  return Math.round(progress);
+};
+
 export const getColorClasses = (
   colorScheme: 'light' | 'dark' | 'auto', 
   isDarkBackground: boolean
