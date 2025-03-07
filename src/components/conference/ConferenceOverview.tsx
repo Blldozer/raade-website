@@ -55,16 +55,16 @@ const ConferenceOverview = () => {
         }} transition={{
           duration: 0.5
         }}>
-            <div className="h-full border-t-4 border-t-[#FBB03B] hover:shadow-xl transition-all duration-300 bg-white rounded-lg shadow p-6 relative overflow-hidden group-hover:translate-y-[-5px]">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#FBB03B]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="h-full border-t-4 border-t-[#FBB03B] hover:shadow-xl transition-all duration-300 bg-[#FBB03B]/90 rounded-lg shadow p-6 relative overflow-hidden group-hover:translate-y-[-5px]">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="flex flex-col items-center relative z-10">
-                <div className="h-14 w-14 flex items-center justify-center mb-4 bg-gradient-to-br from-[#FBB03B] to-[#FF9848] rounded-full text-white p-3 transform transition-transform group-hover:scale-110 duration-300">
+                <div className="h-14 w-14 flex items-center justify-center mb-4 bg-white rounded-full text-[#FBB03B] p-3 transform transition-transform group-hover:scale-110 duration-300">
                   <Rocket strokeWidth={1.5} size={28} className="group-hover:animate-pulse" />
                 </div>
-                <h3 className="text-xl font-simula text-center">Innovation Showcase</h3>
+                <h3 className="text-xl font-simula text-center text-white">Innovation Showcase</h3>
               </div>
               <div className="text-center mt-4 relative z-10">
-                <p className="text-gray-600 font-lora">
+                <p className="text-white font-lora">
                   Discover groundbreaking solutions developed by RAADE's Innovation Studios
                   and other leading African initiatives.
                 </p>
@@ -84,16 +84,16 @@ const ConferenceOverview = () => {
           duration: 0.5,
           delay: 0.2
         }}>
-            <div className="h-full border-t-4 border-t-[#FBB03B] hover:shadow-xl transition-all duration-300 bg-white rounded-lg shadow p-6 relative overflow-hidden group-hover:translate-y-[-5px]">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#FBB03B]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="h-full border-t-4 border-t-[#FBB03B] hover:shadow-xl transition-all duration-300 bg-[#FBB03B]/90 rounded-lg shadow p-6 relative overflow-hidden group-hover:translate-y-[-5px]">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="flex flex-col items-center relative z-10">
-                <div className="h-14 w-14 flex items-center justify-center mb-4 bg-gradient-to-br from-[#FBB03B] to-[#FF9848] rounded-full text-white p-3 transform transition-transform group-hover:scale-110 duration-300">
+                <div className="h-14 w-14 flex items-center justify-center mb-4 bg-white rounded-full text-[#FBB03B] p-3 transform transition-transform group-hover:scale-110 duration-300">
                   <Globe strokeWidth={1.5} size={28} className="group-hover:animate-pulse" />
                 </div>
-                <h3 className="text-xl font-simula text-center">Global Networking</h3>
+                <h3 className="text-xl font-simula text-center text-white">Global Networking</h3>
               </div>
               <div className="text-center mt-4 relative z-10">
-                <p className="text-gray-600 font-lora">
+                <p className="text-white font-lora">
                   Connect with African organizations, investors, academics, and students
                   passionate about sustainable development.
                 </p>
@@ -113,16 +113,16 @@ const ConferenceOverview = () => {
           duration: 0.5,
           delay: 0.4
         }}>
-            <div className="h-full border-t-4 border-t-[#FBB03B] hover:shadow-xl transition-all duration-300 bg-white rounded-lg shadow p-6 relative overflow-hidden group-hover:translate-y-[-5px]">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#FBB03B]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="h-full border-t-4 border-t-[#FBB03B] hover:shadow-xl transition-all duration-300 bg-[#FBB03B]/90 rounded-lg shadow p-6 relative overflow-hidden group-hover:translate-y-[-5px]">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="flex flex-col items-center relative z-10">
-                <div className="h-14 w-14 flex items-center justify-center mb-4 bg-gradient-to-br from-[#FBB03B] to-[#FF9848] rounded-full text-white p-3 transform transition-transform group-hover:scale-110 duration-300">
+                <div className="h-14 w-14 flex items-center justify-center mb-4 bg-white rounded-full text-[#FBB03B] p-3 transform transition-transform group-hover:scale-110 duration-300">
                   <Lightbulb strokeWidth={1.5} size={28} className="group-hover:animate-pulse" />
                 </div>
-                <h3 className="text-xl font-simula text-center">Thought Leadership</h3>
+                <h3 className="text-xl font-simula text-center text-white">Thought Leadership</h3>
               </div>
               <div className="text-center mt-4 relative z-10">
-                <p className="text-gray-600 font-lora">
+                <p className="text-white font-lora">
                   Engage with compelling talks, panels, and workshops that challenge conventional
                   thinking about African development.
                 </p>
