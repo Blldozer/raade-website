@@ -123,7 +123,7 @@ const CountdownTimer = ({
         )}>
           <Timer size={18} className={colors.iconColor} />
           <div className="text-sm font-medium">
-            <span className="font-bold">{timeLeft.days}d</span>:{formatTimeUnit(timeLeft.hours)}h:{formatTimeUnit(timeLeft.minutes)}m
+            <span className="font-bold">{timeLeft.days}d</span>:{formatTimeUnit(timeLeft.hours)}h:{formatTimeUnit(timeLeft.minutes)}m:{formatTimeUnit(timeLeft.seconds)}s
           </div>
           <ChevronDown size={16} className="group-hover:hidden" />
           <ChevronUp size={16} className="hidden group-hover:block" />
@@ -195,7 +195,7 @@ const CountdownTimer = ({
             </button>
           </div>
           
-          <div className={`grid ${isExpanded ? 'grid-cols-4' : 'grid-cols-3'} gap-2 text-center`}>
+          <div className={`grid ${isExpanded ? 'grid-cols-4' : 'grid-cols-4'} gap-2 text-center`}>
             {!isExpanded ? (
               <>
                 <div className="p-1">
@@ -208,13 +208,19 @@ const CountdownTimer = ({
                   <div className="text-xl font-bold text-raade-gold">
                     {formatTimeUnit(timeLeft.hours)}
                   </div>
-                  <div className="text-xs capitalize">hours</div>
+                  <div className="text-xs capitalize">hrs</div>
                 </div>
                 <div className="p-1">
                   <div className="text-xl font-bold text-raade-gold">
                     {formatTimeUnit(timeLeft.minutes)}
                   </div>
                   <div className="text-xs capitalize">min</div>
+                </div>
+                <div className="p-1">
+                  <div className="text-xl font-bold text-raade-gold">
+                    {formatTimeUnit(timeLeft.seconds)}
+                  </div>
+                  <div className="text-xs capitalize">sec</div>
                 </div>
               </>
             ) : (
@@ -259,4 +265,3 @@ const CountdownTimer = ({
 };
 
 export default CountdownTimer;
-
