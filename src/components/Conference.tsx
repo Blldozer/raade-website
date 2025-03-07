@@ -42,40 +42,8 @@ const Conference = () => {
       {/* Hero Section */}
       <ConferenceHero />
       
-      {/* Countdown Section */}
-      <section className="bg-white py-10 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 md:px-8">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="rounded-xl bg-gradient-to-r from-[#274675]/90 to-[#274675] p-8 shadow-lg text-center"
-          >
-            <h2 className="text-2xl font-bold text-white mb-4 font-simula">Join us in</h2>
-            <CountdownTimer targetDate="2025-04-11T09:00:00" className="text-[#FBB03B] font-bold" />
-            <div className="mt-6">
-              <Button 
-                size="lg" 
-                className="bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora mx-2" 
-                onClick={() => navigate("/conference/register")}
-              >
-                Register Now
-              </Button>
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="border-white text-white hover:bg-white hover:text-[#274675] font-lora mx-2 mt-4 md:mt-0"
-                onClick={() => {
-                  const scheduleSection = document.getElementById('schedule');
-                  scheduleSection?.scrollIntoView({ behavior: 'smooth' });
-                }}
-              >
-                View Schedule
-              </Button>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+      {/* Floating Countdown Timer */}
+      <CountdownTimer targetDate="2025-04-11T09:00:00" />
       
       {/* Conference Overview */}
       <ConferenceOverview />

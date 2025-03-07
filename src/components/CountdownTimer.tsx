@@ -1,7 +1,9 @@
 
 import { useEffect, useState } from "react";
-import { Timer } from "lucide-react";
+import { Timer, ChevronRight, ChevronLeft } from "lucide-react";
 import { Card, CardContent } from "./ui/card";
+import { Button } from "./ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface CountdownTimerProps {
   targetDate?: string;
@@ -9,8 +11,10 @@ interface CountdownTimerProps {
 }
 
 const CountdownTimer = ({ targetDate, className }: CountdownTimerProps) => {
+  const navigate = useNavigate();
   // Use the provided targetDate or fall back to the default
   const CONFERENCE_DATE = targetDate ? new Date(targetDate) : new Date('2025-04-11T09:00:00');
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -35,24 +39,53 @@ const CountdownTimer = ({ targetDate, className }: CountdownTimerProps) => {
     return () => clearInterval(timer);
   }, [CONFERENCE_DATE]);
 
+  const toggleExpanded = () => {
+    setIsExpanded(!isExpanded);
+  };
+
   return (
-    <div className={`w-full max-w-4xl mx-auto p-4 ${className || ''}`}>
-      <Card className="bg-raade-navy text-white">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Timer className="w-6 h-6" />
-            <h2 className="text-2xl font-bold">Conference Countdown</h2>
+    <div 
+      className={`fixed left-0 top-1/3 z-50 transition-all duration-300 ${isExpanded ? 'translate-x-0' : 'translate-x-[-70%]'} ${className || ''}`}
+    >
+      <Card className={`bg-raade-navy text-white shadow-lg hover:shadow-xl transition-shadow rounded-r-lg ${isExpanded ? 'rounded-l-lg' : 'rounded-l-none'}`}>
+        <CardContent className={`p-4 transition-all duration-300 ${isExpanded ? 'w-[320px]' : 'w-[150px]'}`}>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <Timer className="w-5 h-5 text-raade-gold" />
+              <h2 className="text-lg font-bold">Countdown</h2>
+            </div>
+            <button 
+              onClick={toggleExpanded}
+              className="text-white hover:text-raade-gold transition-colors"
+              aria-label={isExpanded ? "Collapse countdown" : "Expand countdown"}
+            >
+              {isExpanded ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
+            </button>
           </div>
-          <div className="grid grid-cols-4 gap-4 text-center">
+          
+          <div className={`grid ${isExpanded ? 'grid-cols-4' : 'grid-cols-2'} gap-2 text-center`}>
             {Object.entries(timeLeft).map(([unit, value]) => (
-              <div key={unit} className="p-4">
-                <div className="text-3xl md:text-4xl font-bold text-raade-gold">
+              <div key={unit} className="p-1">
+                <div className="text-xl font-bold text-raade-gold">
                   {value}
                 </div>
-                <div className="text-sm md:text-base capitalize">{unit}</div>
+                <div className="text-xs capitalize">{unit}</div>
               </div>
             ))}
           </div>
+
+          {isExpanded && (
+            <div className="mt-4 text-center">
+              <p className="text-xs mb-2">Join us April 11-12, 2025</p>
+              <Button 
+                size="sm" 
+                className="bg-raade-gold hover:bg-raade-gold/90 text-white w-full"
+                onClick={() => navigate("/conference/register")}
+              >
+                Register Now
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
