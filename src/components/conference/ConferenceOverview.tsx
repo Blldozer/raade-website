@@ -16,12 +16,7 @@ const ConferenceOverview = () => {
         duration: 0.7
       }}>
           <h2 className="text-3xl md:text-4xl font-bold mb-4 font-simula text-neutral-950">AFRICA'S PATH TO THE FUTURE</h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto font-lora">
-            At RAADE's Annual Conference, we will come together to translate bold ideas into continent-wide impact. 
-            This isn't just a conference—it's where change-makers like you come together to shape tomorrow. 
-            Because we know Africa's future won't be built by distant strategies, but by people in rooms like this, 
-            turning possibilities into reality.
-          </p>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto font-lora">At RAADE's Annual Conference, we will come together to translate bold ideas into continent-wide impact. This isn't just a conference—it's where change-makers like you come together to shape tomorrow. Because we know Africa's future won't be built by distant strategies, but by people in rooms like this, turning possibilities into reality.</p>
         </motion.div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
