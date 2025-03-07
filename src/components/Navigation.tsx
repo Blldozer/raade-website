@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 import NavLogo from "./navigation/NavLogo";
 import DesktopNav from "./navigation/DesktopNav";
 import MobileNav from "./navigation/MobileNav";
+import CountdownTimer from "./CountdownTimer";
 
 interface NavigationProps {
   isHeroPage?: boolean;
@@ -56,8 +57,16 @@ const Navigation = ({ isHeroPage = false, forceDarkMode = false }: NavigationPro
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <NavLogo isScrolled={isScrolled} isHeroPage={heroPage} forceDarkMode={forceDarkMode} />
-          <DesktopNav isScrolled={isScrolled} isHeroPage={heroPage} forceDarkMode={forceDarkMode} />
-          <MobileNav isScrolled={isScrolled} isHeroPage={heroPage} forceDarkMode={forceDarkMode} />
+          
+          <div className="flex items-center">
+            {/* Conference Countdown Timer */}
+            <div className="hidden md:block mr-6">
+              <CountdownTimer variant="nav" targetDate="2025-04-11T09:00:00" />
+            </div>
+            
+            <DesktopNav isScrolled={isScrolled} isHeroPage={heroPage} forceDarkMode={forceDarkMode} />
+            <MobileNav isScrolled={isScrolled} isHeroPage={heroPage} forceDarkMode={forceDarkMode} />
+          </div>
         </div>
       </div>
     </nav>

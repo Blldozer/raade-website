@@ -1,16 +1,22 @@
 
 import { useEffect, useState } from "react";
-import { Timer, ChevronRight, ChevronLeft } from "lucide-react";
+import { Timer, ChevronDown, ChevronUp } from "lucide-react";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 interface CountdownTimerProps {
   targetDate?: string;
   className?: string;
+  variant?: "nav" | "floating";
 }
 
-const CountdownTimer = ({ targetDate, className }: CountdownTimerProps) => {
+const CountdownTimer = ({ 
+  targetDate, 
+  className,
+  variant = "floating" 
+}: CountdownTimerProps) => {
   const navigate = useNavigate();
   // Use the provided targetDate or fall back to the default
   const CONFERENCE_DATE = targetDate ? new Date(targetDate) : new Date('2025-04-11T09:00:00');
@@ -43,6 +49,57 @@ const CountdownTimer = ({ targetDate, className }: CountdownTimerProps) => {
     setIsExpanded(!isExpanded);
   };
 
+  // Navigation variant (minimal in nav bar)
+  if (variant === "nav") {
+    return (
+      <div className="relative group">
+        <div className="flex items-center gap-2 cursor-pointer font-montserrat px-3 py-2 rounded-md transition-colors hover:bg-white/10">
+          <Timer size={18} className="text-raade-gold" />
+          <div className="text-sm font-medium">
+            <span className="font-bold">{timeLeft.days}d</span>:{timeLeft.hours}h
+          </div>
+          <ChevronDown size={16} className="group-hover:hidden" />
+          <ChevronUp size={16} className="hidden group-hover:block" />
+        </div>
+        
+        {/* Expanded dropdown on hover */}
+        <div className="absolute right-0 mt-1 hidden group-hover:block z-50">
+          <Card className="bg-white/95 backdrop-blur-sm border border-gray-200 shadow-lg w-60">
+            <CardContent className="p-4">
+              <div className="mb-2 flex items-center gap-2">
+                <Timer size={18} className="text-raade-gold" />
+                <h3 className="text-sm font-bold text-raade-navy">Conference Countdown</h3>
+              </div>
+              
+              <div className="grid grid-cols-4 gap-1 text-center mb-3">
+                {Object.entries(timeLeft).map(([unit, value]) => (
+                  <div key={unit} className="p-1">
+                    <div className="text-lg font-bold text-raade-gold">
+                      {value}
+                    </div>
+                    <div className="text-xs capitalize text-gray-600">{unit}</div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="text-center">
+                <p className="text-xs mb-2 text-gray-600">April 11-12, 2025</p>
+                <Button 
+                  size="sm" 
+                  className="bg-raade-gold hover:bg-raade-gold/90 text-white w-full font-montserrat"
+                  onClick={() => navigate("/conference/register")}
+                >
+                  Register Now
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // Floating bubble variant (original)
   return (
     <div 
       className={`fixed left-0 top-1/3 z-50 transition-all duration-300 ${isExpanded ? 'translate-x-0' : 'translate-x-[-70%]'} ${className || ''}`}

@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import ConferenceHero from "./conference/ConferenceHero";
-import CountdownTimer from "./CountdownTimer";
 import ConferenceSpeakers from "./conference/ConferenceSpeakers";
 import ConferenceSchedule from "./conference/ConferenceSchedule";
 import ConferenceSponsors from "./conference/ConferenceSponsors";
@@ -41,9 +40,6 @@ const Conference = () => {
     <>
       {/* Hero Section */}
       <ConferenceHero />
-      
-      {/* Floating Countdown Timer */}
-      <CountdownTimer targetDate="2025-04-11T09:00:00" />
       
       {/* Conference Overview */}
       <ConferenceOverview />
