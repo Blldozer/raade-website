@@ -6,7 +6,6 @@ import Reality from "../components/about/Reality";
 import Approach from "../components/about/Approach";
 import Impact from "../components/about/Impact";
 import Team from "../components/about/Team";
-import ConferenceValue from "../components/about/ConferenceValue";
 
 const About = () => {
   return (
@@ -16,7 +15,6 @@ const About = () => {
       <NewModel />
       <Reality />
       <Approach />
-      <ConferenceValue />
       <Impact />
       <Team />
     </div>
