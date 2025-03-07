@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Timer, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from "lucide-react";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 interface CountdownTimerProps {
@@ -11,18 +11,15 @@ interface CountdownTimerProps {
   className?: string;
   variant?: "nav" | "floating";
   colorScheme?: "light" | "dark" | "auto";
-  forceDarkMode?: boolean;
 }
 
 const CountdownTimer = ({
   targetDate,
   className,
   variant = "floating",
-  colorScheme = "auto",
-  forceDarkMode = false
+  colorScheme = "auto"
 }: CountdownTimerProps) => {
   const navigate = useNavigate();
-  const location = useLocation();
   // Use the provided targetDate or fall back to the default
   const CONFERENCE_DATE = targetDate ? new Date(targetDate) : new Date('2025-04-11T09:00:00');
   const [isExpanded, setIsExpanded] = useState(false);
@@ -55,33 +52,8 @@ const CountdownTimer = ({
     setIsExpanded(!isExpanded);
   };
 
-  // Determine if we're on a page with a dark background
-  const isDarkBackground = () => {
-    // If forceDarkMode is true, treat the background as dark
-    if (forceDarkMode) return true;
-    
-    // Check current route
-    const route = location.pathname;
-    
-    // Pages with dark backgrounds
-    const darkBackgroundRoutes = [
-      '/', // Home page
-      '/innovation-studios', // Innovation Studios page (uses dark hero)
-    ];
-    
-    // Return true if current route matches any dark background route
-    return darkBackgroundRoutes.some(darkRoute => {
-      if (darkRoute === '/') {
-        return route === '/';
-      }
-      return route.includes(darkRoute);
-    });
-  };
-
-  // Get context-aware color classes based on colorScheme and current route
-  const getColorClasses = () => {
-    const bgIsDark = isDarkBackground();
-    
+  // Get context-aware color classes based on colorScheme
+  const getColorClasses = (bgIsDark: boolean) => {
     if (colorScheme === "light") {
       return {
         text: "text-gray-800",
@@ -127,8 +99,14 @@ const CountdownTimer = ({
       };
     }
   };
+
+  // Determine if we're on a page with a dark background
+  // This is a simplified approach - we're checking the route to determine
+  // if the background is dark or light
+  const route = window.location.pathname;
+  const isDarkBackground = route === "/" || route.includes("/about");
   
-  const colors = getColorClasses();
+  const colors = getColorClasses(isDarkBackground);
 
   // Navigation variant (minimal in nav bar)
   if (variant === "nav") {
@@ -215,3 +193,4 @@ const CountdownTimer = ({
 };
 
 export default CountdownTimer;
+
