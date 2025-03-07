@@ -64,33 +64,45 @@ const WhyAttendTabs = () => {
 
   return (
     <Tabs defaultValue="established" className="w-full">
-      <TabsList className="grid grid-cols-4 mb-8 bg-gray-100 w-full max-w-4xl mx-auto">
-        <TabsTrigger value="established" className="data-[state=active]:bg-[#274675] data-[state=active]:text-white">
+      <TabsList className="grid grid-cols-4 mb-8 bg-gray-100 w-full max-w-4xl mx-auto py-2 h-auto">
+        <TabsTrigger 
+          value="established" 
+          className="data-[state=active]:bg-[#274675] data-[state=active]:text-white py-3 font-simula"
+        >
           <span className="flex items-center gap-2">
-            <Lightbulb className="w-4 h-4" />
-            <span className="hidden md:inline">Established Changemakers</span>
-            <span className="md:hidden">Leaders</span>
+            <Lightbulb className="w-5 h-5" />
+            <span className="hidden md:inline text-base">Established Changemakers</span>
+            <span className="md:hidden text-base">Leaders</span>
           </span>
         </TabsTrigger>
-        <TabsTrigger value="nextgen" className="data-[state=active]:bg-[#2B212E] data-[state=active]:text-white">
+        <TabsTrigger 
+          value="nextgen" 
+          className="data-[state=active]:bg-[#2B212E] data-[state=active]:text-white py-3 font-simula"
+        >
           <span className="flex items-center gap-2">
-            <GraduationCap className="w-4 h-4" />
-            <span className="hidden md:inline">Next Generation</span>
-            <span className="md:hidden">Students</span>
+            <GraduationCap className="w-5 h-5" />
+            <span className="hidden md:inline text-base">Next Generation</span>
+            <span className="md:hidden text-base">Students</span>
           </span>
         </TabsTrigger>
-        <TabsTrigger value="curious" className="data-[state=active]:bg-[#3C403A] data-[state=active]:text-white">
+        <TabsTrigger 
+          value="curious" 
+          className="data-[state=active]:bg-[#3C403A] data-[state=active]:text-white py-3 font-simula"
+        >
           <span className="flex items-center gap-2">
-            <Globe className="w-4 h-4" />
-            <span className="hidden md:inline">Curious Minds</span>
-            <span className="md:hidden">Curious</span>
+            <Globe className="w-5 h-5" />
+            <span className="hidden md:inline text-base">Curious Minds</span>
+            <span className="md:hidden text-base">Curious</span>
           </span>
         </TabsTrigger>
-        <TabsTrigger value="all" className="data-[state=active]:bg-[#FBB03B] data-[state=active]:text-white">
+        <TabsTrigger 
+          value="all" 
+          className="data-[state=active]:bg-[#FBB03B] data-[state=active]:text-white py-3 font-simula"
+        >
           <span className="flex items-center gap-2">
-            <Users className="w-4 h-4" />
-            <span className="hidden md:inline">All Attendees</span>
-            <span className="md:hidden">Everyone</span>
+            <Users className="w-5 h-5" />
+            <span className="hidden md:inline text-base">All Attendees</span>
+            <span className="md:hidden text-base">Everyone</span>
           </span>
         </TabsTrigger>
       </TabsList>

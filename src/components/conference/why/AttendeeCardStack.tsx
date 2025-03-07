@@ -30,13 +30,13 @@ const AttendeeCardStack = ({ attendees, activeId }: AttendeeCardStackProps) => {
   const secondAttendee = attendees[(activeIndex + 1) % attendees.length];
   const thirdAttendee = attendees[(activeIndex + 2) % attendees.length];
 
-  // Auto-advancing functionality - runs every 5 seconds
+  // Auto-advancing functionality - now runs every 8 seconds
   useEffect(() => {
     if (!activeAttendee || isPaused) return;
     
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % activeAttendee.benefits.length);
-    }, 5000); // Change slide every 5 seconds
+    }, 8000); // Changed from 5 to 8 seconds
     
     return () => clearInterval(interval);
   }, [activeAttendee, isPaused]);
@@ -70,22 +70,23 @@ const AttendeeCardStack = ({ attendees, activeId }: AttendeeCardStackProps) => {
   return (
     <div className="relative flex justify-center items-center h-[550px] my-8">
       <div className="relative w-[320px]">
-        {/* Progress Bar - Instagram Story style */}
+        {/* Progress Bar - Instagram Story style with card color */}
         <div className="absolute top-[-15px] left-0 w-full z-10 flex space-x-1">
           {activeAttendee.benefits.map((_, index) => (
             <div 
               key={index} 
-              className="h-1 rounded-full flex-grow relative overflow-hidden bg-gray-300"
+              className="h-1.5 rounded-full flex-grow relative overflow-hidden bg-gray-300/30"
             >
               <motion.div 
-                className="absolute top-0 left-0 bottom-0 bg-white rounded-full"
+                className="absolute top-0 left-0 bottom-0 rounded-full"
+                style={{ backgroundColor: activeAttendee.color }}
                 initial={{ width: index < currentIndex ? "100%" : "0%" }}
                 animate={{ 
                   width: index < currentIndex ? "100%" : 
                           index === currentIndex ? (isPaused ? "50%" : "100%") : "0%" 
                 }}
                 transition={{ 
-                  duration: index === currentIndex && !isPaused ? 5 : 0.3,
+                  duration: index === currentIndex && !isPaused ? 8 : 0.3, // Updated to 8 seconds
                   ease: "linear"
                 }}
               />
