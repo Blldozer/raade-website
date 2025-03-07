@@ -25,28 +25,12 @@ const ConferenceWhy = () => {
             </h2>
           </motion.div>
           
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="w-full lg:w-[61%]"
-          >
-            {/* Empty div to maintain layout but invisible */}
-          </motion.div>
+          <div className="invisible w-full lg:w-[61%]"></div>
         </div>
         
         {/* Content section - 39% and 61% split */}
         <div className="flex flex-col lg:flex-row mb-12">
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="w-full lg:w-[39%]"
-          >
-            {/* Empty div to maintain layout but invisible */}
-          </motion.div>
+          <div className="invisible w-full lg:w-[39%]"></div>
           
           <motion.div 
             initial={{ opacity: 0, x: 20 }}
