@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +20,7 @@ interface AttendeeCardStackProps {
 
 const AttendeeCardStack = ({ attendees, activeId }: AttendeeCardStackProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   
   // Find the active attendee and its index
   const activeIndex = attendees.findIndex(a => a.id === activeId);
@@ -29,13 +30,39 @@ const AttendeeCardStack = ({ attendees, activeId }: AttendeeCardStackProps) => {
   const secondAttendee = attendees[(activeIndex + 1) % attendees.length];
   const thirdAttendee = attendees[(activeIndex + 2) % attendees.length];
 
+  // Auto-advancing functionality - runs every 5 seconds
+  useEffect(() => {
+    if (!activeAttendee || isPaused) return;
+    
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % activeAttendee.benefits.length);
+    }, 5000); // Change slide every 5 seconds
+    
+    return () => clearInterval(interval);
+  }, [activeAttendee, isPaused]);
+  
+  // Reset index when the active attendee changes
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [activeId]);
+
   // Handler for card navigation
   const handleNext = () => {
+    setIsPaused(true); // Pause auto-advance when manually navigating
     setCurrentIndex((prev) => (prev + 1) % activeAttendee!.benefits.length);
+    
+    // Resume auto-advance after 10 seconds of inactivity
+    const timeout = setTimeout(() => setIsPaused(false), 10000);
+    return () => clearTimeout(timeout);
   };
 
   const handlePrev = () => {
+    setIsPaused(true); // Pause auto-advance when manually navigating
     setCurrentIndex((prev) => (prev - 1 + activeAttendee!.benefits.length) % activeAttendee!.benefits.length);
+    
+    // Resume auto-advance after 10 seconds of inactivity
+    const timeout = setTimeout(() => setIsPaused(false), 10000);
+    return () => clearTimeout(timeout);
   };
 
   if (!activeAttendee) return null;
@@ -43,6 +70,29 @@ const AttendeeCardStack = ({ attendees, activeId }: AttendeeCardStackProps) => {
   return (
     <div className="relative flex justify-center items-center h-[550px] my-8">
       <div className="relative w-[320px]">
+        {/* Progress Bar - Instagram Story style */}
+        <div className="absolute top-[-15px] left-0 w-full z-10 flex space-x-1">
+          {activeAttendee.benefits.map((_, index) => (
+            <div 
+              key={index} 
+              className="h-1 rounded-full flex-grow relative overflow-hidden bg-gray-300"
+            >
+              <motion.div 
+                className="absolute top-0 left-0 bottom-0 bg-white rounded-full"
+                initial={{ width: index < currentIndex ? "100%" : "0%" }}
+                animate={{ 
+                  width: index < currentIndex ? "100%" : 
+                          index === currentIndex ? (isPaused ? "50%" : "100%") : "0%" 
+                }}
+                transition={{ 
+                  duration: index === currentIndex && !isPaused ? 5 : 0.3,
+                  ease: "linear"
+                }}
+              />
+            </div>
+          ))}
+        </div>
+        
         {/* Background Cards - Third Card (back) */}
         <motion.div
           className="absolute top-4 -right-6 w-[320px] h-[500px] rounded-xl shadow-lg"
@@ -97,6 +147,8 @@ const AttendeeCardStack = ({ attendees, activeId }: AttendeeCardStackProps) => {
             exit={{ opacity: 0, rotateY: 15, scale: 0.95 }}
             className="relative w-[320px] h-[500px] rounded-xl shadow-2xl overflow-hidden"
             style={{ backgroundColor: activeAttendee.color, zIndex: 3 }}
+            onHoverStart={() => setIsPaused(true)}
+            onHoverEnd={() => setIsPaused(false)}
           >
             {/* Card Content */}
             <div className="relative w-full h-full p-6 text-white flex flex-col">
@@ -147,7 +199,12 @@ const AttendeeCardStack = ({ attendees, activeId }: AttendeeCardStackProps) => {
                   {activeAttendee.benefits.map((_, index) => (
                     <button
                       key={index}
-                      onClick={() => setCurrentIndex(index)}
+                      onClick={() => {
+                        setIsPaused(true);
+                        setCurrentIndex(index);
+                        // Resume auto-advance after 10 seconds
+                        setTimeout(() => setIsPaused(false), 10000);
+                      }}
                       className={`w-2 h-2 rounded-full transition-all duration-300 ${
                         index === currentIndex 
                           ? "bg-white scale-125" 
