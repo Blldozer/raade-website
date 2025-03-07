@@ -1,9 +1,9 @@
 
 import React, { useEffect } from "react";
 import Navigation from "@/components/Navigation";
-import ConferenceComponent from "@/components/Conference";
+import Conference from "@/components/Conference";
 
-const Conference = () => {
+const ConferencePage = () => {
   useEffect(() => {
     // Scroll to top when page loads
     window.scrollTo(0, 0);
@@ -12,9 +12,9 @@ const Conference = () => {
   return (
     <div>
       <Navigation isHeroPage={false} />
-      <ConferenceComponent />
+      <Conference />
     </div>
   );
 };
 
-export default Conference;
+export default ConferencePage;
