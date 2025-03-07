@@ -16,7 +16,7 @@ const ConferenceHero = () => {
 
       <div className="max-w-7xl mx-auto pt-20 px-4 md:px-6 lg:px-8 min-h-screen flex flex-col lg:flex-row items-center">
         {/* Left Content */}
-        <div className="w-full lg:w-2/5 lg:pr-12 py-12 z-10 bg-raade-orange bg-[raade-yellow-orange]">
+        <div className="w-full lg:w-2/5 lg:pr-12 py-12 z-10 bg-[raade-yellow-orange] bg-raade-orange">
           <motion.div initial={{
           opacity: 0,
           y: 20
@@ -79,14 +79,10 @@ const ConferenceHero = () => {
           delay: 0.2
         }} className="w-full max-w-md">
             <div className="relative">
-              <img src="/lovable-uploads/98ae9a06-bde0-482e-8844-28a4bf0ef528.png" alt="RAADE Conference Logo" className="mx-auto w-24 h-24 object-contain mb-6" />
+              
               <div className="text-center">
-                <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold text-white font-simula mb-4 drop-shadow-sm">
-                  AFRICA
-                </h1>
-                <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold font-simula text-raade-navy drop-shadow-sm">
-                  NOW & NEXT
-                </h2>
+                <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold text-white font-simula mb-4 drop-shadow-sm">AFRICA'S</h1>
+                <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold font-simula text-raade-navy drop-shadow-sm">PATH TO THE FUTURE</h2>
               </div>
             </div>
             
