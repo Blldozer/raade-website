@@ -1,3 +1,4 @@
+
 import InnovationStudiosSection from "@/components/InnovationStudios";
 import ProjectsShowcase from "@/components/ProjectsShowcase";
 import StudioOverview from "@/components/studios/StudioOverview";
@@ -6,11 +7,13 @@ import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
 import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
+
 const InnovationStudios = () => {
   const location = useLocation();
   const overviewRef = useRef<HTMLDivElement>(null);
   const projectsRef = useRef<HTMLDivElement>(null);
   const applyRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     // Handle scrolling to sections based on hash
     if (location.hash) {
@@ -32,6 +35,7 @@ const InnovationStudios = () => {
       }, 100);
     }
   }, [location]);
+
   const Hero = () => {
     return <div className="min-h-screen relative overflow-hidden flex items-center">
         {/* Animated gradient background */}
@@ -76,11 +80,12 @@ const InnovationStudios = () => {
           }} transition={{
             delay: 1.2,
             duration: 0.5
-          }} className="mt-12 text-xl md:text-2xl text-white/90 font-lora max-w-2xl"> A project-driven innovation studio creating market-based solutions for Africa's most pressing challenges.</motion.p>
+          }} className="mt-12 text-xl md:text-2xl text-white/90 font-lora max-w-2xl"> A project-driven innovation studio creating market-based solutions for Africa's most pressing challenges.</motion.p>
           </div>
         </div>
       </div>;
   };
+
   return <div>
       <Navigation isHeroPage={true} />
       <div>
@@ -97,4 +102,5 @@ const InnovationStudios = () => {
       </div>
     </div>;
 };
+
 export default InnovationStudios;
