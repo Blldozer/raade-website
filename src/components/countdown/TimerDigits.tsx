@@ -8,7 +8,7 @@ interface TimerDigitsProps {
   seconds: number;
   showLabels?: boolean;
   colorClasses: {
-    accent: string;
+    accent?: string;
     dropdownText?: string;
   };
   compact?: boolean;
@@ -26,7 +26,7 @@ const TimerDigits = ({
   return (
     <div className={`grid grid-cols-4 gap-${compact ? '1' : '2'} text-center`}>
       <div className="p-1">
-        <div className={`${compact ? 'text-xl' : 'text-lg'} font-montserrat font-bold ${colorClasses.accent}`}>
+        <div className={`${compact ? 'text-xl' : 'text-lg'} font-montserrat font-bold ${colorClasses.accent || ''}`}>
           {days}
         </div>
         {showLabels && (
@@ -36,7 +36,7 @@ const TimerDigits = ({
         )}
       </div>
       <div className="p-1">
-        <div className={`${compact ? 'text-xl' : 'text-lg'} font-montserrat font-bold ${colorClasses.accent}`}>
+        <div className={`${compact ? 'text-xl' : 'text-lg'} font-montserrat font-bold ${colorClasses.accent || ''}`}>
           {formatTimeUnit(hours)}
         </div>
         {showLabels && (
@@ -46,7 +46,7 @@ const TimerDigits = ({
         )}
       </div>
       <div className="p-1">
-        <div className={`${compact ? 'text-xl' : 'text-lg'} font-montserrat font-bold ${colorClasses.accent}`}>
+        <div className={`${compact ? 'text-xl' : 'text-lg'} font-montserrat font-bold ${colorClasses.accent || ''}`}>
           {formatTimeUnit(minutes)}
         </div>
         {showLabels && (
@@ -56,7 +56,7 @@ const TimerDigits = ({
         )}
       </div>
       <div className="p-1">
-        <div className={`${compact ? 'text-xl' : 'text-lg'} font-montserrat font-bold ${colorClasses.accent}`}>
+        <div className={`${compact ? 'text-xl' : 'text-lg'} font-montserrat font-bold ${colorClasses.accent || ''}`}>
           {formatTimeUnit(seconds)}
         </div>
         {showLabels && (

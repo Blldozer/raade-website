@@ -57,17 +57,33 @@ const CountdownTimer = ({
   const isDarkBackground = !hasLightBackground(location.pathname);
   
   // Create a custom color scheme if specific colors are provided
-  const customColorScheme = (accentColor || textColor || progressBarColors) 
-    ? {
-        ...(typeof colorScheme === 'object' ? colorScheme : {}),
-        ...(accentColor ? { accent: accentColor, iconColor: accentColor } : {}),
-        ...(textColor ? { text: textColor, dropdownText: textColor } : {}),
-        ...(progressBarColors?.background ? { progressBg: progressBarColors.background } : {}),
-        ...(progressBarColors?.fill ? { progressFill: progressBarColors.fill } : {}),
-      }
-    : colorScheme;
+  const customColorScheme: ColorScheme = {};
   
-  const colors = getColorClasses(customColorScheme, isDarkBackground);
+  if (accentColor) {
+    customColorScheme.accent = accentColor;
+    customColorScheme.iconColor = accentColor;
+  }
+  
+  if (textColor) {
+    customColorScheme.text = textColor;
+    customColorScheme.dropdownText = textColor;
+  }
+  
+  if (progressBarColors?.background) {
+    customColorScheme.progressBg = progressBarColors.background;
+  }
+  
+  if (progressBarColors?.fill) {
+    customColorScheme.progressFill = progressBarColors.fill;
+  }
+  
+  // If we have custom colors, merge with the provided colorScheme
+  const finalColorScheme = 
+    Object.keys(customColorScheme).length > 0 && typeof colorScheme === 'object'
+      ? { ...colorScheme, ...customColorScheme }
+      : (Object.keys(customColorScheme).length > 0 ? customColorScheme : colorScheme);
+  
+  const colors = getColorClasses(finalColorScheme, isDarkBackground);
 
   // Render appropriate timer display based on variant
   if (variant === "nav") {

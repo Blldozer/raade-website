@@ -31,15 +31,16 @@ export const calculateProgress = (startDate: Date, endDate: Date): number => {
   return Math.round(progress);
 };
 
+// Modified the interface to make all properties optional
 export interface ColorScheme {
-  text: string;
-  highlight: string;
-  accent: string;
-  iconColor: string;
-  hoverBg: string;
-  dropdownBg: string;
-  dropdownText: string;
-  dropdownBorder: string;
+  text?: string;
+  highlight?: string;
+  accent?: string;
+  iconColor?: string;
+  hoverBg?: string;
+  dropdownBg?: string;
+  dropdownText?: string;
+  dropdownBorder?: string;
   progressBg?: string;
   progressFill?: string;
 }
@@ -48,75 +49,50 @@ export const getColorClasses = (
   colorScheme: 'light' | 'dark' | 'auto' | ColorScheme, 
   isDarkBackground: boolean
 ): ColorScheme => {
+  // Default color schemes
+  const lightColorScheme: ColorScheme = {
+    text: "text-gray-800",
+    highlight: "text-raade-navy",
+    accent: "text-raade-gold",
+    iconColor: "text-raade-gold",
+    hoverBg: "hover:bg-gray-100",
+    dropdownBg: "bg-white/95",
+    dropdownText: "text-gray-800",
+    dropdownBorder: "border-gray-200",
+    progressBg: "bg-gray-200",
+    progressFill: "bg-raade-gold"
+  };
+
+  const darkColorScheme: ColorScheme = {
+    text: "text-white",
+    highlight: "text-white",
+    accent: "text-raade-gold",
+    iconColor: "text-raade-gold",
+    hoverBg: "hover:bg-white/10",
+    dropdownBg: "bg-raade-navy/95",
+    dropdownText: "text-white",
+    dropdownBorder: "border-gray-700",
+    progressBg: "bg-white/20",
+    progressFill: "bg-raade-gold"
+  };
+
   // If a custom color scheme is provided, use it
   if (typeof colorScheme === 'object') {
-    // Provide defaults for any missing colors
+    // Provide defaults for any missing colors from the appropriate base scheme
+    const baseScheme = isDarkBackground ? darkColorScheme : lightColorScheme;
     return {
-      text: "text-gray-800",
-      highlight: "text-raade-navy",
-      accent: "text-raade-gold",
-      iconColor: "text-raade-gold",
-      hoverBg: "hover:bg-gray-100",
-      dropdownBg: "bg-white/95",
-      dropdownText: "text-gray-800",
-      dropdownBorder: "border-gray-200",
-      progressBg: "bg-white/20",
-      progressFill: "bg-raade-gold",
+      ...baseScheme,
       ...colorScheme
     };
   }
 
   if (colorScheme === "light") {
-    return {
-      text: "text-gray-800",
-      highlight: "text-raade-navy",
-      accent: "text-raade-gold",
-      iconColor: "text-raade-gold",
-      hoverBg: "hover:bg-gray-100",
-      dropdownBg: "bg-white/95",
-      dropdownText: "text-gray-800",
-      dropdownBorder: "border-gray-200",
-      progressBg: "bg-gray-200",
-      progressFill: "bg-raade-gold"
-    };
+    return lightColorScheme;
   } else if (colorScheme === "dark") {
-    return {
-      text: "text-white",
-      highlight: "text-white",
-      accent: "text-raade-gold",
-      iconColor: "text-raade-gold",
-      hoverBg: "hover:bg-white/10",
-      dropdownBg: "bg-raade-navy/95",
-      dropdownText: "text-white",
-      dropdownBorder: "border-gray-700",
-      progressBg: "bg-white/20",
-      progressFill: "bg-raade-gold"
-    };
+    return darkColorScheme;
   } else {
     // Auto mode - adapt based on current route background
-    return isDarkBackground ? {
-      text: "text-white",
-      highlight: "text-white",
-      accent: "text-raade-gold",
-      iconColor: "text-raade-gold",
-      hoverBg: "hover:bg-white/10",
-      dropdownBg: "bg-raade-navy/95",
-      dropdownText: "text-white",
-      dropdownBorder: "border-gray-700",
-      progressBg: "bg-white/20",
-      progressFill: "bg-raade-gold"
-    } : {
-      text: "text-gray-800",
-      highlight: "text-raade-navy",
-      accent: "text-raade-gold",
-      iconColor: "text-raade-gold",
-      hoverBg: "hover:bg-gray-100",
-      dropdownBg: "bg-white/95",
-      dropdownText: "text-gray-800",
-      dropdownBorder: "border-gray-200",
-      progressBg: "bg-gray-200",
-      progressFill: "bg-raade-gold"
-    };
+    return isDarkBackground ? darkColorScheme : lightColorScheme;
   }
 };
 
