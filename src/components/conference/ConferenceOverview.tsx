@@ -1,7 +1,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Calendar, MapPin, Users, Rocket, Lightbulb, Globe } from "lucide-react";
+import { Calendar, MapPin, Users, Rocket, Lightbulb, Globe, Sparkles } from "lucide-react";
 
 const ConferenceOverview = () => {
   return (
@@ -20,7 +20,70 @@ const ConferenceOverview = () => {
               Africa's path to the <span className="font-['Simula_Book_Italic']">future</span>
             </h2>
           </motion.div>
-          <div className="lg:w-[61%]"></div> {/* Spacer div for maintaining the split */}
+          
+          {/* Creative element in the filler div */}
+          <motion.div 
+            className="lg:w-[61%] hidden lg:flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="relative h-40 w-full max-w-lg">
+              {/* Main path line */}
+              <motion.div 
+                className="absolute h-1 bg-gradient-to-r from-[#FBB03B] to-[#FF8A6A] rounded-full left-0 top-1/2 transform -translate-y-1/2"
+                initial={{ width: 0 }}
+                whileInView={{ width: "100%" }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
+              />
+              
+              {/* Animated dots along the path */}
+              {[0.2, 0.4, 0.65, 0.85].map((position, index) => (
+                <motion.div
+                  key={index}
+                  className="absolute w-3 h-3 rounded-full bg-[#FBB03B]"
+                  style={{ left: `${position * 100}%`, top: "50%", translateY: "-50%" }}
+                  initial={{ scale: 0, opacity: 0 }}
+                  whileInView={{
+                    scale: [0, 1.5, 1],
+                    opacity: 1
+                  }}
+                  viewport={{ once: true }}
+                  transition={{ 
+                    duration: 0.6, 
+                    delay: 0.5 + (index * 0.2),
+                    ease: "easeOut"
+                  }}
+                />
+              ))}
+              
+              {/* Sparkle icons */}
+              {[
+                { left: "15%", top: "20%", delay: 0.7, size: 16 },
+                { left: "50%", top: "65%", delay: 1.1, size: 20 },
+                { left: "75%", top: "25%", delay: 1.3, size: 18 },
+                { left: "88%", top: "60%", delay: 1.5, size: 14 },
+              ].map((sparkle, index) => (
+                <motion.div
+                  key={`sparkle-${index}`}
+                  className="absolute"
+                  style={{ left: sparkle.left, top: sparkle.top }}
+                  initial={{ opacity: 0, scale: 0 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: sparkle.delay, duration: 0.5 }}
+                >
+                  <Sparkles 
+                    className="text-[#FBB03B]" 
+                    size={sparkle.size} 
+                    strokeWidth={1.5}
+                  />
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
         </div>
 
         {/* Content Section with reversed 39/61 split */}
