@@ -5,6 +5,7 @@ import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useLocation } from "react-router-dom";
 
 interface CountdownTimerProps {
   targetDate?: string;
@@ -20,6 +21,8 @@ const CountdownTimer = ({
   colorScheme = "auto"
 }: CountdownTimerProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  
   // Use the provided targetDate or fall back to the default
   const CONFERENCE_DATE = targetDate ? new Date(targetDate) : new Date('2025-04-11T09:00:00');
   const [isExpanded, setIsExpanded] = useState(false);
@@ -52,8 +55,24 @@ const CountdownTimer = ({
     setIsExpanded(!isExpanded);
   };
 
-  // Get context-aware color classes based on colorScheme
-  const getColorClasses = (bgIsDark: boolean) => {
+  // Determine if the current page has a light background that needs dark text
+  const hasLightBackground = () => {
+    // Check specific routes that have light backgrounds
+    const lightBackgroundRoutes = [
+      '/conference',
+      '/conference/register',
+    ];
+    
+    // Check if current path matches any light background routes
+    return lightBackgroundRoutes.some(route => 
+      location.pathname === route || location.pathname.startsWith(route + '/')
+    );
+  };
+
+  // Get context-aware color classes based on colorScheme and current route
+  const getColorClasses = () => {
+    const isDarkBackground = !hasLightBackground();
+    
     if (colorScheme === "light") {
       return {
         text: "text-gray-800",
@@ -78,7 +97,7 @@ const CountdownTimer = ({
       };
     } else {
       // Auto mode - adapt based on current route background
-      return bgIsDark ? {
+      return isDarkBackground ? {
         text: "text-white",
         highlight: "text-white",
         accent: "text-raade-gold",
@@ -100,18 +119,12 @@ const CountdownTimer = ({
     }
   };
 
-  // Determine if we're on a page with a dark background
-  // This is a simplified approach - we're checking the route to determine
-  // if the background is dark or light
-  const route = window.location.pathname;
-  const isDarkBackground = route === "/" || route.includes("/about");
-  
-  const colors = getColorClasses(isDarkBackground);
-
   // Format time with leading zeros for better readability
   const formatTimeUnit = (value: number): string => {
     return value < 10 ? `0${value}` : `${value}`;
   };
+
+  const colors = getColorClasses();
 
   // Navigation variant (minimal in nav bar)
   if (variant === "nav") {
