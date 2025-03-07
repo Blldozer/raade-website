@@ -1,15 +1,11 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Lightbulb, GraduationCap, Globe, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
 const ConferenceWhy = () => {
   const navigate = useNavigate();
-  
-  return (
-    <section className="py-16 px-4 md:px-8 bg-raade-navy text-white">
+  return <section className="py-16 px-4 md:px-8 bg-raade-navy text-white">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12 scroll-animate">
           <h2 className="text-4xl font-bold mb-4 font-simula">Why Attend</h2>
@@ -21,13 +17,17 @@ const ConferenceWhy = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           {/* For Established Changemakers */}
-          <motion.div 
-            className="scroll-animate" 
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
+          <motion.div className="scroll-animate" initial={{
+          opacity: 0,
+          x: -20
+        }} whileInView={{
+          opacity: 1,
+          x: 0
+        }} viewport={{
+          once: true
+        }} transition={{
+          duration: 0.5
+        }}>
             <div className="bg-white/5 backdrop-blur-sm p-6 rounded-lg hover:bg-white/10 transition-all h-full">
               <div className="flex items-center mb-4">
                 <Lightbulb className="w-8 h-8 text-[#FBB03B] flex-shrink-0" />
@@ -62,13 +62,17 @@ const ConferenceWhy = () => {
           </motion.div>
           
           {/* For the Next Generation of Leaders */}
-          <motion.div 
-            className="scroll-animate" 
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
+          <motion.div className="scroll-animate" initial={{
+          opacity: 0,
+          x: 20
+        }} whileInView={{
+          opacity: 1,
+          x: 0
+        }} viewport={{
+          once: true
+        }} transition={{
+          duration: 0.5
+        }}>
             <div className="bg-white/5 backdrop-blur-sm p-6 rounded-lg hover:bg-white/10 transition-all h-full">
               <div className="flex items-center mb-4">
                 <GraduationCap className="w-8 h-8 text-[#FBB03B] flex-shrink-0" />
@@ -103,13 +107,18 @@ const ConferenceWhy = () => {
           </motion.div>
           
           {/* For Curious Minds */}
-          <motion.div 
-            className="scroll-animate" 
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
+          <motion.div className="scroll-animate" initial={{
+          opacity: 0,
+          x: -20
+        }} whileInView={{
+          opacity: 1,
+          x: 0
+        }} viewport={{
+          once: true
+        }} transition={{
+          duration: 0.5,
+          delay: 0.2
+        }}>
             <div className="bg-white/5 backdrop-blur-sm p-6 rounded-lg hover:bg-white/10 transition-all h-full">
               <div className="flex items-center mb-4">
                 <Globe className="w-8 h-8 text-[#FBB03B] flex-shrink-0" />
@@ -144,13 +153,18 @@ const ConferenceWhy = () => {
           </motion.div>
           
           {/* For All Attendees */}
-          <motion.div 
-            className="scroll-animate" 
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
+          <motion.div className="scroll-animate" initial={{
+          opacity: 0,
+          x: 20
+        }} whileInView={{
+          opacity: 1,
+          x: 0
+        }} viewport={{
+          once: true
+        }} transition={{
+          duration: 0.5,
+          delay: 0.2
+        }}>
             <div className="bg-white/5 backdrop-blur-sm p-6 rounded-lg hover:bg-white/10 transition-all h-full">
               <div className="flex items-center mb-4">
                 <Users className="w-8 h-8 text-[#FBB03B] flex-shrink-0" />
@@ -170,7 +184,7 @@ const ConferenceWhy = () => {
                 </li>
                 <li className="flex items-start">
                   <span className="text-[#FBB03B] mr-2">•</span>
-                  <span>Meaningful connections formed through collaborative work rather than superficial networking</span>
+                  <span>Meaningful connections formed through collaborative work </span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-[#FBB03B] mr-2">•</span>
@@ -185,29 +199,28 @@ const ConferenceWhy = () => {
           </motion.div>
         </div>
         
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="text-center mt-8"
-        >
+        <motion.div initial={{
+        opacity: 0,
+        y: 20
+      }} whileInView={{
+        opacity: 1,
+        y: 0
+      }} viewport={{
+        once: true
+      }} transition={{
+        duration: 0.6,
+        delay: 0.4
+      }} className="text-center mt-8">
           <p className="text-lg mb-6 font-lora font-semibold">
             By bringing together diverse perspectives and focusing on implementation rather than just discussion, 
             the conference creates a unique environment where each person's contribution becomes more valuable 
             through its connection to others.
           </p>
-          <Button 
-            size="lg" 
-            className="bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora" 
-            onClick={() => navigate("/conference/register")}
-          >
+          <Button size="lg" className="bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora" onClick={() => navigate("/conference/register")}>
             Register Now
           </Button>
         </motion.div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default ConferenceWhy;
