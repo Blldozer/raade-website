@@ -8,7 +8,7 @@ import { Lightbulb, GraduationCap, Globe, Users } from "lucide-react";
 const WhyAttendTabs = () => {
   return (
     <Tabs defaultValue="established" className="w-full">
-      <TabsList className="grid grid-cols-4 mb-8 bg-white/10 w-full max-w-4xl mx-auto">
+      <TabsList className="grid grid-cols-4 mb-8 bg-gray-100 w-full max-w-4xl mx-auto">
         <TabsTrigger value="established" className="data-[state=active]:bg-[#FBB03B] data-[state=active]:text-white">
           <span className="flex items-center gap-2">
             <Lightbulb className="w-4 h-4" />

@@ -23,7 +23,7 @@ const AttendeeCard = ({ icon: Icon, title, subtitle, benefits }: AttendeeCardPro
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
     >
-      <Card className="bg-white/10 backdrop-blur-sm border-white/20 overflow-hidden">
+      <Card className="bg-raade-navy/95 text-white border-raade-navy/20 overflow-hidden">
         <CardContent className="p-6">
           <div className="flex items-center mb-4">
             <Icon className="w-8 h-8 text-[#FBB03B] flex-shrink-0" />
