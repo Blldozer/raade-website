@@ -1,38 +1,31 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Calendar, MapPin } from "lucide-react";
-
 const ConferenceHero = () => {
   const navigate = useNavigate();
-  
-  return (
-    <div className="relative min-h-screen bg-[#FBB03B] overflow-hidden">
+  return <div className="relative min-h-screen bg-[#FBB03B] overflow-hidden">
       {/* Background pattern */}
       <div className="absolute inset-0 z-0 opacity-10">
-        {[...Array(15)].map((_, index) => (
-          <div 
-            key={index}
-            className="absolute w-3 h-3 rounded-full bg-white"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              opacity: Math.random() * 0.8 + 0.2
-            }}
-          />
-        ))}
+        {[...Array(15)].map((_, index) => <div key={index} className="absolute w-3 h-3 rounded-full bg-white" style={{
+        top: `${Math.random() * 100}%`,
+        left: `${Math.random() * 100}%`,
+        opacity: Math.random() * 0.8 + 0.2
+      }} />)}
       </div>
 
       <div className="max-w-7xl mx-auto pt-20 px-4 md:px-6 lg:px-8 min-h-screen flex flex-col lg:flex-row items-center">
         {/* Left Content */}
-        <div className="w-full lg:w-2/5 lg:pr-12 py-12 z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="space-y-6"
-          >
+        <div className="w-full lg:w-2/5 lg:pr-12 py-12 z-10 bg-raade-orange bg-[raade-yellow-orange]">
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} transition={{
+          duration: 0.6
+        }} className="space-y-6">
             <p className="text-lg font-medium text-white font-lora">
               Join us at the Annual RAADE Conference
             </p>
@@ -67,10 +60,7 @@ const ConferenceHero = () => {
               advancing Africa's future.
             </p>
 
-            <button 
-              onClick={() => navigate("/conference/register")}
-              className="px-8 py-3 bg-raade-navy text-white rounded-md font-medium transition-colors hover:bg-raade-navy/90 font-lora shadow-md"
-            >
+            <button onClick={() => navigate("/conference/register")} className="px-8 py-3 bg-raade-navy text-white rounded-md font-medium transition-colors hover:bg-raade-navy/90 font-lora shadow-md">
               Get Tickets
             </button>
           </motion.div>
@@ -78,18 +68,18 @@ const ConferenceHero = () => {
 
         {/* Right Content - Conference Logo & Image */}
         <div className="w-full lg:w-3/5 flex flex-col items-center justify-center z-10 py-12">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="w-full max-w-md"
-          >
+          <motion.div initial={{
+          opacity: 0,
+          scale: 0.95
+        }} animate={{
+          opacity: 1,
+          scale: 1
+        }} transition={{
+          duration: 0.6,
+          delay: 0.2
+        }} className="w-full max-w-md">
             <div className="relative">
-              <img 
-                src="/lovable-uploads/98ae9a06-bde0-482e-8844-28a4bf0ef528.png"
-                alt="RAADE Conference Logo" 
-                className="mx-auto w-24 h-24 object-contain mb-6"
-              />
+              <img src="/lovable-uploads/98ae9a06-bde0-482e-8844-28a4bf0ef528.png" alt="RAADE Conference Logo" className="mx-auto w-24 h-24 object-contain mb-6" />
               <div className="text-center">
                 <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold text-white font-simula mb-4 drop-shadow-sm">
                   AFRICA
@@ -117,8 +107,6 @@ const ConferenceHero = () => {
           </motion.div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default ConferenceHero;
