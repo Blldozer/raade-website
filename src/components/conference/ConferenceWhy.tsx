@@ -11,19 +11,31 @@ const ConferenceWhy = () => {
   return (
     <section className="py-16 px-4 md:px-8 bg-white text-raade-navy">
       <div className="max-w-7xl mx-auto">
-        <motion.div 
-          className="text-center mb-12 scroll-animate"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <h2 className="text-4xl font-bold mb-4 font-simula">Why Attend</h2>
-          <p className="text-lg max-w-3xl mx-auto font-lora text-raade-navy/80">
-            The distinctive value of the RAADE conference is that attendees don't just gain knowledge 
-            or contacts – they become part of creating solutions that can spread across the continent.
-          </p>
-        </motion.div>
+        {/* Title section - 39% and 61% split */}
+        <div className="flex flex-col lg:flex-row mb-12">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="w-full lg:w-[39%]"
+          >
+            <h2 className="text-4xl font-bold mb-4 lg:mb-0 font-simula">Why Attend</h2>
+          </motion.div>
+          
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="w-full lg:w-[61%]"
+          >
+            <p className="text-lg font-lora text-raade-navy/80">
+              The distinctive value of the RAADE conference is that attendees don't just gain knowledge 
+              or contacts – they become part of creating solutions that can spread across the continent.
+            </p>
+          </motion.div>
+        </div>
         
         <WhyAttendTabs />
         
