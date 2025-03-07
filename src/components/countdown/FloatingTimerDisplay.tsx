@@ -1,7 +1,6 @@
 
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
-import { Progress } from "../ui/progress";
 import { Timer, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import TimerDigits from "./TimerDigits";
@@ -18,7 +17,6 @@ interface FloatingTimerDisplayProps {
   isExpanded: boolean;
   toggleExpanded: () => void;
   className?: string;
-  progressPercentage?: number;
   colors?: ColorScheme;
 }
 
@@ -27,7 +25,6 @@ const FloatingTimerDisplay = ({
   isExpanded,
   toggleExpanded,
   className,
-  progressPercentage = 0,
   colors
 }: FloatingTimerDisplayProps) => {
   const navigate = useNavigate();
@@ -37,8 +34,6 @@ const FloatingTimerDisplay = ({
     text: "text-white",
     accent: "text-raade-gold",
     iconColor: "text-raade-gold",
-    progressBg: "bg-white/20",
-    progressFill: "bg-raade-gold"
   };
 
   const timerColors = colors || defaultColors;
@@ -78,19 +73,6 @@ const FloatingTimerDisplay = ({
             compact={true}
           />
           
-          {/* Progress bar */}
-          <div className="mt-3">
-            <div className={cn("h-2 w-full rounded-full overflow-hidden", timerColors.progressBg || "bg-white/20")}>
-              <div 
-                className={cn("h-full rounded-full transition-all duration-500", timerColors.progressFill || "bg-raade-gold")} 
-                style={{ width: `${progressPercentage}%` }}
-              />
-            </div>
-            <p className="text-xs mt-1 text-right text-white/80">
-              {progressPercentage}% to conference day
-            </p>
-          </div>
-
           {isExpanded && <div className="mt-4 text-center">
               <p className="text-xs mb-2">Join us April 11-12, 2025</p>
               <Button size="sm" className="bg-raade-gold hover:bg-raade-gold/90 text-white w-full" onClick={() => navigate("/conference/register")}>

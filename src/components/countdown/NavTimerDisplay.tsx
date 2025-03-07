@@ -15,10 +15,9 @@ interface NavTimerDisplayProps {
     seconds: number;
   };
   colors: ColorScheme;
-  progressPercentage?: number;
 }
 
-const NavTimerDisplay = ({ timeLeft, colors, progressPercentage = 0 }: NavTimerDisplayProps) => {
+const NavTimerDisplay = ({ timeLeft, colors }: NavTimerDisplayProps) => {
   const navigate = useNavigate();
   
   return (
@@ -60,20 +59,7 @@ const NavTimerDisplay = ({ timeLeft, colors, progressPercentage = 0 }: NavTimerD
               }}
             />
             
-            {/* Progress bar */}
-            <div className="mt-3 mb-2">
-              <div className={cn("h-2 w-full rounded-full overflow-hidden", colors.progressBg || "bg-gray-200")}>
-                <div 
-                  className={cn("h-full rounded-full transition-all duration-500", colors.progressFill || "bg-raade-gold")} 
-                  style={{ width: `${progressPercentage}%` }}
-                />
-              </div>
-              <p className={cn("text-xs mt-1 text-right", colors.dropdownText)}>
-                {progressPercentage}% to conference day
-              </p>
-            </div>
-            
-            <div className="text-center">
+            <div className="text-center mt-3">
               <p className={cn("text-xs mb-2", colors.dropdownText)}>April 11-12, 2025</p>
               <Button size="sm" onClick={() => navigate("/conference/register")} className="text-white w-full font-lora bg-raade-orange font-semibold text-lg">
                 Register Now
