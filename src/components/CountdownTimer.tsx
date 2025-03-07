@@ -1,10 +1,17 @@
+
 import { useEffect, useState } from "react";
 import { Timer } from "lucide-react";
 import { Card, CardContent } from "./ui/card";
 
-const CONFERENCE_DATE = new Date('2025-04-11T09:00:00');
+interface CountdownTimerProps {
+  targetDate?: string;
+  className?: string;
+}
 
-const CountdownTimer = () => {
+const CountdownTimer = ({ targetDate, className }: CountdownTimerProps) => {
+  // Use the provided targetDate or fall back to the default
+  const CONFERENCE_DATE = targetDate ? new Date(targetDate) : new Date('2025-04-11T09:00:00');
+
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -26,10 +33,10 @@ const CountdownTimer = () => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [CONFERENCE_DATE]);
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4">
+    <div className={`w-full max-w-4xl mx-auto p-4 ${className || ''}`}>
       <Card className="bg-raade-navy text-white">
         <CardContent className="p-6">
           <div className="flex items-center justify-center gap-2 mb-4">
