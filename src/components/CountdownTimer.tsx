@@ -1,11 +1,11 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useCountdown } from "./countdown/useCountdown";
 import NavTimerDisplay from "./countdown/NavTimerDisplay";
 import FloatingTimerDisplay from "./countdown/FloatingTimerDisplay";
-import { getColorClasses, hasLightBackground, calculateProgress, ColorScheme } from "./countdown/timerUtils";
+import { getColorClasses, hasLightBackground, calculateProgress, ColorScheme, isScrollPastHero } from "./countdown/timerUtils";
 
 interface CountdownTimerProps {
   targetDate?: string;
@@ -42,6 +42,7 @@ const CountdownTimer = ({
     : new Date(new Date('2025-04-11T09:00:00').setMonth(new Date('2025-04-11T09:00:00').getMonth() - 6));
   
   const [isExpanded, setIsExpanded] = useState(false);
+  const [scrollPastHero, setScrollPastHero] = useState(false);
   
   // Get time left using custom hook
   const timeLeft = useCountdown(CONFERENCE_DATE);
@@ -49,12 +50,34 @@ const CountdownTimer = ({
   // Calculate progress percentage
   const progressPercentage = calculateProgress(ANNOUNCEMENT_DATE, CONFERENCE_DATE);
 
+  // Add scroll event listener to detect when user has scrolled past hero section
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollPastHero(isScrollPastHero());
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Check initial scroll position
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   const toggleExpanded = () => {
     setIsExpanded(!isExpanded);
   };
 
-  // Get color classes based on current route and color scheme
-  const isDarkBackground = !hasLightBackground(location.pathname);
+  // Get initial background check based on current route
+  const initialIsDarkBackground = !hasLightBackground(location.pathname);
+  
+  // If we're on index, about, or innovation studios page and have scrolled past hero,
+  // we should use light color scheme (for dark text) as background is likely white
+  const isDarkBackground = scrollPastHero && 
+    (location.pathname === '/' || 
+     location.pathname === '/about' || 
+     location.pathname === '/studios') 
+    ? false : initialIsDarkBackground;
   
   // Create a custom color scheme if specific colors are provided
   const customColorScheme: ColorScheme = {};

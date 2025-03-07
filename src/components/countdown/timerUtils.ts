@@ -108,3 +108,9 @@ export const hasLightBackground = (pathname: string) => {
     pathname === route || pathname.startsWith(route + '/')
   );
 };
+
+// New function to handle scroll-based background detection
+export const isScrollPastHero = (): boolean => {
+  // Check if scrolled past typical hero section height (100vh)
+  return window.scrollY > window.innerHeight * 0.7;
+};
