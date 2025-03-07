@@ -24,8 +24,11 @@ const Navigation = ({ isHeroPage = false, forceDarkMode = false }: NavigationPro
     ? isHeroPage 
     : (location.pathname === "/" || location.pathname === "/studios");
 
-  // Determine if dark mode should be forced based on route
-  const shouldForceDarkMode = forceDarkMode || location.pathname === "/conference";
+  // Determine if dark mode should be forced based on route or background color
+  const isConferencePage = location.pathname === "/conference";
+  // For conference page, we want dark elements (black logo, dark text buttons)
+  // because the background is white/light
+  const shouldForceDarkMode = forceDarkMode || (isConferencePage && !isHeroPage);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -62,7 +65,11 @@ const Navigation = ({ isHeroPage = false, forceDarkMode = false }: NavigationPro
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          <NavLogo isScrolled={isScrolled} isHeroPage={heroPage} forceDarkMode={shouldForceDarkMode} />
+          <NavLogo 
+            isScrolled={isScrolled} 
+            isHeroPage={heroPage} 
+            forceDarkMode={shouldForceDarkMode} 
+          />
           
           <div className="flex items-center">
             {/* Conference Countdown Timer */}
@@ -70,8 +77,16 @@ const Navigation = ({ isHeroPage = false, forceDarkMode = false }: NavigationPro
               <CountdownTimer variant="nav" targetDate="2025-04-11T09:00:00" colorScheme="auto" />
             </div>
             
-            <DesktopNav isScrolled={isScrolled} isHeroPage={heroPage} forceDarkMode={shouldForceDarkMode} />
-            <MobileNav isScrolled={isScrolled} isHeroPage={heroPage} forceDarkMode={shouldForceDarkMode} />
+            <DesktopNav 
+              isScrolled={isScrolled} 
+              isHeroPage={heroPage} 
+              forceDarkMode={shouldForceDarkMode} 
+            />
+            <MobileNav 
+              isScrolled={isScrolled} 
+              isHeroPage={heroPage} 
+              forceDarkMode={shouldForceDarkMode} 
+            />
           </div>
         </div>
       </div>

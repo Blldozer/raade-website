@@ -11,7 +11,7 @@ const ConferencePage = () => {
   
   return (
     <div>
-      <Navigation isHeroPage={true} forceDarkMode={true} />
+      <Navigation isHeroPage={false} forceDarkMode={false} />
       <Conference />
     </div>
   );
