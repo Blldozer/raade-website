@@ -52,7 +52,7 @@ const AboutNav = () => {
           <div className="w-[61%] flex justify-end items-center pr-8">
             {/* Conference Countdown Timer */}
             <div className="hidden md:block mr-6">
-              <CountdownTimer variant="nav" targetDate="2025-04-11T09:00:00" colorScheme="auto" />
+              <CountdownTimer variant="nav" targetDate="2025-04-11T09:00:00" colorScheme="auto" forceDarkMode={true} />
             </div>
             
             <div className="hidden md:block">

@@ -61,7 +61,7 @@ const Navigation = ({ isHeroPage = false, forceDarkMode = false }: NavigationPro
           <div className="flex items-center">
             {/* Conference Countdown Timer */}
             <div className="hidden md:block mr-6">
-              <CountdownTimer variant="nav" targetDate="2025-04-11T09:00:00" colorScheme="auto" />
+              <CountdownTimer variant="nav" targetDate="2025-04-11T09:00:00" colorScheme="auto" forceDarkMode={forceDarkMode} />
             </div>
             
             <DesktopNav isScrolled={isScrolled} isHeroPage={heroPage} forceDarkMode={forceDarkMode} />
