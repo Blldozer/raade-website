@@ -77,7 +77,6 @@ const Navigation = ({ isHeroPage = false, forceDarkMode = false }: NavigationPro
               <CountdownTimer 
                 variant="nav" 
                 targetDate="2025-04-11T09:00:00" 
-                announcementDate="2024-10-11T09:00:00" // 6 months before conference
                 colorScheme="auto" 
               />
             </div>

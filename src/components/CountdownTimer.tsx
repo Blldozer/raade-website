@@ -14,6 +14,7 @@ interface CountdownTimerProps {
   colorScheme?: 'light' | 'dark' | 'auto' | ColorScheme;
   accentColor?: string;
   textColor?: string;
+  // Remove the announcementDate prop as it's not being used
 }
 
 const CountdownTimer = ({
