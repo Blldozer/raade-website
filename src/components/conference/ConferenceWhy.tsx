@@ -20,7 +20,9 @@ const ConferenceWhy = () => {
             transition={{ duration: 0.6 }}
             className="w-full lg:w-[39%]"
           >
-            <h2 className="text-4xl font-bold mb-4 lg:mb-0 font-simula">Why Attend</h2>
+            <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-black">
+              Why Attend
+            </h2>
           </motion.div>
           
           <motion.div 
@@ -28,10 +30,9 @@ const ConferenceWhy = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="w-full lg:w-[61%] bg-gray-50 rounded-lg"
+            className="w-full lg:w-[61%]"
           >
-            {/* Filler box */}
-            <div className="h-full w-full p-6"></div>
+            {/* Empty div to maintain layout but invisible */}
           </motion.div>
         </div>
         
@@ -42,10 +43,9 @@ const ConferenceWhy = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="w-full lg:w-[39%] bg-gray-50 rounded-lg"
+            className="w-full lg:w-[39%]"
           >
-            {/* Filler box */}
-            <div className="h-full w-full p-6"></div>
+            {/* Empty div to maintain layout but invisible */}
           </motion.div>
           
           <motion.div 
