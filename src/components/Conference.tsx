@@ -1,36 +1,17 @@
-
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  Calendar, 
-  Users, 
-  Ticket, 
-  DollarSign, 
-  Award, 
-  MapPin, 
-  Clock, 
-  Star,
-  MessageSquare,
-  Building,
-  Sparkles,
-  GraduationCap,
-  Globe,
-  Lightbulb
-} from "lucide-react";
-
+import { Calendar, Users, Ticket, DollarSign, Award, MapPin, Clock, Star, MessageSquare, Building, Sparkles, GraduationCap, Globe, Lightbulb } from "lucide-react";
 import ConferenceHero from "./conference/ConferenceHero";
 import CountdownTimer from "./CountdownTimer";
 import ConferenceSpeakers from "./conference/ConferenceSpeakers";
 import ConferenceSchedule from "./conference/ConferenceSchedule";
 import ConferenceSponsors from "./conference/ConferenceSponsors";
 import SocialProof from "./conference/SocialProof";
-
 const Conference = () => {
   const navigate = useNavigate();
-  
   useEffect(() => {
     // Initialize scroll animations
     const animateOnScroll = () => {
@@ -38,54 +19,44 @@ const Conference = () => {
       elements.forEach(element => {
         const position = element.getBoundingClientRect();
         // If element is in viewport
-        if(position.top < window.innerHeight && position.bottom >= 0) {
+        if (position.top < window.innerHeight && position.bottom >= 0) {
           element.classList.add('animate-in');
         }
       });
     };
-    
     window.addEventListener('scroll', animateOnScroll);
     animateOnScroll(); // Run once on load
-    
+
     return () => window.removeEventListener('scroll', animateOnScroll);
   }, []);
-  
-  return (
-    <>
+  return <>
       {/* Hero Section */}
       <ConferenceHero />
       
       {/* Countdown Section */}
       <section className="bg-white py-10 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="rounded-xl bg-gradient-to-r from-[#274675]/90 to-[#274675] p-8 shadow-lg text-center"
-          >
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} transition={{
+          duration: 0.6
+        }} className="rounded-xl bg-gradient-to-r from-[#274675]/90 to-[#274675] p-8 shadow-lg text-center">
             <h2 className="text-2xl font-bold text-white mb-4 font-simula">Join us in</h2>
-            <CountdownTimer 
-              targetDate="2025-04-11T09:00:00" 
-              className="text-[#FBB03B] font-bold"
-            />
+            <CountdownTimer targetDate="2025-04-11T09:00:00" className="text-[#FBB03B] font-bold" />
             <div className="mt-6">
-              <Button
-                size="lg"
-                className="bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora mx-2"
-                onClick={() => navigate("/conference/register")}
-              >
+              <Button size="lg" className="bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora mx-2" onClick={() => navigate("/conference/register")}>
                 Register Now
               </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-white text-white hover:bg-white hover:text-[#274675] font-lora mx-2 mt-4 md:mt-0"
-                onClick={() => {
-                  const scheduleSection = document.getElementById('schedule');
-                  scheduleSection?.scrollIntoView({ behavior: 'smooth' });
-                }}
-              >
+              <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-[#274675] font-lora mx-2 mt-4 md:mt-0" onClick={() => {
+              const scheduleSection = document.getElementById('schedule');
+              scheduleSection?.scrollIntoView({
+                behavior: 'smooth'
+              });
+            }}>
                 View Schedule
               </Button>
             </div>
@@ -97,9 +68,7 @@ const Conference = () => {
       <section className="py-16 px-4 md:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 scroll-animate">
-            <h2 className="text-3xl md:text-4xl font-bold text-raade-navy mb-4 font-simula">
-              AFRICA NOW & NEXT
-            </h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-raade-navy mb-4 font-simula">AFRICA'S PATH TO THE FUTURE</h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto font-lora">
               The RAADE Conference brings together innovators, thought leaders, and change-makers
               from across the continent and diaspora to shape Africa's future.
@@ -107,13 +76,17 @@ const Conference = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            <motion.div 
-              className="scroll-animate"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
+            <motion.div className="scroll-animate" initial={{
+            opacity: 0,
+            y: 20
+          }} whileInView={{
+            opacity: 1,
+            y: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            duration: 0.5
+          }}>
               <Card className="h-full border-t-4 border-t-[#FBB03B] hover:shadow-lg transition-shadow">
                 <CardHeader className="flex flex-col items-center">
                   <Sparkles className="h-12 w-12 text-[#FBB03B] mb-4" />
@@ -128,13 +101,18 @@ const Conference = () => {
               </Card>
             </motion.div>
             
-            <motion.div 
-              className="scroll-animate"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
+            <motion.div className="scroll-animate" initial={{
+            opacity: 0,
+            y: 20
+          }} whileInView={{
+            opacity: 1,
+            y: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            duration: 0.5,
+            delay: 0.2
+          }}>
               <Card className="h-full border-t-4 border-t-[#FBB03B] hover:shadow-lg transition-shadow">
                 <CardHeader className="flex flex-col items-center">
                   <Users className="h-12 w-12 text-[#FBB03B] mb-4" />
@@ -149,13 +127,18 @@ const Conference = () => {
               </Card>
             </motion.div>
             
-            <motion.div 
-              className="scroll-animate"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-            >
+            <motion.div className="scroll-animate" initial={{
+            opacity: 0,
+            y: 20
+          }} whileInView={{
+            opacity: 1,
+            y: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            duration: 0.5,
+            delay: 0.4
+          }}>
               <Card className="h-full border-t-4 border-t-[#FBB03B] hover:shadow-lg transition-shadow">
                 <CardHeader className="flex flex-col items-center">
                   <Star className="h-12 w-12 text-[#FBB03B] mb-4" />
@@ -210,13 +193,17 @@ const Conference = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
             {/* For Established Changemakers */}
-            <motion.div 
-              className="scroll-animate"
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
+            <motion.div className="scroll-animate" initial={{
+            opacity: 0,
+            x: -20
+          }} whileInView={{
+            opacity: 1,
+            x: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            duration: 0.5
+          }}>
               <div className="bg-white/5 backdrop-blur-sm p-6 rounded-lg hover:bg-white/10 transition-all h-full">
                 <div className="flex items-center mb-4">
                   <Lightbulb className="w-8 h-8 text-[#FBB03B] flex-shrink-0" />
@@ -251,13 +238,17 @@ const Conference = () => {
             </motion.div>
             
             {/* For the Next Generation of Leaders */}
-            <motion.div 
-              className="scroll-animate"
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
+            <motion.div className="scroll-animate" initial={{
+            opacity: 0,
+            x: 20
+          }} whileInView={{
+            opacity: 1,
+            x: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            duration: 0.5
+          }}>
               <div className="bg-white/5 backdrop-blur-sm p-6 rounded-lg hover:bg-white/10 transition-all h-full">
                 <div className="flex items-center mb-4">
                   <GraduationCap className="w-8 h-8 text-[#FBB03B] flex-shrink-0" />
@@ -292,13 +283,18 @@ const Conference = () => {
             </motion.div>
             
             {/* For Curious Minds */}
-            <motion.div 
-              className="scroll-animate"
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
+            <motion.div className="scroll-animate" initial={{
+            opacity: 0,
+            x: -20
+          }} whileInView={{
+            opacity: 1,
+            x: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            duration: 0.5,
+            delay: 0.2
+          }}>
               <div className="bg-white/5 backdrop-blur-sm p-6 rounded-lg hover:bg-white/10 transition-all h-full">
                 <div className="flex items-center mb-4">
                   <Globe className="w-8 h-8 text-[#FBB03B] flex-shrink-0" />
@@ -310,7 +306,7 @@ const Conference = () => {
                 <ul className="space-y-2 text-white/80 font-lora">
                   <li className="flex items-start">
                     <span className="text-[#FBB03B] mr-2">•</span>
-                    <span>Deeper understanding of African development challenges beyond headlines</span>
+                    <span className="font-lora font-normal">Deeper understanding of African development challenges beyond headlines</span>
                   </li>
                   <li className="flex items-start">
                     <span className="text-[#FBB03B] mr-2">•</span>
@@ -333,13 +329,18 @@ const Conference = () => {
             </motion.div>
             
             {/* For All Attendees */}
-            <motion.div 
-              className="scroll-animate"
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
+            <motion.div className="scroll-animate" initial={{
+            opacity: 0,
+            x: 20
+          }} whileInView={{
+            opacity: 1,
+            x: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            duration: 0.5,
+            delay: 0.2
+          }}>
               <div className="bg-white/5 backdrop-blur-sm p-6 rounded-lg hover:bg-white/10 transition-all h-full">
                 <div className="flex items-center mb-4">
                   <Users className="w-8 h-8 text-[#FBB03B] flex-shrink-0" />
@@ -374,23 +375,24 @@ const Conference = () => {
             </motion.div>
           </div>
           
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-center mt-8"
-          >
-            <p className="text-lg font-medium mb-6 font-simula">
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }} transition={{
+          duration: 0.6,
+          delay: 0.4
+        }} className="text-center mt-8">
+            <p className="text-lg mb-6 font-lora font-semibold">
               By bringing together diverse perspectives and focusing on implementation rather than just discussion, 
               the conference creates a unique environment where each person's contribution becomes more valuable 
               through its connection to others.
             </p>
-            <Button
-              size="lg"
-              className="bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora"
-              onClick={() => navigate("/conference/register")}
-            >
+            <Button size="lg" className="bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora" onClick={() => navigate("/conference/register")}>
               Register Now
             </Button>
           </motion.div>
@@ -414,13 +416,17 @@ const Conference = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            <motion.div 
-              className="scroll-animate"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
+            <motion.div className="scroll-animate" initial={{
+            opacity: 0,
+            y: 20
+          }} whileInView={{
+            opacity: 1,
+            y: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            duration: 0.5
+          }}>
               <Card className="border-t-4 border-t-[#FBB03B] hover:shadow-xl transition-all relative h-full">
                 <div className="absolute top-4 right-4 bg-[#FBB03B] text-white text-sm font-medium py-1 px-3 rounded-full">
                   Early Bird
@@ -449,23 +455,25 @@ const Conference = () => {
                       <span className="text-gray-600 font-lora">Lunch and refreshments</span>
                     </li>
                   </ul>
-                  <Button
-                    className="w-full bg-raade-navy hover:bg-raade-navy/90 text-white font-lora"
-                    onClick={() => navigate("/conference/register")}
-                  >
+                  <Button className="w-full bg-raade-navy hover:bg-raade-navy/90 text-white font-lora" onClick={() => navigate("/conference/register")}>
                     Register Now
                   </Button>
                 </CardContent>
               </Card>
             </motion.div>
             
-            <motion.div 
-              className="scroll-animate"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
+            <motion.div className="scroll-animate" initial={{
+            opacity: 0,
+            y: 20
+          }} whileInView={{
+            opacity: 1,
+            y: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            duration: 0.5,
+            delay: 0.2
+          }}>
               <Card className="border-t-4 border-t-[#FBB03B] hover:shadow-xl transition-all relative h-full">
                 <div className="absolute top-4 right-4 bg-[#FBB03B] text-white text-sm font-medium py-1 px-3 rounded-full">
                   Limited
@@ -494,23 +502,25 @@ const Conference = () => {
                       <span className="text-gray-600 font-lora">Special gift package</span>
                     </li>
                   </ul>
-                  <Button
-                    className="w-full bg-raade-navy hover:bg-raade-navy/90 text-white font-lora"
-                    onClick={() => navigate("/conference/register")}
-                  >
+                  <Button className="w-full bg-raade-navy hover:bg-raade-navy/90 text-white font-lora" onClick={() => navigate("/conference/register")}>
                     Register Now
                   </Button>
                 </CardContent>
               </Card>
             </motion.div>
             
-            <motion.div 
-              className="scroll-animate"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-            >
+            <motion.div className="scroll-animate" initial={{
+            opacity: 0,
+            y: 20
+          }} whileInView={{
+            opacity: 1,
+            y: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            duration: 0.5,
+            delay: 0.4
+          }}>
               <Card className="border-t-4 border-t-[#FBB03B] hover:shadow-xl transition-all h-full">
                 <CardHeader>
                   <CardTitle className="text-xl font-simula">Student Ticket</CardTitle>
@@ -536,10 +546,7 @@ const Conference = () => {
                       <span className="text-gray-600 font-lora">Lunch and refreshments</span>
                     </li>
                   </ul>
-                  <Button
-                    className="w-full bg-raade-navy hover:bg-raade-navy/90 text-white font-lora"
-                    onClick={() => navigate("/conference/register")}
-                  >
+                  <Button className="w-full bg-raade-navy hover:bg-raade-navy/90 text-white font-lora" onClick={() => navigate("/conference/register")}>
                     Register Now
                   </Button>
                 </CardContent>
@@ -552,11 +559,7 @@ const Conference = () => {
             <p className="text-gray-600 mb-6 font-lora">
               Coming with a team? Special discounts are available for groups of 5 or more attendees.
             </p>
-            <Button
-              variant="outline"
-              className="border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-lora"
-              onClick={() => window.location.href = "mailto:conference@raade.org?subject=Group Registration Inquiry"}
-            >
+            <Button variant="outline" className="border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-lora" onClick={() => window.location.href = "mailto:conference@raade.org?subject=Group Registration Inquiry"}>
               Contact for Group Rates
             </Button>
           </div>
@@ -574,13 +577,17 @@ const Conference = () => {
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div 
-              className="scroll-animate"
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
+            <motion.div className="scroll-animate" initial={{
+            opacity: 0,
+            x: -20
+          }} whileInView={{
+            opacity: 1,
+            x: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            duration: 0.5
+          }}>
               <div className="rounded-xl overflow-hidden bg-gray-200 aspect-video">
                 {/* Placeholder for campus map or venue image */}
                 <div className="w-full h-full flex items-center justify-center bg-raade-navy/10">
@@ -589,13 +596,17 @@ const Conference = () => {
               </div>
             </motion.div>
             
-            <motion.div 
-              className="scroll-animate"
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
+            <motion.div className="scroll-animate" initial={{
+            opacity: 0,
+            x: 20
+          }} whileInView={{
+            opacity: 1,
+            x: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            duration: 0.5
+          }}>
               <h3 className="text-2xl font-bold text-raade-navy mb-4 font-simula">Getting Here</h3>
               <div className="space-y-4">
                 <div className="flex items-start">
@@ -622,11 +633,7 @@ const Conference = () => {
                   </div>
                 </div>
                 
-                <Button
-                  variant="outline"
-                  className="mt-4 border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-lora"
-                  onClick={() => window.open("https://maps.google.com/?q=Rice+University,+Houston,+TX", "_blank")}
-                >
+                <Button variant="outline" className="mt-4 border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-lora" onClick={() => window.open("https://maps.google.com/?q=Rice+University,+Houston,+TX", "_blank")}>
                   View on Google Maps
                 </Button>
               </div>
@@ -650,11 +657,7 @@ const Conference = () => {
             for Africa's development challenges.
           </p>
           
-          <Button
-            size="lg"
-            className="bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora px-8 py-6 text-lg"
-            onClick={() => navigate("/conference/register")}
-          >
+          <Button size="lg" className="bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora px-8 py-6 text-lg" onClick={() => navigate("/conference/register")}>
             Register Now
           </Button>
           
@@ -670,8 +673,6 @@ const Conference = () => {
           </div>
         </div>
       </section>
-    </>
-  );
+    </>;
 };
-
 export default Conference;
