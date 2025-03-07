@@ -5,14 +5,20 @@ import { cn } from "@/lib/utils";
 import { useCountdown } from "./countdown/useCountdown";
 import NavTimerDisplay from "./countdown/NavTimerDisplay";
 import FloatingTimerDisplay from "./countdown/FloatingTimerDisplay";
-import { getColorClasses, hasLightBackground, calculateProgress } from "./countdown/timerUtils";
+import { getColorClasses, hasLightBackground, calculateProgress, ColorScheme } from "./countdown/timerUtils";
 
 interface CountdownTimerProps {
   targetDate?: string;
   className?: string;
   variant?: "nav" | "floating";
-  colorScheme?: "light" | "dark" | "auto";
+  colorScheme?: 'light' | 'dark' | 'auto' | ColorScheme;
   announcementDate?: string; // Optional date when the countdown was announced
+  progressBarColors?: {
+    background?: string;
+    fill?: string;
+  };
+  accentColor?: string;
+  textColor?: string;
 }
 
 const CountdownTimer = ({
@@ -20,7 +26,10 @@ const CountdownTimer = ({
   className,
   variant = "floating",
   colorScheme = "auto",
-  announcementDate
+  announcementDate,
+  progressBarColors,
+  accentColor,
+  textColor
 }: CountdownTimerProps) => {
   const location = useLocation();
   
@@ -46,7 +55,19 @@ const CountdownTimer = ({
 
   // Get color classes based on current route and color scheme
   const isDarkBackground = !hasLightBackground(location.pathname);
-  const colors = getColorClasses(colorScheme, isDarkBackground);
+  
+  // Create a custom color scheme if specific colors are provided
+  const customColorScheme = (accentColor || textColor || progressBarColors) 
+    ? {
+        ...(typeof colorScheme === 'object' ? colorScheme : {}),
+        ...(accentColor ? { accent: accentColor, iconColor: accentColor } : {}),
+        ...(textColor ? { text: textColor, dropdownText: textColor } : {}),
+        ...(progressBarColors?.background ? { progressBg: progressBarColors.background } : {}),
+        ...(progressBarColors?.fill ? { progressFill: progressBarColors.fill } : {}),
+      }
+    : colorScheme;
+  
+  const colors = getColorClasses(customColorScheme, isDarkBackground);
 
   // Render appropriate timer display based on variant
   if (variant === "nav") {
@@ -65,6 +86,7 @@ const CountdownTimer = ({
       toggleExpanded={toggleExpanded}
       className={className}
       progressPercentage={progressPercentage}
+      colors={colors}
     />
   );
 };

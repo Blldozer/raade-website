@@ -1,13 +1,11 @@
 
-import { useState } from "react";
 import { Timer, ChevronDown, ChevronUp } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
-import { Progress } from "../ui/progress";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import TimerDigits from "./TimerDigits";
-import { formatTimeUnit } from "./timerUtils";
+import { formatTimeUnit, ColorScheme } from "./timerUtils";
 
 interface NavTimerDisplayProps {
   timeLeft: {
@@ -16,16 +14,7 @@ interface NavTimerDisplayProps {
     minutes: number;
     seconds: number;
   };
-  colors: {
-    text: string;
-    highlight: string;
-    accent: string;
-    iconColor: string;
-    hoverBg: string;
-    dropdownBg: string;
-    dropdownText: string;
-    dropdownBorder: string;
-  };
+  colors: ColorScheme;
   progressPercentage?: number;
 }
 
@@ -73,12 +62,12 @@ const NavTimerDisplay = ({ timeLeft, colors, progressPercentage = 0 }: NavTimerD
             
             {/* Progress bar */}
             <div className="mt-3 mb-2">
-              <Progress value={progressPercentage} className="h-2 bg-gray-200">
+              <div className={cn("h-2 w-full rounded-full overflow-hidden", colors.progressBg || "bg-gray-200")}>
                 <div 
-                  className="h-full bg-raade-gold rounded-full transition-all duration-500" 
+                  className={cn("h-full rounded-full transition-all duration-500", colors.progressFill || "bg-raade-gold")} 
                   style={{ width: `${progressPercentage}%` }}
                 />
-              </Progress>
+              </div>
               <p className={cn("text-xs mt-1 text-right", colors.dropdownText)}>
                 {progressPercentage}% to conference day
               </p>

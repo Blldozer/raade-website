@@ -31,10 +31,41 @@ export const calculateProgress = (startDate: Date, endDate: Date): number => {
   return Math.round(progress);
 };
 
+export interface ColorScheme {
+  text: string;
+  highlight: string;
+  accent: string;
+  iconColor: string;
+  hoverBg: string;
+  dropdownBg: string;
+  dropdownText: string;
+  dropdownBorder: string;
+  progressBg?: string;
+  progressFill?: string;
+}
+
 export const getColorClasses = (
-  colorScheme: 'light' | 'dark' | 'auto', 
+  colorScheme: 'light' | 'dark' | 'auto' | ColorScheme, 
   isDarkBackground: boolean
-) => {
+): ColorScheme => {
+  // If a custom color scheme is provided, use it
+  if (typeof colorScheme === 'object') {
+    // Provide defaults for any missing colors
+    return {
+      text: "text-gray-800",
+      highlight: "text-raade-navy",
+      accent: "text-raade-gold",
+      iconColor: "text-raade-gold",
+      hoverBg: "hover:bg-gray-100",
+      dropdownBg: "bg-white/95",
+      dropdownText: "text-gray-800",
+      dropdownBorder: "border-gray-200",
+      progressBg: "bg-white/20",
+      progressFill: "bg-raade-gold",
+      ...colorScheme
+    };
+  }
+
   if (colorScheme === "light") {
     return {
       text: "text-gray-800",
@@ -44,7 +75,9 @@ export const getColorClasses = (
       hoverBg: "hover:bg-gray-100",
       dropdownBg: "bg-white/95",
       dropdownText: "text-gray-800",
-      dropdownBorder: "border-gray-200"
+      dropdownBorder: "border-gray-200",
+      progressBg: "bg-gray-200",
+      progressFill: "bg-raade-gold"
     };
   } else if (colorScheme === "dark") {
     return {
@@ -55,7 +88,9 @@ export const getColorClasses = (
       hoverBg: "hover:bg-white/10",
       dropdownBg: "bg-raade-navy/95",
       dropdownText: "text-white",
-      dropdownBorder: "border-gray-700"
+      dropdownBorder: "border-gray-700",
+      progressBg: "bg-white/20",
+      progressFill: "bg-raade-gold"
     };
   } else {
     // Auto mode - adapt based on current route background
@@ -67,7 +102,9 @@ export const getColorClasses = (
       hoverBg: "hover:bg-white/10",
       dropdownBg: "bg-raade-navy/95",
       dropdownText: "text-white",
-      dropdownBorder: "border-gray-700"
+      dropdownBorder: "border-gray-700",
+      progressBg: "bg-white/20",
+      progressFill: "bg-raade-gold"
     } : {
       text: "text-gray-800",
       highlight: "text-raade-navy",
@@ -76,7 +113,9 @@ export const getColorClasses = (
       hoverBg: "hover:bg-gray-100",
       dropdownBg: "bg-white/95",
       dropdownText: "text-gray-800",
-      dropdownBorder: "border-gray-200"
+      dropdownBorder: "border-gray-200",
+      progressBg: "bg-gray-200",
+      progressFill: "bg-raade-gold"
     };
   }
 };
