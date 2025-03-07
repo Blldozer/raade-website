@@ -1,6 +1,8 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 import { Calendar, MapPin, Users, Rocket, Lightbulb, Globe, Sparkles } from "lucide-react";
+
 const ConferenceOverview = () => {
   return <section className="py-16 px-4 md:px-8 bg-white">
       <div className="max-w-[1600px] mx-auto">
@@ -22,7 +24,7 @@ const ConferenceOverview = () => {
             </h2>
           </motion.div>
           
-          {/* Creative element in the filler div */}
+          {/* Creative element in the filler div - enhanced with curved path */}
           <motion.div className="lg:w-[61%] hidden lg:flex items-center justify-center" initial={{
           opacity: 0
         }} whileInView={{
@@ -33,76 +35,90 @@ const ConferenceOverview = () => {
           duration: 0.8
         }}>
             <div className="relative h-40 w-full max-w-lg">
-              {/* Main path line */}
-              <motion.div className="absolute h-1 bg-gradient-to-r from-[#FBB03B] to-[#FF8A6A] rounded-full left-0 top-1/2 transform -translate-y-1/2" initial={{
-              width: 0
-            }} whileInView={{
-              width: "100%"
-            }} viewport={{
-              once: true
-            }} transition={{
-              duration: 1.5,
-              ease: "easeOut",
-              delay: 0.2
-            }} />
+              {/* SVG path for curved journey */}
+              <svg className="absolute inset-0 w-full h-full overflow-visible" xmlns="http://www.w3.org/2000/svg">
+                {/* Animated gradient path */}
+                <motion.path 
+                  d="M10,50 C60,20 90,80 150,40 C210,0 240,70 330,50"
+                  fill="none"
+                  strokeWidth="2"
+                  stroke="url(#gradientPath)"
+                  strokeDasharray="5,5"
+                  strokeLinecap="round"
+                  initial={{ pathLength: 0 }}
+                  whileInView={{ pathLength: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 2, ease: "easeOut" }}
+                />
+                
+                {/* Gradient definition */}
+                <defs>
+                  <linearGradient id="gradientPath" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#FBB03B" />
+                    <stop offset="100%" stopColor="#FF8A6A" />
+                  </linearGradient>
+                </defs>
+              </svg>
               
-              {/* Animated dots along the path */}
-              {[0.2, 0.4, 0.65, 0.85].map((position, index) => <motion.div key={index} className="absolute w-3 h-3 rounded-full bg-[#FBB03B]" style={{
-              left: `${position * 100}%`,
-              top: "50%",
-              translateY: "-50%"
-            }} initial={{
-              scale: 0,
-              opacity: 0
-            }} whileInView={{
-              scale: [0, 1.5, 1],
-              opacity: 1
-            }} viewport={{
-              once: true
-            }} transition={{
-              duration: 0.6,
-              delay: 0.5 + index * 0.2,
-              ease: "easeOut"
-            }} />)}
+              {/* Animated dots along the path at key waypoints */}
+              {[
+                { x: 10, y: 50, delay: 0.4 },
+                { x: 60, y: 20, delay: 0.8 },
+                { x: 150, y: 40, delay: 1.2 },
+                { x: 240, y: 70, delay: 1.6 },
+                { x: 330, y: 50, delay: 2.0 }
+              ].map((pos, index) => (
+                <motion.div 
+                  key={index} 
+                  className="absolute w-3 h-3 rounded-full bg-[#FBB03B]" 
+                  style={{ left: pos.x, top: pos.y }}
+                  initial={{ scale: 0, opacity: 0 }}
+                  whileInView={{ scale: [0, 1.5, 1], opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: pos.delay, ease: "easeOut" }}
+                />
+              ))}
               
               {/* Sparkle icons */}
-              {[{
-              left: "15%",
-              top: "20%",
-              delay: 0.7,
-              size: 16
-            }, {
-              left: "50%",
-              top: "65%",
-              delay: 1.1,
-              size: 20
-            }, {
-              left: "75%",
-              top: "25%",
-              delay: 1.3,
-              size: 18
-            }, {
-              left: "88%",
-              top: "60%",
-              delay: 1.5,
-              size: 14
-            }].map((sparkle, index) => <motion.div key={`sparkle-${index}`} className="absolute" style={{
-              left: sparkle.left,
-              top: sparkle.top
-            }} initial={{
-              opacity: 0,
-              scale: 0
-            }} whileInView={{
-              opacity: 1,
-              scale: 1
-            }} viewport={{
-              once: true
-            }} transition={{
-              delay: sparkle.delay,
-              duration: 0.5
-            }}>
+              {[
+                { x: "15%", y: "15%", delay: 0.7, size: 16 },
+                { x: "45%", y: "60%", delay: 1.1, size: 20 },
+                { x: "65%", y: "25%", delay: 1.5, size: 18 },
+                { x: "85%", y: "45%", delay: 1.9, size: 14 },
+                { x: "30%", y: "75%", delay: 2.2, size: 12 }
+              ].map((sparkle, index) => (
+                <motion.div 
+                  key={`sparkle-${index}`} 
+                  className="absolute" 
+                  style={{ left: sparkle.x, top: sparkle.y }}
+                  initial={{ opacity: 0, scale: 0 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: sparkle.delay, duration: 0.5 }}
+                >
                   <Sparkles className="text-[#FBB03B]" size={sparkle.size} strokeWidth={1.5} />
-                </motion.div>)}
+                </motion.div>
+              ))}
+              
+              {/* Path obstruction elements */}
+              {[
+                { x: "38%", y: "40%", delay: 1.3, rotate: 45 },
+                { x: "75%", y: "65%", delay: 1.7, rotate: -30 }
+              ].map((obstacle, index) => (
+                <motion.div 
+                  key={`obstacle-${index}`} 
+                  className="absolute w-6 h-1 bg-[#FBB03B]/30 rounded-full" 
+                  style={{ 
+                    left: obstacle.x, 
+                    top: obstacle.y,
+                    transform: `rotate(${obstacle.rotate}deg)`
+                  }}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: obstacle.delay, duration: 0.5 }}
+                />
+              ))}
             </div>
           </motion.div>
         </div>
@@ -268,4 +284,5 @@ const ConferenceOverview = () => {
       </div>
     </section>;
 };
+
 export default ConferenceOverview;
