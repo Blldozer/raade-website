@@ -16,7 +16,7 @@ const StudioOverview = () => {
         duration: 0.6
       }} className="flex flex-col lg:flex-row mb-16">
           <div className="w-full lg:w-[39%]">
-            <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-slate-950">
+            <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-zinc-950">
               Transforming <span className="font-['Simula_Book_Italic']">non-consumption</span> into consumption
             </h2>
           </div>
