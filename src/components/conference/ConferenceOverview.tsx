@@ -1,24 +1,48 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 import { Calendar, MapPin, Users, Rocket, Lightbulb, Globe } from "lucide-react";
+
 const ConferenceOverview = () => {
-  return <section className="py-16 px-4 md:px-8 bg-white">
-      <div className="max-w-7xl mx-auto">
-        <motion.div className="text-center mb-12" initial={{
-        opacity: 0,
-        y: 20
-      }} whileInView={{
-        opacity: 1,
-        y: 0
-      }} viewport={{
-        once: true
-      }} transition={{
-        duration: 0.7
-      }}>
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 font-simula text-neutral-950">AFRICA'S PATH TO THE FUTURE</h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto font-lora">At RAADE's Annual Conference, we will come together to translate bold ideas into continent-wide impact. This isn't just a conference—it's where change-makers like you come together to shape tomorrow. Because we know Africa's future won't be built by distant strategies, but by people in rooms like this, turning possibilities into reality.</p>
-        </motion.div>
+  return (
+    <section className="py-16 px-4 md:px-8 bg-white">
+      <div className="max-w-[1600px] mx-auto">
+        {/* Title Section with 39/61 split */}
+        <div className="flex flex-col lg:flex-row mb-12">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="w-full lg:w-[39%]"
+          >
+            <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-black">
+              Africa's path to the <span className="font-['Simula_Book_Italic']">future</span>
+            </h2>
+          </motion.div>
+          <div className="lg:w-[61%]"></div> {/* Spacer div for maintaining the split */}
+        </div>
+
+        {/* Content Section with reversed 39/61 split */}
+        <div className="flex flex-col lg:flex-row mb-16">
+          <div className="lg:w-[39%]"></div> {/* Spacer div */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="w-full lg:w-[61%] mt-8 lg:mt-0"
+          >
+            <p className="text-xl font-lora text-gray-700 leading-relaxed max-w-[800px]">
+              At RAADE's Annual Conference, we will come together to translate bold ideas into 
+              continent-wide impact. This isn't just a conference—it's where change-makers like you 
+              come together to shape tomorrow. Because we know Africa's future won't be built by 
+              distant strategies, but by people in rooms like this, turning possibilities into reality.
+            </p>
+          </motion.div>
+        </div>
         
+        {/* Feature Cards Section - Full Width */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           <motion.div className="group" initial={{
           opacity: 0,
@@ -107,6 +131,7 @@ const ConferenceOverview = () => {
           </motion.div>
         </div>
         
+        {/* Video and Event Details Section */}
         <div className="mt-8 text-center">
           <motion.div className="aspect-video max-w-4xl mx-auto bg-gradient-to-br from-[#FBB03B]/10 to-[#FF9848]/5 mb-8 rounded-xl overflow-hidden shadow-lg" initial={{
           opacity: 0,
@@ -153,6 +178,8 @@ const ConferenceOverview = () => {
           </motion.div>
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default ConferenceOverview;
