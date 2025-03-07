@@ -31,10 +31,10 @@ const ConferenceOverview = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <div className="h-full border-t-4 border-t-[#8B5CF6] hover:shadow-xl transition-all duration-300 bg-white rounded-lg shadow p-6 relative overflow-hidden group-hover:translate-y-[-5px]">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#8B5CF6]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="h-full border-t-4 border-t-[#FBB03B] hover:shadow-xl transition-all duration-300 bg-white rounded-lg shadow p-6 relative overflow-hidden group-hover:translate-y-[-5px]">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#FBB03B]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="flex flex-col items-center relative z-10">
-                <div className="h-14 w-14 flex items-center justify-center mb-4 bg-gradient-to-br from-[#9061F9] to-[#8B5CF6] rounded-full text-white p-3 transform transition-transform group-hover:scale-110 duration-300">
+                <div className="h-14 w-14 flex items-center justify-center mb-4 bg-gradient-to-br from-[#FBB03B] to-[#FF9848] rounded-full text-white p-3 transform transition-transform group-hover:scale-110 duration-300">
                   <Rocket strokeWidth={1.5} size={28} className="group-hover:animate-pulse" />
                 </div>
                 <h3 className="text-xl font-simula text-center">Innovation Showcase</h3>
@@ -55,10 +55,10 @@ const ConferenceOverview = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <div className="h-full border-t-4 border-t-[#8B5CF6] hover:shadow-xl transition-all duration-300 bg-white rounded-lg shadow p-6 relative overflow-hidden group-hover:translate-y-[-5px]">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#8B5CF6]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="h-full border-t-4 border-t-[#FBB03B] hover:shadow-xl transition-all duration-300 bg-white rounded-lg shadow p-6 relative overflow-hidden group-hover:translate-y-[-5px]">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#FBB03B]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="flex flex-col items-center relative z-10">
-                <div className="h-14 w-14 flex items-center justify-center mb-4 bg-gradient-to-br from-[#9061F9] to-[#8B5CF6] rounded-full text-white p-3 transform transition-transform group-hover:scale-110 duration-300">
+                <div className="h-14 w-14 flex items-center justify-center mb-4 bg-gradient-to-br from-[#FBB03B] to-[#FF9848] rounded-full text-white p-3 transform transition-transform group-hover:scale-110 duration-300">
                   <Globe strokeWidth={1.5} size={28} className="group-hover:animate-pulse" />
                 </div>
                 <h3 className="text-xl font-simula text-center">Global Networking</h3>
@@ -79,10 +79,10 @@ const ConferenceOverview = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <div className="h-full border-t-4 border-t-[#8B5CF6] hover:shadow-xl transition-all duration-300 bg-white rounded-lg shadow p-6 relative overflow-hidden group-hover:translate-y-[-5px]">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#8B5CF6]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="h-full border-t-4 border-t-[#FBB03B] hover:shadow-xl transition-all duration-300 bg-white rounded-lg shadow p-6 relative overflow-hidden group-hover:translate-y-[-5px]">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#FBB03B]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="flex flex-col items-center relative z-10">
-                <div className="h-14 w-14 flex items-center justify-center mb-4 bg-gradient-to-br from-[#9061F9] to-[#8B5CF6] rounded-full text-white p-3 transform transition-transform group-hover:scale-110 duration-300">
+                <div className="h-14 w-14 flex items-center justify-center mb-4 bg-gradient-to-br from-[#FBB03B] to-[#FF9848] rounded-full text-white p-3 transform transition-transform group-hover:scale-110 duration-300">
                   <Lightbulb strokeWidth={1.5} size={28} className="group-hover:animate-pulse" />
                 </div>
                 <h3 className="text-xl font-simula text-center">Thought Leadership</h3>
@@ -99,7 +99,7 @@ const ConferenceOverview = () => {
         
         <div className="mt-8 text-center">
           <motion.div 
-            className="aspect-video max-w-4xl mx-auto bg-gradient-to-br from-[#8B5CF6]/10 to-[#9061F9]/5 mb-8 rounded-xl overflow-hidden shadow-lg"
+            className="aspect-video max-w-4xl mx-auto bg-gradient-to-br from-[#FBB03B]/10 to-[#FF9848]/5 mb-8 rounded-xl overflow-hidden shadow-lg"
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
@@ -107,7 +107,7 @@ const ConferenceOverview = () => {
           >
             {/* Placeholder for promotional video */}
             <div className="w-full h-full flex items-center justify-center">
-              <p className="text-[#8B5CF6] font-medium font-lora">Conference Promotional Video</p>
+              <p className="text-[#FBB03B] font-medium font-lora">Conference Promotional Video</p>
             </div>
           </motion.div>
           
@@ -118,16 +118,16 @@ const ConferenceOverview = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <div className="flex items-center bg-[#8B5CF6]/10 px-6 py-3 rounded-full hover:bg-[#8B5CF6]/15 transition-colors">
-              <Calendar className="h-5 w-5 text-[#8B5CF6] mr-2" />
+            <div className="flex items-center bg-[#FBB03B]/10 px-6 py-3 rounded-full hover:bg-[#FBB03B]/15 transition-colors">
+              <Calendar className="h-5 w-5 text-[#FBB03B] mr-2" />
               <p className="text-raade-navy font-lora font-medium">April 11-12, 2025</p>
             </div>
-            <div className="flex items-center bg-[#8B5CF6]/10 px-6 py-3 rounded-full hover:bg-[#8B5CF6]/15 transition-colors">
-              <MapPin className="h-5 w-5 text-[#8B5CF6] mr-2" />
+            <div className="flex items-center bg-[#FBB03B]/10 px-6 py-3 rounded-full hover:bg-[#FBB03B]/15 transition-colors">
+              <MapPin className="h-5 w-5 text-[#FBB03B] mr-2" />
               <p className="text-raade-navy font-lora font-medium">Rice University, Houston, TX</p>
             </div>
-            <div className="flex items-center bg-[#8B5CF6]/10 px-6 py-3 rounded-full hover:bg-[#8B5CF6]/15 transition-colors">
-              <Users className="h-5 w-5 text-[#8B5CF6] mr-2" />
+            <div className="flex items-center bg-[#FBB03B]/10 px-6 py-3 rounded-full hover:bg-[#FBB03B]/15 transition-colors">
+              <Users className="h-5 w-5 text-[#FBB03B] mr-2" />
               <p className="text-raade-navy font-lora font-medium">200+ Attendees</p>
             </div>
           </motion.div>
