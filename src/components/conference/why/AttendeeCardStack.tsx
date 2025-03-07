@@ -24,6 +24,10 @@ const AttendeeCardStack = ({ attendees, activeId }: AttendeeCardStackProps) => {
   // Find the active attendee and its index
   const activeIndex = attendees.findIndex(a => a.id === activeId);
   const activeAttendee = attendees.find(a => a.id === activeId);
+  
+  // Get the next two attendees for background cards (cycling through the array)
+  const secondAttendee = attendees[(activeIndex + 1) % attendees.length];
+  const thirdAttendee = attendees[(activeIndex + 2) % attendees.length];
 
   // Handler for card navigation
   const handleNext = () => {
@@ -37,31 +41,65 @@ const AttendeeCardStack = ({ attendees, activeId }: AttendeeCardStackProps) => {
   if (!activeAttendee) return null;
 
   return (
-    <div className="relative w-full h-[400px] my-8">
-      <AnimatePresence mode="wait">
+    <div className="relative flex justify-center items-center h-[550px] my-8">
+      <div className="relative w-[320px]">
+        {/* Background Cards - Third Card (back) */}
         <motion.div
-          key={activeId}
-          initial={{ opacity: 0, rotateY: -30, scale: 0.9 }}
-          animate={{ 
-            opacity: 1, 
-            rotateY: 0, 
-            scale: 1, 
-            transition: { 
-              type: "spring", 
-              stiffness: 300, 
-              damping: 20 
-            } 
+          className="absolute top-4 -right-6 w-[320px] h-[500px] rounded-xl shadow-lg"
+          style={{ 
+            backgroundColor: thirdAttendee.color,
+            zIndex: 1,
+            opacity: 0.4,
+            rotate: 4,
           }}
-          exit={{ opacity: 0, rotateY: 30, scale: 0.9 }}
-          className="absolute inset-0 w-full"
-        >
-          {/* Main Card */}
-          <div 
-            className="w-full h-full rounded-xl shadow-2xl overflow-hidden"
-            style={{ backgroundColor: activeAttendee.color }}
+          animate={{ 
+            rotate: 4,
+            x: [0, 2, 0],
+            transition: { 
+              x: { repeat: Infinity, duration: 3, repeatType: 'reverse' } 
+            }
+          }}
+        />
+        
+        {/* Background Cards - Second Card (middle) */}
+        <motion.div
+          className="absolute top-2 -right-3 w-[320px] h-[500px] rounded-xl shadow-xl"
+          style={{ 
+            backgroundColor: secondAttendee.color,
+            zIndex: 2,
+            opacity: 0.6,
+            rotate: 2,
+          }}
+          animate={{ 
+            rotate: 2,
+            x: [0, 1, 0],
+            transition: { 
+              x: { repeat: Infinity, duration: 2.5, repeatType: 'reverse' } 
+            }
+          }}
+        />
+        
+        {/* Main Card - Animated on tab change */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeId}
+            initial={{ opacity: 0, rotateY: -15, scale: 0.95 }}
+            animate={{ 
+              opacity: 1, 
+              rotateY: 0, 
+              scale: 1,
+              transition: { 
+                type: "spring", 
+                stiffness: 300, 
+                damping: 20 
+              } 
+            }}
+            exit={{ opacity: 0, rotateY: 15, scale: 0.95 }}
+            className="relative w-[320px] h-[500px] rounded-xl shadow-2xl overflow-hidden"
+            style={{ backgroundColor: activeAttendee.color, zIndex: 3 }}
           >
             {/* Card Content */}
-            <div className="relative w-full h-full p-8 text-white flex flex-col">
+            <div className="relative w-full h-full p-6 text-white flex flex-col">
               {/* Corner Brackets */}
               <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-white/40"></div>
               <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-white/40"></div>
@@ -73,7 +111,7 @@ const AttendeeCardStack = ({ attendees, activeId }: AttendeeCardStackProps) => {
                 <Badge className="bg-white/20 text-white mb-2 backdrop-blur-sm">
                   {activeAttendee.subtitle}
                 </Badge>
-                <h3 className="text-3xl font-bold font-simula">{activeAttendee.title}</h3>
+                <h3 className="text-2xl font-bold font-simula">{activeAttendee.title}</h3>
               </div>
               
               {/* Benefit Content with Animation */}
@@ -87,7 +125,7 @@ const AttendeeCardStack = ({ attendees, activeId }: AttendeeCardStackProps) => {
                     transition={{ duration: 0.3 }}
                     className="text-center px-4"
                   >
-                    <p className="text-xl font-lora">
+                    <p className="text-lg font-lora">
                       {activeAttendee.benefits[currentIndex]}
                     </p>
                   </motion.div>
@@ -130,25 +168,9 @@ const AttendeeCardStack = ({ attendees, activeId }: AttendeeCardStackProps) => {
                 </Button>
               </div>
             </div>
-          </div>
-          
-          {/* Shadow Cards (Decorative) */}
-          <div 
-            className="absolute -z-10 w-full h-full rounded-xl shadow-xl opacity-60 top-2 -left-2 rotate-[-3deg]"
-            style={{ 
-              backgroundColor: attendees[(activeIndex + 1) % attendees.length].color,
-              transformOrigin: "top left" 
-            }}
-          ></div>
-          <div 
-            className="absolute -z-20 w-full h-full rounded-xl shadow-xl opacity-40 top-4 -right-2 rotate-[2deg]"
-            style={{ 
-              backgroundColor: attendees[(activeIndex + 2) % attendees.length].color,
-              transformOrigin: "top right" 
-            }}
-          ></div>
-        </motion.div>
-      </AnimatePresence>
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </div>
   );
 };
