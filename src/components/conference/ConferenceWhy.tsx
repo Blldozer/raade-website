@@ -12,7 +12,7 @@ const ConferenceWhy = () => {
     <section className="py-16 px-4 md:px-8 bg-white text-raade-navy">
       <div className="max-w-7xl mx-auto">
         {/* Title section - 39% and 61% split */}
-        <div className="flex flex-col lg:flex-row mb-12">
+        <div className="flex flex-col lg:flex-row mb-8">
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -28,9 +28,34 @@ const ConferenceWhy = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
+            className="w-full lg:w-[61%] bg-gray-50 rounded-lg"
+          >
+            {/* Filler box */}
+            <div className="h-full w-full p-6"></div>
+          </motion.div>
+        </div>
+        
+        {/* Content section - 39% and 61% split */}
+        <div className="flex flex-col lg:flex-row mb-12">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="w-full lg:w-[39%] bg-gray-50 rounded-lg"
+          >
+            {/* Filler box */}
+            <div className="h-full w-full p-6"></div>
+          </motion.div>
+          
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
             className="w-full lg:w-[61%]"
           >
-            <p className="text-lg font-lora text-raade-navy/80">
+            <p className="text-lg font-lora text-raade-navy/80 p-4 lg:p-0">
               The distinctive value of the RAADE conference is that attendees don't just gain knowledge 
               or contacts – they become part of creating solutions that can spread across the continent.
             </p>
