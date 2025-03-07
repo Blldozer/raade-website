@@ -108,6 +108,11 @@ const CountdownTimer = ({
   
   const colors = getColorClasses(isDarkBackground);
 
+  // Format time with leading zeros for better readability
+  const formatTimeUnit = (value: number): string => {
+    return value < 10 ? `0${value}` : `${value}`;
+  };
+
   // Navigation variant (minimal in nav bar)
   if (variant === "nav") {
     return <div className="relative group">
@@ -118,7 +123,7 @@ const CountdownTimer = ({
         )}>
           <Timer size={18} className={colors.iconColor} />
           <div className="text-sm font-medium">
-            <span className="font-bold">{timeLeft.days}d</span>:{timeLeft.hours}h
+            <span className="font-bold">{timeLeft.days}d</span>:{formatTimeUnit(timeLeft.hours)}h:{formatTimeUnit(timeLeft.minutes)}m
           </div>
           <ChevronDown size={16} className="group-hover:hidden" />
           <ChevronUp size={16} className="hidden group-hover:block" />
@@ -138,12 +143,30 @@ const CountdownTimer = ({
               </div>
               
               <div className="grid grid-cols-4 gap-1 text-center mb-3">
-                {Object.entries(timeLeft).map(([unit, value]) => <div key={unit} className="p-1">
-                    <div className={cn("text-lg font-montserrat font-bold", colors.accent)}>
-                      {value}
-                    </div>
-                    <div className={cn("text-xs capitalize", colors.dropdownText)}>{unit}</div>
-                  </div>)}
+                <div className="p-1">
+                  <div className={cn("text-lg font-montserrat font-bold", colors.accent)}>
+                    {timeLeft.days}
+                  </div>
+                  <div className={cn("text-xs capitalize", colors.dropdownText)}>days</div>
+                </div>
+                <div className="p-1">
+                  <div className={cn("text-lg font-montserrat font-bold", colors.accent)}>
+                    {formatTimeUnit(timeLeft.hours)}
+                  </div>
+                  <div className={cn("text-xs capitalize", colors.dropdownText)}>hours</div>
+                </div>
+                <div className="p-1">
+                  <div className={cn("text-lg font-montserrat font-bold", colors.accent)}>
+                    {formatTimeUnit(timeLeft.minutes)}
+                  </div>
+                  <div className={cn("text-xs capitalize", colors.dropdownText)}>minutes</div>
+                </div>
+                <div className="p-1">
+                  <div className={cn("text-lg font-montserrat font-bold", colors.accent)}>
+                    {formatTimeUnit(timeLeft.seconds)}
+                  </div>
+                  <div className={cn("text-xs capitalize", colors.dropdownText)}>seconds</div>
+                </div>
               </div>
               
               <div className="text-center">
@@ -161,7 +184,7 @@ const CountdownTimer = ({
   // Floating bubble variant (original)
   return <div className={`fixed left-0 top-1/3 z-50 transition-all duration-300 ${isExpanded ? 'translate-x-0' : 'translate-x-[-70%]'} ${className || ''}`}>
       <Card className={`bg-raade-navy text-white shadow-lg hover:shadow-xl transition-shadow rounded-r-lg ${isExpanded ? 'rounded-l-lg' : 'rounded-l-none'}`}>
-        <CardContent className={`p-4 transition-all duration-300 ${isExpanded ? 'w-[320px]' : 'w-[150px]'}`}>
+        <CardContent className={`p-4 transition-all duration-300 ${isExpanded ? 'w-[320px]' : 'w-[170px]'}`}>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <Timer className="w-5 h-5 text-raade-gold" />
@@ -172,13 +195,56 @@ const CountdownTimer = ({
             </button>
           </div>
           
-          <div className={`grid ${isExpanded ? 'grid-cols-4' : 'grid-cols-2'} gap-2 text-center`}>
-            {Object.entries(timeLeft).map(([unit, value]) => <div key={unit} className="p-1">
-                <div className="text-xl font-bold text-raade-gold">
-                  {value}
+          <div className={`grid ${isExpanded ? 'grid-cols-4' : 'grid-cols-3'} gap-2 text-center`}>
+            {!isExpanded ? (
+              <>
+                <div className="p-1">
+                  <div className="text-xl font-bold text-raade-gold">
+                    {timeLeft.days}
+                  </div>
+                  <div className="text-xs capitalize">days</div>
                 </div>
-                <div className="text-xs capitalize">{unit}</div>
-              </div>)}
+                <div className="p-1">
+                  <div className="text-xl font-bold text-raade-gold">
+                    {formatTimeUnit(timeLeft.hours)}
+                  </div>
+                  <div className="text-xs capitalize">hours</div>
+                </div>
+                <div className="p-1">
+                  <div className="text-xl font-bold text-raade-gold">
+                    {formatTimeUnit(timeLeft.minutes)}
+                  </div>
+                  <div className="text-xs capitalize">min</div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="p-1">
+                  <div className="text-xl font-bold text-raade-gold">
+                    {timeLeft.days}
+                  </div>
+                  <div className="text-xs capitalize">days</div>
+                </div>
+                <div className="p-1">
+                  <div className="text-xl font-bold text-raade-gold">
+                    {formatTimeUnit(timeLeft.hours)}
+                  </div>
+                  <div className="text-xs capitalize">hours</div>
+                </div>
+                <div className="p-1">
+                  <div className="text-xl font-bold text-raade-gold">
+                    {formatTimeUnit(timeLeft.minutes)}
+                  </div>
+                  <div className="text-xs capitalize">min</div>
+                </div>
+                <div className="p-1">
+                  <div className="text-xl font-bold text-raade-gold">
+                    {formatTimeUnit(timeLeft.seconds)}
+                  </div>
+                  <div className="text-xs capitalize">sec</div>
+                </div>
+              </>
+            )}
           </div>
 
           {isExpanded && <div className="mt-4 text-center">
