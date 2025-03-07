@@ -178,7 +178,7 @@ const ConferenceOverview = () => {
                 <div className="h-14 w-14 flex items-center justify-center mb-4 bg-white rounded-full text-[#FBB03B] p-3 transform transition-transform group-hover:scale-110 duration-300">
                   <Globe strokeWidth={1.5} size={28} className="group-hover:animate-pulse" />
                 </div>
-                <h3 className="text-xl font-simula text-center text-white font-normal">Global Networking</h3>
+                <h3 className="text-xl font-simula text-center text-white font-extrabold">Global Networking</h3>
               </div>
               <div className="text-center mt-4 relative z-10">
                 <p className="text-white font-lora">
