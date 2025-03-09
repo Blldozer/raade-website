@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/button";
 import ConferenceHero from "./conference/ConferenceHero";
 import ConferenceOverview from "./conference/ConferenceOverview";
 import ConferenceWhy from "./conference/ConferenceWhy";
-import ConferenceSponsors from "./conference/ConferenceSponsors";
 import ConferenceRegistration from "./conference/ConferenceRegistration";
 import ConferenceFinalCta from "./conference/ConferenceFinalCta";
 // Import commented out but kept for future use
 // import ConferenceSchedule from "./conference/ConferenceSchedule";
 // import ConferenceVenue from "./conference/ConferenceVenue";
+// import ConferenceSponsors from "./conference/ConferenceSponsors";
 
 const Conference = () => {
   const navigate = useNavigate();
@@ -61,8 +61,8 @@ const Conference = () => {
         <ConferenceVenue />
       </section> */}
       
-      {/* Sponsors Section */}
-      <ConferenceSponsors />
+      {/* Sponsors Section - Hidden until sponsors are confirmed */}
+      {/* <ConferenceSponsors /> */}
       
       {/* Final CTA */}
       <ConferenceFinalCta />
