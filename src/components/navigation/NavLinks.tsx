@@ -28,10 +28,10 @@ export const navItems = [
     href: "/conference",
     dropdownItems: [
       { name: "Overview", href: "/conference" },
-      // Hidden for now:
-      // { name: "Speakers", href: "/conference#speakers" },
-      // { name: "Schedule", href: "/conference#schedule" },
-      // { name: "Registration", href: "/conference#registration" },
+      { name: "Speakers", href: "/conference#speakers" },
+      { name: "Schedule", href: "/conference#schedule" },
+      { name: "Registration", href: "/conference#registration" },
+      { name: "Venue", href: "/conference#venue" },
       { name: "Sponsorship", href: "/conference#sponsorship" },
     ],
   },

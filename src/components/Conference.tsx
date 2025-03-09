@@ -7,6 +7,9 @@ import ConferenceHero from "./conference/ConferenceHero";
 import ConferenceOverview from "./conference/ConferenceOverview";
 import ConferenceWhy from "./conference/ConferenceWhy";
 import ConferenceSponsors from "./conference/ConferenceSponsors";
+import ConferenceSchedule from "./conference/ConferenceSchedule";
+import ConferenceRegistration from "./conference/ConferenceRegistration";
+import ConferenceVenue from "./conference/ConferenceVenue";
 import ConferenceFinalCta from "./conference/ConferenceFinalCta";
 
 const Conference = () => {
@@ -42,17 +45,20 @@ const Conference = () => {
       {/* Why Attend Section */}
       <ConferenceWhy />
       
-      {/* Speakers Section - Hidden for now */}
-      {/* <ConferenceSpeakers /> */}
+      {/* Schedule Section */}
+      <section id="schedule">
+        <ConferenceSchedule />
+      </section>
       
-      {/* Schedule Section - Hidden for now */}
-      {/* <ConferenceSchedule /> */}
+      {/* Registration Options */}
+      <section id="registration">
+        <ConferenceRegistration />
+      </section>
       
-      {/* Registration Options - Hidden for now */}
-      {/* <ConferenceRegistration /> */}
-      
-      {/* Venue and Location - Hidden for now */}
-      {/* <ConferenceVenue /> */}
+      {/* Venue and Location */}
+      <section id="venue">
+        <ConferenceVenue />
+      </section>
       
       {/* Sponsors Section */}
       <ConferenceSponsors />
