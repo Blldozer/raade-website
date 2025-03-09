@@ -1,4 +1,3 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { AnimatePresence } from "framer-motion";
@@ -104,13 +103,12 @@ const MainCard = ({
         custom={direction}
         variants={cardVariants}
         initial="initial"
-        animate={["animate", isTabTransitioning ? null : "floating"]}
-        exit="exit"
-        whileHover={isTabTransitioning ? {} : "hover"}
         animate={!isTabTransitioning ? {
           ...cardVariants.animate,
           ...floatingAnimation
         } : cardVariants.animate}
+        exit="exit"
+        whileHover={isTabTransitioning ? {} : "hover"}
         className="relative w-[320px] h-[500px] rounded-xl shadow-2xl overflow-hidden perspective-1000"
         style={{ 
           backgroundColor: activeAttendee.color, 
