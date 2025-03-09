@@ -24,6 +24,7 @@ interface AttendeeCardStackProps {
 const AttendeeCardStack = ({ attendees, activeId, onTabChange }: AttendeeCardStackProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [isTabTransitioning, setIsTabTransitioning] = useState(false);
   
   // Find the active attendee and its index
   const activeIndex = attendees.findIndex(a => a.id === activeId);
@@ -32,6 +33,17 @@ const AttendeeCardStack = ({ attendees, activeId, onTabChange }: AttendeeCardSta
   // Get the next two attendees for background cards (cycling through the array)
   const secondAttendee = attendees[(activeIndex + 1) % attendees.length];
   const thirdAttendee = attendees[(activeIndex + 2) % attendees.length];
+
+  // Handle tab transitions
+  const handleTabTransition = (nextTabId: string) => {
+    setIsTabTransitioning(true);
+    setTimeout(() => {
+      if (onTabChange) {
+        onTabChange(nextTabId);
+      }
+      setIsTabTransitioning(false);
+    }, 300); // Match this with the exit animation duration
+  };
 
   // Auto-advancing functionality - runs every 8 seconds
   useEffect(() => {
@@ -44,10 +56,8 @@ const AttendeeCardStack = ({ attendees, activeId, onTabChange }: AttendeeCardSta
         // If we've reached the end of benefits for this tab
         if (nextIndex >= activeAttendee.benefits.length) {
           // Move to the next tab
-          if (onTabChange) {
-            const nextTabIndex = (activeIndex + 1) % attendees.length;
-            onTabChange(attendees[nextTabIndex].id);
-          }
+          const nextTabIndex = (activeIndex + 1) % attendees.length;
+          handleTabTransition(attendees[nextTabIndex].id);
           return 0; // Reset index for the new tab
         }
         
@@ -70,10 +80,8 @@ const AttendeeCardStack = ({ attendees, activeId, onTabChange }: AttendeeCardSta
     // Check if we're at the last benefit
     if (currentIndex === activeAttendee!.benefits.length - 1) {
       // Move to the next tab
-      if (onTabChange) {
-        const nextTabIndex = (activeIndex + 1) % attendees.length;
-        onTabChange(attendees[nextTabIndex].id);
-      }
+      const nextTabIndex = (activeIndex + 1) % attendees.length;
+      handleTabTransition(attendees[nextTabIndex].id);
       setCurrentIndex(0); // Reset index for the new tab
     } else {
       // Just move to the next benefit in the current tab
@@ -91,10 +99,8 @@ const AttendeeCardStack = ({ attendees, activeId, onTabChange }: AttendeeCardSta
     // Check if we're at the first benefit
     if (currentIndex === 0) {
       // Move to the previous tab
-      if (onTabChange) {
-        const prevTabIndex = (activeIndex - 1 + attendees.length) % attendees.length;
-        onTabChange(attendees[prevTabIndex].id);
-      }
+      const prevTabIndex = (activeIndex - 1 + attendees.length) % attendees.length;
+      handleTabTransition(attendees[prevTabIndex].id);
       // Set to the last benefit of the new active tab
       const prevAttendee = attendees[(activeIndex - 1 + attendees.length) % attendees.length];
       setCurrentIndex(prevAttendee.benefits.length - 1);
@@ -111,18 +117,12 @@ const AttendeeCardStack = ({ attendees, activeId, onTabChange }: AttendeeCardSta
   // Tab navigation handlers
   const handleNextTab = () => {
     const nextIndex = (activeIndex + 1) % attendees.length;
-    const nextTabId = attendees[nextIndex].id;
-    if (onTabChange) {
-      onTabChange(nextTabId);
-    }
+    handleTabTransition(attendees[nextIndex].id);
   };
 
   const handlePrevTab = () => {
     const prevIndex = (activeIndex - 1 + attendees.length) % attendees.length;
-    const prevTabId = attendees[prevIndex].id;
-    if (onTabChange) {
-      onTabChange(prevTabId);
-    }
+    handleTabTransition(attendees[prevIndex].id);
   };
 
   if (!activeAttendee) return null;
@@ -135,6 +135,7 @@ const AttendeeCardStack = ({ attendees, activeId, onTabChange }: AttendeeCardSta
         size="icon"
         className="absolute left-4 md:left-12 top-1/2 -translate-y-1/2 bg-white/30 hover:bg-white/50 text-black z-10 rounded-full h-12 w-12 shadow-lg"
         onClick={handlePrevTab}
+        disabled={isTabTransitioning}
         aria-label="Previous attendee type"
       >
         <ArrowLeft className="w-6 h-6 stroke-[2.5]" />
@@ -145,6 +146,7 @@ const AttendeeCardStack = ({ attendees, activeId, onTabChange }: AttendeeCardSta
         size="icon"
         className="absolute right-4 md:right-12 top-1/2 -translate-y-1/2 bg-white/30 hover:bg-white/50 text-black z-10 rounded-full h-12 w-12 shadow-lg"
         onClick={handleNextTab}
+        disabled={isTabTransitioning}
         aria-label="Next attendee type"
       >
         <ArrowRight className="w-6 h-6 stroke-[2.5]" />
@@ -155,7 +157,7 @@ const AttendeeCardStack = ({ attendees, activeId, onTabChange }: AttendeeCardSta
         <ProgressBar
           benefits={activeAttendee.benefits}
           currentIndex={currentIndex}
-          isPaused={isPaused}
+          isPaused={isPaused || isTabTransitioning}
           setCurrentIndex={setCurrentIndex}
           setIsPaused={setIsPaused}
           activeAttendeeColor={activeAttendee.color}
@@ -178,6 +180,7 @@ const AttendeeCardStack = ({ attendees, activeId, onTabChange }: AttendeeCardSta
           handlePrev={handlePrev}
           handleNextTab={handleNextTab}
           handlePrevTab={handlePrevTab}
+          isTabTransitioning={isTabTransitioning}
         />
       </div>
     </div>
