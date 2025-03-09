@@ -1,11 +1,13 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
 import AttendeeCardStack from "./AttendeeCardStack";
 import { Lightbulb, GraduationCap, Globe, Users } from "lucide-react";
 
 const WhyAttendTabs = () => {
+  const [activeTab, setActiveTab] = useState("established");
+
   // Define attendee data with colors for each card
   const attendees = [
     {
@@ -62,8 +64,12 @@ const WhyAttendTabs = () => {
     }
   ];
 
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+  };
+
   return (
-    <Tabs defaultValue="established" className="w-full">
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
       <TabsList className="grid grid-cols-4 mb-8 bg-gray-100 w-full max-w-4xl mx-auto py-2 h-auto">
         <TabsTrigger 
           value="established" 
@@ -114,7 +120,7 @@ const WhyAttendTabs = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <AttendeeCardStack attendees={attendees} activeId="established" />
+            <AttendeeCardStack attendees={attendees} activeId="established" onTabChange={handleTabChange} />
           </motion.div>
         </TabsContent>
         
@@ -124,7 +130,7 @@ const WhyAttendTabs = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <AttendeeCardStack attendees={attendees} activeId="nextgen" />
+            <AttendeeCardStack attendees={attendees} activeId="nextgen" onTabChange={handleTabChange} />
           </motion.div>
         </TabsContent>
         
@@ -134,7 +140,7 @@ const WhyAttendTabs = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <AttendeeCardStack attendees={attendees} activeId="curious" />
+            <AttendeeCardStack attendees={attendees} activeId="curious" onTabChange={handleTabChange} />
           </motion.div>
         </TabsContent>
         
@@ -144,7 +150,7 @@ const WhyAttendTabs = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <AttendeeCardStack attendees={attendees} activeId="all" />
+            <AttendeeCardStack attendees={attendees} activeId="all" onTabChange={handleTabChange} />
           </motion.div>
         </TabsContent>
       </div>

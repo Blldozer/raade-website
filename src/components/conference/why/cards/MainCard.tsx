@@ -17,6 +17,8 @@ interface MainCardProps {
   setIsPaused: (paused: boolean) => void;
   handleNext: () => void;
   handlePrev: () => void;
+  handleNextTab?: () => void;
+  handlePrevTab?: () => void;
 }
 
 const MainCard = ({
@@ -26,7 +28,9 @@ const MainCard = ({
   setCurrentIndex,
   setIsPaused,
   handleNext,
-  handlePrev
+  handlePrev,
+  handleNextTab,
+  handlePrevTab
 }: MainCardProps) => {
   return (
     <AnimatePresence mode="wait">
@@ -56,6 +60,8 @@ const MainCard = ({
           setIsPaused={setIsPaused}
           handleNext={handleNext}
           handlePrev={handlePrev}
+          handleNextTab={handleNextTab}
+          handlePrevTab={handlePrevTab}
         />
       </motion.div>
     </AnimatePresence>

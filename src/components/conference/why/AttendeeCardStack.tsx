@@ -16,9 +16,10 @@ interface Attendee {
 interface AttendeeCardStackProps {
   attendees: Attendee[];
   activeId: string;
+  onTabChange?: (tabId: string) => void;
 }
 
-const AttendeeCardStack = ({ attendees, activeId }: AttendeeCardStackProps) => {
+const AttendeeCardStack = ({ attendees, activeId, onTabChange }: AttendeeCardStackProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   
@@ -65,6 +66,23 @@ const AttendeeCardStack = ({ attendees, activeId }: AttendeeCardStackProps) => {
     return () => clearTimeout(timeout);
   };
 
+  // Tab navigation handlers
+  const handleNextTab = () => {
+    const nextIndex = (activeIndex + 1) % attendees.length;
+    const nextTabId = attendees[nextIndex].id;
+    if (onTabChange) {
+      onTabChange(nextTabId);
+    }
+  };
+
+  const handlePrevTab = () => {
+    const prevIndex = (activeIndex - 1 + attendees.length) % attendees.length;
+    const prevTabId = attendees[prevIndex].id;
+    if (onTabChange) {
+      onTabChange(prevTabId);
+    }
+  };
+
   if (!activeAttendee) return null;
 
   return (
@@ -95,6 +113,8 @@ const AttendeeCardStack = ({ attendees, activeId }: AttendeeCardStackProps) => {
           setIsPaused={setIsPaused}
           handleNext={handleNext}
           handlePrev={handlePrev}
+          handleNextTab={handleNextTab}
+          handlePrevTab={handlePrevTab}
         />
       </div>
     </div>
