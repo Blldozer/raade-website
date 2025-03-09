@@ -4,14 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import ConferenceHero from "./conference/ConferenceHero";
-import ConferenceSpeakers from "./conference/ConferenceSpeakers";
-import ConferenceSchedule from "./conference/ConferenceSchedule";
-import ConferenceSponsors from "./conference/ConferenceSponsors";
-import SocialProof from "./conference/SocialProof";
 import ConferenceOverview from "./conference/ConferenceOverview";
 import ConferenceWhy from "./conference/ConferenceWhy";
-import ConferenceRegistration from "./conference/ConferenceRegistration";
-import ConferenceVenue from "./conference/ConferenceVenue";
+import ConferenceSponsors from "./conference/ConferenceSponsors";
+import SocialProof from "./conference/SocialProof";
 import ConferenceFinalCta from "./conference/ConferenceFinalCta";
 
 const Conference = () => {
@@ -47,17 +43,17 @@ const Conference = () => {
       {/* Why Attend Section */}
       <ConferenceWhy />
       
-      {/* Speakers Section */}
-      <ConferenceSpeakers />
+      {/* Speakers Section - Hidden for now */}
+      {/* <ConferenceSpeakers /> */}
       
-      {/* Schedule Section */}
-      <ConferenceSchedule />
+      {/* Schedule Section - Hidden for now */}
+      {/* <ConferenceSchedule /> */}
       
-      {/* Registration Options */}
-      <ConferenceRegistration />
+      {/* Registration Options - Hidden for now */}
+      {/* <ConferenceRegistration /> */}
       
-      {/* Venue and Location */}
-      <ConferenceVenue />
+      {/* Venue and Location - Hidden for now */}
+      {/* <ConferenceVenue /> */}
       
       {/* Sponsors Section */}
       <ConferenceSponsors />
