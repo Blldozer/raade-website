@@ -1,5 +1,9 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { Resend } from "npm:resend@1.0.0";
+
+const resendApiKey = Deno.env.get("RESEND_API_KEY") || "";
+const resend = new Resend(resendApiKey);
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -49,6 +53,10 @@ serve(async (req) => {
         ticketTypeDisplay = "Speaker";
         ticketPrice = "$0";
         break;
+      case "student-group":
+        ticketTypeDisplay = "Student Group";
+        ticketPrice = "$50/person";
+        break;
       default:
         ticketTypeDisplay = ticketType;
         ticketPrice = "TBD";
@@ -93,14 +101,26 @@ serve(async (req) => {
       </html>
     `;
 
-    // For development/demo purposes, we'll log the email
-    console.log("Email would be sent with the following content:");
-    console.log("To:", email);
-    console.log("Subject: RAADE Conference 2025 - Registration Confirmation");
-    console.log("HTML Content:", emailContent);
+    // Send email using Resend
+    try {
+      const { data, error } = await resend.emails.send({
+        from: "RAADE Conference <onboarding@resend.dev>",
+        to: [email],
+        subject: "RAADE Conference 2025 - Registration Confirmation",
+        html: emailContent,
+      });
 
-    // In a real implementation, you would integrate with an email service provider
-    // For now, we'll simulate a successful email send
+      if (error) {
+        console.error("Resend API Error:", error);
+        throw new Error(`Failed to send email: ${error.message}`);
+      }
+
+      console.log("Confirmation email sent successfully:", data);
+    } catch (emailError) {
+      console.error("Error sending confirmation email:", emailError);
+      throw emailError;
+    }
+
     return new Response(
       JSON.stringify({ 
         success: true, 

@@ -1,11 +1,14 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
+import { Resend } from "npm:resend@1.0.0";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+const resendApiKey = Deno.env.get("RESEND_API_KEY") || "";
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
+const resend = new Resend(resendApiKey);
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -72,14 +75,6 @@ serve(async (req) => {
       throw tokenError;
     }
     
-    // For development/demo purposes, we'll log the verification token
-    console.log(`Verification token for ${email}: ${token}`);
-
-    // In a real implementation, we would send an email with the verification token
-    console.log("Email would be sent with the following content:");
-    console.log("To:", email);
-    console.log("Subject: RAADE Conference 2025 - Email Verification");
-    
     // Email content
     const emailContent = `
       <html>
@@ -117,9 +112,29 @@ serve(async (req) => {
       </html>
     `;
 
-    console.log("HTML Content:", emailContent);
+    console.log(`Sending verification email to ${email} for ${fullName} with token ${token}`);
 
-    // For now, simulate a successful email send
+    // Send email using Resend
+    try {
+      const { data, error } = await resend.emails.send({
+        from: "RAADE Conference <onboarding@resend.dev>",
+        to: [email],
+        subject: "RAADE Conference 2025 - Email Verification",
+        html: emailContent,
+      });
+
+      if (error) {
+        console.error("Resend API Error:", error);
+        throw new Error(`Failed to send email: ${error.message}`);
+      }
+
+      console.log("Email sent successfully:", data);
+    } catch (emailError) {
+      console.error("Error sending email:", emailError);
+      throw emailError;
+    }
+
+    // Success response
     return new Response(
       JSON.stringify({ 
         success: true, 
