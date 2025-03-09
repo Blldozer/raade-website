@@ -65,7 +65,7 @@ const ConferenceWhy = () => {
         duration: 0.6,
         delay: 0.4
       }} className="text-center mt-12">
-          <p className="mb-6 font-Lora text-slate-950 mx-[5px] font-normal text-2xl">
+          <p className="mb-6 font-lora text-slate-950 mx-[5px] font-normal text-2xl">
             By bringing together diverse perspectives and focusing on implementation rather than just discussion, 
             the conference creates a unique environment where each person's contribution becomes more valuable 
             through its connection to others.
