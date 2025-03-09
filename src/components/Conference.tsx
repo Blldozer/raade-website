@@ -7,7 +7,6 @@ import ConferenceHero from "./conference/ConferenceHero";
 import ConferenceOverview from "./conference/ConferenceOverview";
 import ConferenceWhy from "./conference/ConferenceWhy";
 import ConferenceSponsors from "./conference/ConferenceSponsors";
-import SocialProof from "./conference/SocialProof";
 import ConferenceFinalCta from "./conference/ConferenceFinalCta";
 
 const Conference = () => {
@@ -57,9 +56,6 @@ const Conference = () => {
       
       {/* Sponsors Section */}
       <ConferenceSponsors />
-      
-      {/* Social Proof Section */}
-      <SocialProof />
       
       {/* Final CTA */}
       <ConferenceFinalCta />
