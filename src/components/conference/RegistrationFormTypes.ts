@@ -22,7 +22,12 @@ export const registrationSchema = z.object({
   ticketType: z.string().min(1, "Please select a ticket type"),
   specialRequests: z.string().optional(),
   groupSize: z.number().optional(),
-  groupEmails: z.array(z.string().email("Please enter valid email addresses")).optional(),
+  // Define group emails as an array of objects with a value property
+  groupEmails: z.array(
+    z.object({
+      value: z.string().email("Please enter valid email addresses")
+    })
+  ).optional(),
 });
 
 export type RegistrationFormData = z.infer<typeof registrationSchema>;

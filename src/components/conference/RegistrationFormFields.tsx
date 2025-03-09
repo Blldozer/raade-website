@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { UseFormRegister, FormState, UseFormSetValue, UseFormWatch, Control, useFieldArray } from "react-hook-form";
 import { Label } from "@/components/ui/label";
@@ -266,7 +265,7 @@ const RegistrationFormFields = ({
                 <div key={field.id} className="flex gap-2">
                   <Input
                     placeholder={`Group member ${index + 1} email`}
-                    {...register(`groupEmails.${index}` as any)}
+                    {...register(`groupEmails.${index}.value` as any)}
                   />
                   <Button
                     type="button"

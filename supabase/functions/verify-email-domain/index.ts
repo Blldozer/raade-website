@@ -76,15 +76,9 @@ serve(async (req) => {
     }
     
     // Non-Rice Student tickets require any .edu email
-    else if (ticketType === "non-rice-student" && !isEduEmail) {
+    else if ((ticketType === "non-rice-student" || ticketType === "student-group") && !isEduEmail) {
       isValid = false;
       message = "Student tickets require an .edu email address";
-    }
-
-    // Student Group tickets require any .edu email
-    else if (ticketType === "student-group" && !isEduEmail) {
-      isValid = false;
-      message = "Student group tickets require an .edu email address";
     }
 
     return new Response(
