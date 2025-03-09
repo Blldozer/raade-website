@@ -3,7 +3,7 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 interface CardContentProps {
   activeAttendee: {
@@ -82,16 +82,6 @@ const CardContent = ({
       initial="hidden"
       animate="visible"
     >
-      {/* Decorative Sparkle */}
-      <motion.div
-        className="absolute top-4 right-4 text-yellow-300/70"
-        initial={{ opacity: 0, scale: 0, rotate: -30 }}
-        animate={{ opacity: 1, scale: 1, rotate: 0 }}
-        transition={{ delay: 0.6, duration: 0.5, type: "spring" }}
-      >
-        <Sparkles size={16} />
-      </motion.div>
-      
       {/* Corner Brackets */}
       <motion.div variants={itemVariants} className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-white/40"></motion.div>
       <motion.div variants={itemVariants} className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-white/40"></motion.div>
