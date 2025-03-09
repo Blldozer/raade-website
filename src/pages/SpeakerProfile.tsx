@@ -14,6 +14,7 @@ const SpeakerProfilePage = () => {
     <div>
       <Navigation isHeroPage={false} forceDarkMode={false} />
       <SpeakerProfile />
+      <Footer />
     </div>
   );
 };
