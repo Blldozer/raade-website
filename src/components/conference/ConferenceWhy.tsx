@@ -70,7 +70,7 @@ const ConferenceWhy = () => {
             the conference creates a unique environment where each person's contribution becomes more valuable 
             through its connection to others.
           </p>
-          <Button size="lg" className="bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora" onClick={() => navigate("/conference/register")}>
+          <Button size="lg" onClick={() => navigate("/conference/register")} className="bg-[#FBB03B] hover:bg-[#FBB03B]/90 font-lora text-xl font-bold text-white">
             Register Now
           </Button>
         </motion.div>
