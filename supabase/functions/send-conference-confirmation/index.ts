@@ -33,17 +33,17 @@ serve(async (req) => {
     let ticketPrice;
     
     switch (ticketType) {
-      case "early-bird":
-        ticketTypeDisplay = "Early Bird";
-        ticketPrice = "$199";
+      case "rice-student":
+        ticketTypeDisplay = "Rice Student";
+        ticketPrice = "$50";
         break;
-      case "standard":
-        ticketTypeDisplay = "Standard";
-        ticketPrice = "$249";
+      case "non-rice-student":
+        ticketTypeDisplay = "Non-Rice Student";
+        ticketPrice = "$65";
         break;
-      case "student":
-        ticketTypeDisplay = "Student";
-        ticketPrice = "$99";
+      case "young-professional":
+        ticketTypeDisplay = "Young Professional";
+        ticketPrice = "$85";
         break;
       case "speaker":
         ticketTypeDisplay = "Speaker";

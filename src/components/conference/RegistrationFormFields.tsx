@@ -88,9 +88,9 @@ const RegistrationFormFields = ({
             <SelectValue placeholder="Select ticket type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="early-bird">Early Bird {getTicketPriceText("early-bird")}</SelectItem>
-            <SelectItem value="standard">Standard {getTicketPriceText("standard")}</SelectItem>
-            <SelectItem value="student">Student {getTicketPriceText("student")}</SelectItem>
+            <SelectItem value="rice-student">Rice Student {getTicketPriceText("rice-student")}</SelectItem>
+            <SelectItem value="non-rice-student">Non-Rice Student {getTicketPriceText("non-rice-student")}</SelectItem>
+            <SelectItem value="young-professional">Young Professional {getTicketPriceText("young-professional")}</SelectItem>
             <SelectItem value="speaker">Speaker {getTicketPriceText("speaker")}</SelectItem>
           </SelectContent>
         </Select>

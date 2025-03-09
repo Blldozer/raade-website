@@ -26,17 +26,17 @@ serve(async (req) => {
     let description = "";
 
     switch (ticketType) {
-      case "early-bird":
-        amount = 19900; // $199.00
-        description = "Early Bird Ticket - RAADE Conference 2025";
+      case "rice-student":
+        amount = 5000; // $50.00
+        description = "Rice Student Ticket - RAADE Conference 2025";
         break;
-      case "standard":
-        amount = 24900; // $249.00
-        description = "Standard Ticket - RAADE Conference 2025";
+      case "non-rice-student":
+        amount = 6500; // $65.00
+        description = "Non-Rice Student Ticket - RAADE Conference 2025";
         break;
-      case "student":
-        amount = 9900; // $99.00
-        description = "Student Ticket - RAADE Conference 2025";
+      case "young-professional":
+        amount = 8500; // $85.00
+        description = "Young Professional Ticket - RAADE Conference 2025";
         break;
       case "speaker":
         amount = 0; // Free for speakers

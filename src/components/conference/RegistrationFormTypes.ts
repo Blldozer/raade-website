@@ -14,9 +14,9 @@ export type RegistrationFormData = z.infer<typeof registrationSchema>;
 
 export const getTicketPriceText = (ticketType: string) => {
   switch (ticketType) {
-    case "early-bird": return "($199)";
-    case "standard": return "($249)";
-    case "student": return "($99)";
+    case "rice-student": return "($50)";
+    case "non-rice-student": return "($65)";
+    case "young-professional": return "($85)";
     case "speaker": return "(Free)";
     default: return "";
   }
