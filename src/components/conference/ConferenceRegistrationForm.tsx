@@ -1,23 +1,11 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Send, CreditCard } from "lucide-react";
+import { Loader2, CreditCard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Card,
   CardContent,
@@ -26,18 +14,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import StripeCheckout from "./StripeCheckout";
 
-const registrationSchema = z.object({
-  fullName: z.string().min(2, "Full name is required"),
-  email: z.string().email("Please enter a valid email address"),
-  organization: z.string().min(2, "Organization name is required"),
-  role: z.string().min(2, "Your role is required"),
-  ticketType: z.string().min(1, "Please select a ticket type"),
-  specialRequests: z.string().optional(),
-});
-
-type RegistrationFormData = z.infer<typeof registrationSchema>;
+import { registrationSchema, RegistrationFormData } from "./RegistrationFormTypes";
+import RegistrationFormFields from "./RegistrationFormFields";
+import PaymentSection from "./PaymentSection";
 
 const ConferenceRegistrationForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -59,8 +39,6 @@ const ConferenceRegistrationForm = () => {
       specialRequests: "",
     },
   });
-
-  const watchTicketType = watch("ticketType");
 
   const handleInitialSubmit = (data: RegistrationFormData) => {
     setRegistrationData(data);
@@ -131,17 +109,6 @@ const ConferenceRegistrationForm = () => {
     setIsSubmitting(false);
   };
 
-  // Helper function to get ticket price display text
-  const getTicketPriceText = (ticketType: string) => {
-    switch (ticketType) {
-      case "early-bird": return "($199)";
-      case "standard": return "($249)";
-      case "student": return "($99)";
-      case "speaker": return "(Free)";
-      default: return "";
-    }
-  };
-
   return (
     <Card className="shadow-lg border-[#FBB03B]/10">
       <CardHeader>
@@ -151,86 +118,12 @@ const ConferenceRegistrationForm = () => {
       <CardContent>
         {!showPayment ? (
           <form onSubmit={handleSubmit(handleInitialSubmit)} className="space-y-6">
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="fullName">Full Name</Label>
-                <Input
-                  id="fullName"
-                  placeholder="Enter your full name"
-                  {...register("fullName")}
-                />
-                {errors.fullName && (
-                  <p className="text-red-500 text-sm mt-1">{errors.fullName.message}</p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="email">Email Address</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="your.email@example.com"
-                  {...register("email")}
-                />
-                {errors.email && (
-                  <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="organization">Organization</Label>
-                <Input
-                  id="organization"
-                  placeholder="Enter your organization name"
-                  {...register("organization")}
-                />
-                {errors.organization && (
-                  <p className="text-red-500 text-sm mt-1">{errors.organization.message}</p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="role">Your Role</Label>
-                <Input
-                  id="role"
-                  placeholder="Your position or role"
-                  {...register("role")}
-                />
-                {errors.role && (
-                  <p className="text-red-500 text-sm mt-1">{errors.role.message}</p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="ticketType">Ticket Type</Label>
-                <Select 
-                  onValueChange={(value) => setValue("ticketType", value)}
-                  value={watchTicketType}
-                >
-                  <SelectTrigger id="ticketType">
-                    <SelectValue placeholder="Select ticket type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="early-bird">Early Bird {getTicketPriceText("early-bird")}</SelectItem>
-                    <SelectItem value="standard">Standard {getTicketPriceText("standard")}</SelectItem>
-                    <SelectItem value="student">Student {getTicketPriceText("student")}</SelectItem>
-                    <SelectItem value="speaker">Speaker {getTicketPriceText("speaker")}</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.ticketType && (
-                  <p className="text-red-500 text-sm mt-1">{errors.ticketType.message}</p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="specialRequests">Special Requests</Label>
-                <Textarea
-                  id="specialRequests"
-                  placeholder="Any special requests or accommodations (optional)"
-                  {...register("specialRequests")}
-                />
-              </div>
-            </div>
+            <RegistrationFormFields 
+              register={register}
+              errors={errors}
+              setValue={setValue}
+              watch={watch}
+            />
 
             <Button
               type="submit"
@@ -251,34 +144,13 @@ const ConferenceRegistrationForm = () => {
             </Button>
           </form>
         ) : (
-          <div className="space-y-6">
-            <div className="bg-gray-50 p-4 rounded-md">
-              <h3 className="font-medium mb-2 font-simula">Registration Summary</h3>
-              <p className="font-lora"><strong>Name:</strong> {registrationData?.fullName}</p>
-              <p className="font-lora"><strong>Email:</strong> {registrationData?.email}</p>
-              <p className="font-lora"><strong>Organization:</strong> {registrationData?.organization}</p>
-              <p className="font-lora"><strong>Ticket Type:</strong> {registrationData?.ticketType} {getTicketPriceText(registrationData?.ticketType || "")}</p>
-            </div>
-            
-            {registrationData && (
-              <StripeCheckout 
-                ticketType={registrationData.ticketType}
-                email={registrationData.email}
-                fullName={registrationData.fullName}
-                onSuccess={handlePaymentSuccess}
-                onError={handlePaymentError}
-              />
-            )}
-            
-            <Button 
-              variant="outline" 
-              onClick={() => setShowPayment(false)}
-              className="w-full border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-lora"
-              disabled={isSubmitting}
-            >
-              Back to Registration Form
-            </Button>
-          </div>
+          <PaymentSection 
+            registrationData={registrationData!}
+            isSubmitting={isSubmitting}
+            onPaymentSuccess={handlePaymentSuccess}
+            onPaymentError={handlePaymentError}
+            onBackClick={() => setShowPayment(false)}
+          />
         )}
       </CardContent>
       <CardFooter className="text-sm text-gray-500 border-t pt-4 font-lora">

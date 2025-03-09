@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import NavLogo from "./NavLogo";
 import DesktopNav from "./DesktopNav";
 import MobileNav from "./MobileNav";
+import CountdownTimer from "../CountdownTimer";
 
 const AboutNav = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -49,6 +50,11 @@ const AboutNav = () => {
           
           {/* Right section (61%) */}
           <div className="w-[61%] flex justify-end items-center pr-8">
+            {/* Conference Countdown Timer */}
+            <div className="hidden md:block mr-6">
+              <CountdownTimer variant="nav" targetDate="2025-04-11T09:00:00" colorScheme="auto" />
+            </div>
+            
             <div className="hidden md:block">
               <DesktopNav isScrolled={isScrolled} isHeroPage={true} className="justify-end" />
             </div>

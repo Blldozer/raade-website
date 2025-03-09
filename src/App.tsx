@@ -9,13 +9,14 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
 import InnovationStudios from "./pages/InnovationStudios";
 import Conference from "./pages/Conference";
-import ConferenceRegistration from "./pages/ConferenceRegistration";
 import About from "./pages/About";
 import Footer from "./components/Footer";
 import Navigation from "./components/Navigation";
 import ProjectDetail from "./pages/ProjectDetail";
 import StudentApplication from "./pages/StudentApplication";
 import PartnerApplication from "./pages/PartnerApplication";
+import ConferenceRegistration from "./pages/ConferenceRegistration";
+import SpeakerProfile from "./pages/SpeakerProfile";
 
 // Initialize the QueryClient
 const queryClient = new QueryClient();
@@ -48,6 +49,7 @@ const App = () => (
               <Route path="/studios" element={<InnovationStudios />} />
               <Route path="/conference" element={<Conference />} />
               <Route path="/conference/register" element={<ConferenceRegistration />} />
+              <Route path="/conference/speakers/:speakerId" element={<SpeakerProfile />} />
               <Route path="/projects/:projectSlug" element={<ProjectDetail />} />
               <Route path="/apply/student" element={<StudentApplication />} />
               <Route path="/apply/partner" element={<PartnerApplication />} />

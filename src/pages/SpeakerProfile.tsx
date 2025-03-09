@@ -1,9 +1,10 @@
 
 import React, { useEffect } from "react";
 import Navigation from "@/components/Navigation";
-import Conference from "@/components/Conference";
+import SpeakerProfile from "@/components/conference/speaker/SpeakerProfile";
+import Footer from "@/components/Footer";
 
-const ConferencePage = () => {
+const SpeakerProfilePage = () => {
   useEffect(() => {
     // Scroll to top when page loads
     window.scrollTo(0, 0);
@@ -12,9 +13,10 @@ const ConferencePage = () => {
   return (
     <div>
       <Navigation isHeroPage={false} forceDarkMode={false} />
-      <Conference />
+      <SpeakerProfile />
+      <Footer />
     </div>
   );
 };
 
-export default ConferencePage;
+export default SpeakerProfilePage;

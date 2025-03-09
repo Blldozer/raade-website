@@ -16,11 +16,14 @@ const NavLogo = ({
   forceSize = "h-60" 
 }: NavLogoProps) => {
   const location = useLocation();
+  const isConferencePage = location.pathname === "/conference";
   
   // Determine which logo to use based on the current page, scroll state, and forceDarkMode
-  // For hero pages when not scrolled or when forceDarkMode is true, use white logo
-  // For other pages or when scrolled, use black logo
-  const logoSrc = (isHeroPage && !isScrolled) || forceDarkMode
+  // For conference page with white background (no hero), use black logo
+  // For hero pages when not scrolled or when forceDarkMode is false, use white logo
+  const logoSrc = ((isHeroPage && !isScrolled) || 
+                   (isConferencePage && isHeroPage) ||
+                   (forceDarkMode && !isConferencePage))
     ? "/logos/RAADE-logo-final-white.png" 
     : "/logos/RAADE-logo-final-black.png";
 

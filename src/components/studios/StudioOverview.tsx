@@ -1,21 +1,22 @@
-
 import { motion } from "framer-motion";
 import { Compass, Rocket, CheckCircle } from "lucide-react";
-
 const StudioOverview = () => {
-  return (
-    <section className="py-24 bg-white">
+  return <section className="py-24 bg-white">
       <div className="max-w-[1600px] mx-auto px-6 md:px-12">
         {/* Title Section - 39/61 split */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="flex flex-col lg:flex-row mb-16"
-        >
+        <motion.div initial={{
+        opacity: 0,
+        x: -20
+      }} whileInView={{
+        opacity: 1,
+        x: 0
+      }} viewport={{
+        once: true
+      }} transition={{
+        duration: 0.6
+      }} className="flex flex-col lg:flex-row mb-16">
           <div className="w-full lg:w-[39%]">
-            <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-raade-Thunder">
+            <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-zinc-950">
               Transforming <span className="font-['Simula_Book_Italic']">non-consumption</span> into consumption
             </h2>
           </div>
@@ -25,13 +26,17 @@ const StudioOverview = () => {
         {/* Content Section - 39/61 split reversed */}
         <div className="flex flex-col lg:flex-row mb-20">
           <div className="lg:w-[39%]"></div> {/* Filler space */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="w-full lg:w-[61%]"
-          >
+          <motion.div initial={{
+          opacity: 0,
+          x: 20
+        }} whileInView={{
+          opacity: 1,
+          x: 0
+        }} viewport={{
+          once: true
+        }} transition={{
+          duration: 0.6
+        }} className="w-full lg:w-[61%]">
             <div className="space-y-8 text-xl leading-relaxed font-lora text-gray-700 max-w-[800px]">
               <p>
                 At RAADE, we focus on a powerful concept: identifying areas where millions 
@@ -63,20 +68,21 @@ const StudioOverview = () => {
         {/* Three Phase Cards with Image Backgrounds - Now Square */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
           {/* Phase 1: Immersion & Discovery */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="relative aspect-square group overflow-hidden rounded-xl shadow-lg"
-          >
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }} transition={{
+          duration: 0.5,
+          delay: 0.1
+        }} className="relative aspect-square group overflow-hidden rounded-xl shadow-lg">
             {/* Background Image */}
             <div className="absolute inset-0 w-full h-full">
-              <img 
-                src="/RAADE-Design-Sprint-Edith-Ibeke.jpg" 
-                alt="Immersion & Discovery Phase" 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
+              <img src="/RAADE-Design-Sprint-Edith-Ibeke.jpg" alt="Immersion & Discovery Phase" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
             </div>
             
             {/* Title Overlay - Always Visible */}
@@ -100,20 +106,21 @@ const StudioOverview = () => {
           </motion.div>
 
           {/* Phase 2: Rapid Ideation & Prototyping */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="relative aspect-square group overflow-hidden rounded-xl shadow-lg"
-          >
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }} transition={{
+          duration: 0.5,
+          delay: 0.2
+        }} className="relative aspect-square group overflow-hidden rounded-xl shadow-lg">
             {/* Background Image */}
             <div className="absolute inset-0 w-full h-full">
-              <img 
-                src="/RAADE-Prototyping-Gustavo-Vives.jpeg" 
-                alt="Rapid Ideation & Prototyping Phase" 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
+              <img src="/RAADE-Prototyping-Gustavo-Vives.jpeg" alt="Rapid Ideation & Prototyping Phase" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
             </div>
             
             {/* Title Overlay - Always Visible */}
@@ -136,20 +143,21 @@ const StudioOverview = () => {
           </motion.div>
 
           {/* Phase 3: Implementation */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="relative aspect-square group overflow-hidden rounded-xl shadow-lg"
-          >
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }} transition={{
+          duration: 0.5,
+          delay: 0.3
+        }} className="relative aspect-square group overflow-hidden rounded-xl shadow-lg">
             {/* Background Image */}
             <div className="absolute inset-0 w-full h-full">
-              <img 
-                src="/RAADE-Innovation-Studio-1-Hawa-Ife-Hamza.jpg" 
-                alt="Implementation Phase" 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
+              <img src="/RAADE-Innovation-Studio-1-Hawa-Ife-Hamza.jpg" alt="Implementation Phase" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
             </div>
             
             {/* Title Overlay - Always Visible */}
@@ -173,8 +181,6 @@ const StudioOverview = () => {
           </motion.div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default StudioOverview;

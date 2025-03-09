@@ -7,6 +7,7 @@ import {
   NavigationMenuTrigger,
   NavigationMenuContent,
 } from "@/components/ui/navigation-menu";
+import { useLocation } from "react-router-dom";
 
 export const navItems = [
   {
@@ -30,6 +31,7 @@ export const navItems = [
       { name: "Speakers", href: "/conference#speakers" },
       { name: "Schedule", href: "/conference#schedule" },
       { name: "Registration", href: "/conference#registration" },
+      { name: "Venue", href: "/conference#venue" },
       { name: "Sponsorship", href: "/conference#sponsorship" },
     ],
   },
@@ -44,8 +46,21 @@ interface NavLinksProps {
 }
 
 const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = false, forceDarkMode = false }: NavLinksProps) => {
+  const location = useLocation();
+  const isConferencePage = location.pathname === "/conference";
+  
   const getTextColor = () => {
-    if ((isHeroPage && !isScrolled) || forceDarkMode) return "text-white hover:text-[#FBB03B]";
+    // For conference page with no hero section (i.e., white background), use dark text
+    if (isConferencePage && !isHeroPage) {
+      return "text-[#274675] hover:text-[#FBB03B]";
+    }
+    
+    // For normal cases (hero pages when not scrolled or when force dark mode is true)
+    if ((isHeroPage && !isScrolled) || forceDarkMode) {
+      return "text-white hover:text-[#FBB03B]";
+    }
+    
+    // Default case
     return "text-[#274675] hover:text-[#FBB03B]";
   };
 
@@ -96,7 +111,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
           <a
             href="#join"
             className={`px-6 py-2 rounded-md transition-all duration-300 border-2 text-lg font-alegreyasans font-bold ${
-              (isHeroPage && !isScrolled) || forceDarkMode
+              (isHeroPage && !isScrolled) || (forceDarkMode && !isConferencePage)
                 ? "border-white text-white hover:bg-[#FBB03B] hover:border-[#FBB03B] hover:text-white" 
                 : "border-[#FBB03B] bg-[#FBB03B] text-white hover:bg-[#274675] hover:border-[#274675] shadow-md"
             }`}
