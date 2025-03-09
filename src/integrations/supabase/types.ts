@@ -9,11 +9,31 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      approved_edu_domains: {
+        Row: {
+          created_at: string
+          domain: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          domain: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          domain?: string
+          id?: string
+        }
+        Relationships: []
+      }
       conference_registrations: {
         Row: {
           created_at: string
           dietary_requirements: string | null
           email: string
+          email_verified: boolean | null
+          from_known_institution: boolean | null
           full_name: string
           id: string
           organization: string
@@ -22,11 +42,14 @@ export type Database = {
           status: string
           ticket_type: string
           updated_at: string
+          verification_method: string | null
         }
         Insert: {
           created_at?: string
           dietary_requirements?: string | null
           email: string
+          email_verified?: boolean | null
+          from_known_institution?: boolean | null
           full_name: string
           id?: string
           organization: string
@@ -35,11 +58,14 @@ export type Database = {
           status?: string
           ticket_type: string
           updated_at?: string
+          verification_method?: string | null
         }
         Update: {
           created_at?: string
           dietary_requirements?: string | null
           email?: string
+          email_verified?: boolean | null
+          from_known_institution?: boolean | null
           full_name?: string
           id?: string
           organization?: string
@@ -48,6 +74,111 @@ export type Database = {
           status?: string
           ticket_type?: string
           updated_at?: string
+          verification_method?: string | null
+        }
+        Relationships: []
+      }
+      email_verifications: {
+        Row: {
+          created_at: string
+          email: string
+          expires_at: string
+          from_known_institution: boolean | null
+          id: string
+          ticket_type: string
+          token: string
+          verified: boolean
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          expires_at: string
+          from_known_institution?: boolean | null
+          id?: string
+          ticket_type: string
+          token: string
+          verified?: boolean
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          expires_at?: string
+          from_known_institution?: boolean | null
+          id?: string
+          ticket_type?: string
+          token?: string
+          verified?: boolean
+        }
+        Relationships: []
+      }
+      group_registration_members: {
+        Row: {
+          created_at: string
+          email: string
+          email_verified: boolean
+          from_known_institution: boolean | null
+          group_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          email_verified?: boolean
+          from_known_institution?: boolean | null
+          group_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          email_verified?: boolean
+          from_known_institution?: boolean | null
+          group_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_registration_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "group_registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_registrations: {
+        Row: {
+          completed: boolean
+          created_at: string
+          group_size: number
+          id: string
+          lead_email: string
+          lead_name: string
+          lead_organization: string
+          payment_completed: boolean
+          ticket_type: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          group_size: number
+          id?: string
+          lead_email: string
+          lead_name: string
+          lead_organization: string
+          payment_completed?: boolean
+          ticket_type: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          group_size?: number
+          id?: string
+          lead_email?: string
+          lead_name?: string
+          lead_organization?: string
+          payment_completed?: boolean
+          ticket_type?: string
         }
         Relationships: []
       }

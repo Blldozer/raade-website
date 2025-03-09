@@ -1,6 +1,12 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@13.7.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
+
+const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
+const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -19,11 +25,12 @@ serve(async (req) => {
     });
 
     // Get ticket data from request
-    const { ticketType, email, fullName } = await req.json();
+    const { ticketType, email, fullName, groupSize } = await req.json();
 
     // Define price based on ticket type
     let amount = 0;
     let description = "";
+    const isGroupRegistration = ticketType === "student-group";
 
     switch (ticketType) {
       case "rice-student":
@@ -38,6 +45,10 @@ serve(async (req) => {
         amount = 8500; // $85.00
         description = "Young Professional Ticket - RAADE Conference 2025";
         break;
+      case "student-group":
+        amount = 5000 * (groupSize || 5); // $50.00 per person
+        description = `Student Group (${groupSize || 5} members) - RAADE Conference 2025`;
+        break;
       case "speaker":
         amount = 0; // Free for speakers
         description = "Speaker Pass - RAADE Conference 2025";
@@ -50,6 +61,29 @@ serve(async (req) => {
             headers: { ...corsHeaders, "Content-Type": "application/json" } 
           }
         );
+    }
+
+    // Verify email is verified for non-speaker tickets
+    if (ticketType !== "speaker") {
+      const { data: verification, error: verificationError } = await supabase
+        .from('email_verifications')
+        .select('verified')
+        .eq('email', email)
+        .eq('ticket_type', ticketType)
+        .single();
+      
+      if (verificationError || !verification || !verification.verified) {
+        return new Response(
+          JSON.stringify({ 
+            error: "Email not verified",
+            message: "Please verify your email before proceeding to payment."
+          }),
+          { 
+            status: 400, 
+            headers: { ...corsHeaders, "Content-Type": "application/json" } 
+          }
+        );
+      }
     }
 
     // If it's a free ticket (speakers), just return success without creating a payment intent
@@ -76,7 +110,8 @@ serve(async (req) => {
       metadata: {
         ticketType,
         customerName: fullName,
-        email
+        email,
+        groupSize: isGroupRegistration ? String(groupSize || 5) : undefined
       },
       automatic_payment_methods: {
         enabled: true,
@@ -93,7 +128,9 @@ serve(async (req) => {
       JSON.stringify({ 
         clientSecret: paymentIntent.client_secret,
         amount: amount / 100, // Convert cents to dollars for display
-        currency: "USD"
+        currency: "USD",
+        isGroupRegistration,
+        groupSize: isGroupRegistration ? groupSize || 5 : undefined
       }),
       { 
         status: 200, 
