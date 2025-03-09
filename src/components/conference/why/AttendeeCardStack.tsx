@@ -38,11 +38,25 @@ const AttendeeCardStack = ({ attendees, activeId, onTabChange }: AttendeeCardSta
     if (!activeAttendee || isPaused) return;
     
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % activeAttendee.benefits.length);
+      setCurrentIndex((prev) => {
+        const nextIndex = prev + 1;
+        
+        // If we've reached the end of benefits for this tab
+        if (nextIndex >= activeAttendee.benefits.length) {
+          // Move to the next tab
+          if (onTabChange) {
+            const nextTabIndex = (activeIndex + 1) % attendees.length;
+            onTabChange(attendees[nextTabIndex].id);
+          }
+          return 0; // Reset index for the new tab
+        }
+        
+        return nextIndex;
+      });
     }, 8000);
     
     return () => clearInterval(interval);
-  }, [activeAttendee, isPaused]);
+  }, [activeAttendee, isPaused, activeIndex, attendees, onTabChange]);
   
   // Reset index when the active attendee changes
   useEffect(() => {
@@ -52,7 +66,19 @@ const AttendeeCardStack = ({ attendees, activeId, onTabChange }: AttendeeCardSta
   // Handler for card navigation
   const handleNext = () => {
     setIsPaused(true); // Pause auto-advance when manually navigating
-    setCurrentIndex((prev) => (prev + 1) % activeAttendee!.benefits.length);
+    
+    // Check if we're at the last benefit
+    if (currentIndex === activeAttendee!.benefits.length - 1) {
+      // Move to the next tab
+      if (onTabChange) {
+        const nextTabIndex = (activeIndex + 1) % attendees.length;
+        onTabChange(attendees[nextTabIndex].id);
+      }
+      setCurrentIndex(0); // Reset index for the new tab
+    } else {
+      // Just move to the next benefit in the current tab
+      setCurrentIndex(prev => prev + 1);
+    }
     
     // Resume auto-advance after 10 seconds of inactivity
     const timeout = setTimeout(() => setIsPaused(false), 10000);
@@ -61,7 +87,21 @@ const AttendeeCardStack = ({ attendees, activeId, onTabChange }: AttendeeCardSta
 
   const handlePrev = () => {
     setIsPaused(true); // Pause auto-advance when manually navigating
-    setCurrentIndex((prev) => (prev - 1 + activeAttendee!.benefits.length) % activeAttendee!.benefits.length);
+    
+    // Check if we're at the first benefit
+    if (currentIndex === 0) {
+      // Move to the previous tab
+      if (onTabChange) {
+        const prevTabIndex = (activeIndex - 1 + attendees.length) % attendees.length;
+        onTabChange(attendees[prevTabIndex].id);
+      }
+      // Set to the last benefit of the new active tab
+      const prevAttendee = attendees[(activeIndex - 1 + attendees.length) % attendees.length];
+      setCurrentIndex(prevAttendee.benefits.length - 1);
+    } else {
+      // Just move to the previous benefit in the current tab
+      setCurrentIndex(prev => prev - 1);
+    }
     
     // Resume auto-advance after 10 seconds of inactivity
     const timeout = setTimeout(() => setIsPaused(false), 10000);
