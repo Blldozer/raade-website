@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { speakersList } from "./data/speakersData";
+import { Link } from "react-router-dom";
 
 const ConferenceSpeakers = () => {
   return (
@@ -41,10 +42,13 @@ const ConferenceSpeakers = () => {
                   <p className="text-gray-600 text-sm mb-3 font-lora">{speaker.organization}</p>
                   <p className="text-gray-600 font-lora">{speaker.bio}</p>
                   
-                  <button className="mt-4 text-raade-navy hover:text-[#FBB03B] transition-colors flex items-center text-sm font-medium">
+                  <Link 
+                    to={`/conference/speakers/${speaker.id}`} 
+                    className="mt-4 text-raade-navy hover:text-[#FBB03B] transition-colors flex items-center text-sm font-medium"
+                  >
                     <span>Full profile</span>
                     <ExternalLink className="ml-1 h-3 w-3" />
-                  </button>
+                  </Link>
                 </div>
               </div>
             </motion.div>
