@@ -1,6 +1,8 @@
 
 import React, { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import ProgressBar from "./cards/ProgressBar";
 import BackgroundCards from "./cards/BackgroundCards";
 import MainCard from "./cards/MainCard";
@@ -87,6 +89,27 @@ const AttendeeCardStack = ({ attendees, activeId, onTabChange }: AttendeeCardSta
 
   return (
     <div className="relative flex justify-center items-center h-[550px] my-8">
+      {/* Tab Navigation Buttons (Outside Card) */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute left-4 md:left-12 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white z-10 rounded-full h-12 w-12 shadow-lg"
+        onClick={handlePrevTab}
+        aria-label="Previous attendee type"
+      >
+        <ArrowLeft className="w-6 h-6" />
+      </Button>
+      
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute right-4 md:right-12 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white z-10 rounded-full h-12 w-12 shadow-lg"
+        onClick={handleNextTab}
+        aria-label="Next attendee type"
+      >
+        <ArrowRight className="w-6 h-6" />
+      </Button>
+      
       <div className="relative w-[320px]">
         {/* Progress Bar - Instagram Story style with card color */}
         <ProgressBar

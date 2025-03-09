@@ -17,8 +17,6 @@ interface CardContentProps {
   setIsPaused: (paused: boolean) => void;
   handleNext: () => void;
   handlePrev: () => void;
-  handleNextTab?: () => void;
-  handlePrevTab?: () => void;
 }
 
 const CardContent = ({
@@ -27,9 +25,7 @@ const CardContent = ({
   setCurrentIndex,
   setIsPaused,
   handleNext,
-  handlePrev,
-  handleNextTab,
-  handlePrevTab
+  handlePrev
 }: CardContentProps) => {
   return (
     <div className="relative w-full h-full p-6 text-white flex flex-col">
@@ -38,31 +34,6 @@ const CardContent = ({
       <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-white/40"></div>
       <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-white/40"></div>
       <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-white/40"></div>
-      
-      {/* Tab Navigation Buttons */}
-      {handlePrevTab && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-white/20 text-white hover:bg-white/30 z-10 rounded-full h-10 w-10"
-          onClick={handlePrevTab}
-          aria-label="Previous card"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
-      )}
-      
-      {handleNextTab && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 bg-white/20 text-white hover:bg-white/30 z-10 rounded-full h-10 w-10"
-          onClick={handleNextTab}
-          aria-label="Next card"
-        >
-          <ArrowRight className="w-5 h-5" />
-        </Button>
-      )}
       
       {/* Header */}
       <div className="mb-6">

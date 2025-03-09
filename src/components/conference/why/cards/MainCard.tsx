@@ -60,8 +60,6 @@ const MainCard = ({
           setIsPaused={setIsPaused}
           handleNext={handleNext}
           handlePrev={handlePrev}
-          handleNextTab={handleNextTab}
-          handlePrevTab={handlePrevTab}
         />
       </motion.div>
     </AnimatePresence>
