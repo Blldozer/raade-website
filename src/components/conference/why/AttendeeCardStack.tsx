@@ -93,21 +93,21 @@ const AttendeeCardStack = ({ attendees, activeId, onTabChange }: AttendeeCardSta
       <Button
         variant="ghost"
         size="icon"
-        className="absolute left-4 md:left-12 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white z-10 rounded-full h-12 w-12 shadow-lg"
+        className="absolute left-4 md:left-12 top-1/2 -translate-y-1/2 bg-white/30 hover:bg-white/50 text-black z-10 rounded-full h-12 w-12 shadow-lg"
         onClick={handlePrevTab}
         aria-label="Previous attendee type"
       >
-        <ArrowLeft className="w-6 h-6" />
+        <ArrowLeft className="w-6 h-6 stroke-[2.5]" />
       </Button>
       
       <Button
         variant="ghost"
         size="icon"
-        className="absolute right-4 md:right-12 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white z-10 rounded-full h-12 w-12 shadow-lg"
+        className="absolute right-4 md:right-12 top-1/2 -translate-y-1/2 bg-white/30 hover:bg-white/50 text-black z-10 rounded-full h-12 w-12 shadow-lg"
         onClick={handleNextTab}
         aria-label="Next attendee type"
       >
-        <ArrowRight className="w-6 h-6" />
+        <ArrowRight className="w-6 h-6 stroke-[2.5]" />
       </Button>
       
       <div className="relative w-[320px]">
