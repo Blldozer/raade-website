@@ -96,6 +96,18 @@ const MainCard = ({
     }
   };
 
+  // Combined animation for non-transitioning state
+  const combinedAnimation = isTabTransitioning 
+    ? "animate" 
+    : {
+        ...cardVariants.animate,
+        y: floatingAnimation.y,
+        transition: {
+          ...cardVariants.animate.transition,
+          y: floatingAnimation.transition.y
+        }
+      };
+
   return (
     <AnimatePresence mode="wait" custom={direction}>
       <motion.div
@@ -103,7 +115,7 @@ const MainCard = ({
         custom={direction}
         variants={cardVariants}
         initial="initial"
-        animate={!isTabTransitioning ? [cardVariants.animate.name, floatingAnimation.name] : "animate"}
+        animate={combinedAnimation}
         exit="exit"
         whileHover={isTabTransitioning ? {} : "hover"}
         className="relative w-[320px] h-[500px] rounded-xl shadow-2xl overflow-hidden perspective-1000"
