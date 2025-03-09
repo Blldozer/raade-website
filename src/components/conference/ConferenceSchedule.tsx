@@ -18,14 +18,14 @@ const ConferenceSchedule = () => {
             <TabsList className="grid w-full max-w-md grid-cols-2">
               <TabsTrigger 
                 value="day1" 
-                className="text-lg font-simula data-[state=active]:bg-[#FBB03B] data-[state=active]:text-white"
+                className="text-lg font-montserrat font-semibold data-[state=active]:bg-[#FBB03B] data-[state=active]:text-white"
                 onClick={() => setActiveDay("day1")}
               >
                 Day 1 (April 11)
               </TabsTrigger>
               <TabsTrigger 
                 value="day2" 
-                className="text-lg font-simula data-[state=active]:bg-[#FBB03B] data-[state=active]:text-white"
+                className="text-lg font-montserrat font-semibold data-[state=active]:bg-[#FBB03B] data-[state=active]:text-white"
                 onClick={() => setActiveDay("day2")}
               >
                 Day 2 (April 12)
@@ -35,8 +35,8 @@ const ConferenceSchedule = () => {
           
           <div className="mt-8">
             <div className="flex mb-4 px-4">
-              <div className="w-1/4 font-simula text-gray-500 text-sm">Time</div>
-              <div className="w-3/4 font-simula text-gray-500 text-sm">Session</div>
+              <div className="w-1/4 font-montserrat font-semibold text-gray-500 text-sm">Time</div>
+              <div className="w-3/4 font-montserrat font-semibold text-gray-500 text-sm">Session</div>
             </div>
             
             <DaySchedule day="day1" events={scheduleDay1} />
@@ -45,7 +45,7 @@ const ConferenceSchedule = () => {
         </Tabs>
         
         <div className="bg-[#FBB03B]/10 p-6 rounded-lg mt-12 text-center">
-          <p className="text-gray-700 font-lora">
+          <p className="text-gray-700 font-opensans">
             This schedule is subject to change. Please check back for updates.
           </p>
         </div>

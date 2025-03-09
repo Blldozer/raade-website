@@ -46,28 +46,28 @@ const ScheduleEvent = ({ event, index }: ScheduleEventProps) => {
       className={`flex flex-col md:flex-row mb-4 p-4 border-l-4 ${getEventTypeClass(event.type)} bg-gray-50 rounded-r-md hover:shadow-md transition-shadow`}
     >
       <div className="w-full md:w-1/4 mb-2 md:mb-0">
-        <p className="font-semibold text-raade-navy font-simula">{event.time}</p>
+        <p className="font-semibold text-raade-navy font-montserrat">{event.time}</p>
       </div>
       <div className="w-full md:w-3/4">
-        <h3 className="text-lg font-bold text-raade-navy font-simula">{event.title}</h3>
-        <p className="text-gray-600 mb-2 font-lora">{event.description}</p>
+        <h3 className="text-lg font-bold text-raade-navy font-montserrat">{event.title}</h3>
+        <p className="text-gray-600 mb-2 font-opensans">{event.description}</p>
         <div className="flex flex-wrap gap-4 mt-2 text-sm">
           <div className="flex items-center text-gray-500">
             <MapPin className="w-4 h-4 mr-1" />
-            <span>{event.location}</span>
+            <span className="font-opensans">{event.location}</span>
           </div>
           
           {event.speaker && (
             <div className="flex items-center text-[#FBB03B]">
               <Users className="w-4 h-4 mr-1" />
-              <span>{event.speaker}</span>
+              <span className="font-opensans">{event.speaker}</span>
             </div>
           )}
           
           {event.capacity && (
             <div className="flex items-center text-gray-500">
               <Clock className="w-4 h-4 mr-1" />
-              <span>{event.capacity}</span>
+              <span className="font-opensans">{event.capacity}</span>
             </div>
           )}
         </div>
