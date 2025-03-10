@@ -108,8 +108,8 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
           </NavigationMenuItem>
         ))}
         <NavigationMenuItem>
-          <a
-            href="#join"
+          <Link
+            to="/studios#apply"
             className={`px-6 py-2 rounded-md transition-all duration-300 border-2 text-lg font-alegreyasans font-bold ${
               (isHeroPage && !isScrolled) || (forceDarkMode && !isConferencePage)
                 ? "border-white text-white hover:bg-[#FBB03B] hover:border-[#FBB03B] hover:text-white" 
@@ -118,7 +118,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
             onClick={onClick}
           >
             Join Us
-          </a>
+          </Link>
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
