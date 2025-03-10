@@ -7,7 +7,6 @@ import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import TypographyDebugger from "@/components/debug/TypographyDebugger";
 
 const InnovationStudios = () => {
   const location = useLocation();
@@ -15,20 +14,6 @@ const InnovationStudios = () => {
   const projectsRef = useRef<HTMLDivElement>(null);
   const applyRef = useRef<HTMLDivElement>(null);
   const [currentSection, setCurrentSection] = useState<string>("hero");
-  const [debugMode, setDebugMode] = useState<boolean>(false);
-
-  // Toggle debug mode with Ctrl+D
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.key === 'd') {
-        e.preventDefault();
-        setDebugMode(prev => !prev);
-      }
-    };
-    
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
 
   // Track scroll position to determine current section for proper nav contrast
   useEffect(() => {
@@ -94,8 +79,7 @@ const InnovationStudios = () => {
   }, [location]);
 
   const Hero = () => {
-    return (
-      <div className="min-h-screen relative overflow-hidden flex items-center">
+    return <div className="min-h-screen relative overflow-hidden flex items-center">
         {/* Animated gradient background */}
         <div className="absolute inset-0 z-0 bg-[#2b212e]">
           <div className="absolute inset-0 animate-gradient-x bg-gradient-to-r from-[#2b212e] via-[#3b2c40] to-[#2b212e] bg-[length:200%_100%]" />
@@ -106,44 +90,46 @@ const InnovationStudios = () => {
         
         <div className="container mx-auto px-4 relative z-20">
           <div className="max-w-4xl mx-auto">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              transition={{ duration: 0.6 }} 
-              className="space-y-6"
-            >
-              {["Design.", "Build.", "Scale."].map((word, index) => (
-                <motion.div 
-                  key={word} 
-                  initial={{ opacity: 0, x: -20 }} 
-                  animate={{ opacity: 1, x: 0 }} 
-                  transition={{ delay: index * 0.2 + 0.3, duration: 0.5 }}
-                >
-                  <h1 className="hero-title-1 font-simula text-white">
+            <motion.div initial={{
+            opacity: 0,
+            y: 20
+          }} animate={{
+            opacity: 1,
+            y: 0
+          }} transition={{
+            duration: 0.6
+          }} className="space-y-6">
+              {["Design.", "Build.", "Scale."].map((word, index) => <motion.div key={word} initial={{
+              opacity: 0,
+              x: -20
+            }} animate={{
+              opacity: 1,
+              x: 0
+            }} transition={{
+              delay: index * 0.2 + 0.3,
+              duration: 0.5
+            }}>
+                  <h1 className="text-7xl md:text-9xl font-simula text-white">
                     {word}
                   </h1>
-                </motion.div>
-              ))}
+                </motion.div>)}
             </motion.div>
             
-            <motion.p 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              transition={{ delay: 1.2, duration: 0.5 }} 
-              className="mt-12 hero-text text-white/90 font-lora reading-width-normal"
-            >
-              A project-driven innovation studio creating market-based solutions for Africa's most pressing challenges.
-            </motion.p>
+            <motion.p initial={{
+            opacity: 0
+          }} animate={{
+            opacity: 1
+          }} transition={{
+            delay: 1.2,
+            duration: 0.5
+          }} className="mt-12 text-xl md:text-2xl text-white/90 font-lora max-w-2xl"> A project-driven innovation studio creating market-based solutions for Africa's most pressing challenges.</motion.p>
           </div>
         </div>
-      </div>
-    );
+      </div>;
   };
 
-  return (
-    <div>
+  return <div>
       <Navigation isHeroPage={true} forceDarkMode={currentSection !== "hero"} />
-      <TypographyDebugger enabled={debugMode} />
       <div>
         <Hero />
         <div ref={overviewRef} id="overview">
@@ -156,8 +142,7 @@ const InnovationStudios = () => {
           <StudioCTA />
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
 
 export default InnovationStudios;

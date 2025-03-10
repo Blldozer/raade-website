@@ -1,29 +1,14 @@
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Navigation from '../Navigation';
 import AnimatedText from './AnimatedText';
 import gsap from 'gsap';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import TypographyDebugger from '../debug/TypographyDebugger';
 
 const Hero = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const [debugMode, setDebugMode] = useState<boolean>(false);
-  
-  // Toggle debug mode with Ctrl+D
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.key === 'd') {
-        e.preventDefault();
-        setDebugMode(prev => !prev);
-      }
-    };
-    
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
   
   const scrollToNextSection = () => {
     const nextSection = document.getElementById('transition-stat');
@@ -73,9 +58,6 @@ const Hero = () => {
   
   return (
     <div className="relative h-screen overflow-hidden" data-background="dark">
-      {/* Typography Debugger */}
-      <TypographyDebugger enabled={debugMode} />
-    
       {/* Video Background - lowest z-index */}
       <div className="absolute inset-0 z-0">
         <video
@@ -104,7 +86,7 @@ const Hero = () => {
           <div className="space-y-[clamp(1rem,2vw,2rem)] max-w-[min(90%,1200px)] mx-auto pointer-events-auto">
             <AnimatedText />
 
-            <p className="hero-text text-white/90 reading-width-normal font-merriweather">
+            <p className="text-[length:var(--fluid-body)] text-white/90 max-w-[min(100%,800px)] font-merriweather">
               The future of Africa isn't a distant dream - it's being built today, by innovators and changemakers
               like you. Join a community of students and partners creating sustainable solutions through market-driven innovation.
             </p>
@@ -113,7 +95,7 @@ const Hero = () => {
               <Link 
                 to="/studios#apply"
                 className="group w-full sm:w-auto px-[clamp(1.5rem,2vw,2rem)] py-[clamp(0.75rem,1.5vw,1rem)] bg-raade-gold-start text-[#1A365D] rounded-lg font-semibold 
-                  transition-all duration-300 hero-small font-alegreyasans relative overflow-hidden hover:shadow-[0_0_20px_rgba(251,176,59,0.5)]"
+                  transition-all duration-300 text-[length:var(--fluid-body)] font-alegreyasans relative overflow-hidden hover:shadow-[0_0_20px_rgba(251,176,59,0.5)]"
               >
                 <span className="relative z-10">Start Building Today</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-raade-gold-start via-raade-gold-middle to-raade-gold-end opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -121,7 +103,7 @@ const Hero = () => {
               <Link 
                 to="/studios" 
                 className="group w-full sm:w-auto px-[clamp(1.5rem,2vw,2rem)] py-[clamp(0.75rem,1.5vw,1rem)] border-2 border-raade-gold-start text-raade-gold-start rounded-lg 
-                  font-semibold transition-all duration-300 hero-small font-alegreyasans hover:bg-raade-gold-start hover:text-white relative overflow-hidden"
+                  font-semibold transition-all duration-300 text-[length:var(--fluid-body)] font-alegreyasans hover:bg-raade-gold-start hover:text-white relative overflow-hidden"
               >
                 <span className="relative z-10">Explore Our Impact</span>
               </Link>

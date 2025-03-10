@@ -53,13 +53,13 @@ const AnimatedText = () => {
     <div className="space-y-4 md:space-y-8" ref={containerRef}>
       <h1 
         ref={orgNameRef}
-        className="hero-subtitle text-raade-gold-start font-medium tracking-wide uppercase font-alegreyasans"
+        className="text-raade-gold-start text-base sm:text-lg md:text-2xl font-medium tracking-wide uppercase font-alegreyasans"
       >
         Rice Association for African Development
       </h1>
 
       <div className="relative">
-        <h2 className="hero-title-1 font-bold tracking-wide font-zillahighlight">
+        <h2 className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-bold tracking-wide font-zillahighlight">
           <div className="text-white">We can't wait for tomorrow.</div>
           <div ref={text2Ref} className="text-raade-gold-start"></div>
         </h2>
