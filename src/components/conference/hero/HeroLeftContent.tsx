@@ -1,28 +1,35 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Calendar, MapPin } from "lucide-react";
+import { Calendar, MapPin, Users, Mic, Lightbulb } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const HeroLeftContent = () => {
   const navigate = useNavigate();
   
   return (
-    <div className="w-full lg:w-1/2 lg:pr-12 py-10 z-10">
+    <div className="w-full max-w-4xl mx-auto py-10 z-10 text-center">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         className="space-y-6"
       >
-        <p className="text-xl font-medium text-white font-lora">Join us at the RAADE African Development Forum</p>
+        <motion.p 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="text-xl font-medium text-white font-lora"
+        >
+          Join us at the RAADE
+        </motion.p>
         
         <div className="space-y-2">
           <motion.h2 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-5xl lg:text-6xl font-bold font-simula text-white"
+            className="text-6xl lg:text-7xl font-bold font-simula text-white"
           >
             AFRICAN
           </motion.h2>
@@ -30,41 +37,83 @@ const HeroLeftContent = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-5xl lg:text-6xl font-bold font-simula text-white"
+            className="text-6xl lg:text-7xl font-bold font-simula text-white"
           >
             INNOVATION
           </motion.h2>
           <motion.div 
-            initial={{ opacity: 0, width: 0 }}
-            animate={{ opacity: 1, width: "60%" }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="h-1 bg-[#FBB03B] mt-2 mb-5" 
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: "40%", opacity: 1 }}
+            transition={{ duration: 1, delay: 0.6 }}
+            className="h-1 bg-[#FBB03B] mx-auto mt-4" 
           />
-          <p className="text-2xl font-simula text-white mt-2">
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.7 }}
+            className="text-2xl font-simula text-white mt-6"
+          >
             Building Pathways to the Future
-          </p>
+          </motion.p>
         </div>
 
-        <div className="space-y-4 pt-2">
-          <div className="flex items-center">
-            <Calendar className="mr-3 h-6 w-6 text-[#FBB03B]" />
-            <p className="text-white font-lora font-medium text-lg">April 11-12, 2025</p>
+        {/* Forum highlights */}
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
+          className="flex flex-wrap justify-center gap-3 mt-8"
+        >
+          <div className="px-5 py-2.5 bg-white/10 backdrop-blur-sm rounded-full flex items-center gap-2">
+            <Mic className="text-[#FBB03B] h-4 w-4" />
+            <p className="text-white font-lora font-medium">10+ Speakers</p>
           </div>
-          <div className="flex items-center">
-            <MapPin className="mr-3 h-6 w-6 text-[#FBB03B]" />
-            <p className="text-white font-lora font-medium text-lg">Rice University, Houston, TX</p>
+          <div className="px-5 py-2.5 bg-white/10 backdrop-blur-sm rounded-full flex items-center gap-2">
+            <Lightbulb className="text-[#FBB03B] h-4 w-4" />
+            <p className="text-white font-lora font-medium">5 Workshops</p>
           </div>
-        </div>
+          <div className="px-5 py-2.5 bg-white/10 backdrop-blur-sm rounded-full flex items-center gap-2">
+            <Users className="text-[#FBB03B] h-4 w-4" />
+            <p className="text-white font-lora font-medium">100+ Attendees</p>
+          </div>
+        </motion.div>
 
-        <p className="text-lg text-white/90 max-w-lg font-lora">
+        {/* Event details */}
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.9 }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-4"
+        >
+          <div className="flex items-center">
+            <Calendar className="mr-3 h-5 w-5 text-[#FBB03B]" />
+            <p className="text-white font-lora font-medium">April 11-12, 2025</p>
+          </div>
+          <div className="flex items-center">
+            <MapPin className="mr-3 h-5 w-5 text-[#FBB03B]" />
+            <p className="text-white font-lora font-medium">Rice University, Houston, TX</p>
+          </div>
+        </motion.div>
+
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 1 }}
+          className="text-lg text-white/90 max-w-2xl mx-auto font-lora mt-6"
+        >
           The RAADE Forum brings together innovative minds to discuss sustainable 
           solutions for Africa's development. With a spotlight on student-led innovation,
           this forum is the foremost platform for changemakers passionate about 
           advancing Africa's future.
-        </p>
+        </motion.p>
 
-        {/* Center the Register Now button */}
-        <div className="pt-4 flex justify-center">
+        {/* Register Now button */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 1.1 }}
+          className="pt-8"
+        >
           <motion.button 
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -73,7 +122,7 @@ const HeroLeftContent = () => {
           >
             Register Now
           </motion.button>
-        </div>
+        </motion.div>
       </motion.div>
     </div>
   );

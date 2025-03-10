@@ -1,10 +1,12 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 
+// This component is no longer used in the main layout,
+// but we're keeping it for reference or potential future use
+
 const HeroRightContent = () => {
   return (
-    <div className="w-full lg:w-1/2 flex flex-col items-center justify-center z-10 py-12">
+    <div className="w-full flex flex-col items-center justify-center z-10 py-12">
       <motion.div 
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
