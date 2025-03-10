@@ -42,10 +42,7 @@ const ConferenceWhy = () => {
           duration: 0.6,
           delay: 0.2
         }} className="w-full lg:w-[61%]">
-            <p className="text-lg font-lora p-4 lg:p-0 text-slate-950">
-              The distinctive value of the RAADE conference is that attendees don't just gain knowledge 
-              or contacts – they become part of creating solutions that can spread across the continent.
-            </p>
+            <p className="text-lg font-lora p-4 lg:p-0 text-slate-950">The distinctive value of the RAADE African development forum is that attendees don't just gain knowledge or contacts – they become part of creating solutions that can spread across the continent.</p>
           </motion.div>
         </div>
         
