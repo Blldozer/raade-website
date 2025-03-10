@@ -14,7 +14,7 @@ const ContentSection = () => {
     }} transition={{
       duration: 0.6
     }} className="w-full lg:w-[61%] mt-8 lg:mt-0">
-        <p className="text-xl font-lora text-gray-700 leading-relaxed max-w-[800px]">At RAADE's Annual Conference, we will come together to translate bold ideas into continent-wide impact. This isn't just a conference—it's where change-makers like you come together to shape tomorrow. Because we know Africa's future won't be built by distant strategies, but by people in rooms like this, turning possibilities into reality.</p>
+        <p className="text-xl font-lora text-gray-700 leading-relaxed max-w-[800px]">At RAADE's African development forum, we will come together to translate bold ideas into continent-wide impact. This isn't just another gathering—it's where change-makers like you come together to shape tomorrow. Because we know Africa's future won't be built by distant strategies, but by people in rooms like this, turning possibilities into reality.</p>
       </motion.div>
     </div>;
 };
