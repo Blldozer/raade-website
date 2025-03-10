@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import NavLogo from "./NavLogo";
 import DesktopNav from "./DesktopNav";
 import MobileNav from "./MobileNav";
-import CountdownTimer from "./CountdownTimer";
+import CountdownTimer from "../CountdownTimer";
 
 const AboutNav = () => {
   const [isScrolled, setIsScrolled] = useState(false);
