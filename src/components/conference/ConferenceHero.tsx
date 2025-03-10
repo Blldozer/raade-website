@@ -11,8 +11,8 @@ const ConferenceHero = () => {
       {/* Background with gradient, team image, and Africa outline */}
       <HeroBackground />
       
-      {/* Main content container - using full width with proper z-index to ensure visibility */}
-      <div className="container max-w-7xl mx-auto relative z-50 pt-20 px-4 md:px-6 lg:px-8 min-h-screen flex flex-col items-center justify-center">
+      {/* Main content container - using full width with higher z-index to ensure visibility */}
+      <div className="container max-w-7xl mx-auto relative z-10 pt-20 px-4 md:px-6 lg:px-8 min-h-screen flex flex-col items-center justify-center">
         {/* Small Countdown Timer at the top */}
         <div className="w-full flex justify-end mb-4">
           <CountdownTimer 
