@@ -39,7 +39,7 @@ const Approach = () => {
               real needs and create meaningful change.
             </p>
           </motion.div>
-          {/* Image Collage with original image sizes */}
+          {/* Image Collage with scaled down images */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -52,21 +52,21 @@ const Approach = () => {
                 <img 
                   src="/about-page-images/RAADE-HCD-Image-boy-center-flower.png" 
                   alt="Boy surrounded by colorful flower petals" 
-                  className="max-w-full max-h-full hover:scale-105 transition-transform duration-500"
+                  className="max-w-full max-h-full scale-50 hover:scale-[0.55] transition-transform duration-500"
                 />
               </div>
               <div className="rounded-tr-xl bg-gray-100 flex items-center justify-center overflow-hidden">
                 <img 
                   src="/about-page-images/RAADE-HCD-boy-center-community.png" 
                   alt="Boy in center of community" 
-                  className="max-w-full max-h-full hover:scale-105 transition-transform duration-500"
+                  className="max-w-full max-h-full scale-50 hover:scale-[0.55] transition-transform duration-500"
                 />
               </div>
               <div className="col-span-2 rounded-b-xl bg-gray-100 flex items-center justify-center overflow-hidden">
                 <img 
                   src="/about-page-images/RAADE-HCD-person-center-africa.png" 
                   alt="Person in center of Africa" 
-                  className="max-w-full max-h-full hover:scale-105 transition-transform duration-500"
+                  className="max-w-full max-h-full scale-50 hover:scale-[0.55] transition-transform duration-500"
                 />
               </div>
             </div>
