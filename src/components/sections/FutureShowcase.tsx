@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -105,10 +106,10 @@ const ProjectCard = ({
         <p className={`animate-content text-sm font-medium ${textOpacityClass} tracking-wider`}>
           {category}
         </p>
-        <h3 className={`animate-content text-3xl md:text-4xl lg:text-5xl font-bold ${textColorClass} font-zillaslab leading-tight`}>
+        <h3 className={`animate-content text-3xl md:text-4xl lg:text-5xl font-bold ${textColorClass} font-simula leading-tight`}>
           {title}
         </h3>
-        <p className={`animate-content ${descriptionClass} font-merriweather leading-relaxed text-lg`}>
+        <p className={`animate-content ${descriptionClass} font-lora leading-relaxed text-lg`}>
           {description}
         </p>
         <Link to={`/projects/${slug}`} className={`animate-content inline-flex items-center text-[#FBB03B] text-lg font-alegreyasans group-hover:translate-x-2 transition-all duration-300 ease-out`}>
@@ -134,10 +135,10 @@ const FutureShowcase = () => {
   }}>
       <div className="max-w-[90vw] xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-40">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#1A365D] mb-8 font-Simula\n">
+          <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-[#1A365D] mb-8">
             Building in Progress
           </h2>
-          <p className="text-lg md:text-xl text-[#1A365D]/80 max-w-3xl mx-auto font-merriweather leading-relaxed">
+          <p className="text-lg md:text-xl text-[#1A365D]/80 max-w-3xl mx-auto font-lora leading-relaxed">
             Step into the future we're creating. Each project is a window into tomorrow,
             where innovation meets impact in real time.
           </p>
