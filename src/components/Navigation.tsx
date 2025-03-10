@@ -44,10 +44,10 @@ const Navigation = ({
       const heroHeight = window.innerHeight * 0.9;
       
       // Control navbar visibility based on scroll direction
-      if (currentScrollY > lastScrollY) {
-        setIsVisible(false); // Scrolling down
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setIsVisible(false); // Scrolling down - hide navbar
       } else {
-        setIsVisible(true); // Scrolling up
+        setIsVisible(true); // Scrolling up - show navbar
       }
       
       setLastScrollY(currentScrollY);
