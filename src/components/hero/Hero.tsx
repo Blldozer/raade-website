@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef } from 'react';
 import Navigation from '../Navigation';
 import AnimatedText from './AnimatedText';
@@ -57,6 +58,7 @@ const Hero = () => {
   
   return (
     <div className="relative h-screen overflow-hidden" data-background="dark">
+      {/* Video Background - lowest z-index */}
       <div className="absolute inset-0 z-0">
         <video
           ref={videoRef}
@@ -70,18 +72,16 @@ const Hero = () => {
         </video>
       </div>
       
+      {/* Gradient Overlay - low z-index but above video */}
       <div className="absolute inset-0 z-10 bg-gradient-to-br from-[#1A365D]/60 via-[#2A466D]/65 to-[#1A365D]/70 backdrop-blur-[4px]" />
       
-      {/* <div className="relative z-20"> */}
-        {/* <ParticleField /> */}
-      {/* </div> */}
-      
-      <div className="relative z-50">
+      {/* Navigation - highest z-index */}
+      <div className="absolute top-0 left-0 right-0 z-[9999]">
         <Navigation isHeroPage={true} />
       </div>
       
-      
-      <div className="relative z-30" ref={contentRef}>
+      {/* Main Content - high z-index but below navigation */}
+      <div className="relative z-30 pt-[var(--navbar-height)]" ref={contentRef}>
         <div className="fluid-container h-screen flex flex-col justify-center">
           <div className="space-y-[clamp(1rem,2vw,2rem)] max-w-[min(90%,1200px)] mx-auto pointer-events-auto">
             <AnimatedText />
