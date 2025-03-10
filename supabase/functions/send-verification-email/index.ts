@@ -118,10 +118,10 @@ serve(async (req) => {
 
     console.log(`Attempting to send verification email to ${email} for ${fullName} with token ${token}`);
 
-    // Send email using Resend with proper domain email
+    // Send email using Resend with the new sender address
     try {
       const { data, error } = await resend.emails.send({
-        from: "RAADE Conference <registration@rice-raade.com>",
+        from: "RAADE Conference <ife@rice-raade.com>",
         to: [email],
         subject: "RAADE Conference 2025 - Email Verification",
         html: emailContent,
