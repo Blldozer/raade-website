@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef } from 'react';
 import Navigation from '../Navigation';
 import AnimatedText from './AnimatedText';
@@ -91,14 +92,14 @@ const Hero = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-[clamp(0.5rem,1vw,1rem)]">
-              <button 
-                onClick={() => window.location.href = "#studios"}
+              <Link 
+                to="/studios#apply"
                 className="group w-full sm:w-auto px-[clamp(1.5rem,2vw,2rem)] py-[clamp(0.75rem,1.5vw,1rem)] bg-raade-gold-start text-[#1A365D] rounded-lg font-semibold 
                   transition-all duration-300 text-[length:var(--fluid-body)] font-alegreyasans relative overflow-hidden hover:shadow-[0_0_20px_rgba(251,176,59,0.5)]"
               >
                 <span className="relative z-10">Start Building Today</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-raade-gold-start via-raade-gold-middle to-raade-gold-end opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </button>
+              </Link>
               <Link 
                 to="/studios#apply" 
                 className="group w-full sm:w-auto px-[clamp(1.5rem,2vw,2rem)] py-[clamp(0.75rem,1.5vw,1rem)] border-2 border-raade-gold-start text-raade-gold-start rounded-lg 
