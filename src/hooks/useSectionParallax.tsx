@@ -14,13 +14,21 @@ export const useSectionParallax = (sectionId: string, depth: number = 0.2) => {
     if (!section) return;
 
     const parallaxElements = section.querySelectorAll('.parallax-element');
-    
     if (parallaxElements.length === 0) return;
     
-    // Reduce parallax effect on mobile to prevent elements from overlapping
-    const adjustedDepth = isMobile ? depth * 0.4 : isTablet ? depth * 0.7 : depth;
+    // Disable parallax on mobile for better performance and visibility
+    if (isMobile) {
+      parallaxElements.forEach(element => {
+        if (element instanceof HTMLElement) {
+          element.style.transform = 'none';
+        }
+      });
+      return;
+    }
     
-    // Create a container for all animations in this section
+    // Reduce effect on tablet
+    const adjustedDepth = isTablet ? depth * 0.5 : depth;
+    
     const sectionTimeline = gsap.timeline({
       scrollTrigger: {
         trigger: section,
@@ -31,34 +39,27 @@ export const useSectionParallax = (sectionId: string, depth: number = 0.2) => {
     });
     
     parallaxElements.forEach((element, index) => {
-      // Calculate a slightly different depth for each element to create layering
-      // Use smaller values on mobile for better visibility
-      const elementDepth = adjustedDepth * (1 + (index * (isMobile ? 0.05 : 0.1)));
+      if (!(element instanceof HTMLElement)) return;
       
-      // Make sure z-index is properly applied to avoid overlap issues
-      if (element instanceof Element) {
-        const currentStyles = window.getComputedStyle(element);
-        const currentZIndex = parseInt(currentStyles.zIndex) || 0;
-        
-        // Apply z-index in reverse order of parallax depth to prevent background elements
-        // from appearing in front of foreground elements
-        element.setAttribute('style', `${element.getAttribute('style') || ''}; z-index: ${100 - Math.round(elementDepth * 100)};`);
-      }
+      // Calculate z-index based on depth - deeper elements should be behind
+      const zIndex = Math.round(100 - (index * 10));
+      element.style.zIndex = `${zIndex}`;
+      
+      // Ensure proper stacking with transform-style
+      element.style.transformStyle = 'preserve-3d';
+      
+      // Add perspective for 3D effect
+      element.style.perspective = '1000px';
       
       sectionTimeline.to(element, {
-        y: `${elementDepth * 100}%`,
+        y: `${adjustedDepth * 100 * (index + 1)}%`,
         ease: "none",
-      }, 0); // The '0' means all animations start together
+      }, 0);
     });
     
     return () => {
-      // Clean up all ScrollTriggers related to this section
       ScrollTrigger.getAll().forEach(trigger => {
-        const triggerVars = trigger.vars;
-        // Check if the trigger element is our section
-        if (triggerVars.trigger && 
-            triggerVars.trigger instanceof Element && 
-            triggerVars.trigger.id === sectionId) {
+        if (trigger.vars.trigger === section) {
           trigger.kill();
         }
       });

@@ -8,32 +8,49 @@ import JoinSection from "@/components/sections/JoinSection";
 import { useSectionTransitions } from "@/hooks/useSectionTransitions";
 
 const Index = () => {
-  // Use our refactored hook for section transitions
   useSectionTransitions();
   
   return (
-    <div className="min-h-screen overflow-hidden">
-      <section className="relative w-full min-h-screen" id="hero">
+    <div className="relative min-h-screen overflow-x-hidden">
+      <section 
+        className="relative w-full min-h-screen z-[var(--z-content)]" 
+        id="hero"
+      >
         <Hero />
       </section>
       
-      <section className="relative w-full min-h-screen" id="conference-promo">
+      <section 
+        className="relative w-full min-h-screen z-[var(--z-content)]" 
+        id="conference-promo"
+      >
         <ConferencePromo />
       </section>
       
-      <section className="relative w-full min-h-screen" id="transition-stat">
+      <section 
+        className="relative w-full min-h-screen z-[var(--z-content)]" 
+        id="transition-stat"
+      >
         <TransitionStat />
       </section>
       
-      <section className="relative w-full min-h-screen bg-white" id="future-showcase">
+      <section 
+        className="relative w-full min-h-screen bg-white z-[var(--z-content)]" 
+        id="future-showcase"
+      >
         <FutureShowcase />
       </section>
       
-      <section className="relative w-full min-h-screen bg-[#3C403A]" id="transition-hook">
+      <section 
+        className="relative w-full min-h-screen bg-[#3C403A] z-[var(--z-content)]" 
+        id="transition-hook"
+      >
         <TransitionHook />
       </section>
       
-      <section className="relative w-full min-h-screen" id="join">
+      <section 
+        className="relative w-full min-h-screen z-[var(--z-content)]" 
+        id="join"
+      >
         <JoinSection />
       </section>
     </div>

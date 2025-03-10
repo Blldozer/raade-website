@@ -8,23 +8,27 @@ import { useFutureShowcaseAnimation } from './useFutureShowcaseAnimation';
 import { useGeneralSectionAnimations } from './useGeneralSectionAnimations';
 
 export const useSectionTransitions = () => {
-  // Use all our specialized hooks
   useNavBackground();
   
-  // Initialize parallax effect for each section that needs it
-  useSectionParallax('conference-promo', 0.2);
-  useSectionParallax('transition-stat', 0.15);
-  useSectionParallax('future-showcase', 0.25);
+  // Initialize parallax effect for each section with specific depths
+  useSectionParallax('conference-promo', 0.15); // Subtle effect for promo
+  useSectionParallax('transition-stat', 0.2);   // Medium effect for stats
+  useSectionParallax('future-showcase', 0.25);  // Stronger effect for showcase
   
   useTransitionStatAnimation();
   useTransitionHookAnimation();
   useFutureShowcaseAnimation();
   useGeneralSectionAnimations();
   
-  // Additional cleanup for any ScrollTrigger instances
   useEffect(() => {
+    // Add the new z-index CSS file to the document
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '/src/styles/zIndex.css';
+    document.head.appendChild(link);
+    
     return () => {
-      // This is now handled in each individual hook
+      document.head.removeChild(link);
     };
   }, []);
 };
