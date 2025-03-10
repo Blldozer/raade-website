@@ -17,16 +17,7 @@ const ConferenceHero = () => {
         <div className="w-full flex justify-end mb-4">
           <CountdownTimer 
             variant="nav" 
-            colorScheme={{
-              text: "text-white",
-              highlight: "text-white",
-              accent: "text-[#FBB03B]",
-              iconColor: "text-[#FBB03B]",
-              hoverBg: "hover:bg-white/10",
-              dropdownBg: "bg-[#274675]/95",
-              dropdownText: "text-white",
-              dropdownBorder: "border-white/20"
-            }}
+            colorScheme="light" // Always use light scheme on dark hero background
           />
         </div>
         
