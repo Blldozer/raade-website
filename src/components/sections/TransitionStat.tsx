@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import CountUp from 'react-countup';
@@ -87,9 +86,7 @@ const TransitionStat = () => {
       });
     }
   };
-  return <section ref={sectionRef} className="min-h-screen flex flex-col justify-center items-center py-10 relative overflow-hidden bg-[#3C403A]">
-      {/* Removed the white gradient overlay that was affecting the background color */}
-      
+  return <section ref={sectionRef} className="min-h-screen flex flex-col justify-center items-center py-10 relative overflow-hidden bg-[#3C403A]" data-background="dark">
       {/* Main content */}
       <div ref={contentRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
         <motion.div initial={{

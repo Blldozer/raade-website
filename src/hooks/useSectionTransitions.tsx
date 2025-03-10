@@ -15,11 +15,13 @@ export const useSectionTransitions = () => {
     });
 
     // Mark sections with data attributes for light/dark backgrounds
-    document.querySelectorAll('#hero, #transition-hook').forEach(section => {
+    // Dark backgrounds - use white logo and light contrast buttons
+    document.querySelectorAll('#hero, #transition-hook, #transition-stat, #conference-promo').forEach(section => {
       section.setAttribute('data-background', 'dark');
     });
     
-    document.querySelectorAll('#conference-promo, #transition-stat, #future-showcase, #join').forEach(section => {
+    // Light backgrounds - use black logo and dark contrast buttons
+    document.querySelectorAll('#future-showcase, #join').forEach(section => {
       section.setAttribute('data-background', 'light');
     });
 

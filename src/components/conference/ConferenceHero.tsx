@@ -7,7 +7,7 @@ import CountdownTimer from "../CountdownTimer";
 
 const ConferenceHero = () => {
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden" data-background="dark">
       {/* Background with gradient, team image, and Africa outline */}
       <HeroBackground />
       
