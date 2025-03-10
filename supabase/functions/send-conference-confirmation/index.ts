@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { Resend } from "npm:resend@4.0.0";
 
@@ -49,8 +48,8 @@ serve(async (req) => {
         ticketTypeDisplay = "Non-Rice Student";
         ticketPrice = "$65";
         break;
-      case "young-professional":
-        ticketTypeDisplay = "Young Professional";
+      case "professional":
+        ticketTypeDisplay = "Professional";
         ticketPrice = "$85";
         break;
       case "speaker":

@@ -1,3 +1,4 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -109,7 +110,7 @@ const ConferenceRegistration = () => {
             </Card>
           </motion.div>
           
-          {/* Young Professional Ticket */}
+          {/* Professional Ticket */}
           <motion.div className="scroll-animate" initial={{
           opacity: 0,
           y: 20
@@ -127,11 +128,11 @@ const ConferenceRegistration = () => {
                 Professional
               </div>
               <CardHeader>
-                <CardTitle className="text-xl font-simula">Young Professional Ticket</CardTitle>
+                <CardTitle className="text-xl font-simula">Professional Ticket</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-3xl font-bold text-raade-navy mb-4">$85</p>
-                <p className="text-gray-500 mb-6 font-lora text-sm">For young professionals</p>
+                <p className="text-gray-500 mb-6 font-lora text-sm">For professionals</p>
                 <ul className="space-y-2 mb-8">
                   <li className="flex items-start">
                     <Star className="h-5 w-5 text-[#FBB03B] mr-2 shrink-0 mt-0.5" />

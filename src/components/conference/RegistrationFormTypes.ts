@@ -5,7 +5,7 @@ import { z } from "zod";
 export const TICKET_TYPES = {
   RICE_STUDENT: "rice-student",
   NON_RICE_STUDENT: "non-rice-student",
-  YOUNG_PROFESSIONAL: "young-professional",
+  YOUNG_PROFESSIONAL: "professional",
   STUDENT_GROUP: "student-group"
 };
 

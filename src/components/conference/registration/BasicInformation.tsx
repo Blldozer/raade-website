@@ -49,10 +49,10 @@ const BasicInformation = ({
       </div>
 
       <div>
-        <Label htmlFor="organization">Organization</Label>
+        <Label htmlFor="organization">Organization/University</Label>
         <Input
           id="organization"
-          placeholder="Enter your organization name"
+          placeholder="Enter your organization or university name"
           {...register("organization")}
         />
         {errors.organization && (
