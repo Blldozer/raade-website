@@ -168,9 +168,9 @@ const ConferenceRegistration = () => {
           <Button 
             variant="outline" 
             className="border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-lora"
-            onClick={() => window.location.href = "mailto:conference@raade.org?subject=Student Group Registration Inquiry"}
+            onClick={() => navigate("/conference/register")}
           >
-            Contact for Group Registration
+            Register Now
           </Button>
         </div>
       </div>
