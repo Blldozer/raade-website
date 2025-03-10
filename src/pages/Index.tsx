@@ -53,6 +53,27 @@ const Index = () => {
       });
     }
     
+    // Create a special transition between FutureShowcase and TransitionHook (the "Every day we wait" section)
+    const hookSection = document.getElementById('transition-hook');
+    
+    if (futureSection && hookSection) {
+      // Coordinate the transition between these sections
+      ScrollTrigger.create({
+        trigger: futureSection,
+        start: "bottom 70%",
+        endTrigger: hookSection,
+        end: "top 30%",
+        markers: false, // Set to true for debugging
+        toggleClass: "transition-to-hook",
+        onToggle: (self) => {
+          if (self.isActive) {
+            // If we're in the transition zone, make sure both sections are visible
+            gsap.set([futureSection, hookSection], { visibility: "visible" });
+          }
+        }
+      });
+    }
+    
     return () => {
       // Cleanup
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
@@ -90,7 +111,7 @@ const Index = () => {
       </section>
       
       <section 
-        className="relative w-full min-h-screen bg-[#F5F5F0]" 
+        className="relative w-full min-h-screen bg-[#3C403A]" 
         id="transition-hook"
       >
         <TransitionHook />

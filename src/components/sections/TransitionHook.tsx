@@ -1,9 +1,64 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
+import ScrollTrigger from 'gsap/ScrollTrigger';
+
+// Register the ScrollTrigger plugin
+gsap.registerPlugin(ScrollTrigger);
 
 const TransitionHook = () => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    const section = sectionRef.current;
+    const content = contentRef.current;
+    
+    if (!section || !content) return;
+    
+    // Create zoom-in animation for entering this section
+    const enterTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: "top bottom",
+        end: "top center",
+        scrub: true,
+      }
+    });
+    
+    // Scale up from smaller size as it enters the viewport
+    enterTl.fromTo(section, {
+      scale: 0.9,
+      opacity: 0.5
+    }, {
+      scale: 1,
+      opacity: 1,
+      duration: 1,
+      ease: "power2.out"
+    });
+    
+    // Create a smooth transition for the content
+    gsap.fromTo(content, {
+      y: 30,
+      opacity: 0
+    }, {
+      y: 0,
+      opacity: 1,
+      duration: 0.8,
+      scrollTrigger: {
+        trigger: content,
+        start: "top 80%",
+        toggleActions: "play none none reverse"
+      }
+    });
+    
+    return () => {
+      // Clean up
+      ScrollTrigger.getAll().forEach(t => t.kill());
+    };
+  }, []);
+
   const scrollToNextSection = () => {
     const nextSection = document.getElementById('join');
     if (nextSection) {
@@ -19,8 +74,8 @@ const TransitionHook = () => {
   };
 
   return (
-    <section className="min-h-screen flex flex-col justify-between section-padding bg-[#3C403A]">
-      <div className="flex-grow flex items-center">
+    <section ref={sectionRef} className="min-h-screen flex flex-col justify-between section-padding bg-[#3C403A]">
+      <div ref={contentRef} className="flex-grow flex items-center">
         <div className="fluid-container text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

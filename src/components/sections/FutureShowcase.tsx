@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -119,6 +118,7 @@ const ProjectCard = ({
       </div>
     </div>;
 };
+
 const FutureShowcase = () => {
   const sectionRef = useRef<HTMLElement>(null);
   
@@ -141,6 +141,24 @@ const FutureShowcase = () => {
       { scale: 0.9, opacity: 0.5 },
       { scale: 1, opacity: 1, duration: 1, ease: "power2.out" }
     );
+    
+    // Create zoom-out effect when leaving this section to transition to the next
+    const exitTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: "bottom 70%", // Start the animation when the bottom of the section is 70% up the viewport
+        end: "bottom top",
+        scrub: true,
+        markers: false, // Set to true for debugging
+      }
+    });
+    
+    exitTl.to(section, {
+      scale: 0.95,
+      opacity: 0.8,
+      duration: 1,
+      ease: "power2.in"
+    });
     
     return () => {
       const ctx = gsap.context(() => {
