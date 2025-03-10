@@ -38,6 +38,7 @@ const TicketTypeSelection = ({
           <SelectValue placeholder="Select ticket type" />
         </SelectTrigger>
         <SelectContent>
+          <SelectItem value={TICKET_TYPES.TEST}>Test Ticket {getTicketPriceText(TICKET_TYPES.TEST)}</SelectItem>
           <SelectItem value={TICKET_TYPES.RICE_STUDENT}>Rice Student {getTicketPriceText(TICKET_TYPES.RICE_STUDENT)}</SelectItem>
           <SelectItem value={TICKET_TYPES.NON_RICE_STUDENT}>Non-Rice Student {getTicketPriceText(TICKET_TYPES.NON_RICE_STUDENT)}</SelectItem>
           <SelectItem value={TICKET_TYPES.YOUNG_PROFESSIONAL}>Professional {getTicketPriceText(TICKET_TYPES.YOUNG_PROFESSIONAL)}</SelectItem>

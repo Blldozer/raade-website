@@ -18,10 +18,8 @@ serve(async (req) => {
       apiVersion: "2023-10-16",
     });
 
-    // Get ticket data from request
     const { ticketType, email, fullName, groupSize } = await req.json();
 
-    // Define price based on ticket type
     let amount = 0;
     let description = "";
     const isGroupRegistration = ticketType === "student-group";
@@ -35,13 +33,17 @@ serve(async (req) => {
         amount = 6500; // $65.00
         description = "Non-Rice Student Ticket - RAADE Conference 2025";
         break;
-      case "young-professional":
+      case "professional":
         amount = 8500; // $85.00
-        description = "Young Professional Ticket - RAADE Conference 2025";
+        description = "Professional Ticket - RAADE Conference 2025";
         break;
       case "student-group":
         amount = 5000 * (groupSize || 5); // $50.00 per person
         description = `Student Group (${groupSize || 5} members) - RAADE Conference 2025`;
+        break;
+      case "test":
+        amount = 100; // $1.00
+        description = "Test Ticket - RAADE Conference 2025";
         break;
       default:
         return new Response(
