@@ -163,7 +163,7 @@ const ConferenceRegistration = () => {
         <div className="bg-[#FBB03B]/10 p-8 rounded-xl mt-12">
           <h3 className="text-xl font-bold text-raade-navy mb-4 font-simula">Student Group Discount</h3>
           <p className="text-gray-600 mb-6 font-lora">
-            Student groups of 5 or more can register at a discounted rate of $50 per person. Contact us for details.
+            Student groups of 5 or more can register at a discounted rate of $50 per person. Select the Student Group option during registration.
           </p>
           <Button 
             variant="outline" 

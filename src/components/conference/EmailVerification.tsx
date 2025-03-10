@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,20 +9,68 @@ import { useToast } from "@/hooks/use-toast";
 
 interface EmailVerificationProps {
   email: string;
+  fullName: string;
   ticketType: string;
+  emailSent: boolean;
   onVerificationSuccess: () => void;
   onVerificationError: (error: string) => void;
 }
 
 const EmailVerification = ({
   email,
+  fullName,
   ticketType,
+  emailSent,
   onVerificationSuccess,
   onVerificationError
 }: EmailVerificationProps) => {
   const [verificationCode, setVerificationCode] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isSendingEmail, setIsSendingEmail] = useState<boolean>(false);
   const { toast } = useToast();
+
+  // Attempt to send verification email if it hasn't been sent yet
+  useEffect(() => {
+    const sendVerificationEmail = async () => {
+      if (!emailSent) {
+        setIsSendingEmail(true);
+        try {
+          console.log("Sending initial verification email from useEffect to:", email);
+          const { data, error } = await supabase.functions.invoke("send-verification-email", {
+            body: {
+              email,
+              fullName,
+              ticketType,
+              isKnownInstitution: false
+            },
+          });
+
+          if (error) {
+            console.error("Error sending verification email:", error);
+            throw error;
+          }
+
+          toast({
+            title: "Verification code sent",
+            description: "A verification code has been sent to your email.",
+          });
+        } catch (error) {
+          console.error("Error in sending verification email:", error);
+          const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+          toast({
+            title: "Failed to send verification code",
+            description: errorMessage,
+            variant: "destructive",
+          });
+          onVerificationError(errorMessage);
+        } finally {
+          setIsSendingEmail(false);
+        }
+      }
+    };
+
+    sendVerificationEmail();
+  }, [email, fullName, ticketType, emailSent, toast, onVerificationError]);
 
   const handleVerifyEmail = async () => {
     if (!verificationCode) {
@@ -37,6 +85,7 @@ const EmailVerification = ({
     setIsSubmitting(true);
 
     try {
+      console.log("Verifying email with code:", verificationCode);
       const { data, error } = await supabase.functions.invoke("verify-email-token", {
         body: {
           email,
@@ -46,6 +95,7 @@ const EmailVerification = ({
       });
 
       if (error) {
+        console.error("Error from verify-email-token function:", error);
         throw error;
       }
 
@@ -73,19 +123,21 @@ const EmailVerification = ({
   };
 
   const handleResendCode = async () => {
-    setIsSubmitting(true);
+    setIsSendingEmail(true);
 
     try {
+      console.log("Resending verification email to:", email);
       const { data, error } = await supabase.functions.invoke("send-verification-email", {
         body: {
           email,
-          fullName: "User", // This should be passed from the parent component
+          fullName,
           ticketType,
-          isKnownInstitution: false // This will be set on the server
+          isKnownInstitution: false
         },
       });
 
       if (error) {
+        console.error("Error resending verification email:", error);
         throw error;
       }
 
@@ -102,7 +154,7 @@ const EmailVerification = ({
         variant: "destructive",
       });
     } finally {
-      setIsSubmitting(false);
+      setIsSendingEmail(false);
     }
   };
 
@@ -146,10 +198,10 @@ const EmailVerification = ({
             <Button
               variant="outline"
               onClick={handleResendCode}
-              disabled={isSubmitting}
+              disabled={isSendingEmail}
               className="w-full mt-2 sm:mt-0"
             >
-              {isSubmitting ? (
+              {isSendingEmail ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 "Resend Code"

@@ -26,6 +26,7 @@ const ConferenceRegistrationForm = () => {
   const [showEmailVerification, setShowEmailVerification] = useState(false);
   const [registrationData, setRegistrationData] = useState<RegistrationFormData | null>(null);
   const [emailValidationResult, setEmailValidationResult] = useState<{ isValid: boolean; message?: string } | null>(null);
+  const [verificationEmailSent, setVerificationEmailSent] = useState(false);
   const { toast } = useToast();
   
   const {
@@ -80,6 +81,8 @@ const ConferenceRegistrationForm = () => {
       
       // Send verification email for all ticket types except SPEAKER
       if (data.ticketType !== TICKET_TYPES.SPEAKER) {
+        console.log("Sending verification email to:", data.email);
+        
         const { error: verificationError } = await supabase.functions.invoke("send-verification-email", {
           body: {
             email: data.email,
@@ -89,8 +92,17 @@ const ConferenceRegistrationForm = () => {
           },
         });
         
-        if (verificationError) throw verificationError;
+        if (verificationError) {
+          console.error("Error sending verification email:", verificationError);
+          throw verificationError;
+        }
         
+        toast({
+          title: "Verification email sent",
+          description: `We've sent a verification code to ${data.email}. Please check your inbox and enter the code.`,
+        });
+        
+        setVerificationEmailSent(true);
         setRegistrationData(data);
         setShowEmailVerification(true);
       } else {
@@ -169,6 +181,7 @@ const ConferenceRegistrationForm = () => {
       setShowEmailVerification(false);
       setRegistrationData(null);
       setEmailValidationResult(null);
+      setVerificationEmailSent(false);
     } catch (error) {
       console.error("Registration error:", error);
       toast({
@@ -231,7 +244,9 @@ const ConferenceRegistrationForm = () => {
         ) : showEmailVerification && registrationData ? (
           <EmailVerification 
             email={registrationData.email}
+            fullName={registrationData.fullName}
             ticketType={registrationData.ticketType}
+            emailSent={verificationEmailSent}
             onVerificationSuccess={handleVerificationSuccess}
             onVerificationError={handleVerificationError}
           />
