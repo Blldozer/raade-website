@@ -1,9 +1,7 @@
-
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Calendar, MapPin, ChevronDown } from "lucide-react";
-
 const ConferenceHero = () => {
   const navigate = useNavigate();
   return <div className="relative min-h-screen overflow-hidden">
@@ -44,9 +42,7 @@ const ConferenceHero = () => {
             }} transition={{
               duration: 0.8,
               delay: 0.2
-            }} className="text-5xl lg:text-6xl font-bold font-simula text-white">
-                AFRICA 
-              </motion.h2>
+            }} className="text-5xl lg:text-6xl font-bold font-simula text-white">AFRICAN</motion.h2>
               <motion.h2 initial={{
               opacity: 0,
               x: -20
@@ -94,12 +90,11 @@ const ConferenceHero = () => {
 
             {/* Center the Register Now button and hide View Schedule button */}
             <div className="pt-4 flex justify-center">
-              <motion.button 
-                whileHover={{ scale: 1.05 }} 
-                whileTap={{ scale: 0.95 }} 
-                onClick={() => navigate("/conference/register")} 
-                className="px-8 py-3 bg-[#FBB03B] text-white rounded-md font-medium transition-all hover:bg-[#FBB03B]/90 font-lora shadow-md"
-              >
+              <motion.button whileHover={{
+              scale: 1.05
+            }} whileTap={{
+              scale: 0.95
+            }} onClick={() => navigate("/conference/register")} className="px-8 py-3 bg-[#FBB03B] text-white rounded-md font-medium transition-all hover:bg-[#FBB03B]/90 font-lora shadow-md">
                 Register Now
               </motion.button>
             </div>
