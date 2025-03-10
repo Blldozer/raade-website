@@ -1,12 +1,12 @@
-
 import { z } from "zod";
 
 // Ticket type constants
 export const TICKET_TYPES = {
   RICE_STUDENT: "rice-student",
   NON_RICE_STUDENT: "non-rice-student",
-  YOUNG_PROFESSIONAL: "young-professional",
-  STUDENT_GROUP: "student-group"
+  YOUNG_PROFESSIONAL: "professional",
+  STUDENT_GROUP: "student-group",
+  TEST: "test" // Add new test ticket type
 };
 
 // Email schema with domain validation helper
@@ -38,6 +38,7 @@ export const getTicketPriceText = (ticketType: string) => {
     case TICKET_TYPES.NON_RICE_STUDENT: return "($65)";
     case TICKET_TYPES.YOUNG_PROFESSIONAL: return "($85)";
     case TICKET_TYPES.STUDENT_GROUP: return "($50/person, min 5)";
+    case TICKET_TYPES.TEST: return "($1)";
     default: return "";
   }
 };
@@ -47,7 +48,8 @@ export const getTicketPrice = (ticketType: string): number => {
     case TICKET_TYPES.RICE_STUDENT: return 50;
     case TICKET_TYPES.NON_RICE_STUDENT: return 65;
     case TICKET_TYPES.YOUNG_PROFESSIONAL: return 85;
-    case TICKET_TYPES.STUDENT_GROUP: return 50; // Per person
+    case TICKET_TYPES.STUDENT_GROUP: return 50;
+    case TICKET_TYPES.TEST: return 1;
     default: return 0;
   }
 };
@@ -101,8 +103,8 @@ export const validateTicketEmailDomain = (email: string, ticketType: string): { 
     };
   }
   
-  // Non-Rice Student tickets require any .edu email
-  if (ticketType === TICKET_TYPES.NON_RICE_STUDENT && !validation.isEduEmail) {
+  // Non-Rice Student and Student Group tickets require any .edu email
+  if ((ticketType === TICKET_TYPES.NON_RICE_STUDENT || ticketType === TICKET_TYPES.STUDENT_GROUP) && !validation.isEduEmail) {
     return { 
       isValid: false, 
       message: "Student tickets require an .edu email address" 

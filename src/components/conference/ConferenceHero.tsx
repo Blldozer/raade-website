@@ -8,11 +8,11 @@ import CountdownTimer from "../CountdownTimer";
 const ConferenceHero = () => {
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* Background with gradient and Africa outline */}
+      {/* Background with gradient, team image, and Africa outline */}
       <HeroBackground />
       
-      {/* Main content container - using full width now */}
-      <div className="container max-w-7xl mx-auto relative z-20 pt-20 px-4 md:px-6 lg:px-8 min-h-screen flex flex-col items-center justify-center">
+      {/* Main content container - using full width with higher z-index to ensure visibility */}
+      <div className="container max-w-7xl mx-auto relative z-10 pt-20 px-4 md:px-6 lg:px-8 min-h-screen flex flex-col items-center justify-center">
         {/* Small Countdown Timer at the top */}
         <div className="w-full flex justify-end mb-4">
           <CountdownTimer 
@@ -30,7 +30,7 @@ const ConferenceHero = () => {
           />
         </div>
         
-        {/* Centered content with combined information */}
+        {/* Centered hero content */}
         <HeroLeftContent />
       </div>
       

@@ -54,7 +54,7 @@ const Navigation = ({ isHeroPage = false, forceDarkMode = false }: NavigationPro
   return (
     <nav
       className={cn(
-        "fixed w-full z-50 transition-all duration-300",
+        "fixed w-full z-[100] transition-all duration-300 pointer-events-auto",
         isScrolled
           ? "bg-white/5 backdrop-blur-[2px] shadow-md"
           : "bg-transparent",
@@ -76,7 +76,6 @@ const Navigation = ({ isHeroPage = false, forceDarkMode = false }: NavigationPro
             <div className="hidden md:block mr-6">
               <CountdownTimer 
                 variant="nav" 
-                targetDate="2025-04-11T09:00:00" 
                 colorScheme="auto" 
               />
             </div>

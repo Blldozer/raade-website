@@ -1,12 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@13.7.0";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-
-const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
-const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
-
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -24,10 +18,8 @@ serve(async (req) => {
       apiVersion: "2023-10-16",
     });
 
-    // Get ticket data from request
     const { ticketType, email, fullName, groupSize } = await req.json();
 
-    // Define price based on ticket type
     let amount = 0;
     let description = "";
     const isGroupRegistration = ticketType === "student-group";
@@ -41,13 +33,17 @@ serve(async (req) => {
         amount = 6500; // $65.00
         description = "Non-Rice Student Ticket - RAADE Conference 2025";
         break;
-      case "young-professional":
+      case "professional":
         amount = 8500; // $85.00
-        description = "Young Professional Ticket - RAADE Conference 2025";
+        description = "Professional Ticket - RAADE Conference 2025";
         break;
       case "student-group":
         amount = 5000 * (groupSize || 5); // $50.00 per person
         description = `Student Group (${groupSize || 5} members) - RAADE Conference 2025`;
+        break;
+      case "test":
+        amount = 100; // $1.00
+        description = "Test Ticket - RAADE Conference 2025";
         break;
       default:
         return new Response(
@@ -57,27 +53,6 @@ serve(async (req) => {
             headers: { ...corsHeaders, "Content-Type": "application/json" } 
           }
         );
-    }
-
-    // Verify email is verified
-    const { data: verification, error: verificationError } = await supabase
-      .from('email_verifications')
-      .select('verified')
-      .eq('email', email)
-      .eq('ticket_type', ticketType)
-      .single();
-    
-    if (verificationError || !verification || !verification.verified) {
-      return new Response(
-        JSON.stringify({ 
-          error: "Email not verified",
-          message: "Please verify your email before proceeding to payment."
-        }),
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, "Content-Type": "application/json" } 
-        }
-      );
     }
 
     // Create a Payment Intent

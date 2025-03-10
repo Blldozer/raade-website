@@ -13,8 +13,8 @@ const ConferencePage = () => {
   }, []);
   
   return (
-    <div>
-      <Navigation isHeroPage={false} forceDarkMode={false} />
+    <div className="relative">
+      <Navigation isHeroPage={true} forceDarkMode={false} />
       <Conference />
     </div>
   );

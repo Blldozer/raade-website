@@ -1,9 +1,11 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Star, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+
 const ConferenceRegistration = () => {
   const navigate = useNavigate();
   return <section id="registration" className="py-16 px-4 md:px-8 bg-white">
@@ -109,7 +111,7 @@ const ConferenceRegistration = () => {
             </Card>
           </motion.div>
           
-          {/* Young Professional Ticket */}
+          {/* Professional Ticket */}
           <motion.div className="scroll-animate" initial={{
           opacity: 0,
           y: 20
@@ -122,16 +124,16 @@ const ConferenceRegistration = () => {
           duration: 0.5,
           delay: 0.4
         }}>
-            <Card className="border-t-4 border-t-[#FBB03B] hover:shadow-xl transition-all h-full">
-              <div className="absolute top-4 right-4 bg-[#FBB03B] text-white text-sm font-medium py-1 px-3 rounded-full">
+            <Card className="border-t-4 border-t-[#FBB03B] hover:shadow-xl transition-all relative h-full">
+              <div className="absolute top-4 right-4 z-10 bg-[#FBB03B] text-white text-sm font-medium py-1 px-3 rounded-full">
                 Professional
               </div>
               <CardHeader>
-                <CardTitle className="text-xl font-simula">Young Professional Ticket</CardTitle>
+                <CardTitle className="text-xl font-simula">Professional Ticket</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-3xl font-bold text-raade-navy mb-4">$85</p>
-                <p className="text-gray-500 mb-6 font-lora text-sm">For young professionals</p>
+                <p className="text-gray-500 mb-6 font-lora text-sm">For professionals</p>
                 <ul className="space-y-2 mb-8">
                   <li className="flex items-start">
                     <Star className="h-5 w-5 text-[#FBB03B] mr-2 shrink-0 mt-0.5" />
