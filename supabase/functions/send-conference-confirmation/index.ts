@@ -10,6 +10,10 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+function isRiceEmail(email: string): boolean {
+  return email.toLowerCase().endsWith("@rice.edu");
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -129,14 +133,23 @@ This is an automated message. Please do not reply to this email.
 © 2024 RAADE - Rice Association for African Development
     `;
 
-    // Send email using Resend with the new sender address
+    // Determine the best sender email to use
+    const senderEmail = isRiceEmail(email) 
+      ? "RAADE Conference <ife@rice-raade.com>"
+      : "RAADE Conference <conference@resend.dev>";
+
+    console.log(`Using sender email: ${senderEmail} for recipient: ${email}`);
+
+    // Send email using Resend with the appropriate sender address
     try {
       const { data, error } = await resend.emails.send({
-        from: "RAADE Conference <ife@rice-raade.com>",
+        from: senderEmail,
         to: [email],
         subject: "RAADE Conference 2025 - Registration Confirmation",
         html: emailContent,
         text: plainTextContent,
+        // Add reply-to for responses
+        reply_to: "conference@raade.org"
       });
 
       if (error) {
@@ -153,7 +166,13 @@ This is an automated message. Please do not reply to this email.
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: "Confirmation email sent successfully"
+        message: "Confirmation email sent successfully",
+        senderUsed: senderEmail,
+        debug: {
+          email: email,
+          domain: email.split('@')[1],
+          isRice: isRiceEmail(email)
+        }
       }),
       { 
         status: 200, 
@@ -165,7 +184,11 @@ This is an automated message. Please do not reply to this email.
     console.error("Error sending confirmation email:", error);
     
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        stack: error.stack,
+        cause: error.cause
+      }),
       { 
         status: 500, 
         headers: { ...corsHeaders, "Content-Type": "application/json" } 

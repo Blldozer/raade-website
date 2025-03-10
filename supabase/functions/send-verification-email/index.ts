@@ -31,6 +31,14 @@ function generateToken(length = 6) {
   return token;
 }
 
+function isRiceEmail(email: string): boolean {
+  return email.toLowerCase().endsWith("@rice.edu");
+}
+
+function isEduEmail(email: string): boolean {
+  return email.toLowerCase().endsWith(".edu");
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -49,6 +57,8 @@ serve(async (req) => {
         }
       );
     }
+
+    console.log(`Processing verification request for ${email} (${ticketType})`);
 
     // Generate verification token
     const token = generateToken();
@@ -104,7 +114,7 @@ serve(async (req) => {
                 <p>Please enter this code on the verification page to confirm your email address.</p>
               </div>
               <p>This code will expire in 24 hours.</p>
-              <p>If you have any issues, please reply to this email for assistance.</p>
+              <p>If you have any issues, please contact us at conference@raade.org for assistance.</p>
               <p>Best regards,<br>The RAADE Conference Team</p>
             </div>
             <div class="footer">
@@ -130,7 +140,7 @@ Please enter this code on the verification page to confirm your email address.
 
 This code will expire in 24 hours.
 
-If you have any issues, please reply to this email for assistance.
+If you have any issues, please contact us at conference@raade.org for assistance.
 
 Best regards,
 The RAADE Conference Team
@@ -139,16 +149,25 @@ The RAADE Conference Team
 This is an automated message from the conference registration system.
     `;
 
-    console.log(`Attempting to send verification email to ${email} for ${fullName} with token ${token}`);
+    // Determine the best sender email to use
+    // For Rice emails, use Rice-related sender if possible
+    // For others, use the Resend default domain which has better deliverability
+    const senderEmail = isRiceEmail(email) 
+      ? "RAADE Conference <ife@rice-raade.com>"
+      : "RAADE Conference <conference@resend.dev>";
 
-    // Send email using Resend with the new sender address
+    console.log(`Sending verification email to ${email} with token ${token} using sender: ${senderEmail}`);
+
+    // Send email using Resend
     try {
       const { data, error } = await resend.emails.send({
-        from: "RAADE Conference <ife@rice-raade.com>",
+        from: senderEmail,
         to: [email],
         subject: "RAADE Conference 2025 - Email Verification",
         html: emailContent,
         text: plainTextContent,
+        // Add reply-to for responses
+        reply_to: "conference@raade.org"
       });
 
       if (error) {
@@ -168,9 +187,12 @@ This is an automated message from the conference registration system.
       JSON.stringify({ 
         success: true, 
         message: "Verification email sent successfully",
+        senderUsed: senderEmail,
         debug: {
           email: email,
-          resendApiKeyLength: resendApiKey.length,
+          domain: email.split('@')[1],
+          isRice: isRiceEmail(email),
+          isEdu: isEduEmail(email),
           tokenCreated: true
         }
       }),
