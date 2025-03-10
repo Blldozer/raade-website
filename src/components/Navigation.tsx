@@ -87,7 +87,7 @@ const Navigation = ({
   return (
     <nav
       className={cn(
-        "fixed w-full z-[100] transition-all duration-300 pointer-events-auto pt-2 sm:pt-3 md:pt-4", 
+        "fixed w-full z-[100] transition-all duration-300 pointer-events-auto pt-2 sm:pt-3 md:pt-4 isolate", 
         isScrolled
           ? "bg-white/5 backdrop-blur-[2px] shadow-md"
           : "bg-transparent",
