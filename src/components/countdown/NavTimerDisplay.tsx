@@ -35,7 +35,7 @@ const NavTimerDisplay = ({
           <CardContent className="p-4">
             <div className="mb-2 flex items-center gap-2">
               <Timer size={18} className={colors.iconColor} />
-              <h3 className={cn("text-sm font-bold font-montserrat", colors.highlight)}>Forum Countdown</h3>
+              <h3 className={cn("text-sm font-bold font-montserrat", colors.highlight)}>Conference Countdown</h3>
             </div>
             
             <TimerDigits days={timeLeft.days} hours={timeLeft.hours} minutes={timeLeft.minutes} seconds={timeLeft.seconds} colorClasses={{
