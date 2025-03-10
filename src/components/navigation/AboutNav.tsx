@@ -50,7 +50,7 @@ const AboutNav = () => {
   return (
     <nav
       className={cn(
-        "fixed w-full z-50 transition-all duration-300",
+        "fixed w-full z-50 transition-all duration-300 pt-4", // Added pt-4 for top padding
         isScrolled
           ? "bg-white/5 backdrop-blur-[2px] shadow-md"
           : "bg-transparent",

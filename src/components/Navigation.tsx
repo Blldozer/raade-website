@@ -78,7 +78,7 @@ const Navigation = ({
   return (
     <nav
       className={cn(
-        "fixed w-full z-[100] transition-all duration-300 pointer-events-auto",
+        "fixed w-full z-[100] transition-all duration-300 pointer-events-auto pt-4", // Added pt-4 for top padding
         isScrolled
           ? "bg-white/5 backdrop-blur-[2px] shadow-md"
           : "bg-transparent",
