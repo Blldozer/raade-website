@@ -3,9 +3,10 @@ import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
+import ScrollToPlugin from 'gsap/ScrollToPlugin';
 
 // Register the ScrollTrigger plugin
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 const TransitionHook = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -14,8 +15,9 @@ const TransitionHook = () => {
   useEffect(() => {
     const section = sectionRef.current;
     const content = contentRef.current;
+    const joinSection = document.getElementById('join');
     
-    if (!section || !content) return;
+    if (!section || !content || !joinSection) return;
     
     // Create zoom-in animation for entering this section
     const enterTl = gsap.timeline({
@@ -51,6 +53,28 @@ const TransitionHook = () => {
         start: "top 80%",
         toggleActions: "play none none reverse"
       }
+    });
+    
+    // Create zoom-out animation when transitioning to joinSection
+    const exitTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: "bottom 60%",
+        end: "bottom top",
+        scrub: true,
+        onLeave: () => {
+          // Signal to the joinSection to start its zoom-in animation
+          document.dispatchEvent(new CustomEvent('transitionToJoin'));
+        }
+      }
+    });
+    
+    // Scale down and fade when transitioning to join section
+    exitTl.to(section, {
+      scale: 0.85,
+      opacity: 0.5,
+      duration: 1,
+      ease: "power2.in"
     });
     
     return () => {

@@ -78,7 +78,7 @@ const Index = () => {
     const joinSection = document.getElementById('join');
     
     if (hookSection && joinSection) {
-      // Coordinate the transition between these sections
+      // Enhanced coordination for the simultaneous zoom effect
       ScrollTrigger.create({
         trigger: hookSection,
         start: "bottom 60%",
@@ -91,10 +91,24 @@ const Index = () => {
             // If we're in the transition zone, make sure both sections are visible
             gsap.set([hookSection, joinSection], { visibility: "visible" });
             
-            // Add a subtle animation for the join section
-            gsap.fromTo(joinSection, 
-              { opacity: 0, y: 30 },
-              { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }
+            // Trigger the custom transition event when entering the overlap zone
+            if (self.isActive) {
+              document.dispatchEvent(new CustomEvent('transitionToJoin'));
+            }
+            
+            // Create the simultaneous zoom effect - hook section zooming out while join section zooms in
+            const timeline = gsap.timeline();
+            timeline.to(hookSection, {
+              scale: 0.85,
+              opacity: 0.6,
+              duration: 0.8,
+              ease: "power2.in"
+            }, 0);
+            
+            timeline.fromTo(joinSection, 
+              { scale: 0.85, opacity: 0.6 },
+              { scale: 1, opacity: 1, duration: 0.8, ease: "power2.out" },
+              0
             );
           }
         }
