@@ -1,4 +1,5 @@
-import React, { useRef } from 'react';
+
+import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { projects } from '@/data/ProjectData';
@@ -82,8 +83,36 @@ const ProjectCard = ({
 const FutureShowcase = () => {
   const sectionRef = useRef<HTMLElement>(null);
   
+  useEffect(() => {
+    // When leaving this section (scrolling down), trigger transition to the hook section
+    const onSectionExit = () => {
+      document.dispatchEvent(new CustomEvent('transitionToHook'));
+    };
+    
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        // When the section is no longer intersecting and scrolling down
+        if (!entry.isIntersecting && entry.boundingClientRect.y < 0) {
+          onSectionExit();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+    
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+    };
+  }, []);
+  
   return (
-    <section ref={sectionRef} className="relative py-40 bg-white" style={{
+    <section id="future-showcase" ref={sectionRef} className="relative py-40 bg-white" style={{
       height: 'auto',
       minHeight: '100vh',
       zIndex: 1 // Ensure proper stacking context
