@@ -9,15 +9,27 @@ interface SubmissionConfirmationProps {
   message: string;
   buttonText?: string;
   customMessage?: React.ReactNode;
+  icon?: React.ReactNode;
+  buttonAction?: () => void;
 }
 
 const SubmissionConfirmation = ({
   title,
   message,
   buttonText = "Return to Home",
-  customMessage
+  customMessage,
+  icon,
+  buttonAction
 }: SubmissionConfirmationProps) => {
   const navigate = useNavigate();
+
+  const handleButtonClick = () => {
+    if (buttonAction) {
+      buttonAction();
+    } else {
+      navigate('/');
+    }
+  };
 
   return (
     <motion.div
@@ -27,7 +39,7 @@ const SubmissionConfirmation = ({
     >
       <div className="flex justify-center mb-6">
         <div className="rounded-full bg-green-500/20 p-4">
-          <Check className="h-16 w-16 text-green-500" />
+          {icon || <Check className="h-16 w-16 text-green-500" />}
         </div>
       </div>
       
@@ -37,7 +49,7 @@ const SubmissionConfirmation = ({
       {customMessage && <div className="mb-8">{customMessage}</div>}
       
       <Button 
-        onClick={() => navigate('/')}
+        onClick={handleButtonClick}
         className="bg-[#FBB03B] hover:bg-[#FBB03B]/80 text-white font-lora"
       >
         <Home className="mr-2 h-4 w-4" />

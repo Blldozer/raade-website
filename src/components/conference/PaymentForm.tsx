@@ -26,6 +26,7 @@ const PaymentForm = ({ email, onSuccess, onError, amount, currency }: PaymentFor
 
   const [message, setMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [paymentCompleted, setPaymentCompleted] = useState(false);
 
   useEffect(() => {
     if (!stripe) {
@@ -44,7 +45,10 @@ const PaymentForm = ({ email, onSuccess, onError, amount, currency }: PaymentFor
       switch (paymentIntent?.status) {
         case "succeeded":
           setMessage("Payment succeeded!");
-          onSuccess();
+          if (!paymentCompleted) {
+            setPaymentCompleted(true);
+            onSuccess();
+          }
           break;
         case "processing":
           setMessage("Your payment is processing.");
@@ -57,7 +61,7 @@ const PaymentForm = ({ email, onSuccess, onError, amount, currency }: PaymentFor
           break;
       }
     });
-  }, [stripe, onSuccess]);
+  }, [stripe, onSuccess, paymentCompleted]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -69,7 +73,7 @@ const PaymentForm = ({ email, onSuccess, onError, amount, currency }: PaymentFor
 
     setIsLoading(true);
 
-    const { error } = await stripe.confirmPayment({
+    const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         return_url: window.location.href,
@@ -88,9 +92,10 @@ const PaymentForm = ({ email, onSuccess, onError, amount, currency }: PaymentFor
         setMessage("An unexpected error occurred");
         onError("An unexpected error occurred");
       }
-    } else {
+    } else if (paymentIntent && paymentIntent.status === "succeeded") {
       // The payment has been processed!
       setMessage("Payment succeeded!");
+      setPaymentCompleted(true);
       onSuccess();
     }
 
@@ -144,7 +149,7 @@ const PaymentForm = ({ email, onSuccess, onError, amount, currency }: PaymentFor
           />
           
           <Button
-            disabled={isLoading || !stripe || !elements}
+            disabled={isLoading || !stripe || !elements || paymentCompleted}
             className="w-full bg-raade-navy hover:bg-raade-navy/90 text-white"
             type="submit"
           >
