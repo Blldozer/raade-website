@@ -20,7 +20,7 @@ const HeroRightContent = () => {
           >
             <div className="relative mb-8">
               <motion.div 
-                className="absolute -inset-6 rounded-lg bg-white/10 backdrop-blur-sm" 
+                className="absolute -inset-6 rounded-lg bg-white/15 backdrop-blur-md shadow-lg" 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.4, delay: 0.6 }}
@@ -28,7 +28,7 @@ const HeroRightContent = () => {
               <h2 className="relative text-7xl md:text-8xl font-bold font-simula text-white leading-tight tracking-tighter">
                 <span className="drop-shadow-lg">BUILDING</span> 
                 <br />
-                <span className="text-[#FBB03B] drop-shadow-lg">TOMORROW</span>
+                <span className="bg-gradient-to-br from-[#FBB03B] via-[#FF9848] to-[#FF8A6A] bg-clip-text text-transparent drop-shadow-sm">TOMORROW</span>
               </h2>
             </div>
             
@@ -45,21 +45,21 @@ const HeroRightContent = () => {
               {/* Forum highlights buttons */}
               <div className="flex flex-wrap justify-center gap-3 mt-4">
                 <motion.div 
-                  className="group px-5 py-2 bg-white/10 rounded-full cursor-pointer hover:bg-white/20 transition-all" 
+                  className="group px-5 py-2 bg-white/10 backdrop-blur-sm rounded-full cursor-pointer hover:bg-white/20 transition-all" 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   <p className="text-white font-lora font-medium">10+ Speakers</p>
                 </motion.div>
                 <motion.div 
-                  className="group px-5 py-2 bg-white/10 rounded-full cursor-pointer hover:bg-white/20 transition-all" 
+                  className="group px-5 py-2 bg-white/10 backdrop-blur-sm rounded-full cursor-pointer hover:bg-white/20 transition-all" 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   <p className="text-white font-lora font-medium">5 Workshops</p>
                 </motion.div>
                 <motion.div 
-                  className="group px-5 py-2 bg-white/10 rounded-full cursor-pointer hover:bg-white/20 transition-all" 
+                  className="group px-5 py-2 bg-white/10 backdrop-blur-sm rounded-full cursor-pointer hover:bg-white/20 transition-all" 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
