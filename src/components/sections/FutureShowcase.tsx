@@ -24,7 +24,7 @@ const showcaseProjects = [{
   slug: nutritionProject?.slug || "child-nutrition-initiative"
 }, {
   title: womenProject?.name || "Women's Entrepreneurship Program",
-  image: "https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80", // Using a different image
+  image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80", // Updated to image with Black individuals
   description: womenProject?.challenge || "Young mothers with limited education struggle to maintain small businesses",
   category: "BUSINESS",
   slug: womenProject?.slug || "womens-entrepreneurship-program"
