@@ -22,14 +22,14 @@ export type Project = {
 
 export const projects: Project[] = [
   {
-    name: "SunFi Solar Initiative",
+    name: "SunFi Solar Access Program",
     partner: "SunFi Energy",
     partnerLink: "https://www.sunfi.co/",
     challenge: "Limited access to clean energy in rural Nigerian communities; decentralized market with price verification challenges",
     sector: "Energy",
     image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&q=80",
     slug: "sunfi-solar-initiative",
-    description: "The SunFi Solar Initiative addresses Nigeria's significant energy gap, where nearly half the population lacks reliable electricity access. In partnership with SunFi Energy, we're reimagining how distributed energy partners (DEPs) can expand solar power access across Nigeria. Our team is developing strategies to optimize this entrepreneurial distribution model, enabling more efficient deployment of affordable solar solutions to underserved communities. By enhancing the effectiveness of local energy entrepreneurs, this initiative aims to create pathways to clean energy that can scale nationwide.",
+    description: "The SunFi Solar Access Program addresses Nigeria's significant energy gap, where nearly half the population lacks reliable electricity access. In partnership with SunFi Energy, we're reimagining how distributed energy partners (DEPs) can expand solar power access across Nigeria. Our team is developing strategies to optimize this entrepreneurial distribution model, enabling more efficient deployment of affordable solar solutions to underserved communities. By enhancing the effectiveness of local energy entrepreneurs, this initiative aims to create pathways to clean energy that can scale nationwide.",
     goals: [
       "Optimize the distributed energy partner (DEP) network model",
       "Develop strategies for more efficient solar solution deployment",
@@ -72,7 +72,7 @@ export const projects: Project[] = [
     name: "Child Nutrition Initiative",
     partner: "Medical Women's Association of Nigeria",
     partnerLink: "https://www.mwan.org/",
-    challenge: "Nearly 1/3 of under-five children in Nigeria are underweight or wasted; commercial options increasingly unaffordable",
+    challenge: "Nearly 1/3 of under-five children in Nigeria suffer from malnutrition; rising inflation has put commercial baby foods beyond reach for most families.",
     sector: "Healthcare",
     image: "https://images.unsplash.com/photo-1493770348161-369560ae357d?auto=format&fit=crop&q=80",
     slug: "child-nutrition-initiative",

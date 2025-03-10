@@ -11,7 +11,7 @@ const sunfiProject = projects.find(p => p.slug === "sunfi-solar-initiative");
 const nutritionProject = projects.find(p => p.slug === "child-nutrition-initiative");
 const womenProject = projects.find(p => p.slug === "womens-entrepreneurship-program");
 const showcaseProjects = [{
-  title: sunfiProject?.name || "SunFi Solar Initiative",
+  title: sunfiProject?.name || "SunFi Solar Access Program",
   image: sunfiProject?.image || "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&q=80",
   description: sunfiProject?.challenge || "Limited access to clean energy in rural Nigerian communities",
   category: "ENERGY",
@@ -19,7 +19,7 @@ const showcaseProjects = [{
 }, {
   title: nutritionProject?.name || "Child Nutrition Initiative",
   image: nutritionProject?.image || "https://images.unsplash.com/photo-1493770348161-369560ae357d?auto=format&fit=crop&q=80",
-  description: nutritionProject?.challenge || "Nearly 1/3 of under-five children in Nigeria are underweight or wasted",
+  description: nutritionProject?.challenge || "Nearly 1/3 of under-five children in Nigeria suffer from malnutrition; rising inflation has put commercial baby foods beyond reach for most families.",
   category: "HEALTHCARE",
   slug: nutritionProject?.slug || "child-nutrition-initiative"
 }, {
@@ -29,6 +29,7 @@ const showcaseProjects = [{
   category: "BUSINESS",
   slug: womenProject?.slug || "womens-entrepreneurship-program"
 }];
+
 const ProjectCard = ({
   title,
   image,
