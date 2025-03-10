@@ -1,20 +1,100 @@
 
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import CountUp from 'react-countup';
+import gsap from 'gsap';
+import ScrollTrigger from 'gsap/ScrollTrigger';
+
+// Register the ScrollTrigger plugin
+gsap.registerPlugin(ScrollTrigger);
 
 const TransitionStat = () => {
+  const sectionRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    const section = sectionRef.current;
+    const content = contentRef.current;
+    const nextSection = document.getElementById('future-showcase');
+    
+    if (!section || !content || !nextSection) return;
+    
+    // Create zoom-in animation for entering this section
+    const enterTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: "top bottom",
+        end: "top center",
+        scrub: true,
+      }
+    });
+    
+    // Scale up the section as it enters the viewport
+    enterTl.fromTo(section, 
+      { scale: 0.8, opacity: 0 },
+      { scale: 1, opacity: 1, duration: 1, ease: "power2.out" }
+    );
+    
+    // Create zoom-out animation when leaving this section
+    const exitTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: "bottom 80%",
+        end: "bottom top",
+        scrub: true,
+      }
+    });
+    
+    // Scale down and fade out this section as we scroll to the next
+    exitTl.to(section, {
+      scale: 0.9,
+      opacity: 0.5,
+      duration: 1,
+      ease: "power2.in"
+    });
+    
+    // Animation for the content - slides in from bottom
+    gsap.fromTo(content,
+      { y: 50, opacity: 0 },
+      { 
+        y: 0, 
+        opacity: 1, 
+        duration: 0.8, 
+        scrollTrigger: {
+          trigger: content,
+          start: "top 80%",
+          toggleActions: "play none none reverse"
+        }
+      }
+    );
+    
+    return () => {
+      // Clean up animations
+      ScrollTrigger.getAll().forEach(t => t.kill());
+    };
+  }, []);
+
+  const scrollToNextSection = () => {
+    const nextSection = document.getElementById('future-showcase');
+    if (nextSection) {
+      gsap.to(window, {
+        duration: 1,
+        scrollTo: {
+          y: nextSection,
+          offsetY: 0
+        },
+        ease: "power2.inOut"
+      });
+    }
+  };
 
   return (
-    <div 
+    <section 
+      ref={sectionRef}
       className="min-h-screen flex flex-col justify-center items-center py-10 bg-white relative overflow-hidden"
     >
       {/* Background gradient for depth */}
       <div className="absolute inset-0 bg-gradient-to-b from-white via-white to-[#F5F5F0]/50 pointer-events-none"></div>
-      
-      {/* Card effect shadow and border */}
-      <div className="absolute inset-0 shadow-xl rounded-t-3xl pointer-events-none border-t-2 border-[#F5F5F0]"></div>
       
       {/* Main content */}
       <div 
@@ -56,13 +136,14 @@ const TransitionStat = () => {
         <motion.button 
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          onClick={scrollToNextSection} 
           className="cursor-pointer p-4 group" 
           aria-label="Scroll to next section"
         >
           <div className="w-6 h-6 mx-auto border-b-2 border-r-2 border-[#1A365D]/30 rotate-45 transition-all duration-300 group-hover:border-[#1A365D] group-hover:scale-110" />
         </motion.button>
       </motion.div>
-    </div>
+    </section>
   );
 };
 
