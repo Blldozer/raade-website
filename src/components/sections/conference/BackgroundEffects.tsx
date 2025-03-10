@@ -19,7 +19,7 @@ const BackgroundEffects = () => {
     <>
       {/* Base image layer */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/raade-eboard-sally-port-cmp.jpg')] bg-cover bg-center opacity-40 mix-blend-multiply"></div>
+        <div className="absolute inset-0 bg-[url('/raade-eboard-sally-port-cmp.jpg')] bg-cover bg-center opacity-25 mix-blend-multiply"></div>
       </div>
       
       {/* Gradient overlay with animation */}
@@ -30,13 +30,13 @@ const BackgroundEffects = () => {
         style={{
           background: "linear-gradient(135deg, #274675 0%, #1E3A6C 25%, #8B5CF6 50%, #1E3A6C 75%, #274675 100%)",
           backgroundSize: "200% 200%",
-          opacity: 0.85,
+          opacity: 0.80,
           mixBlendMode: "overlay"
         }}
       />
       
       {/* Abstract shapes in background */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-0 w-full h-full opacity-20">
           {/* Animated shapes */}
           <motion.div 
