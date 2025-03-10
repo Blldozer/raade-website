@@ -32,8 +32,7 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "flex items-center justify-center transition-colors duration-200 p-2 rounded-md",
-          forceDarkMode ? "text-[#274675] hover:bg-[#274675]/10" : "text-white hover:bg-white/10",
-          "aria-expanded": isOpen
+          forceDarkMode ? "text-[#274675] hover:bg-[#274675]/10" : "text-white hover:bg-white/10"
         )}
         aria-label={isOpen ? "Close menu" : "Open menu"}
         aria-expanded={isOpen}
