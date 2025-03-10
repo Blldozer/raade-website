@@ -1,22 +1,93 @@
 
 import { motion } from "framer-motion";
+import { Linkedin } from "lucide-react";
 
 const teamMembers = [
-  { name: "Kene Onubogu", classYear: "'25", position: "Founder & Co-executive Director" },
-  { name: "Ife Idakolo", classYear: "'26", position: "Co-founder and Co-executive Director" },
-  { name: "Precious Akinrinmade", classYear: "'25", position: "Innovation Studio Director" },
-  { name: "Hawa Diallo", classYear: "'25", position: "Innovation Studio Head Officer" },
-  { name: "Eshe Lovely", classYear: "'26", position: "Innovation Studio Officer" },
-  { name: "Denise Lundu", classYear: "'27", position: "Innovation Studio Officer" },
-  { name: "Favour Williams", classYear: "'25", position: "Outreach Director" },
-  { name: "Nma Moghalu", classYear: "'28", position: "Outreach Officer" },
-  { name: "Kamji Mbakwe", classYear: "'28", position: "Outreach Officer" },
-  { name: "Alexander Jamu", classYear: "'26", position: "Creative Design, Branding and Marketing Director" },
-  { name: "Djenabou Boakum", classYear: "'28", position: "Creative Design, Branding and Marketing Officer" },
-  { name: "Ama Imoyo", classYear: "'28", position: "Finance Officer" },
-  { name: "Temilade Oluwasesin", classYear: "'26", position: "Logistics Manager" },
-  { name: "Rose Oyoo", classYear: "'26", position: "Logistics Manager" },
-  { name: "Kene Okereke", classYear: "'28", position: "Tech Officer" }
+  { 
+    name: "Kene Onubogu", 
+    classYear: "'25", 
+    position: "Founder & Co-executive Director",
+    linkedin: "https://www.linkedin.com/in/kenerice/"
+  },
+  { 
+    name: "Ife Idakolo", 
+    classYear: "'26", 
+    position: "Co-founder and Co-executive Director",
+    linkedin: "https://www.linkedin.com/in/ifeoluwaidakolo/"
+  },
+  { 
+    name: "Precious Akinrinmade", 
+    classYear: "'25", 
+    position: "Innovation Studio Director",
+    linkedin: "https://www.linkedin.com/in/precious-akinrinmade/"
+  },
+  { 
+    name: "Hawa Diallo", 
+    classYear: "'25", 
+    position: "Innovation Studio Head Officer" 
+  },
+  { 
+    name: "Eshe Lovely", 
+    classYear: "'26", 
+    position: "Innovation Studio Officer",
+    linkedin: "https://www.linkedin.com/in/eshelovely/"
+  },
+  { 
+    name: "Denise Lundu", 
+    classYear: "'27", 
+    position: "Innovation Studio Officer" 
+  },
+  { 
+    name: "Favour Williams", 
+    classYear: "'25", 
+    position: "Outreach Director",
+    linkedin: "https://www.linkedin.com/in/favour-williams/"
+  },
+  { 
+    name: "Nma Moghalu", 
+    classYear: "'28", 
+    position: "Outreach Officer",
+    linkedin: "https://www.linkedin.com/in/nmamoghalu/"
+  },
+  { 
+    name: "Kamji Mbakwe", 
+    classYear: "'28", 
+    position: "Outreach Officer",
+    linkedin: "https://www.linkedin.com/in/kamji-mbakwe-3ab417256/"
+  },
+  { 
+    name: "Alexander Jamu", 
+    classYear: "'26", 
+    position: "Creative Design, Branding and Marketing Director" 
+  },
+  { 
+    name: "Djenabou Boakum", 
+    classYear: "'28", 
+    position: "Creative Design, Branding and Marketing Officer" 
+  },
+  { 
+    name: "Ama Imoyo", 
+    classYear: "'28", 
+    position: "Finance Officer" 
+  },
+  { 
+    name: "Temilade Oluwasesin", 
+    classYear: "'26", 
+    position: "Logistics Manager",
+    linkedin: "https://www.linkedin.com/in/temilade-oluwasesin-521979227/"
+  },
+  { 
+    name: "Rose Oyoo", 
+    classYear: "'26", 
+    position: "Logistics Manager",
+    linkedin: "https://www.linkedin.com/in/rose-oyoo/"
+  },
+  { 
+    name: "Kene Okereke", 
+    classYear: "'28", 
+    position: "Tech Officer",
+    linkedin: "https://www.linkedin.com/in/kenechukwu-okereke/"
+  }
 ];
 
 const Team = () => {
@@ -76,9 +147,18 @@ const Team = () => {
                   />
                 </div>
                 <div className="p-8">
-                  <h3 className="text-5xl font-simula text-white mb-2">
-                    {member.name} <span className="text-3xl text-[#FBB03B]">{member.classYear}</span>
-                  </h3>
+                  {member.linkedin ? (
+                    <h3 className="text-5xl font-simula text-white mb-2 flex items-center gap-3">
+                      <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-[#FBB03B] transition-colors flex items-center gap-2">
+                        {member.name} <Linkedin className="w-8 h-8 inline text-[#FBB03B]" />
+                      </a>
+                      <span className="text-3xl text-[#FBB03B]">{member.classYear}</span>
+                    </h3>
+                  ) : (
+                    <h3 className="text-5xl font-simula text-white mb-2">
+                      {member.name} <span className="text-3xl text-[#FBB03B]">{member.classYear}</span>
+                    </h3>
+                  )}
                   <p className="text-2xl text-gray-300 font-lora">
                     {member.position}
                   </p>
