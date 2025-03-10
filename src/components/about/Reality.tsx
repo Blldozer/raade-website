@@ -1,7 +1,6 @@
 
 import { motion } from "framer-motion";
 import CountUp from "react-countup";
-import ImageCollage from "./ImageCollage";
 
 const Reality = () => {
   return (
@@ -25,24 +24,13 @@ const Reality = () => {
 
         {/* Content Section with 39/61 split - Spacer on left, content on right */}
         <div className="flex flex-col lg:flex-row mb-16">
-          <div className="lg:w-[39%] mb-8 lg:mb-0">
-            <ImageCollage 
-              variant="scattered" 
-              images={[
-                "/lovable-uploads/57a9d290-224d-44e7-b284-7715e6f4f3fd.png",
-                "/lovable-uploads/9c6ceb51-936a-4146-a252-1051ae86534a.png",
-                "/lovable-uploads/e94065dc-60d5-469d-8ea2-6657f57bb00b.png",
-                "/Women Enterpreneurs.jpg"
-              ]} 
-              className="transform scale-90"
-            />
-          </div>
+          <div className="lg:w-[39%]"></div>
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="w-full lg:w-[61%]"
+            className="w-full lg:w-[61%] mt-8 lg:mt-0"
           >
             <p className="text-xl font-lora text-gray-700 leading-relaxed">
               For too long, development solutions have followed a one-way path: from the 

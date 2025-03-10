@@ -6,7 +6,7 @@ const teamMembers = [
   { 
     name: "Kene Onubogu", 
     classYear: "'25", 
-    position: "Co-founder & Co-executive Director",
+    position: "Founder & Co-executive Director",
     linkedin: "https://www.linkedin.com/in/kenerice/"
   },
   { 

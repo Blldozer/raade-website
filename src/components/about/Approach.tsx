@@ -40,38 +40,14 @@ const Approach = () => {
             </p>
           </motion.div>
           <div className="lg:w-[61%] h-[400px] mt-8 lg:mt-0">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7 }}
-              className="w-full h-full rounded-xl overflow-hidden"
-            >
-              <img 
-                src="/RAADE-Innovation-Studio-Design-Sprint-Team-5.jpg" 
-                alt="Human-Centered Design" 
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-1000"
-              />
-            </motion.div>
+            <div className="w-full h-full bg-cream rounded-xl"></div>
           </div>
         </div>
 
         {/* Second Principle - 61/39 split (reversed) */}
         <div className="flex flex-col lg:flex-row mb-24">
           <div className="lg:w-[61%] h-[400px] mb-8 lg:mb-0">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7 }}
-              className="w-full h-full rounded-xl overflow-hidden"
-            >
-              <img 
-                src="/RAADE-Design-Sprint-Gustavo-Vives.jpg" 
-                alt="Co-Creation" 
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-1000"
-              />
-            </motion.div>
+            <div className="w-full h-full bg-cream rounded-xl"></div>
           </div>
           <motion.div
             initial={{ opacity: 0, x: 20 }}
@@ -108,19 +84,7 @@ const Approach = () => {
             </p>
           </motion.div>
           <div className="lg:w-[61%] h-[400px] mt-8 lg:mt-0">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7 }}
-              className="w-full h-full rounded-xl overflow-hidden"
-            >
-              <img 
-                src="/lovable-uploads/ea70dd62-188f-483f-b286-c31c1e137ceb.png" 
-                alt="Scalable Impact" 
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-1000"
-              />
-            </motion.div>
+            <div className="w-full h-full bg-cream rounded-xl"></div>
           </div>
         </div>
       </div>
