@@ -32,16 +32,16 @@ const TransitionHook = () => {
     >
       <div ref={contentRef} className="flex-grow flex items-center">
         <div className="fluid-container text-center">
-          <h2 className="text-[length:var(--fluid-h2)] font-bold text-white font-alegreyasans">
+          <h2 className="fluid-h2 font-bold text-white font-alegreyasans max-w-4xl mx-auto">
             Every day we wait
-            <br />
+            <br className="hidden sm:block" />
             is another <span className="text-raade-gold-start">opportunity lost</span>.
           </h2>
         </div>
       </div>
       
       <div className="text-center pb-[clamp(2rem,4vw,3rem)]">
-        <p className="text-[length:var(--fluid-body)] text-white/80 font-merriweather mb-[clamp(1rem,2vw,1.5rem)]">
+        <p className="fluid-body text-white/80 font-merriweather mb-[clamp(1rem,2vw,1.5rem)] max-w-lg mx-auto">
           Here's how you can get involved
         </p>
         <button

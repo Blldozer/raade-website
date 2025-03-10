@@ -6,6 +6,7 @@ import NavLogo from "./navigation/NavLogo";
 import DesktopNav from "./navigation/DesktopNav";
 import MobileNav from "./navigation/MobileNav";
 import CountdownTimer from "./CountdownTimer";
+import useResponsive from "@/hooks/useResponsive";
 
 interface NavigationProps {
   isHeroPage?: boolean;
@@ -24,6 +25,7 @@ const Navigation = ({
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isDarkBackground, setIsDarkBackground] = useState(true);
   const location = useLocation();
+  const { isMobile, isTablet, width } = useResponsive();
   
   // If isHeroPage is explicitly passed, use that value, otherwise determine it from the path
   const heroPage = isHeroPage !== undefined 
@@ -75,10 +77,17 @@ const Navigation = ({
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
+  // Use dynamic padding based on device size
+  const getPadding = () => {
+    if (isMobile) return "px-4";
+    if (isTablet) return "px-6";
+    return "px-8";
+  };
+
   return (
     <nav
       className={cn(
-        "fixed w-full z-[100] transition-all duration-300 pointer-events-auto pt-4", // Added pt-4 for top padding
+        "fixed w-full z-[100] transition-all duration-300 pointer-events-auto pt-2 sm:pt-3 md:pt-4", 
         isScrolled
           ? "bg-white/5 backdrop-blur-[2px] shadow-md"
           : "bg-transparent",
@@ -87,13 +96,13 @@ const Navigation = ({
           : "-translate-y-full"
       )}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
+      <div className={`max-w-7xl mx-auto ${getPadding()}`}>
+        <div className="flex justify-between items-center h-16 sm:h-18 md:h-20">
           <NavLogo 
             isScrolled={isScrolled} 
             isHeroPage={heroPage} 
             forceDarkMode={shouldForceDarkMode || !isDarkBackground}
-            useShortForm={useShortFormLogo}
+            useShortForm={useShortFormLogo || width < 640}
           />
           
           <div className="flex items-center">

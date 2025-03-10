@@ -13,18 +13,24 @@ export default {
   prefix: "",
   theme: {
     container: {
-  center: true,
-  padding: "2rem",
-  screens: {
-    'xs': '375px',    // Small phones
-    'sm': '640px',    // Large phones
-    'md': '768px',    // Tablets
-    'lg': '1024px',   // Laptops
-    'xl': '1280px',   // Desktop
-    '2xl': '1400px',  // Large Desktop
-    '3xl': '1920px'   // Extra Large Screens
-  },
-},
+      center: true,
+      padding: {
+        DEFAULT: '1rem',
+        sm: '1.5rem',
+        md: '2rem',
+        lg: '2.5rem',
+        xl: '3rem',
+      },
+      screens: {
+        'xs': '375px',    // Small phones
+        'sm': '640px',    // Large phones
+        'md': '768px',   // Tablets
+        'lg': '1024px',   // Laptops
+        'xl': '1280px',   // Desktop
+        '2xl': '1400px',  // Large Desktop
+        '3xl': '1920px'   // Extra Large Screens
+      },
+    },
     extend: {
       fontFamily: {
         amadine: ["Amadine", "sans-serif"],
@@ -109,6 +115,19 @@ export default {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.3s ease-out",
+      },
+      spacing: {
+        '1/2': '50%',
+        '1/3': '33.333333%',
+        '2/3': '66.666667%',
+        '1/4': '25%',
+        '3/4': '75%',
+        '1/5': '20%',
+        '2/5': '40%',
+        '3/5': '60%',
+        '4/5': '80%',
+        'screen-w': '100vw',
+        'screen-h': '100vh',
       },
     },
   },

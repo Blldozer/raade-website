@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -73,6 +74,27 @@
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* Improved fluid typography using min, max and clamp for better control */
+    --fluid-h1: clamp(2rem, 5vw + 1rem, 4rem);
+    --fluid-h2: clamp(1.75rem, 4vw + 0.5rem, 3rem);
+    --fluid-h3: clamp(1.25rem, 3vw + 0.25rem, 2rem);
+    --fluid-body: clamp(1rem, 1vw + 0.25rem, 1.25rem);
+    --fluid-small: clamp(0.875rem, 0.5vw + 0.5rem, 1rem);
+    
+    /* Responsive spacing variables */
+    --section-padding-small: clamp(1.5rem, 3vw, 3rem);
+    --section-padding: clamp(2rem, 5vw, 6rem);
+    --section-padding-large: clamp(3rem, 8vw, 8rem);
+    
+    /* Layout variables */
+    --navbar-height: clamp(4rem, 8vh, 6rem);
+    --content-width: min(90vw, 1440px);
+    --content-width-narrow: min(85vw, 1200px);
+    --content-width-wide: min(95vw, 1800px);
+    
+    /* Consistent focus and interaction styling */
+    --focus-ring: 0 0 0 2px var(--ring);
   }
 
   .dark {
@@ -112,16 +134,6 @@
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
-
-  /* Fluid Typography Custom Properties */
-  :root {
-    --fluid-h1: clamp(2.5rem, 5vw, 4rem);
-    --fluid-h2: clamp(2rem, 4vw, 3rem);
-    --fluid-h3: clamp(1.5rem, 3vw, 2rem);
-    --fluid-body: clamp(1rem, 1.5vw, 1.25rem);
-    --section-padding: clamp(2rem, 5vw, 6rem);
-    --content-width: min(90vw, 1440px);
-  }
 }
 
 @layer base {
@@ -129,8 +141,36 @@
     @apply border-border;
   }
 
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    font-size: 16px;
+  }
+
+  /* Address potential scaling issues on Windows browsers */
+  @media screen and (-webkit-min-device-pixel-ratio: 0) {
+    html {
+      font-size: calc(16px + 0.2vw);
+    }
+  }
+
   body {
     @apply bg-background text-foreground overflow-x-hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Improve focus styles for accessibility */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  /* Better image handling for responsive designs */
+  img, video, svg {
+    max-width: 100%;
+    height: auto;
+    display: block;
   }
 }
 
@@ -139,6 +179,7 @@
     background-color: #F5F5F0;
   }
 
+  /* Enhanced fluid container utilities */
   .fluid-container {
     width: var(--content-width);
     margin-left: auto;
@@ -147,11 +188,65 @@
     padding-right: clamp(1rem, 3vw, 2rem);
   }
 
+  .fluid-container-narrow {
+    width: var(--content-width-narrow);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: clamp(1rem, 3vw, 2rem);
+    padding-right: clamp(1rem, 3vw, 2rem);
+  }
+
+  .fluid-container-wide {
+    width: var(--content-width-wide);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: clamp(1rem, 3vw, 2rem);
+    padding-right: clamp(1rem, 3vw, 2rem);
+  }
+
+  /* Responsive spacing utilities */
   .section-padding {
     padding-top: var(--section-padding);
     padding-bottom: var(--section-padding);
   }
 
+  .section-padding-small {
+    padding-top: var(--section-padding-small);
+    padding-bottom: var(--section-padding-small);
+  }
+
+  .section-padding-large {
+    padding-top: var(--section-padding-large);
+    padding-bottom: var(--section-padding-large);
+  }
+
+  /* Typography utilities */
+  .fluid-h1 {
+    font-size: var(--fluid-h1);
+    line-height: 1.1;
+  }
+
+  .fluid-h2 {
+    font-size: var(--fluid-h2);
+    line-height: 1.2;
+  }
+
+  .fluid-h3 {
+    font-size: var(--fluid-h3);
+    line-height: 1.3;
+  }
+
+  .fluid-body {
+    font-size: var(--fluid-body);
+    line-height: 1.5;
+  }
+
+  .fluid-small {
+    font-size: var(--fluid-small);
+    line-height: 1.5;
+  }
+
+  /* Animation utilities */
   @keyframes gradientShift {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
@@ -223,6 +318,35 @@
       transition: opacity 0.3s ease-out;
       transform: none !important;
       opacity: 1 !important;
+    }
+  }
+  
+  /* Windows-specific fixes - helps with scaling on Windows devices */
+  @supports (-ms-ime-align: auto) {
+    html, body {
+      -ms-overflow-style: scrollbar;
+    }
+    
+    img, video {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+  
+  /* Edge-specific fixes */
+  @supports (-ms-accelerator: true) {
+    html, body {
+      -ms-overflow-style: scrollbar;
+    }
+  }
+  
+  /* Mobile viewport considerations */
+  @media screen and (max-width: 640px) {
+    :root {
+      --fluid-h1: clamp(1.75rem, 8vw, 2.5rem);
+      --fluid-h2: clamp(1.5rem, 6vw, 2rem);
+      --fluid-h3: clamp(1.25rem, 5vw, 1.75rem);
+      --section-padding: clamp(1.5rem, 4vw, 3rem);
     }
   }
 }
