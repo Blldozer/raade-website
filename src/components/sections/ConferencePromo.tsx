@@ -71,7 +71,7 @@ const ConferencePromo = () => {
   return (
     <motion.div 
       ref={sectionRef}
-      className="relative py-20 md:py-28 overflow-hidden"
+      className="relative py-24 md:py-32 lg:py-40 overflow-hidden"
       variants={gradientVariants}
       animate="animate"
       style={{
@@ -110,18 +110,6 @@ const ConferencePromo = () => {
               delay: 2 
             }}
           />
-        </div>
-        
-        {/* Subtle pattern overlay */}
-        <div className="absolute inset-0 opacity-5">
-          <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="1"/>
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#grid)" />
-          </svg>
         </div>
       </div>
       
@@ -180,13 +168,14 @@ const ConferencePromo = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.3 }}
+              className="pt-2"
             >
               <Link 
                 to="/conference" 
-                className="relative inline-flex items-center mt-6 px-8 py-4 overflow-hidden rounded-lg font-bold text-lg group"
+                className="inline-flex items-center px-8 py-4 rounded-lg font-bold text-lg group overflow-hidden relative"
               >
-                <span className="absolute w-full h-full bg-gradient-to-r from-[#FFA726] to-[#FF8A6A] group-hover:from-[#FF8A6A] group-hover:to-[#FFA726] transition-all duration-500"></span>
-                <span className="relative flex items-center justify-center text-white w-full">
+                <span className="absolute inset-0 bg-gradient-to-r from-[#FFA726] to-[#FF8A6A] group-hover:from-[#FF8A6A] group-hover:to-[#FFA726] transition-all duration-500"></span>
+                <span className="relative flex items-center justify-center text-white">
                   Learn More
                   <ChevronRight className="ml-2 h-5 w-5 transform group-hover:translate-x-1 transition-transform duration-300" />
                 </span>
@@ -203,7 +192,7 @@ const ConferencePromo = () => {
             whileHover={{ scale: 1.02 }}
             className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-white/20 hover:border-white/30 transition-all duration-300"
           >
-            <div className="text-center mb-8">
+            <div className="text-center mb-6">
               <motion.h3 
                 className="text-2xl font-bold text-white font-simula mb-4"
                 whileHover={{ scale: 1.05, color: "#FFA726" }}
@@ -211,58 +200,56 @@ const ConferencePromo = () => {
               >
                 Time Remaining
               </motion.h3>
-              <p className="text-white/70 font-lora mt-2 mb-6">Don't miss this opportunity to connect and collaborate</p>
+              <p className="text-white/70 font-lora mb-6">Don't miss this opportunity to connect and collaborate</p>
               
-              {/* Enhanced countdown timer placement */}
-              <div className="relative py-2">
-                <motion.div
-                  className="countdown-container p-4 bg-gradient-to-r from-[#1E3A6C]/70 to-[#274675]/70 rounded-xl backdrop-blur-md"
-                  whileHover={{ 
-                    scale: 1.03,
-                    boxShadow: "0 0 30px rgba(251, 176, 59, 0.3)"
+              {/* Enhanced countdown timer */}
+              <motion.div
+                className="p-4 rounded-xl backdrop-blur-md bg-gradient-to-br from-[#1E3A6C]/70 to-[#274675]/70 border border-white/10 overflow-hidden relative"
+                whileHover={{ 
+                  scale: 1.03,
+                  boxShadow: "0 0 30px rgba(251, 176, 59, 0.3)"
+                }}
+                transition={{ duration: 0.3 }}
+              >
+                <CountdownTimer 
+                  targetDate="2025-04-11T09:00:00" 
+                  variant="floating"
+                  colorScheme={{
+                    text: "text-white",
+                    accent: "text-[#FFA726]",
+                    dropdownBg: "bg-[#274675]"
                   }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <CountdownTimer 
-                    targetDate="2025-04-11T09:00:00" 
-                    variant="floating"
-                    colorScheme={{
-                      text: "text-white",
-                      accent: "text-[#FFA726]",
-                      dropdownBg: "bg-[#274675]"
+                />
+                
+                {/* Animated elements for the countdown */}
+                <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+                  <motion.div 
+                    className="absolute top-0 left-1/4 w-24 h-1 bg-gradient-to-r from-[#FFA726]/0 via-[#FFA726] to-[#FFA726]/0 rounded-full"
+                    animate={{
+                      left: ["25%", "75%", "25%"],
+                      opacity: [0, 1, 0]
+                    }}
+                    transition={{
+                      duration: 5,
+                      repeat: Infinity,
+                      ease: "easeInOut"
                     }}
                   />
-                  
-                  {/* Decorative elements for the countdown */}
-                  <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-                    <motion.div 
-                      className="absolute -top-1 left-1/4 w-20 h-1 bg-gradient-to-r from-[#FFA726]/0 via-[#FFA726] to-[#FFA726]/0 rounded-full"
-                      animate={{
-                        left: ["25%", "75%", "25%"],
-                        opacity: [0, 1, 0]
-                      }}
-                      transition={{
-                        duration: 5,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                      }}
-                    />
-                    <motion.div 
-                      className="absolute -bottom-1 right-1/4 w-20 h-1 bg-gradient-to-r from-[#FFA726]/0 via-[#FFA726] to-[#FFA726]/0 rounded-full"
-                      animate={{
-                        right: ["25%", "75%", "25%"],
-                        opacity: [0, 1, 0]
-                      }}
-                      transition={{
-                        duration: 6,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: 1
-                      }}
-                    />
-                  </div>
-                </motion.div>
-              </div>
+                  <motion.div 
+                    className="absolute bottom-0 right-1/4 w-24 h-1 bg-gradient-to-r from-[#FFA726]/0 via-[#FFA726] to-[#FFA726]/0 rounded-full"
+                    animate={{
+                      right: ["25%", "75%", "25%"],
+                      opacity: [0, 1, 0]
+                    }}
+                    transition={{
+                      duration: 6,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: 1
+                    }}
+                  />
+                </div>
+              </motion.div>
             </div>
             
             <div className="text-center">
@@ -272,11 +259,11 @@ const ConferencePromo = () => {
               >
                 <Link 
                   to="/conference/register" 
-                  className="relative inline-block px-8 py-4 w-full sm:w-auto overflow-hidden rounded-lg font-bold text-lg group"
+                  className="inline-block px-8 py-4 w-full sm:w-auto rounded-lg font-bold text-lg group relative overflow-hidden"
                 >
                   <span className="absolute inset-0 w-full h-full transition-all duration-300 ease-out transform translate-x-0 bg-gradient-to-r from-[#FFA726] to-[#FF8A6A] group-hover:translate-x-0"></span>
                   <span className="absolute inset-0 w-full h-full transition-all duration-300 ease-out transform translate-x-full bg-gradient-to-l from-[#FFA726] to-[#FF8A6A] group-hover:translate-x-0"></span>
-                  <span className="relative flex justify-center items-center text-white w-full">
+                  <span className="relative flex justify-center items-center text-white">
                     Register Now
                   </span>
                 </Link>
