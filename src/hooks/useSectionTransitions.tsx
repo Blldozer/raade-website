@@ -1,3 +1,4 @@
+
 import { useEffect } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
@@ -52,8 +53,50 @@ export const useSectionTransitions = () => {
         start: "top 80%", // Start when top of section is 80% from top of viewport
         end: "top 20%",   // End when top of section is 20% from top of viewport
         onEnter: () => {
+          // Special handling for TransitionStat section
+          if (section.id === "transition-stat") {
+            // First make section visible
+            gsap.to(section, {
+              duration: 0.8,
+              autoAlpha: 1,
+              y: 0,
+              ease: "power2.out",
+              overwrite: "auto"
+            });
+            
+            // Animate stat counter with a scale effect
+            const statCounter = section.querySelector(".stat-counter");
+            if (statCounter) {
+              gsap.fromTo(statCounter, 
+                { scale: 0.9, autoAlpha: 0 },
+                { 
+                  scale: 1, 
+                  autoAlpha: 1, 
+                  duration: 1.2, 
+                  ease: "back.out(1.2)",
+                  delay: 0.3
+                }
+              );
+            }
+            
+            // Animate the description text that appears after the stat
+            const contentElements = section.querySelectorAll(".content-element");
+            if (contentElements.length) {
+              gsap.fromTo(contentElements,
+                { y: 20, autoAlpha: 0 },
+                { 
+                  y: 0,
+                  autoAlpha: 1,
+                  duration: 0.8,
+                  stagger: 0.4, // Stagger the animation of multiple elements
+                  delay: 1.2, // Start after stat counter finishes
+                  ease: "power2.out"
+                }
+              );
+            }
+          }
           // Special handling for Future Showcase section
-          if (section.id === "future-showcase") {
+          else if (section.id === "future-showcase") {
             // First, ensure the section background is visible
             gsap.to(section, {
               duration: 0.8,
