@@ -13,16 +13,16 @@ const HeroBackground = () => {
   const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
   
   return (
-    <div ref={containerRef} className="absolute inset-0 overflow-hidden">
+    <div ref={containerRef} className="absolute inset-0 overflow-hidden pointer-events-none">
       {/* Base gradient layer */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#FBB03B] via-[#FF9848] to-[#FF8A6A] z-0"></div>
       
-      {/* Team image with parallax effect */}
+      {/* Team image with parallax effect - increased opacity from 0.2 to 0.25 */}
       <motion.div 
         className="absolute inset-0 z-10"
         style={{ y: imageY }}
       >
-        <div className="absolute inset-0 bg-[url('/raade-eboard-baker-institute-cmp.jpg')] bg-cover bg-center opacity-20 mix-blend-overlay"></div>
+        <div className="absolute inset-0 bg-[url('/raade-eboard-baker-institute-cmp.jpg')] bg-cover bg-center opacity-25 mix-blend-overlay"></div>
       </motion.div>
       
       {/* Grain texture overlay */}
