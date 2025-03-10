@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -78,40 +77,12 @@
     /* Navbar height for proper content padding */
     --navbar-height: clamp(4rem, 8vh, 6rem);
     
-    /* Typography Scale - Modular scale with ratio of 1.2 (minor third) */
-    --font-scale-ratio: 1.2;
-    
-    /* Fluid Typography System - Base Sizes */
-    --font-size-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
-    
-    /* Heading Scales - Using CSS Clamp for fluid sizing */
-    --font-size-h1: clamp(2.5rem, 2rem + 2.5vw, 5rem);       /* Largest headings */
-    --font-size-h2: clamp(2rem, 1.75rem + 1.5vw, 3.75rem);   /* Section headings */
-    --font-size-h3: clamp(1.5rem, 1.25rem + 1vw, 2.5rem);    /* Sub-section headings */
-    --font-size-h4: clamp(1.25rem, 1.15rem + 0.5vw, 1.75rem); /* Minor headings */
-    
-    /* Body Text Scales */
-    --font-size-large: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);  /* Large paragraphs */
-    --font-size-normal: var(--font-size-base);                   /* Normal text */
-    --font-size-small: clamp(0.875rem, 0.8rem + 0.25vw, 1rem);   /* Small text */
-    --font-size-tiny: clamp(0.75rem, 0.7rem + 0.15vw, 0.875rem); /* Tiny text */
-    
-    /* Line Heights - Optimal reading experience */
-    --line-height-tight: 1.1;      /* Headings */
-    --line-height-normal: 1.5;     /* Body text */
-    --line-height-loose: 1.8;      /* Easier reading for smaller text */
-    
-    /* Optimal content width for readability (45-75 characters) */
-    --content-width-narrow: min(100%, 40ch);    /* Minimum width for readability */
-    --content-width-optimal: min(100%, 65ch);   /* Optimal reading width */
-    --content-width-wide: min(100%, 85ch);      /* Maximum comfortable reading width */
-    
-    /* Spacing Variables - Based on typography rhythm */
-    --space-xs: calc(var(--font-size-base) * 0.25);
-    --space-sm: calc(var(--font-size-base) * 0.5);
-    --space-md: calc(var(--font-size-base) * 1);
-    --space-lg: calc(var(--font-size-base) * 2);
-    --space-xl: calc(var(--font-size-base) * 4);
+    /* Improved fluid typography using min, max and clamp for better control */
+    --fluid-h1: clamp(2rem, 5vw + 1rem, 4rem);
+    --fluid-h2: clamp(1.75rem, 4vw + 0.5rem, 3rem);
+    --fluid-h3: clamp(1.25rem, 3vw + 0.25rem, 2rem);
+    --fluid-body: clamp(1rem, 1vw + 0.25rem, 1.25rem);
+    --fluid-small: clamp(0.875rem, 0.5vw + 0.5rem, 1rem);
     
     /* Responsive spacing variables */
     --section-padding-small: clamp(1.5rem, 3vw, 3rem);
@@ -190,37 +161,6 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Typography Styles */
-  h1 {
-    font-size: var(--font-size-h1);
-    line-height: var(--line-height-tight);
-  }
-
-  h2 {
-    font-size: var(--font-size-h2);
-    line-height: var(--line-height-tight);
-  }
-  
-  h3 {
-    font-size: var(--font-size-h3);
-    line-height: var(--line-height-tight);
-  }
-  
-  h4 {
-    font-size: var(--font-size-h4);
-    line-height: var(--line-height-normal);
-  }
-  
-  p {
-    font-size: var(--font-size-normal);
-    line-height: var(--line-height-normal);
-  }
-  
-  small {
-    font-size: var(--font-size-small);
-    line-height: var(--line-height-loose);
-  }
-
   /* Improve focus styles for accessibility */
   :focus-visible {
     outline: 2px solid hsl(var(--ring));
@@ -263,47 +203,6 @@
     margin-right: auto;
     padding-left: clamp(1rem, 3vw, 2rem);
     padding-right: clamp(1rem, 3vw, 2rem);
-  }
-
-  /* Fluid Typography Utilities */
-  .text-fluid-h1 {
-    font-size: var(--font-size-h1);
-    line-height: var(--line-height-tight);
-  }
-  
-  .text-fluid-h2 {
-    font-size: var(--font-size-h2);
-    line-height: var(--line-height-tight);
-  }
-  
-  .text-fluid-h3 {
-    font-size: var(--font-size-h3); 
-    line-height: var(--line-height-tight);
-  }
-  
-  .text-fluid-h4 {
-    font-size: var(--font-size-h4);
-    line-height: var(--line-height-normal);
-  }
-  
-  .text-fluid-large {
-    font-size: var(--font-size-large);
-    line-height: var(--line-height-normal);
-  }
-  
-  .text-fluid-normal {
-    font-size: var(--font-size-normal);
-    line-height: var(--line-height-normal);
-  }
-  
-  .text-fluid-small {
-    font-size: var(--font-size-small);
-    line-height: var(--line-height-loose);
-  }
-  
-  .text-fluid-tiny {
-    font-size: var(--font-size-tiny);
-    line-height: var(--line-height-loose);
   }
 
   /* Responsive spacing utilities */
@@ -445,24 +344,10 @@
   /* Mobile viewport considerations */
   @media screen and (max-width: 640px) {
     :root {
-      --font-size-h1: clamp(2rem, 1.75rem + 1.5vw, 3.5rem);
-      --font-size-h2: clamp(1.75rem, 1.5rem + 1vw, 2.75rem);
-      --font-size-h3: clamp(1.25rem, 1.125rem + 0.75vw, 2rem);
-      --font-size-h4: clamp(1.125rem, 1rem + 0.5vw, 1.5rem);
+      --fluid-h1: clamp(1.75rem, 8vw, 2.5rem);
+      --fluid-h2: clamp(1.5rem, 6vw, 2rem);
+      --fluid-h3: clamp(1.25rem, 5vw, 1.75rem);
       --section-padding: clamp(1.5rem, 4vw, 3rem);
     }
   }
-}
-
-/* Debug Tools - Remove in production */
-.debug-typography {
-  position: fixed;
-  top: 0;
-  left: 0;
-  background: black;
-  color: white;
-  padding: 5px;
-  z-index: 9999;
-  font-size: 14px;
-  font-family: monospace;
 }
