@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
@@ -53,46 +52,54 @@ export const useSectionTransitions = () => {
         start: "top 80%", // Start when top of section is 80% from top of viewport
         end: "top 20%",   // End when top of section is 20% from top of viewport
         onEnter: () => {
-          // Fade in and slide up when entering viewport
-          gsap.to(section, {
-            duration: 0.8,
-            autoAlpha: 1,
-            y: 0,
-            ease: "power2.out",
-            overwrite: "auto"
-          });
-          
-          // Unique section-specific animations (progressive enhancement)
-          if (section.id === "conference-promo") {
-            // Reveal conference promo elements sequentially
-            const elements = section.querySelectorAll(".content-element");
-            gsap.to(elements, {
+          // Special handling for Future Showcase section
+          if (section.id === "future-showcase") {
+            // First, ensure the section background is visible
+            gsap.to(section, {
+              duration: 0.8,
               autoAlpha: 1,
               y: 0,
-              stagger: 0.1,
-              duration: 0.6,
               ease: "power2.out",
-              delay: 0.2
+              overwrite: "auto"
             });
-          }
-          else if (section.id === "transition-stat") {
-            // Special reveal animation for stats
-            const counter = section.querySelector(".stat-counter");
-            if (counter) {
-              gsap.fromTo(counter, 
-                { scale: 0.8, autoAlpha: 0 },
-                { scale: 1, autoAlpha: 1, duration: 0.8, ease: "back.out" }
+
+            // Then animate the header content
+            const header = section.querySelector('.content-element');
+            if (header) {
+              gsap.fromTo(header,
+                { y: 30, autoAlpha: 0 },
+                { 
+                  y: 0,
+                  autoAlpha: 1,
+                  duration: 0.8,
+                  delay: 0.2,
+                  ease: "power2.out"
+                }
               );
             }
-          }
-          else if (section.id === "future-showcase") {
-            // Slide in project cards from sides alternately
-            const projectCards = section.querySelectorAll(".project-card");
+
+            // Finally animate the project cards
+            const projectCards = section.querySelectorAll('.project-card');
             projectCards.forEach((card, i) => {
               gsap.fromTo(card,
                 { x: i % 2 === 0 ? -50 : 50, autoAlpha: 0 },
-                { x: 0, autoAlpha: 1, duration: 0.7, delay: i * 0.15, ease: "power2.out" }
+                { 
+                  x: 0,
+                  autoAlpha: 1,
+                  duration: 0.7,
+                  delay: 0.4 + (i * 0.15),
+                  ease: "power2.out"
+                }
               );
+            });
+          } else {
+            // Default animation for other sections
+            gsap.to(section, {
+              duration: 0.8,
+              autoAlpha: 1,
+              y: 0,
+              ease: "power2.out",
+              overwrite: "auto"
             });
           }
         },

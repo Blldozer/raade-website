@@ -1,4 +1,3 @@
-
 import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -84,9 +83,10 @@ const FutureShowcase = () => {
   const sectionRef = useRef<HTMLElement>(null);
   
   return (
-    <section ref={sectionRef} className="relative py-40 bg-white overflow-y-auto" style={{
+    <section ref={sectionRef} className="relative py-40 bg-white" style={{
       height: 'auto',
-      minHeight: '100vh'
+      minHeight: '100vh',
+      zIndex: 1 // Ensure proper stacking context
     }}>
       <div className="max-w-[90vw] xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-40 content-element">
