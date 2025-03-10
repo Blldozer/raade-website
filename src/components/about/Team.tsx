@@ -2,21 +2,21 @@
 import { motion } from "framer-motion";
 
 const teamMembers = [
-  { name: "Kene Onubogu", position: "Founder & Co-executive Director" },
-  { name: "Ife Idakolo", position: "Co-founder and Co-executive Director" },
-  { name: "Precious Akinrinmade", position: "Innovation Studio Director" },
-  { name: "Hawa Diallo", position: "Innovation Studio Head Officer" },
-  { name: "Eshe Lovely", position: "Innovation Studio Officer" },
-  { name: "Denise Lundu", position: "Innovation Studio Officer" },
-  { name: "Favour Williams", position: "Outreach Director" },
-  { name: "Nma Moghalu", position: "Outreach Officer" },
-  { name: "Kamji Mbakwe", position: "Outreach Officer" },
-  { name: "Alexander Jamu", position: "Creative Design, Branding and Marketing Director" },
-  { name: "Djenabou Boakum", position: "Creative Design, Branding and Marketing Officer" },
-  { name: "Ama Imoyo", position: "Finance Officer" },
-  { name: "Temilade Oluwasesin", position: "Logistics Manager" },
-  { name: "Rose Oyoo", position: "Logistics Manager" },
-  { name: "Kene Okereke", position: "Tech Officer" }
+  { name: "Kene Onubogu", classYear: "'25", position: "Founder & Co-executive Director" },
+  { name: "Ife Idakolo", classYear: "'26", position: "Co-founder and Co-executive Director" },
+  { name: "Precious Akinrinmade", classYear: "'25", position: "Innovation Studio Director" },
+  { name: "Hawa Diallo", classYear: "'25", position: "Innovation Studio Head Officer" },
+  { name: "Eshe Lovely", classYear: "'26", position: "Innovation Studio Officer" },
+  { name: "Denise Lundu", classYear: "'27", position: "Innovation Studio Officer" },
+  { name: "Favour Williams", classYear: "'25", position: "Outreach Director" },
+  { name: "Nma Moghalu", classYear: "'28", position: "Outreach Officer" },
+  { name: "Kamji Mbakwe", classYear: "'28", position: "Outreach Officer" },
+  { name: "Alexander Jamu", classYear: "'26", position: "Creative Design, Branding and Marketing Director" },
+  { name: "Djenabou Boakum", classYear: "'28", position: "Creative Design, Branding and Marketing Officer" },
+  { name: "Ama Imoyo", classYear: "'28", position: "Finance Officer" },
+  { name: "Temilade Oluwasesin", classYear: "'26", position: "Logistics Manager" },
+  { name: "Rose Oyoo", classYear: "'26", position: "Logistics Manager" },
+  { name: "Kene Okereke", classYear: "'28", position: "Tech Officer" }
 ];
 
 const Team = () => {
@@ -76,8 +76,8 @@ const Team = () => {
                   />
                 </div>
                 <div className="p-8">
-                  <h3 className="text-5xl font-simula text-white mb-4">
-                    {member.name}
+                  <h3 className="text-5xl font-simula text-white mb-2">
+                    {member.name} <span className="text-3xl text-[#FBB03B]">{member.classYear}</span>
                   </h3>
                   <p className="text-2xl text-gray-300 font-lora">
                     {member.position}
