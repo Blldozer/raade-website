@@ -8,12 +8,14 @@ interface SubmissionConfirmationProps {
   title: string;
   message: string;
   buttonText?: string;
+  customMessage?: React.ReactNode;
 }
 
 const SubmissionConfirmation = ({
   title,
   message,
-  buttonText = "Return to Home"
+  buttonText = "Return to Home",
+  customMessage
 }: SubmissionConfirmationProps) => {
   const navigate = useNavigate();
 
@@ -30,7 +32,9 @@ const SubmissionConfirmation = ({
       </div>
       
       <h2 className="text-2xl font-simula text-white mb-4">{title}</h2>
-      <p className="text-white/80 font-lora mb-8">{message}</p>
+      <p className="text-white/80 font-lora mb-4">{message}</p>
+      
+      {customMessage && <div className="mb-8">{customMessage}</div>}
       
       <Button 
         onClick={() => navigate('/')}

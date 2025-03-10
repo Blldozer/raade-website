@@ -75,6 +75,15 @@ const StudentApplication = () => {
     }
   };
 
+  const applicationSummary = (
+    <div className="text-white/80 font-lora text-left p-4 bg-[#1a1a1a] rounded-md mb-4">
+      <h3 className="text-[#FBB03B] mb-2 font-simula">Your Application Summary:</h3>
+      <p><span className="text-[#FBB03B]/80">Name:</span> {formData.full_name}</p>
+      <p><span className="text-[#FBB03B]/80">University:</span> {formData.university}</p>
+      <p><span className="text-[#FBB03B]/80">Major:</span> {formData.major}</p>
+    </div>
+  );
+
   return (
     <div className="bg-black min-h-screen">
       <Navigation forceDarkMode={true} />
@@ -85,6 +94,8 @@ const StudentApplication = () => {
           <SubmissionConfirmation 
             title="Application Submitted Successfully!"
             message="Thank you for your interest in RAADE Innovation Studios! We'll review your application and be in touch soon."
+            customMessage={applicationSummary}
+            buttonText="Return to Home"
           />
         ) : (
           <form onSubmit={handleSubmit} className="space-y-8 bg-[#121212] p-8 rounded-lg border border-[#333] max-w-3xl mx-auto">

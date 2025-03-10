@@ -63,7 +63,7 @@ const PartnerApplication = () => {
       // Show confirmation screen instead of redirecting
       setIsSubmitted(true);
       
-    } catch (error: Error | unknown) {
+    } catch (error: unknown) {
       toast({
         title: "Submission Failed",
         description: error instanceof Error ? error.message : "There was an error submitting your application. Please try again.",
@@ -74,6 +74,15 @@ const PartnerApplication = () => {
     }
   };
 
+  const projectSummary = (
+    <div className="text-white/80 font-lora text-left p-4 bg-[#1a1a1a] rounded-md mb-4">
+      <h3 className="text-[#FBB03B] mb-2 font-simula">Your Challenge Summary:</h3>
+      <p><span className="text-[#FBB03B]/80">Organization:</span> {formData.organization_name}</p>
+      <p><span className="text-[#FBB03B]/80">Project Idea:</span> {formData.project_idea.substring(0, 100)}{formData.project_idea.length > 100 ? '...' : ''}</p>
+      <p><span className="text-[#FBB03B]/80">Expected Timeline:</span> {formData.timeline || 'Not specified'}</p>
+    </div>
+  );
+
   return (
     <div className="bg-black min-h-screen">
       <Navigation forceDarkMode={true} />
@@ -83,7 +92,9 @@ const PartnerApplication = () => {
         {isSubmitted ? (
           <SubmissionConfirmation 
             title="Partnership Request Submitted Successfully!"
-            message="Thank you for your interest in partnering with RAADE! We'll review your request and be in touch soon to discuss your project."
+            message="Thank you for your interest in partnering with RAADE Innovation Studios! Our team will review your challenge and be in touch soon."
+            customMessage={projectSummary}
+            buttonText="Return to Home"
           />
         ) : (
           <form onSubmit={handleSubmit} className="space-y-8 bg-[#121212] p-8 rounded-lg border border-[#333] max-w-3xl mx-auto">
