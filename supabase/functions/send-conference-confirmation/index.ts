@@ -62,7 +62,7 @@ serve(async (req) => {
         ticketPrice = "TBD";
     }
 
-    // Email content
+    // HTML email content
     const emailContent = `
       <html>
         <head>
@@ -101,6 +101,34 @@ serve(async (req) => {
       </html>
     `;
 
+    // Plain text version of the email
+    const plainTextContent = `
+Conference Registration Confirmation - RAADE Annual Conference 2025
+
+Dear ${fullName},
+
+Thank you for registering for the RAADE Annual Conference 2025!
+
+We're excited to have you join us on April 11-12, 2025 for two days of inspiring discussions, networking, and innovation in African development.
+
+Registration Details:
+Name: ${fullName}
+Email: ${email}
+Ticket Type: ${ticketTypeDisplay} (${ticketPrice})
+
+Additional information, including venue details and conference schedule, will be sent closer to the event date.
+
+If you have any questions or need to make changes to your registration, please contact us at conference@raade.org
+
+We look forward to seeing you at the conference!
+
+Best regards,
+The RAADE Conference Team
+
+This is an automated message. Please do not reply to this email.
+© 2024 RAADE - Rice Association for African Development
+    `;
+
     // Send email using Resend with the new sender address
     try {
       const { data, error } = await resend.emails.send({
@@ -108,6 +136,7 @@ serve(async (req) => {
         to: [email],
         subject: "RAADE Conference 2025 - Registration Confirmation",
         html: emailContent,
+        text: plainTextContent,
       });
 
       if (error) {

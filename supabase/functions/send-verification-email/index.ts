@@ -76,7 +76,7 @@ serve(async (req) => {
       throw tokenError;
     }
     
-    // Email content
+    // Email HTML content
     const emailContent = `
       <html>
         <head>
@@ -116,6 +116,29 @@ serve(async (req) => {
       </html>
     `;
 
+    // Plain text version of the email
+    const plainTextContent = `
+Email Verification - RAADE Conference 2025
+
+Dear ${fullName},
+
+Thank you for registering for the RAADE Annual Conference 2025! Please verify your email address to complete your registration.
+
+Your verification code is: ${token}
+
+Please enter this code on the verification page to confirm your email address.
+
+This code will expire in 24 hours.
+
+If you have any issues, please reply to this email for assistance.
+
+Best regards,
+The RAADE Conference Team
+
+© 2024 RAADE - Rice Association for African Development
+This is an automated message from the conference registration system.
+    `;
+
     console.log(`Attempting to send verification email to ${email} for ${fullName} with token ${token}`);
 
     // Send email using Resend with the new sender address
@@ -125,6 +148,7 @@ serve(async (req) => {
         to: [email],
         subject: "RAADE Conference 2025 - Email Verification",
         html: emailContent,
+        text: plainTextContent,
       });
 
       if (error) {
