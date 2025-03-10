@@ -6,18 +6,18 @@ import { Calendar, MapPin, Users } from "lucide-react";
 const EventDetails = () => {
   return (
     <div className="mt-8 text-center">
-      <motion.div 
+      {/* Temporarily hide video placeholder */}
+      {/* <motion.div 
         className="aspect-video max-w-4xl mx-auto bg-gradient-to-br from-[#FBB03B]/10 to-[#FF9848]/5 mb-8 rounded-xl overflow-hidden shadow-lg" 
         initial={{ opacity: 0, scale: 0.95 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 0.3 }}
       >
-        {/* Placeholder for promotional video */}
         <div className="w-full h-full flex items-center justify-center">
           <p className="text-[#FBB03B] font-medium font-lora">Conference Promotional Video</p>
         </div>
-      </motion.div>
+      </motion.div> */}
       
       <motion.div 
         className="flex flex-wrap justify-center gap-4 mt-8" 
