@@ -1,8 +1,8 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { Resend } from "npm:resend@1.0.0";
+import { Resend } from "npm:resend@4.0.0";
 
-const resendApiKey = Deno.env.get("RESEND_API_KEY") || "";
+const resendApiKey = Deno.env.get("RESEND_API_KEY") || "re_Nn1yMwZ5_BH6KaYzBaD3cKroP3rxRpUjx";
 const resend = new Resend(resendApiKey);
 
 const corsHeaders = {

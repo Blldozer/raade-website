@@ -119,10 +119,9 @@ serve(async (req) => {
     console.log(`Attempting to send verification email to ${email} for ${fullName} with token ${token}`);
 
     // Send email using Resend with proper domain email
-    // Using onboarding email temporarily until domain verification is confirmed
     try {
       const { data, error } = await resend.emails.send({
-        from: "RAADE Conference <onboarding@resend.dev>",
+        from: "RAADE Conference <registration@rice-raade.com>",
         to: [email],
         subject: "RAADE Conference 2025 - Email Verification",
         html: emailContent,
