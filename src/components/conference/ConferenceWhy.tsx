@@ -20,9 +20,7 @@ const ConferenceWhy = () => {
         }} transition={{
           duration: 0.6
         }} className="w-full lg:w-[39%]">
-            <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-black">
-              Why Attend
-            </h2>
+            <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-black">Why Attend?</h2>
           </motion.div>
           
           <div className="invisible w-full lg:w-[61%]"></div>
