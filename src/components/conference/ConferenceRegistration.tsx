@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Star, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+
 const ConferenceRegistration = () => {
   const navigate = useNavigate();
   return <section id="registration" className="py-16 px-4 md:px-8 bg-white">
@@ -123,8 +124,8 @@ const ConferenceRegistration = () => {
           duration: 0.5,
           delay: 0.4
         }}>
-            <Card className="border-t-4 border-t-[#FBB03B] hover:shadow-xl transition-all h-full">
-              <div className="absolute top-4 right-4 bg-[#FBB03B] text-white text-sm font-medium py-1 px-3 rounded-full">
+            <Card className="border-t-4 border-t-[#FBB03B] hover:shadow-xl transition-all relative h-full">
+              <div className="absolute top-4 right-4 z-10 bg-[#FBB03B] text-white text-sm font-medium py-1 px-3 rounded-full">
                 Professional
               </div>
               <CardHeader>
