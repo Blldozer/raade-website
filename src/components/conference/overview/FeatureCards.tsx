@@ -9,7 +9,7 @@ const FeatureCards = () => {
       <FeatureCard 
         icon={Rocket}
         title="Innovation Showcase"
-        description="Discover groundbreaking solutions developed by RAADE's Innovation Studios and other leading African initiatives."
+        description="Discover solutions developed by RAADE's Innovation Studios and other leading African initiatives."
       />
       
       <FeatureCard 
