@@ -39,7 +39,7 @@ const Approach = () => {
               real needs and create meaningful change.
             </p>
           </motion.div>
-          {/* Image Collage with scaled down images */}
+          {/* Tighter collage layout without boxes */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -47,26 +47,26 @@ const Approach = () => {
             transition={{ delay: 0.4, duration: 0.6 }}
             className="lg:w-[61%] mt-8 lg:mt-0 relative"
           >
-            <div className="w-full h-full rounded-xl grid grid-cols-2 grid-rows-2 gap-4">
-              <div className="rounded-tl-xl bg-gray-100 flex items-center justify-center overflow-hidden">
+            <div className="w-full h-full flex flex-wrap gap-2">
+              <div className="w-[calc(50%-1px)] flex justify-center">
                 <img 
                   src="/about-page-images/RAADE-HCD-Image-boy-center-flower.png" 
                   alt="Boy surrounded by colorful flower petals" 
-                  className="max-w-full max-h-full scale-50 hover:scale-[0.55] transition-transform duration-500"
+                  className="scale-50 hover:scale-[0.55] transition-transform duration-500"
                 />
               </div>
-              <div className="rounded-tr-xl bg-gray-100 flex items-center justify-center overflow-hidden">
+              <div className="w-[calc(50%-1px)] flex justify-center">
                 <img 
                   src="/about-page-images/RAADE-HCD-boy-center-community.png" 
                   alt="Boy in center of community" 
-                  className="max-w-full max-h-full scale-50 hover:scale-[0.55] transition-transform duration-500"
+                  className="scale-50 hover:scale-[0.55] transition-transform duration-500"
                 />
               </div>
-              <div className="col-span-2 rounded-b-xl bg-gray-100 flex items-center justify-center overflow-hidden">
+              <div className="w-full flex justify-center mt-2">
                 <img 
                   src="/about-page-images/RAADE-HCD-person-center-africa.png" 
                   alt="Person in center of Africa" 
-                  className="max-w-full max-h-full scale-50 hover:scale-[0.55] transition-transform duration-500"
+                  className="scale-50 hover:scale-[0.55] transition-transform duration-500"
                 />
               </div>
             </div>
