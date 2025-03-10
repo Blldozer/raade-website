@@ -9,7 +9,7 @@ import Team from "../components/about/Team";
 import { useSectionTransitions } from "../hooks/useSectionTransitions";
 
 const About = () => {
-  // Use the custom hook for section transitions and nav background detection
+  // Use the refactored hook for section transitions and nav background detection
   useSectionTransitions();
 
   return (

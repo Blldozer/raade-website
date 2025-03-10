@@ -8,7 +8,7 @@ import JoinSection from "@/components/sections/JoinSection";
 import { useSectionTransitions } from "@/hooks/useSectionTransitions";
 
 const Index = () => {
-  // Use our hook for section transitions
+  // Use our refactored hook for section transitions
   useSectionTransitions();
   
   return (
