@@ -15,43 +15,8 @@ const TransitionStat = () => {
   useEffect(() => {
     const section = sectionRef.current;
     const content = contentRef.current;
-    const nextSection = document.getElementById('future-showcase');
     
-    if (!section || !content || !nextSection) return;
-    
-    // Create zoom-in animation for entering this section
-    const enterTl = gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        start: "top bottom",
-        end: "top center",
-        scrub: true,
-      }
-    });
-    
-    // Scale up the section as it enters the viewport
-    enterTl.fromTo(section, 
-      { scale: 0.8, opacity: 0 },
-      { scale: 1, opacity: 1, duration: 1, ease: "power2.out" }
-    );
-    
-    // Create zoom-out animation when leaving this section
-    const exitTl = gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        start: "bottom 80%",
-        end: "bottom top",
-        scrub: true,
-      }
-    });
-    
-    // Scale down and fade out this section as we scroll to the next
-    exitTl.to(section, {
-      scale: 0.9,
-      opacity: 0.5,
-      duration: 1,
-      ease: "power2.in"
-    });
+    if (!section || !content) return;
     
     // Animation for the content - slides in from bottom
     gsap.fromTo(content,
@@ -70,7 +35,11 @@ const TransitionStat = () => {
     
     return () => {
       // Clean up animations
-      ScrollTrigger.getAll().forEach(t => t.kill());
+      ScrollTrigger.getAll().forEach(t => {
+        if (t.vars.trigger === content || t.vars.trigger === section) {
+          t.kill();
+        }
+      });
     };
   }, []);
 
@@ -89,12 +58,15 @@ const TransitionStat = () => {
   };
 
   return (
-    <section 
+    <div 
       ref={sectionRef}
       className="min-h-screen flex flex-col justify-center items-center py-10 bg-white relative overflow-hidden"
     >
+      {/* Card styling for the transition effect */}
+      <div className="absolute inset-0 bg-white rounded-2xl shadow-lg transform transition-all duration-500"></div>
+      
       {/* Background gradient for depth */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-white to-[#F5F5F0]/50 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-white via-white to-[#F5F5F0]/50 pointer-events-none rounded-2xl"></div>
       
       {/* Main content */}
       <div 
@@ -143,7 +115,7 @@ const TransitionStat = () => {
           <div className="w-6 h-6 mx-auto border-b-2 border-r-2 border-[#1A365D]/30 rotate-45 transition-all duration-300 group-hover:border-[#1A365D] group-hover:scale-110" />
         </motion.button>
       </motion.div>
-    </section>
+    </div>
   );
 };
 

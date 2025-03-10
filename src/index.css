@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -189,5 +188,52 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
 
+  /* Card Deck Transition Effect Styles */
+  #transition-stat {
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    transform: translate3d(0, 0, 0);
+    transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+  }
+
+  #future-showcase {
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    transform: translate3d(0, 100%, 0) scale(0.85);
+    opacity: 0;
+    transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+  }
+
+  .transitioning-out {
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
+    animation: card-slide-out 0.5s ease-out forwards;
+  }
+
+  .transitioning-in {
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.15);
+    animation: card-slide-in 0.5s ease-out forwards;
+  }
+
+  @keyframes card-slide-out {
+    from {
+      transform: translate3d(0, 0, 0) scale(1) rotateX(0deg);
+      opacity: 1;
+    }
+    to {
+      transform: translate3d(0, -10%, 0) scale(0.9) rotateX(-5deg);
+      opacity: 0;
+    }
+  }
+
+  @keyframes card-slide-in {
+    from {
+      transform: translate3d(0, 100%, 0) scale(0.85) rotateX(5deg);
+      opacity: 0.6;
+    }
+    to {
+      transform: translate3d(0, 0, 0) scale(1) rotateX(0deg);
+      opacity: 1;
+    }
+  }
+}
