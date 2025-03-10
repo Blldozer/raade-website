@@ -10,7 +10,12 @@ import { useGeneralSectionAnimations } from './useGeneralSectionAnimations';
 export const useSectionTransitions = () => {
   // Use all our specialized hooks
   useNavBackground();
-  useSectionParallax();
+  
+  // Initialize parallax effect for each section that needs it
+  useSectionParallax('conference-promo', 0.2);
+  useSectionParallax('transition-stat', 0.15);
+  useSectionParallax('future-showcase', 0.25);
+  
   useTransitionStatAnimation();
   useTransitionHookAnimation();
   useFutureShowcaseAnimation();
