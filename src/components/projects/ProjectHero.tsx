@@ -13,7 +13,7 @@ interface ProjectHeroProps {
 
 const ProjectHero = ({ image, name, sector, partner, partnerLink }: ProjectHeroProps) => {
   return (
-    <div className="relative h-[60vh] min-h-[400px] overflow-hidden">
+    <div id="project-hero" className="relative h-[60vh] min-h-[400px] overflow-hidden">
       <div className="absolute inset-0 bg-black/50 z-10"></div>
       <img 
         src={image} 

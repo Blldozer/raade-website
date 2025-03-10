@@ -26,12 +26,20 @@ const ProjectDetail = () => {
     
     // Scroll to top when component mounts
     window.scrollTo(0, 0);
+    
+    // Set initial dark background for the navigation
+    document.body.setAttribute('data-nav-background', 'dark');
+    
+    // Clean up on unmount
+    return () => {
+      document.body.removeAttribute('data-nav-background');
+    };
   }, [project, navigate]);
   
   if (!project) return null;
 
   return (
-    <div className="bg-black">
+    <div className="bg-white">
       {/* Hero Section */}
       <ProjectHero 
         image={project.image}
@@ -46,7 +54,7 @@ const ProjectDetail = () => {
         <Button 
           variant="ghost" 
           onClick={() => navigate("/studios")}
-          className="mb-8 text-white hover:text-[#FBB03B]"
+          className="mb-8 text-raade-navy hover:text-[#FBB03B]"
         >
           <ArrowLeft className="mr-2 h-4 w-4" /> Back to Projects
         </Button>

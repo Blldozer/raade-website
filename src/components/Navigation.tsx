@@ -32,6 +32,9 @@ const Navigation = ({
     ? isHeroPage 
     : (location.pathname === "/" || location.pathname === "/studios");
 
+  // Project page detection - check if we're on a project detail page
+  const isProjectPage = location.pathname.startsWith('/projects/');
+  
   // Determine if dark mode should be forced based on route or background color
   const isConferencePage = location.pathname === "/conference";
   const isStudiosPage = location.pathname === "/studios";
@@ -74,8 +77,15 @@ const Navigation = ({
     // Initial check
     handleScroll();
     
+    // If on project page, set initial dark background to true 
+    // for the hero section which has a dark overlay
+    if (isProjectPage && !isScrolled) {
+      setIsDarkBackground(true);
+      document.body.setAttribute('data-nav-background', 'dark');
+    }
+    
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+  }, [lastScrollY, isProjectPage, isScrolled]);
 
   // Use dynamic padding based on device size
   const getPadding = () => {
@@ -83,6 +93,34 @@ const Navigation = ({
     if (isTablet) return "px-6";
     return "px-8";
   };
+
+  // For project pages, we need to detect when scrolling past the hero section
+  // to change the logo and button contrast
+  useEffect(() => {
+    if (!isProjectPage) return;
+    
+    const handleProjectPageScroll = () => {
+      const projectHeroElement = document.querySelector('[id^="project-hero"]');
+      
+      if (projectHeroElement) {
+        const heroBottom = projectHeroElement.getBoundingClientRect().bottom;
+        // If the hero bottom is above the top of the viewport, we've scrolled past it
+        if (heroBottom <= 0) {
+          document.body.setAttribute('data-nav-background', 'light');
+          setIsDarkBackground(false);
+        } else {
+          document.body.setAttribute('data-nav-background', 'dark');
+          setIsDarkBackground(true);
+        }
+      }
+    };
+    
+    window.addEventListener('scroll', handleProjectPageScroll);
+    // Initial check
+    handleProjectPageScroll();
+    
+    return () => window.removeEventListener('scroll', handleProjectPageScroll);
+  }, [isProjectPage]);
 
   return (
     <nav
