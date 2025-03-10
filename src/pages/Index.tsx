@@ -31,6 +31,28 @@ const Index = () => {
       });
     });
     
+    // Create a special transition between TransitionStat and FutureShowcase
+    const statSection = document.getElementById('transition-stat');
+    const futureSection = document.getElementById('future-showcase');
+    
+    if (statSection && futureSection) {
+      // This marker helps coordinate the two animations
+      ScrollTrigger.create({
+        trigger: statSection,
+        start: "bottom 60%",
+        endTrigger: futureSection,
+        end: "top 40%",
+        markers: false, // Set to true for debugging
+        toggleClass: "transitioning",
+        onToggle: (self) => {
+          if (self.isActive) {
+            // If we're in the transition zone, make sure both sections are visible
+            gsap.set([statSection, futureSection], { visibility: "visible" });
+          }
+        }
+      });
+    }
+    
     return () => {
       // Cleanup
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());

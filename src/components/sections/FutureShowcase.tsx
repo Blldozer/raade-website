@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -120,14 +121,35 @@ const ProjectCard = ({
 };
 const FutureShowcase = () => {
   const sectionRef = useRef<HTMLElement>(null);
+  
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      ScrollTrigger.refresh();
-    }, sectionRef);
+    const section = sectionRef.current;
+    if (!section) return;
+    
+    // Create zoom-in animation for this section
+    const enterTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: "top bottom",
+        end: "top center",
+        scrub: true,
+      }
+    });
+    
+    // Create zoom-in effect when entering this section
+    enterTl.fromTo(section,
+      { scale: 0.9, opacity: 0.5 },
+      { scale: 1, opacity: 1, duration: 1, ease: "power2.out" }
+    );
+    
     return () => {
+      const ctx = gsap.context(() => {
+        ScrollTrigger.refresh();
+      }, sectionRef);
       ctx.revert();
     };
   }, []);
+  
   return <section ref={sectionRef} className="relative py-40 bg-white overflow-y-auto" style={{
     height: 'auto',
     minHeight: '100vh'

@@ -15,11 +15,12 @@ const TransitionStat = () => {
   useEffect(() => {
     const section = sectionRef.current;
     const content = contentRef.current;
+    const nextSection = document.getElementById('future-showcase');
     
-    if (!section || !content) return;
+    if (!section || !content || !nextSection) return;
     
-    // Create zoom-in animation
-    const tl = gsap.timeline({
+    // Create zoom-in animation for entering this section
+    const enterTl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
         start: "top bottom",
@@ -29,10 +30,28 @@ const TransitionStat = () => {
     });
     
     // Scale up the section as it enters the viewport
-    tl.fromTo(section, 
+    enterTl.fromTo(section, 
       { scale: 0.8, opacity: 0 },
       { scale: 1, opacity: 1, duration: 1, ease: "power2.out" }
     );
+    
+    // Create zoom-out animation when leaving this section
+    const exitTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: "bottom 80%",
+        end: "bottom top",
+        scrub: true,
+      }
+    });
+    
+    // Scale down and fade out this section as we scroll to the next
+    exitTl.to(section, {
+      scale: 0.9,
+      opacity: 0.5,
+      duration: 1,
+      ease: "power2.in"
+    });
     
     // Animation for the content - slides in from bottom
     gsap.fromTo(content,
