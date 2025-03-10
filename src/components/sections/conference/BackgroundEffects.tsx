@@ -19,7 +19,7 @@ const BackgroundEffects = () => {
     <>
       {/* Base image layer */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/raade-eboard-baker-institute-cmp.jpg')] bg-cover bg-center opacity-40 mix-blend-multiply"></div>
+        <div className="absolute inset-0 bg-[url('/raade-eboard-sally-port-cmp.jpg')] bg-cover bg-center opacity-40 mix-blend-multiply"></div>
       </div>
       
       {/* Gradient overlay with animation */}
