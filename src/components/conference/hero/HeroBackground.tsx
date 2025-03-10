@@ -9,24 +9,26 @@ const HeroBackground = () => {
     offset: ["start start", "end start"]
   });
   
-  // Create parallax effect for image
-  const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
+  // Reduced parallax effect with a smaller range of motion
+  // Starting with a higher initial position to match the "scrolled" look
+  const imageY = useTransform(scrollYProgress, [0, 1], ["10%", "20%"]);
   
   return (
     <div ref={containerRef} className="absolute inset-0 overflow-hidden pointer-events-none z-0">
       {/* Warm base gradient layer */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#FEF7CD] via-[#FEC6A1] to-[#FDE1D3] z-0"></div>
       
-      {/* Team image with parallax effect - increased opacity and softer blend */}
+      {/* Team image with reduced parallax effect - increased opacity and softer blend */}
       <motion.div 
         className="absolute inset-0 z-1"
         style={{ y: imageY }}
+        initial={{ y: "10%" }} // Set initial position to match the "scrolled" look
       >
-        <div className="absolute inset-0 bg-[url('/raade-eboard-baker-institute-cmp.jpg')] bg-cover bg-center opacity-45 mix-blend-soft-light"></div>
+        <div className="absolute inset-0 bg-[url('/raade-eboard-baker-institute-cmp.jpg')] bg-cover bg-center opacity-55 mix-blend-soft-light"></div>
       </motion.div>
       
       {/* Subtle warm overlay for consistent coloring */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#FBB03B]/20 to-[#FF8A6A]/20 z-2"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-[#FBB03B]/15 to-[#FF8A6A]/15 z-2"></div>
       
       {/* Subtle grain texture overlay */}
       <div 
@@ -36,11 +38,11 @@ const HeroBackground = () => {
         }}
       ></div>
       
-      {/* Very subtle vignette - much lighter than before */}
+      {/* Very subtle vignette - lighter than before */}
       <motion.div 
-        className="absolute inset-0 z-4 opacity-30 bg-gradient-to-t from-[#FBB03B]/40 via-transparent to-transparent"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.3 }}
+        className="absolute inset-0 z-4 opacity-20 bg-gradient-to-t from-[#FBB03B]/30 via-transparent to-transparent"
+        initial={{ opacity: 0.2 }}
+        animate={{ opacity: 0.2 }}
         transition={{ duration: 1.5 }}
       />
       
