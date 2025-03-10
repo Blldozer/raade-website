@@ -1,6 +1,7 @@
 
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 interface NavLogoProps {
   isScrolled?: boolean;
@@ -18,6 +19,7 @@ const NavLogo = ({
   useShortForm = false
 }: NavLogoProps) => {
   const location = useLocation();
+  const [showSecondary, setShowSecondary] = useState(false);
   
   // For short form logos
   const blackShortFormLogo = "/logos/RAADE-logo-short-form-black.png";
@@ -36,19 +38,24 @@ const NavLogo = ({
     ? (useShortForm ? whiteShortFormLogo : whiteRegularLogo)
     : (useShortForm ? blackShortFormLogo : blackRegularLogo);
 
+  // Reset the state when forceDarkMode changes
+  useEffect(() => {
+    setShowSecondary(false);
+  }, [forceDarkMode, useShortForm]);
+
   return (
     <div className="flex-shrink-0 flex items-center">
       <Link to="/" className="flex items-center relative">
-        {/* Primary logo (visible) */}
+        {/* Primary logo (visible when showSecondary is false) */}
         <img
-          className={`${forceSize} w-auto transition-opacity duration-300 ease-in-out z-10`}
+          className={`${forceSize} w-auto transition-opacity duration-300 ease-in-out z-10 ${showSecondary ? 'opacity-0' : 'opacity-100'}`}
           src={primaryLogo}
           alt="RAADE"
         />
         
-        {/* Secondary logo (hidden until state changes) - positioned absolutely underneath */}
+        {/* Secondary logo (visible when showSecondary is true) */}
         <img
-          className={`${forceSize} w-auto absolute top-0 left-0 opacity-0 transition-opacity duration-300 ease-in-out pointer-events-none`}
+          className={`${forceSize} w-auto absolute top-0 left-0 transition-opacity duration-300 ease-in-out pointer-events-none ${showSecondary ? 'opacity-100' : 'opacity-0'}`}
           src={secondaryLogo}
           alt="RAADE"
         />
