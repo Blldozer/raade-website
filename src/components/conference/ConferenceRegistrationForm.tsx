@@ -14,8 +14,7 @@ const ConferenceRegistrationForm = () => {
     isSubmitting,
     showPayment,
     registrationData,
-    emailValidationResult,
-    setEmailValidationResult,
+    handleEmailValidation,
     handleInitialSubmit,
     setShowPayment,
   } = useRegistrationForm();
@@ -52,12 +51,12 @@ const ConferenceRegistrationForm = () => {
               setValue={form.setValue}
               watch={form.watch}
               control={form.control}
-              onEmailValidation={setEmailValidationResult}
+              onEmailValidation={handleEmailValidation}
             />
             
             <Button
               type="submit"
-              disabled={isSubmitting || (emailValidationResult && !emailValidationResult.isValid)}
+              disabled={isSubmitting}
               className="w-full bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora"
             >
               {isSubmitting ? (
