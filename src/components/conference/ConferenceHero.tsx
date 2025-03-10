@@ -173,7 +173,7 @@ const ConferenceHero = () => {
                   }} whileTap={{
                     scale: 0.95
                   }}>
-                      <p className="text-white font-lora font-medium">200+ Attendees</p>
+                      <p className="text-white font-lora font-medium">100+ Attendees</p>
                     </motion.div>
                   </div>
                 </div>
