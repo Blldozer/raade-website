@@ -89,9 +89,13 @@ const FutureShowcase = () => {
     }}>
       <div className="max-w-[90vw] xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-40 content-element">
+          <span className="block text-sm font-medium tracking-wider text-[#1A365D]/70 mb-4 uppercase">
+            Our Projects
+          </span>
           <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-[#1A365D] mb-8">
             Building in Progress
           </h2>
+          <div className="w-24 h-1 bg-[#FBB03B] mx-auto mb-8"></div>
           <p className="text-lg md:text-xl text-[#1A365D]/80 max-w-3xl mx-auto font-lora leading-relaxed">
             Step into the future we're creating. Each project is a window into tomorrow,
             where innovation meets impact in real time.
