@@ -1,20 +1,17 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, Users, Globe, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-
 const ConferenceFinalCta = () => {
   const navigate = useNavigate();
-  
-  return (
-    <section className="py-16 relative overflow-hidden">
+  return <section className="py-16 relative overflow-hidden">
       {/* Background with gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-raade-navy to-raade-navy/90 z-0">
         <div className="absolute inset-0 bg-[url('/public/raade-eboard-baker-institute-cmp.jpg')] bg-cover bg-center opacity-20 mix-blend-overlay"></div>
-        <div className="absolute inset-0 bg-[length:30px_30px] opacity-10" 
-             style={{ backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)" }}></div>
+        <div className="absolute inset-0 bg-[length:30px_30px] opacity-10" style={{
+        backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)"
+      }}></div>
       </div>
       
       {/* Content container */}
@@ -22,12 +19,17 @@ const ConferenceFinalCta = () => {
         <div className="grid md:grid-cols-2 gap-8 items-center">
           {/* Left column - Main content */}
           <div className="text-white">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
+            <motion.div initial={{
+            opacity: 0,
+            y: 20
+          }} whileInView={{
+            opacity: 1,
+            y: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            duration: 0.5
+          }}>
               <h2 className="text-4xl md:text-5xl font-bold mb-6 font-simula leading-tight">
                 Be Part of Africa's <span className="text-[#FBB03B]">Innovation Journey</span>
               </h2>
@@ -43,15 +45,14 @@ const ConferenceFinalCta = () => {
                 </div>
               </div>
               
-              <motion.div 
-                whileHover={{ scale: 1.03 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-              >
-                <Button 
-                  size="lg" 
-                  className="bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora px-8 py-6 text-lg group relative overflow-hidden"
-                  onClick={() => navigate("/conference/register")}
-                >
+              <motion.div whileHover={{
+              scale: 1.03
+            }} transition={{
+              type: "spring",
+              stiffness: 400,
+              damping: 10
+            }}>
+                <Button size="lg" className="bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora px-8 py-6 text-lg group relative overflow-hidden" onClick={() => navigate("/conference/register")}>
                   <span className="relative z-10 flex items-center">
                     Register Now
                     <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -63,13 +64,18 @@ const ConferenceFinalCta = () => {
           </div>
           
           {/* Right column - Benefits and details */}
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20"
-          >
+          <motion.div initial={{
+          opacity: 0,
+          x: 20
+        }} whileInView={{
+          opacity: 1,
+          x: 0
+        }} viewport={{
+          once: true
+        }} transition={{
+          duration: 0.6,
+          delay: 0.2
+        }} className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
             <h3 className="text-2xl font-simula text-white mb-4">What to Expect:</h3>
             
             <ul className="space-y-4 mb-6">
@@ -108,20 +114,23 @@ const ConferenceFinalCta = () => {
         </div>
         
         {/* Social proof */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-12 text-center text-white/80"
-        >
+        <motion.div initial={{
+        opacity: 0,
+        y: 20
+      }} whileInView={{
+        opacity: 1,
+        y: 0
+      }} viewport={{
+        once: true
+      }} transition={{
+        duration: 0.5,
+        delay: 0.4
+      }} className="mt-12 text-center text-white/80">
           <p className="font-lora italic">
-            "Join over <span className="text-white font-semibold">200+ attendees</span> from <span className="text-white font-semibold">25+ countries</span> committed to innovation in African development."
+            "Join over <span className="text-white font-semibold">100+ attendees</span> from <span className="text-white font-semibold">25+ countries</span> committed to innovation in African development."
           </p>
         </motion.div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default ConferenceFinalCta;
