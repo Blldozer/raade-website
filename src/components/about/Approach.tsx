@@ -39,7 +39,8 @@ const Approach = () => {
               real needs and create meaningful change.
             </p>
           </motion.div>
-          {/* Tighter collage layout without boxes */}
+          
+          {/* Updated 2x2 collage layout */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -47,26 +48,36 @@ const Approach = () => {
             transition={{ delay: 0.4, duration: 0.6 }}
             className="lg:w-[61%] mt-8 lg:mt-0 relative"
           >
-            <div className="w-full h-full flex flex-wrap gap-2">
-              <div className="w-[calc(50%-1px)] flex justify-center">
+            <div className="grid grid-cols-2 gap-1">
+              {/* Top row - 2 images side by side */}
+              <div className="flex justify-center items-center">
                 <img 
                   src="/about-page-images/RAADE-HCD-Image-boy-center-flower.png" 
                   alt="Boy surrounded by colorful flower petals" 
-                  className="scale-50 hover:scale-[0.55] transition-transform duration-500"
+                  className="scale-50 hover:scale-[0.55] transition-transform duration-500 object-contain"
                 />
               </div>
-              <div className="w-[calc(50%-1px)] flex justify-center">
+              <div className="flex justify-center items-center">
                 <img 
                   src="/about-page-images/RAADE-HCD-boy-center-community.png" 
                   alt="Boy in center of community" 
-                  className="scale-50 hover:scale-[0.55] transition-transform duration-500"
+                  className="scale-50 hover:scale-[0.55] transition-transform duration-500 object-contain"
                 />
               </div>
-              <div className="w-full flex justify-center mt-2">
+              
+              {/* Bottom row - 2 images side by side */}
+              <div className="flex justify-center items-center">
                 <img 
                   src="/about-page-images/RAADE-HCD-person-center-africa.png" 
                   alt="Person in center of Africa" 
-                  className="scale-50 hover:scale-[0.55] transition-transform duration-500"
+                  className="scale-50 hover:scale-[0.55] transition-transform duration-500 object-contain"
+                />
+              </div>
+              <div className="flex justify-center items-center">
+                <img 
+                  src="/about-page-images/RAADE-HCD-Flower-from-heas.png" 
+                  alt="Flower formed from human heads" 
+                  className="scale-50 hover:scale-[0.55] transition-transform duration-500 object-contain"
                 />
               </div>
             </div>
