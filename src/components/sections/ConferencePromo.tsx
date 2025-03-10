@@ -38,17 +38,14 @@ const ConferencePromo = () => {
   return (
     <motion.div 
       ref={sectionRef}
-      className="relative min-h-screen flex items-center overflow-hidden"
+      className="relative min-h-screen flex items-center overflow-hidden py-24 md:py-32"
     >
       {/* Background gradient and animated shapes */}
       <BackgroundEffects />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-16 md:py-20 lg:py-24 w-full">
-        <div className="promo-content grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Left side: Conference Info */}
-          <ConferenceInfo />
-          
-          {/* Right side: Countdown */}
+      <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-16 md:py-20 lg:py-24 w-full">
+        <div className="promo-content grid grid-cols-1 gap-16 items-center">
+          {/* Centered Countdown takes full width */}
           <EnhancedCountdown />
         </div>
       </div>
