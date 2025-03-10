@@ -19,7 +19,7 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "transition-colors duration-200",
-          forceDarkMode ? "text-[#FBB03B]" : "text-white"
+          forceDarkMode ? "text-[#274675]" : "text-white"
         )}
       >
         {isOpen ? <X size={24} /> : <Menu size={24} />}

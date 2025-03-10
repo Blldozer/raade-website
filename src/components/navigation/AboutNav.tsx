@@ -63,7 +63,7 @@ const AboutNav = () => {
             <div className="hidden md:block mr-6">
               <CountdownTimer 
                 variant="nav" 
-                colorScheme={isDarkBackground ? "light" : "dark"} 
+                colorScheme={!isDarkBackground ? "dark" : "light"} 
               />
             </div>
             

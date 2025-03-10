@@ -7,23 +7,35 @@ interface NavLogoProps {
   isHeroPage?: boolean;
   forceDarkMode?: boolean;
   forceSize?: string;
+  useShortForm?: boolean;
 }
 
 const NavLogo = ({ 
   isScrolled = false, 
   isHeroPage = false, 
   forceDarkMode = false,
-  forceSize = "h-60" 
+  forceSize = "h-60",
+  useShortForm = false
 }: NavLogoProps) => {
   const location = useLocation();
   const isConferencePage = location.pathname === "/conference";
+  const isStudiosPage = location.pathname === "/studios";
   
   // Determine which logo to use based on the current page, scroll state, and forceDarkMode
   // When forceDarkMode is true, use black logo (dark mode means dark UI elements)
   // When forceDarkMode is false and we're on a hero or special page, use white logo
-  const logoSrc = forceDarkMode
+  
+  // For short form logos
+  let shortFormLogoSrc = forceDarkMode
+    ? "/logos/RAADE-logo-short-form-black.png" 
+    : "/logos/RAADE-logo-short-form-white.png";
+    
+  // For regular logos
+  let regularLogoSrc = forceDarkMode
     ? "/logos/RAADE-logo-final-black.png" 
     : "/logos/RAADE-logo-final-white.png";
+    
+  const logoSrc = useShortForm ? shortFormLogoSrc : regularLogoSrc;
 
   return (
     <div className="flex-shrink-0 flex items-center">
