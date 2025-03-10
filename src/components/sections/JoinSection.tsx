@@ -170,7 +170,7 @@ const JoinSection = () => {
               <CardHeader>
                 <CardTitle className="text-2xl font-simula text-[#274675] flex items-center">
                   <Handshake className="mr-2 h-5 w-5 text-[#FBB03B]" /> 
-                  Annual Conference
+                  African Development Forum
                 </CardTitle>
                 <CardDescription className="text-[#274675]/70 font-lora">
                   Global summit bringing together African leaders, scholars, and innovators
@@ -204,14 +204,13 @@ const JoinSection = () => {
                 <div className="w-full space-y-4">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-[#274675]/70 font-lora">Rice University, Houston, TX</span>
-                    <span className="text-[#FBB03B] font-bold font-lora">Early bird closing soon</span>
                   </div>
                   <Link
                     to="/conference/register"
                     className="block w-full"
                   >
                     <Button className="w-full bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora group">
-                      Register for the Conference
+                      Register for the Forum
                       <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                     </Button>
                   </Link>
