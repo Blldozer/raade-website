@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
@@ -12,6 +13,7 @@ interface StripeCheckoutProps {
   ticketType: string;
   email: string;
   fullName: string;
+  groupSize?: number;
   onSuccess: () => void;
   onError: (error: string) => void;
 }
@@ -20,6 +22,7 @@ const StripeCheckout = ({
   ticketType, 
   email,
   fullName,
+  groupSize,
   onSuccess,
   onError 
 }: StripeCheckoutProps) => {
@@ -27,23 +30,29 @@ const StripeCheckout = ({
   const [isLoading, setIsLoading] = useState(true);
   const [amount, setAmount] = useState(0);
   const [currency, setCurrency] = useState("USD");
+  const [isGroupRegistration, setIsGroupRegistration] = useState(false);
   
   useEffect(() => {
     // Create a payment intent when the component loads
     const createPaymentIntent = async () => {
       setIsLoading(true);
       try {
+        console.log("Creating payment intent with:", { ticketType, email, fullName, groupSize });
         const { data, error } = await supabase.functions.invoke('create-payment-intent', {
           body: {
             ticketType,
             email,
-            fullName
+            fullName,
+            groupSize
           },
         });
         
         if (error) {
+          console.error("Payment intent error:", error);
           throw error;
         }
+        
+        console.log("Payment intent created:", data);
         
         // Handle free tickets (speakers)
         if (data.freeTicket) {
@@ -55,6 +64,7 @@ const StripeCheckout = ({
           setClientSecret(data.clientSecret);
           setAmount(data.amount);
           setCurrency(data.currency);
+          setIsGroupRegistration(data.isGroupRegistration || false);
         }
       } catch (error) {
         console.error("Error creating payment intent:", error);
@@ -65,7 +75,7 @@ const StripeCheckout = ({
     };
     
     createPaymentIntent();
-  }, [ticketType, email, fullName, onSuccess, onError]);
+  }, [ticketType, email, fullName, groupSize, onSuccess, onError]);
 
   if (isLoading) {
     return (
@@ -108,6 +118,8 @@ const StripeCheckout = ({
             onError={onError}
             amount={amount}
             currency={currency}
+            isGroupRegistration={isGroupRegistration}
+            groupSize={isGroupRegistration ? groupSize : undefined}
           />
         </Elements>
       )}

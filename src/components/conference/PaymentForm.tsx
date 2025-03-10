@@ -18,9 +18,19 @@ interface PaymentFormProps {
   onError: (error: string) => void;
   amount: number;
   currency: string;
+  isGroupRegistration?: boolean;
+  groupSize?: number;
 }
 
-const PaymentForm = ({ email, onSuccess, onError, amount, currency }: PaymentFormProps) => {
+const PaymentForm = ({ 
+  email, 
+  onSuccess, 
+  onError, 
+  amount, 
+  currency,
+  isGroupRegistration,
+  groupSize
+}: PaymentFormProps) => {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -102,14 +112,24 @@ const PaymentForm = ({ email, onSuccess, onError, amount, currency }: PaymentFor
     setIsLoading(false);
   };
 
+  // Format amount properly for display
+  const displayAmount = isGroupRegistration && groupSize
+    ? `${(amount / groupSize).toFixed(2)} ${currency} per person (${groupSize} people)`
+    : `${amount.toFixed(2)} ${currency}`;
+
   return (
     <Card className="w-full mt-4">
       <CardContent className="pt-6">
         <div className="text-center mb-4">
           <h3 className="text-lg font-medium">Payment Details</h3>
           <p className="text-gray-500 text-sm">
-            Total: {amount.toFixed(2)} {currency}
+            Total: {displayAmount}
           </p>
+          {isGroupRegistration && groupSize && (
+            <p className="text-gray-500 text-sm mt-1">
+              Group registration for {groupSize} people
+            </p>
+          )}
         </div>
         
         <form id="payment-form" onSubmit={handleSubmit}>
