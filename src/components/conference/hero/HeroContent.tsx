@@ -1,19 +1,17 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
 import { Calendar, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const HeroContent = () => {
-  const navigate = useNavigate();
-  
   return (
     <div className="w-full lg:w-1/2 lg:pr-12 py-10 z-10">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="space-y-6"
+        className="space-y-[clamp(1rem,2vw,2rem)]"
       >
         <p className="text-xl font-medium text-white font-lora">
           Join us at the Annual RAADE Conference
@@ -69,7 +67,7 @@ const HeroContent = () => {
           <motion.button 
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => navigate("/conference/register")} 
+            onClick={() => window.location.href = "/conference/register"} 
             className="px-8 py-3 bg-[#FBB03B] text-white rounded-md font-medium transition-all hover:bg-[#FBB03B]/90 font-lora shadow-md"
           >
             Register Now
