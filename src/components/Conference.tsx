@@ -8,10 +8,6 @@ import ConferenceOverview from "./conference/ConferenceOverview";
 import ConferenceWhy from "./conference/ConferenceWhy";
 import ConferenceRegistration from "./conference/ConferenceRegistration";
 import ConferenceFinalCta from "./conference/ConferenceFinalCta";
-// Import commented out but kept for future use
-// import ConferenceSchedule from "./conference/ConferenceSchedule";
-// import ConferenceVenue from "./conference/ConferenceVenue";
-// import ConferenceSponsors from "./conference/ConferenceSponsors";
 
 const Conference = () => {
   const navigate = useNavigate();
@@ -46,23 +42,10 @@ const Conference = () => {
       {/* Why Attend Section */}
       <ConferenceWhy />
       
-      {/* Schedule Section - Hidden for now */}
-      {/* <section id="schedule">
-        <ConferenceSchedule />
-      </section> */}
-      
       {/* Registration Options */}
       <section id="registration">
         <ConferenceRegistration />
       </section>
-      
-      {/* Venue and Location - Hidden for now */}
-      {/* <section id="venue">
-        <ConferenceVenue />
-      </section> */}
-      
-      {/* Sponsors Section - Hidden until sponsors are confirmed */}
-      {/* <ConferenceSponsors /> */}
       
       {/* Final CTA */}
       <ConferenceFinalCta />
