@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface EmailVerificationProps {
   email: string;
@@ -27,6 +28,8 @@ const EmailVerification = ({
   const [verificationCode, setVerificationCode] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSendingEmail, setIsSendingEmail] = useState<boolean>(false);
+  const [sendingAttempts, setSendingAttempts] = useState<number>(0);
+  const [sendingError, setSendingError] = useState<string | null>(null);
   const { toast } = useToast();
 
   // Attempt to send verification email if it hasn't been sent yet
@@ -34,6 +37,8 @@ const EmailVerification = ({
     const sendVerificationEmail = async () => {
       if (!emailSent) {
         setIsSendingEmail(true);
+        setSendingError(null);
+        
         try {
           console.log("Sending initial verification email from useEffect to:", email);
           const { data, error } = await supabase.functions.invoke("send-verification-email", {
@@ -46,17 +51,24 @@ const EmailVerification = ({
           });
 
           if (error) {
-            console.error("Error sending verification email:", error);
+            console.error("Error from send-verification-email function:", error);
             throw error;
           }
 
+          if (data.error) {
+            console.error("Error in response from send-verification-email:", data.error);
+            throw new Error(data.error);
+          }
+
+          setSendingAttempts(prev => prev + 1);
           toast({
             title: "Verification code sent",
-            description: "A verification code has been sent to your email.",
+            description: "A verification code has been sent to your email. Please check your inbox and spam folder.",
           });
         } catch (error) {
           console.error("Error in sending verification email:", error);
           const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+          setSendingError(errorMessage);
           toast({
             title: "Failed to send verification code",
             description: errorMessage,
@@ -124,6 +136,7 @@ const EmailVerification = ({
 
   const handleResendCode = async () => {
     setIsSendingEmail(true);
+    setSendingError(null);
 
     try {
       console.log("Resending verification email to:", email);
@@ -141,13 +154,15 @@ const EmailVerification = ({
         throw error;
       }
 
+      setSendingAttempts(prev => prev + 1);
       toast({
         title: "Verification code sent",
-        description: "A new verification code has been sent to your email.",
+        description: "A new verification code has been sent to your email. Please check both your inbox and spam folder.",
       });
     } catch (error) {
       console.error("Error sending verification email:", error);
       const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+      setSendingError(errorMessage);
       toast({
         title: "Failed to send code",
         description: errorMessage,
@@ -163,8 +178,28 @@ const EmailVerification = ({
       <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
         <h3 className="font-semibold text-lg mb-2">Email Verification Required</h3>
         <p className="text-gray-600 mb-4">
-          We've sent a verification code to <span className="font-semibold">{email}</span>. Please check your inbox and enter the code below.
+          We've sent a verification code to <span className="font-semibold">{email}</span>. Please check your inbox and spam folder.
         </p>
+        
+        {sendingError && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertDescription>
+              Error sending verification email: {sendingError}. Please try resending or contact support.
+            </AlertDescription>
+          </Alert>
+        )}
+        
+        {sendingAttempts > 0 && (
+          <div className="bg-blue-50 border border-blue-100 p-3 rounded-md mb-4">
+            <p className="text-blue-700 text-sm">
+              {sendingAttempts === 1 ? (
+                "Verification email sent. If you don't see it in your inbox, please check your spam folder."
+              ) : (
+                `We've attempted to send ${sendingAttempts} verification emails. Please check both your inbox and spam folder.`
+              )}
+            </p>
+          </div>
+        )}
         
         <div className="space-y-4">
           <div>
