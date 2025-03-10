@@ -1,5 +1,6 @@
 
 import Hero from "@/components/hero/Hero";
+import ConferencePromo from "@/components/sections/ConferencePromo";
 import TransitionStat from "@/components/sections/TransitionStat";
 import FutureShowcase from "@/components/sections/FutureShowcase";
 import TransitionHook from "@/components/sections/TransitionHook";
@@ -13,6 +14,13 @@ const Index = () => {
         id="hero"
       >
         <Hero />
+      </section>
+      
+      <section 
+        className="relative w-full" 
+        id="conference-promo"
+      >
+        <ConferencePromo />
       </section>
       
       <section 

@@ -1,7 +1,9 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import CountUp from 'react-countup';
 import gsap from 'gsap';
+
 const TransitionStat = () => {
   const scrollToNextSection = () => {
     const nextSection = document.getElementById('future-showcase');
@@ -16,7 +18,9 @@ const TransitionStat = () => {
       });
     }
   };
-  return <section className="min-h-screen flex flex-col justify-between py-20 bg-cream relative bg-white">
+
+  return (
+    <section className="min-h-screen flex flex-col justify-between py-20 bg-cream relative bg-white">
       <div className="flex-grow flex items-center bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div initial={{
@@ -65,6 +69,8 @@ const TransitionStat = () => {
           <div className="w-6 h-6 mx-auto border-b-2 border-r-2 border-[#1A365D]/30 rotate-45 transition-all duration-300 group-hover:border-[#1A365D] group-hover:scale-110" />
         </motion.button>
       </motion.div>
-    </section>;
+    </section>
+  );
 };
+
 export default TransitionStat;
