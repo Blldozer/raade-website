@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import Conference from "@/components/Conference";
@@ -11,38 +12,17 @@ const ConferencePage = () => {
     document.title = "RAADE | Day Forum";
     
     // Set initial nav background attribute for proper contrast
-    const setNavBackground = () => {
-      // For the hero section (which has a dark background), set "dark"
-      // As user scrolls down to white sections, this will be updated dynamically
-      document.body.setAttribute('data-nav-background', 'dark');
-    };
+    document.body.setAttribute('data-nav-background', 'light');
     
-    setNavBackground();
-    
-    // Add scroll listener to update nav background attribute based on scroll position
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      const heroHeight = window.innerHeight * 0.9;
-      
-      // If we're in the hero section (dark background), use "dark" 
-      // Otherwise in the white content sections, use "light"
-      if (scrollPosition < heroHeight) {
-        document.body.setAttribute('data-nav-background', 'dark');
-      } else {
-        document.body.setAttribute('data-nav-background', 'light');
-      }
-    };
-    
-    window.addEventListener("scroll", handleScroll);
-    
+    // Clean up function to reset the attribute when component unmounts
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      document.body.removeAttribute('data-nav-background');
     };
   }, []);
   
   return (
     <div className="relative">
-      <Navigation isHeroPage={true} forceDarkMode={false} />
+      <Navigation isHeroPage={true} forceDarkMode={true} />
       <Conference />
     </div>
   );
