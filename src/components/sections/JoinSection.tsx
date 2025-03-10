@@ -1,83 +1,96 @@
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { ArrowRight, Handshake } from 'lucide-react';
+import React, { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import ScrollTrigger from 'gsap/ScrollTrigger';
+import BackgroundEffects from './join/BackgroundEffects';
+import SectionHeader from './join/SectionHeader';
+import InnovationStudiosCard from './join/InnovationStudiosCard';
+import ConferenceCard from './join/ConferenceCard';
+import PartnerCTA from './join/PartnerCTA';
+
+// Register ScrollTrigger
+gsap.registerPlugin(ScrollTrigger);
 
 const JoinSection = () => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    const content = contentRef.current;
+
+    if (!section || !content) return;
+
+    // Initial state - slightly scaled down and faded
+    gsap.set(section, {
+      scale: 0.9,
+      opacity: 0.8
+    });
+
+    // Create zoom-in animation for entering this section
+    const enterTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: "top bottom",
+        end: "top center",
+        scrub: true,
+      }
+    });
+
+    // Scale up as it enters the viewport
+    enterTl.to(section, {
+      scale: 1,
+      opacity: 1,
+      duration: 1.2,
+      ease: "power2.out"
+    });
+
+    // Listen for the transition event from TransitionHook
+    const transitionHandler = () => {
+      // Trigger a more pronounced zoom-in animation when explicitly transitioning
+      gsap.fromTo(section,
+        { scale: 0.9, opacity: 0.8 },
+        { 
+          scale: 1, 
+          opacity: 1, 
+          duration: 0.8, 
+          ease: "power2.out",
+          overwrite: true
+        }
+      );
+    };
+
+    document.addEventListener('transitionToJoin', transitionHandler);
+
+    return () => {
+      // Clean up
+      document.removeEventListener('transitionToJoin', transitionHandler);
+      ScrollTrigger.getAll().forEach(t => t.kill());
+    };
+  }, []);
+
   return (
-    <section className="py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-4xl font-bold text-[#1A365D] mb-6 font-zillaslab">
-            Build with us
-          </h2>
-        </motion.div>
+    <section 
+      ref={sectionRef}
+      className="relative min-h-screen overflow-hidden py-20 md:py-32"
+    >
+      {/* Background elements */}
+      <BackgroundEffects />
+      
+      <div ref={contentRef} className="container mx-auto px-6 lg:px-8 relative z-10">
+        {/* Section header */}
+        <SectionHeader />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {/* Innovation Studios */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="space-y-6"
-          >
-            <div className="aspect-w-16 aspect-h-9 rounded-2xl overflow-hidden">
-              <img
-                src="/Cozy-Sunlit-Rustic-Kitchen.jpeg"
-                alt="Innovation Studios"
-                className="object-cover w-full h-full"
-              />
-            </div>
-            <h3 className="text-2xl font-bold text-[#1A365D] font-zillaslab">Innovation Studios</h3>
-            <p className="text-lg text-[#1A365D]/80 font-merriweather">
-              9-week intensive programs where Rice students collaborate with African
-              organizations to develop innovative solutions.
-            </p>
-            <Link
-              to="/studios"
-              className="inline-flex items-center text-[#FBB03B] text-lg font-alegreyasans hover:translate-x-2 transition-all duration-300"
-            >
-              Join the Studios
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </motion.div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 max-w-6xl mx-auto">
+          {/* Innovation Studios Card */}
+          <InnovationStudiosCard />
 
-          {/* Annual Conference */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="space-y-6"
-          >
-            <div className="aspect-w-16 aspect-h-9 rounded-2xl overflow-hidden">
-              <img
-                src="/Cozy-Café-Interior.jpeg"
-                alt="Annual Conference"
-                className="object-cover w-full h-full"
-              />
-            </div>
-            <h3 className="text-2xl font-bold text-[#1A365D] font-zillaslab">Partner With Us</h3>
-            <p className="text-lg text-[#1A365D]/80 font-merriweather">
-              Have a challenge that needs solving? Bring your development challenge to our talented student teams and collaborate on innovative solutions.
-            </p>
-            <Link
-              to="/apply/partner"
-              className="inline-flex items-center bg-[#FBB03B] text-white px-4 py-2 rounded-md hover:bg-[#FBB03B]/80 transition-all duration-300 font-alegreyasans"
-            >
-              <Handshake className="mr-2 h-5 w-5" />
-              Submit Your Challenge
-            </Link>
-          </motion.div>
+          {/* Conference Card */}
+          <ConferenceCard />
         </div>
+        
+        {/* Partner submission CTA */}
+        <PartnerCTA />
       </div>
     </section>
   );

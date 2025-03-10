@@ -3,9 +3,10 @@ import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
+import ScrollToPlugin from 'gsap/ScrollToPlugin';
 
 // Register the ScrollTrigger plugin
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 const TransitionHook = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -14,10 +15,31 @@ const TransitionHook = () => {
   useEffect(() => {
     const section = sectionRef.current;
     const content = contentRef.current;
+    const joinSection = document.getElementById('join');
     
-    if (!section || !content) return;
+    if (!section || !content || !joinSection) return;
     
-    // Create zoom-in animation for entering this section
+    // Initial state - slightly scaled down
+    gsap.set(section, {
+      scale: 0.9,
+      opacity: 0.7
+    });
+    
+    // Listen for transition from FutureShowcase
+    const transitionFromFutureHandler = () => {
+      // Enhanced zoom-in effect when transitioning from FutureShowcase
+      gsap.to(section, {
+        scale: 1,
+        opacity: 1,
+        duration: 1.2,
+        ease: "power2.out",
+        overwrite: true
+      });
+    };
+    
+    document.addEventListener('transitionToHook', transitionFromFutureHandler);
+    
+    // Create zoom-in animation for entering this section (default behavior)
     const enterTl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
@@ -28,10 +50,7 @@ const TransitionHook = () => {
     });
     
     // Scale up from smaller size as it enters the viewport
-    enterTl.fromTo(section, {
-      scale: 0.9,
-      opacity: 0.5
-    }, {
+    enterTl.to(section, {
       scale: 1,
       opacity: 1,
       duration: 1,
@@ -53,8 +72,31 @@ const TransitionHook = () => {
       }
     });
     
+    // Create zoom-out animation when transitioning to joinSection
+    const exitTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: "bottom 60%",
+        end: "bottom top",
+        scrub: true,
+        onLeave: () => {
+          // Signal to the joinSection to start its zoom-in animation
+          document.dispatchEvent(new CustomEvent('transitionToJoin'));
+        }
+      }
+    });
+    
+    // Scale down and fade when transitioning to join section
+    exitTl.to(section, {
+      scale: 0.85,
+      opacity: 0.5,
+      duration: 1,
+      ease: "power2.in"
+    });
+    
     return () => {
       // Clean up
+      document.removeEventListener('transitionToHook', transitionFromFutureHandler);
       ScrollTrigger.getAll().forEach(t => t.kill());
     };
   }, []);
