@@ -36,7 +36,7 @@ const EventDetails = () => {
         </div>
         <div className="flex items-center bg-[#FBB03B]/10 px-6 py-3 rounded-full hover:bg-[#FBB03B]/15 transition-colors">
           <Users className="h-5 w-5 text-[#FBB03B] mr-2" />
-          <p className="text-raade-navy font-lora font-medium">200+ Attendees</p>
+          <p className="text-raade-navy font-lora font-medium">100+ Attendees</p>
         </div>
       </motion.div>
     </div>
