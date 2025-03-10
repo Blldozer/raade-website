@@ -40,13 +40,9 @@ export const useGeneralSectionAnimations = () => {
       // if the trigger element is one of our target sections
       ScrollTrigger.getAll().forEach(trigger => {
         const triggerElement = trigger.vars.trigger;
-        
-        // Check if it's an Element before trying to use matches
-        if (triggerElement instanceof Element) {
-          // Check if this is NOT one of our special sections
-          if (!triggerElement.matches('#hero, #transition-stat, #transition-hook, #future-showcase')) {
-            trigger.kill();
-          }
+        if (triggerElement instanceof Element &&
+            !triggerElement.matches('#hero, #transition-stat, #transition-hook, #future-showcase')) {
+          trigger.kill();
         }
       });
     };
