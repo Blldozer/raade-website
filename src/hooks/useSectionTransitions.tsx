@@ -19,16 +19,4 @@ export const useSectionTransitions = () => {
   useTransitionHookAnimation();
   useFutureShowcaseAnimation();
   useGeneralSectionAnimations();
-  
-  useEffect(() => {
-    // Add the new z-index CSS file to the document
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = '/src/styles/zIndex.css';
-    document.head.appendChild(link);
-    
-    return () => {
-      document.head.removeChild(link);
-    };
-  }, []);
 };
