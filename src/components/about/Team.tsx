@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { Linkedin } from "lucide-react";
 const teamMembers = [{
@@ -135,9 +136,8 @@ const Team = () => {
                       <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-[#FBB03B] transition-colors flex items-center gap-2">
                         {member.name} <Linkedin className="w-8 h-8 inline text-[#FBB03B]" />
                       </a>
-                      <span className="text-3xl text-[#FBB03B]">{member.classYear}</span>
                     </h3> : <h3 className="text-5xl font-simula text-white mb-2">
-                      {member.name} <span className="text-3xl text-[#FBB03B]">{member.classYear}</span>
+                      {member.name}
                     </h3>}
                   <p className="text-2xl text-gray-300 font-lora">
                     {member.position}
