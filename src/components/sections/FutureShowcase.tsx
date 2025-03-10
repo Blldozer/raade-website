@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -25,7 +24,7 @@ const showcaseProjects = [{
   slug: nutritionProject?.slug || "child-nutrition-initiative"
 }, {
   title: womenProject?.name || "Women's Entrepreneurship Program",
-  image: womenProject?.image || "https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&q=80",
+  image: "https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80", // Using a different image
   description: womenProject?.challenge || "Young mothers with limited education struggle to maintain small businesses",
   category: "BUSINESS",
   slug: womenProject?.slug || "womens-entrepreneurship-program"
