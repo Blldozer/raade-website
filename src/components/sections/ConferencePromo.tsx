@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, MapPin, ChevronRight, Sparkles } from 'lucide-react';
+import { Calendar, MapPin, ChevronRight } from 'lucide-react';
 import CountdownTimer from '../CountdownTimer';
 import gsap from 'gsap';
 import { motion } from 'framer-motion';
@@ -123,32 +123,6 @@ const ConferencePromo = () => {
             <rect width="100%" height="100%" fill="url(#grid)" />
           </svg>
         </div>
-        
-        {/* Floating sparkles */}
-        <div className="absolute inset-0">
-          {[...Array(6)].map((_, i) => (
-            <motion.div 
-              key={i}
-              className="absolute"
-              style={{
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-              }}
-              animate={{ 
-                y: [0, -20, 0],
-                opacity: [0.2, 0.8, 0.2]
-              }}
-              transition={{ 
-                duration: 3 + Math.random() * 5,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: Math.random() * 2
-              }}
-            >
-              <Sparkles className="text-white/20 h-6 w-6" />
-            </motion.div>
-          ))}
-        </div>
       </div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -229,27 +203,66 @@ const ConferencePromo = () => {
             whileHover={{ scale: 1.02 }}
             className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-white/20 hover:border-white/30 transition-all duration-300"
           >
-            <div className="text-center mb-6">
+            <div className="text-center mb-8">
               <motion.h3 
-                className="text-2xl font-bold text-white font-simula"
+                className="text-2xl font-bold text-white font-simula mb-4"
                 whileHover={{ scale: 1.05, color: "#FFA726" }}
                 transition={{ duration: 0.2 }}
               >
                 Time Remaining
               </motion.h3>
-              <p className="text-white/70 font-lora mt-2">Don't miss this opportunity to connect and collaborate</p>
-            </div>
-            
-            <div className="flex justify-center mb-8">
-              <CountdownTimer 
-                targetDate="2025-04-11T09:00:00" 
-                variant="floating"
-                colorScheme={{
-                  text: "text-white",
-                  accent: "text-[#FFA726]",
-                  dropdownBg: "bg-[#274675]"
-                }}
-              />
+              <p className="text-white/70 font-lora mt-2 mb-6">Don't miss this opportunity to connect and collaborate</p>
+              
+              {/* Enhanced countdown timer placement */}
+              <div className="relative py-2">
+                <motion.div
+                  className="countdown-container p-4 bg-gradient-to-r from-[#1E3A6C]/70 to-[#274675]/70 rounded-xl backdrop-blur-md"
+                  whileHover={{ 
+                    scale: 1.03,
+                    boxShadow: "0 0 30px rgba(251, 176, 59, 0.3)"
+                  }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <CountdownTimer 
+                    targetDate="2025-04-11T09:00:00" 
+                    variant="floating"
+                    colorScheme={{
+                      text: "text-white",
+                      accent: "text-[#FFA726]",
+                      dropdownBg: "bg-[#274675]"
+                    }}
+                  />
+                  
+                  {/* Decorative elements for the countdown */}
+                  <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+                    <motion.div 
+                      className="absolute -top-1 left-1/4 w-20 h-1 bg-gradient-to-r from-[#FFA726]/0 via-[#FFA726] to-[#FFA726]/0 rounded-full"
+                      animate={{
+                        left: ["25%", "75%", "25%"],
+                        opacity: [0, 1, 0]
+                      }}
+                      transition={{
+                        duration: 5,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    />
+                    <motion.div 
+                      className="absolute -bottom-1 right-1/4 w-20 h-1 bg-gradient-to-r from-[#FFA726]/0 via-[#FFA726] to-[#FFA726]/0 rounded-full"
+                      animate={{
+                        right: ["25%", "75%", "25%"],
+                        opacity: [0, 1, 0]
+                      }}
+                      transition={{
+                        duration: 6,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 1
+                      }}
+                    />
+                  </div>
+                </motion.div>
+              </div>
             </div>
             
             <div className="text-center">
