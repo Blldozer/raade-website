@@ -7,8 +7,8 @@ const HeroBackground = () => {
   
   return (
     <div ref={containerRef} className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-      {/* Warm base gradient layer */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#FEF7CD] via-[#FEC6A1] to-[#FDE1D3] z-0"></div>
+      {/* Solid base color layer */}
+      <div className="absolute inset-0 bg-[#FDE1D3] z-0"></div>
       
       {/* Team image - full size with no parallax */}
       <div className="absolute inset-0 z-1">
