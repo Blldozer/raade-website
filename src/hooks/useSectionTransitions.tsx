@@ -41,11 +41,8 @@ export const useSectionTransitions = () => {
     
     // Apply different transition effects to each section
     sections.forEach((section, index) => {
-      // Initial setup - hide sections until they enter viewport
-      gsap.set(section, { 
-        autoAlpha: 0,
-        y: 50,  // Start slightly below final position
-      });
+      // Do NOT hide sections initially - this was causing the content to be invisible
+      // Instead, just set up scroll triggers to enhance the sections as they come into view
       
       // Create ScrollTrigger for each section
       ScrollTrigger.create({
@@ -55,15 +52,6 @@ export const useSectionTransitions = () => {
         onEnter: () => {
           // Special handling for TransitionStat section
           if (section.id === "transition-stat") {
-            // First make section visible
-            gsap.to(section, {
-              duration: 0.8,
-              autoAlpha: 1,
-              y: 0,
-              ease: "power2.out",
-              overwrite: "auto"
-            });
-            
             // Animate stat counter with a scale effect
             const statCounter = section.querySelector(".stat-counter");
             if (statCounter) {
@@ -80,7 +68,7 @@ export const useSectionTransitions = () => {
             }
             
             // Animate the description text that appears after the stat
-            const contentElements = section.querySelectorAll(".content-element");
+            const contentElements = section.querySelectorAll(".content-element:not(.opacity-100)");
             if (contentElements.length) {
               gsap.fromTo(contentElements,
                 { y: 20, autoAlpha: 0 },
@@ -97,15 +85,6 @@ export const useSectionTransitions = () => {
           }
           // Special handling for TransitionHook section
           else if (section.id === "transition-hook") {
-            // First make section visible
-            gsap.to(section, {
-              duration: 0.8,
-              autoAlpha: 1,
-              y: 0,
-              ease: "power2.out",
-              overwrite: "auto"
-            });
-            
             // Animate the heading separately with a more dramatic reveal
             const heading = section.querySelector("h2");
             if (heading) {
@@ -163,17 +142,8 @@ export const useSectionTransitions = () => {
           }
           // Special handling for Future Showcase section
           else if (section.id === "future-showcase") {
-            // First, ensure the section background is visible
-            gsap.to(section, {
-              duration: 0.8,
-              autoAlpha: 1,
-              y: 0,
-              ease: "power2.out",
-              overwrite: "auto"
-            });
-
-            // Then animate the header content
-            const header = section.querySelector('.content-element');
+            // Animate the header content
+            const header = section.querySelector('.content-element:not(.opacity-100)');
             if (header) {
               gsap.fromTo(header,
                 { y: 30, autoAlpha: 0 },
@@ -202,26 +172,23 @@ export const useSectionTransitions = () => {
               );
             });
           } else {
-            // Default animation for other sections
-            gsap.to(section, {
-              duration: 0.8,
-              autoAlpha: 1,
-              y: 0,
-              ease: "power2.out",
-              overwrite: "auto"
-            });
+            // For other sections, identify and animate any content elements that don't have opacity-100
+            const contentElements = section.querySelectorAll(".content-element:not(.opacity-100)");
+            if (contentElements.length) {
+              gsap.fromTo(contentElements,
+                { y: 20, autoAlpha: 0 },
+                { 
+                  y: 0,
+                  autoAlpha: 1,
+                  duration: 0.8,
+                  stagger: 0.3,
+                  ease: "power2.out"
+                }
+              );
+            }
           }
-        },
-        onLeaveBack: () => {
-          // Fade out and slide down when scrolling back up
-          gsap.to(section, {
-            duration: 0.6,
-            autoAlpha: 0,
-            y: 50,
-            ease: "power2.in",
-            overwrite: "auto"
-          });
         }
+        // We're removing the onLeaveBack handler that was making content disappear when scrolling back up
       });
       
       // Add subtle parallax effect to section backgrounds

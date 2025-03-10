@@ -39,7 +39,7 @@ const ConferenceInfo = () => {
   return (
     <div className="text-white space-y-6 p-6 md:p-8 bg-black/40 backdrop-blur-md rounded-xl shadow-xl">
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 1, y: 0 }} // Changed from opacity: 0, y: 20 to ensure visibility
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
@@ -68,7 +68,7 @@ const ConferenceInfo = () => {
       </motion.div>
       
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 1, y: 0 }} // Changed from opacity: 0, y: 20 to ensure visibility
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 0.2 }}
@@ -85,7 +85,7 @@ const ConferenceInfo = () => {
       </motion.div>
       
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 1, y: 0 }} // Changed from opacity: 0, y: 20 to ensure visibility
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 0.3 }}

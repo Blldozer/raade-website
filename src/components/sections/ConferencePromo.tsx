@@ -35,6 +35,7 @@ const ConferencePromo = () => {
     <div 
       ref={sectionRef}
       className="relative min-h-screen flex items-center overflow-hidden pt-[var(--navbar-height)]"
+      style={{ opacity: 1 }} // Force visibility of the conference promo section
     >
       {/* Background gradient and animated shapes */}
       <BackgroundEffects />
@@ -42,12 +43,12 @@ const ConferencePromo = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 py-16 md:py-20 lg:py-24 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Left side: Conference Info */}
-          <div className="content-element opacity-100">
+          <div className="opacity-100"> {/* Removed content-element class that was triggering animations */}
             <ConferenceInfo />
           </div>
           
           {/* Right side: Countdown */}
-          <div className="content-element opacity-100">
+          <div className="opacity-100"> {/* Removed content-element class that was triggering animations */}
             <EnhancedCountdown />
           </div>
         </div>

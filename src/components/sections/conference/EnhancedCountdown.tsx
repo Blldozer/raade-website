@@ -12,7 +12,7 @@ const EnhancedCountdown = () => {
 
   return (
     <motion.div 
-      initial={{ opacity: 0, scale: 0.95 }}
+      initial={{ opacity: 1, scale: 1 }} // Changed from 0.95 to ensure visibility
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 0.7 }}
