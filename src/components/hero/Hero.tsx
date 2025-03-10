@@ -1,8 +1,6 @@
-
 import React, { useEffect, useRef } from 'react';
 import Navigation from '../Navigation';
 import AnimatedText from './AnimatedText';
-// import ParticleField from './ParticleField';
 import gsap from 'gsap';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -49,7 +47,7 @@ const Hero = () => {
       }
     });
 
-    // Set the initial background state
+    // Set the initial background state for proper navigation contrast
     document.body.setAttribute('data-nav-background', 'dark');
     
     return () => {
@@ -79,7 +77,6 @@ const Hero = () => {
       {/* </div> */}
       
       <div className="relative z-50">
-        {/* Using isHeroPage={true} ensures that the white logo will be displayed */}
         <Navigation isHeroPage={true} />
       </div>
       

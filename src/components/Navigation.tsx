@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useLocation } from "react-router-dom";
@@ -92,7 +93,7 @@ const Navigation = ({
             <div className="hidden md:block mr-6">
               <CountdownTimer 
                 variant="nav" 
-                colorScheme={!isDarkBackground ? "dark" : "light"} 
+                colorScheme={isDarkBackground ? "light" : "dark"} 
               />
             </div>
             
