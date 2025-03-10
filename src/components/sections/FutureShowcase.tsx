@@ -150,13 +150,17 @@ const FutureShowcase = () => {
         end: "bottom top",
         scrub: true,
         markers: false, // Set to true for debugging
+        onLeave: () => {
+          // Signal to the TransitionHook section to start its zoom-in animation
+          document.dispatchEvent(new CustomEvent('transitionToHook'));
+        }
       }
     });
     
     exitTl.to(section, {
-      scale: 0.95,
-      opacity: 0.8,
-      duration: 1,
+      scale: 0.85,
+      opacity: 0.7,
+      duration: 1.2,
       ease: "power2.in"
     });
     

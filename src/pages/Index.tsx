@@ -1,4 +1,3 @@
-
 import Hero from "@/components/hero/Hero";
 import ConferencePromo from "@/components/sections/ConferencePromo";
 import TransitionStat from "@/components/sections/TransitionStat";
@@ -69,6 +68,26 @@ const Index = () => {
           if (self.isActive) {
             // If we're in the transition zone, make sure both sections are visible
             gsap.set([futureSection, hookSection], { visibility: "visible" });
+            
+            // Create the simultaneous zoom effect
+            if (self.isActive) {
+              document.dispatchEvent(new CustomEvent('transitionToHook'));
+              
+              // Create the simultaneous zoom effect - future showcase zooming out while hook section zooms in
+              const timeline = gsap.timeline();
+              timeline.to(futureSection, {
+                scale: 0.85,
+                opacity: 0.7,
+                duration: 1.2,
+                ease: "power2.in"
+              }, 0);
+              
+              timeline.fromTo(hookSection, 
+                { scale: 0.85, opacity: 0.7 },
+                { scale: 1, opacity: 1, duration: 1.2, ease: "power2.out" },
+                0
+              );
+            }
           }
         }
       });
@@ -121,6 +140,7 @@ const Index = () => {
     };
   }, []);
 
+  
   return (
     <div className="min-h-screen overflow-hidden">
       <section 

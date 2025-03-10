@@ -19,7 +19,27 @@ const TransitionHook = () => {
     
     if (!section || !content || !joinSection) return;
     
-    // Create zoom-in animation for entering this section
+    // Initial state - slightly scaled down
+    gsap.set(section, {
+      scale: 0.9,
+      opacity: 0.7
+    });
+    
+    // Listen for transition from FutureShowcase
+    const transitionFromFutureHandler = () => {
+      // Enhanced zoom-in effect when transitioning from FutureShowcase
+      gsap.to(section, {
+        scale: 1,
+        opacity: 1,
+        duration: 1.2,
+        ease: "power2.out",
+        overwrite: true
+      });
+    };
+    
+    document.addEventListener('transitionToHook', transitionFromFutureHandler);
+    
+    // Create zoom-in animation for entering this section (default behavior)
     const enterTl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
@@ -30,10 +50,7 @@ const TransitionHook = () => {
     });
     
     // Scale up from smaller size as it enters the viewport
-    enterTl.fromTo(section, {
-      scale: 0.9,
-      opacity: 0.5
-    }, {
+    enterTl.to(section, {
       scale: 1,
       opacity: 1,
       duration: 1,
@@ -79,6 +96,7 @@ const TransitionHook = () => {
     
     return () => {
       // Clean up
+      document.removeEventListener('transitionToHook', transitionFromFutureHandler);
       ScrollTrigger.getAll().forEach(t => t.kill());
     };
   }, []);
