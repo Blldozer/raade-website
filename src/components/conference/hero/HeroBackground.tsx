@@ -4,12 +4,12 @@ import React from "react";
 const HeroBackground = () => {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-      {/* Base gradient layer with a more transparent color to allow image visibility */}
-      <div className="absolute inset-0 bg-white/60 z-0"></div>
+      {/* Base gradient layer with transparency to allow image visibility */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#FBB03B]/70 via-[#FF9848]/70 to-[#FF8A6A]/70 z-0"></div>
       
       {/* Team image with static positioning - no parallax */}
       <div className="absolute inset-0 z-1">
-        <div className="absolute inset-0 bg-[url('/raade-eboard-baker-institute-cmp.jpg')] bg-cover bg-center opacity-50 mix-blend-multiply"></div>
+        <div className="absolute inset-0 bg-[url('/raade-eboard-baker-institute-cmp.jpg')] bg-cover bg-center opacity-60 mix-blend-multiply"></div>
       </div>
       
       {/* Grain texture overlay */}
@@ -22,7 +22,7 @@ const HeroBackground = () => {
       
       {/* Gradient overlay for better text contrast */}
       <div 
-        className="absolute inset-0 z-3 opacity-50 bg-gradient-to-t from-black/60 via-transparent to-transparent"
+        className="absolute inset-0 z-3 opacity-40 bg-gradient-to-t from-black/60 via-transparent to-transparent"
       />
       
       {/* Static floating particles - no animation */}
