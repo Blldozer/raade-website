@@ -4,35 +4,45 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
+import { projects } from '@/data/ProjectData';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const projects = [
+// Get the specific projects we want to highlight
+const sunfiProject = projects.find(p => p.slug === "sunfi-solar-initiative");
+const nutritionProject = projects.find(p => p.slug === "child-nutrition-initiative");
+const womenProject = projects.find(p => p.slug === "womens-entrepreneurship-program");
+
+const showcaseProjects = [
   {
-    title: "YOUR KITCHEN IS ENOUGH",
-    image: "/Cozy-Sunlit-Rustic-Kitchen.jpeg",
-    description: "Empowering local ingredients, enriching communities",
-    category: "SUSTAINABLE LIVING"
+    title: sunfiProject?.name || "SunFi Solar Initiative",
+    image: sunfiProject?.image || "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&q=80",
+    description: sunfiProject?.challenge || "Limited access to clean energy in rural Nigerian communities",
+    category: "ENERGY",
+    slug: sunfiProject?.slug || "sunfi-solar-initiative"
   },
   {
-    title: "LIGHTS THAT NEVER GO OUT",
-    image: "/Cozy-Café-Interior.jpeg",
-    description: "Sustainable power for unstoppable progress",
-    category: "ENERGY SOLUTIONS"
+    title: nutritionProject?.name || "Child Nutrition Initiative",
+    image: nutritionProject?.image || "https://images.unsplash.com/photo-1493770348161-369560ae357d?auto=format&fit=crop&q=80",
+    description: nutritionProject?.challenge || "Nearly 1/3 of under-five children in Nigeria are underweight or wasted",
+    category: "HEALTHCARE",
+    slug: nutritionProject?.slug || "child-nutrition-initiative"
   },
   {
-    title: "BUILDING RESILIENT FAMILIES",
-    image: "/Mother-and-Newborn-Intimacy.jpeg",
-    description: "Building generational prosperity through innovation",
-    category: "COMMUNITY DEVELOPMENT"
+    title: womenProject?.name || "Women's Entrepreneurship Program",
+    image: womenProject?.image || "https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&q=80",
+    description: womenProject?.challenge || "Young mothers with limited education struggle to maintain small businesses",
+    category: "BUSINESS",
+    slug: womenProject?.slug || "womens-entrepreneurship-program"
   }
 ];
 
-const ProjectCard = ({ title, image, description, category, index }: { 
+const ProjectCard = ({ title, image, description, category, slug, index }: { 
   title: string, 
   image: string, 
   description: string,
   category: string,
+  slug: string,
   index: number
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -41,11 +51,11 @@ const ProjectCard = ({ title, image, description, category, index }: {
     const card = cardRef.current;
     if (!card) return;
     
-    const image = card.querySelector('.project-image img');
+    const imageEl = card.querySelector('.project-image img');
     const content = card.querySelectorAll('.animate-content');
     
     gsap.set(card, { opacity: 0, y: 40 });
-    gsap.set(image, { scale: 1.2 });
+    gsap.set(imageEl, { scale: 1.2 });
     gsap.set(content, { opacity: 0, y: 30 });
     
     ScrollTrigger.create({
@@ -59,7 +69,7 @@ const ProjectCard = ({ title, image, description, category, index }: {
           ease: "power3.out"
         });
         
-        gsap.to(image, {
+        gsap.to(imageEl, {
           scale: 1,
           duration: 2,
           ease: "power2.out"
@@ -89,7 +99,7 @@ const ProjectCard = ({ title, image, description, category, index }: {
       }}
     >
       <Link 
-        to="/studios"
+        to={`/projects/${slug}`}
         className="project-image relative overflow-hidden rounded-2xl shadow-lg transform transition-transform duration-700 group-hover:scale-[1.02]"
         style={{ gridArea: 'image' }}
       >
@@ -115,7 +125,7 @@ const ProjectCard = ({ title, image, description, category, index }: {
           {description}
         </p>
         <Link 
-          to="/studios"
+          to={`/projects/${slug}`}
           className={`animate-content inline-flex items-center text-[#FBB03B] text-lg font-alegreyasans group-hover:translate-x-2 transition-all duration-300 ease-out`}
         >
           Learn More 
@@ -157,9 +167,9 @@ const FutureShowcase = () => {
         </div>
 
         <div className="space-y-32">
-          {projects.map((project, index) => (
+          {showcaseProjects.map((project, index) => (
             <div key={project.title} className="project-card">
-              <ProjectCard {...project} index={index} />
+              <ProjectCard {...project} index={index} slug={project.slug} />
             </div>
           ))}
         </div>
