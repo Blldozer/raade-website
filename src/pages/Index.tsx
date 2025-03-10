@@ -74,6 +74,33 @@ const Index = () => {
       });
     }
     
+    // Create a special transition between TransitionHook and JoinSection
+    const joinSection = document.getElementById('join');
+    
+    if (hookSection && joinSection) {
+      // Coordinate the transition between these sections
+      ScrollTrigger.create({
+        trigger: hookSection,
+        start: "bottom 60%",
+        endTrigger: joinSection,
+        end: "top 40%",
+        markers: false, // Set to true for debugging
+        toggleClass: "transition-to-join",
+        onToggle: (self) => {
+          if (self.isActive) {
+            // If we're in the transition zone, make sure both sections are visible
+            gsap.set([hookSection, joinSection], { visibility: "visible" });
+            
+            // Add a subtle animation for the join section
+            gsap.fromTo(joinSection, 
+              { opacity: 0, y: 30 },
+              { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }
+            );
+          }
+        }
+      });
+    }
+    
     return () => {
       // Cleanup
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
@@ -118,7 +145,7 @@ const Index = () => {
       </section>
       
       <section 
-        className="relative w-full min-h-screen bg-white" 
+        className="relative w-full min-h-screen" 
         id="join"
       >
         <JoinSection />
