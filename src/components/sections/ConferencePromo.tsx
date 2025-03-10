@@ -1,71 +1,22 @@
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
-import gsap from 'gsap';
-import ScrollTrigger from 'gsap/ScrollTrigger';
 import BackgroundEffects from './conference/BackgroundEffects';
 import ConferenceInfo from './conference/ConferenceInfo';
 import EnhancedCountdown from './conference/EnhancedCountdown';
 
-// Register ScrollTrigger
-gsap.registerPlugin(ScrollTrigger);
-
 const ConferencePromo = () => {
-  const sectionRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  
-  useEffect(() => {
-    const section = sectionRef.current;
-    const content = contentRef.current;
-    
-    if (!section || !content) return;
-    
-    // Main content animation on scroll
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        start: "top bottom",
-        end: "bottom top",
-        toggleActions: "play none none reverse"
-      }
-    });
-    
-    tl.fromTo(
-      content,
-      { y: 30, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.8, ease: "power2.out" }
-    );
-    
-    // Zoom out animation when scrolling away
-    const zoomOutTl = gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        start: "center center",
-        end: "bottom top",
-        scrub: true,
-      }
-    });
-    
-    zoomOutTl.to(section, {
-      scale: 0.85,
-      opacity: 0.8,
-      duration: 1,
-      ease: "power1.in"
-    });
-    
-    return () => {
-      // Clean up
-      ScrollTrigger.getAll().forEach(t => t.kill());
-    };
-  }, []);
 
   return (
-    <motion.div 
-      ref={sectionRef}
+    <div 
       className="relative min-h-screen flex items-center overflow-hidden"
     >
       {/* Background gradient and animated shapes */}
       <BackgroundEffects />
+      
+      {/* Card effect shadow and border */}
+      <div className="absolute inset-0 shadow-lg rounded-b-3xl pointer-events-none"></div>
       
       <div 
         ref={contentRef}
@@ -79,7 +30,7 @@ const ConferencePromo = () => {
           <EnhancedCountdown />
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
