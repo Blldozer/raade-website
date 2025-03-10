@@ -6,8 +6,12 @@ import Reality from "../components/about/Reality";
 import Approach from "../components/about/Approach";
 import Impact from "../components/about/Impact";
 import Team from "../components/about/Team";
+import { useSectionTransitions } from "../hooks/useSectionTransitions";
 
 const About = () => {
+  // Use the custom hook for section transitions and nav background detection
+  useSectionTransitions();
+
   return (
     <div className="bg-white">
       <AboutNav />
