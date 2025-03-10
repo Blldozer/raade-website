@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { UseFormRegister, FormState, UseFormSetValue, UseFormWatch, Control, useFieldArray } from "react-hook-form";
 import { Label } from "@/components/ui/label";
@@ -5,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import {
   Select,
@@ -18,16 +18,8 @@ import {
   RegistrationFormData,
   getTicketPriceText,
   TICKET_TYPES,
-  validateEmailDomain
+  validateTicketEmailDomain
 } from "./RegistrationFormTypes";
-import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 
 interface RegistrationFormFieldsProps {
   register: UseFormRegister<RegistrationFormData>;
@@ -71,55 +63,24 @@ const RegistrationFormFields = ({
 
   useEffect(() => {
     // When email changes and ticket type is set, validate the email domain
-    const validateEmail = async () => {
+    const validateEmail = () => {
       if (watchEmail && watchTicketType) {
         setIsCheckingEmail(true);
         
         try {
-          // Client-side basic validation
-          const initialValidation = validateEmailDomain(watchEmail);
+          // Client-side validation only
+          const validationResult = validateTicketEmailDomain(watchEmail, watchTicketType);
           
-          if (!initialValidation.isValid) {
-            if (onEmailValidation) {
-              onEmailValidation({ isValid: false, message: "Invalid email format" });
-            }
-            setIsCheckingEmail(false);
-            return;
+          if (onEmailValidation) {
+            onEmailValidation(validationResult);
           }
           
-          // Server-side validation with database check
-          const { data, error } = await supabase.functions.invoke('verify-email-domain', {
-            body: {
-              email: watchEmail,
-              ticketType: watchTicketType
-            }
-          });
-          
-          if (error) {
-            console.error("Error validating email domain:", error);
+          if (!validationResult.isValid) {
             toast({
-              title: "Email validation error",
-              description: "There was an error validating your email domain. Please try again.",
+              title: "Email domain not valid",
+              description: validationResult.message,
               variant: "destructive",
             });
-            if (onEmailValidation) {
-              onEmailValidation({ isValid: false, message: "Error validating email" });
-            }
-          } else if (data) {
-            if (onEmailValidation) {
-              onEmailValidation({ 
-                isValid: data.isValid, 
-                message: data.message 
-              });
-            }
-            
-            if (!data.isValid) {
-              toast({
-                title: "Email domain not valid",
-                description: data.message,
-                variant: "destructive",
-              });
-            }
           }
         } catch (error) {
           console.error("Error in email validation:", error);

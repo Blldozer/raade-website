@@ -101,8 +101,8 @@ export const validateTicketEmailDomain = (email: string, ticketType: string): { 
     };
   }
   
-  // Non-Rice Student tickets require any .edu email
-  if (ticketType === TICKET_TYPES.NON_RICE_STUDENT && !validation.isEduEmail) {
+  // Non-Rice Student and Student Group tickets require any .edu email
+  if ((ticketType === TICKET_TYPES.NON_RICE_STUDENT || ticketType === TICKET_TYPES.STUDENT_GROUP) && !validation.isEduEmail) {
     return { 
       isValid: false, 
       message: "Student tickets require an .edu email address" 

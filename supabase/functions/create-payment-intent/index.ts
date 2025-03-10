@@ -1,12 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@13.7.0";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-
-const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
-const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
-
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -57,27 +51,6 @@ serve(async (req) => {
             headers: { ...corsHeaders, "Content-Type": "application/json" } 
           }
         );
-    }
-
-    // Verify email is verified
-    const { data: verification, error: verificationError } = await supabase
-      .from('email_verifications')
-      .select('verified')
-      .eq('email', email)
-      .eq('ticket_type', ticketType)
-      .single();
-    
-    if (verificationError || !verification || !verification.verified) {
-      return new Response(
-        JSON.stringify({ 
-          error: "Email not verified",
-          message: "Please verify your email before proceeding to payment."
-        }),
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, "Content-Type": "application/json" } 
-        }
-      );
     }
 
     // Create a Payment Intent

@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
@@ -15,18 +15,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { registrationSchema, RegistrationFormData } from "./RegistrationFormTypes";
+import { registrationSchema, RegistrationFormData, TICKET_TYPES } from "./RegistrationFormTypes";
 import RegistrationFormFields from "./RegistrationFormFields";
 import PaymentSection from "./PaymentSection";
-import EmailVerification from "./EmailVerification";
 
 const ConferenceRegistrationForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
-  const [showEmailVerification, setShowEmailVerification] = useState(false);
   const [registrationData, setRegistrationData] = useState<RegistrationFormData | null>(null);
   const [emailValidationResult, setEmailValidationResult] = useState<{ isValid: boolean; message?: string } | null>(null);
-  const [verificationEmailSent, setVerificationEmailSent] = useState(false);
   const { toast } = useToast();
   
   const {
@@ -46,8 +43,6 @@ const ConferenceRegistrationForm = () => {
     },
   });
 
-  const watchTicketType = watch("ticketType");
-  
   const handleInitialSubmit = async (data: RegistrationFormData) => {
     // Double-check email validation
     if (!emailValidationResult?.isValid) {
@@ -63,7 +58,7 @@ const ConferenceRegistrationForm = () => {
     
     try {
       // For student group registrations, validate all emails
-      if (data.ticketType === "student-group" && data.groupEmails) {
+      if (data.ticketType === TICKET_TYPES.STUDENT_GROUP && data.groupEmails) {
         // Check if the group has at least the selected number of members
         if (!data.groupSize || data.groupEmails.length < data.groupSize) {
           toast({
@@ -76,53 +71,18 @@ const ConferenceRegistrationForm = () => {
         }
       }
       
-      console.log("Sending verification email to:", data.email);
-      
-      const { error: verificationError } = await supabase.functions.invoke("send-verification-email", {
-        body: {
-          email: data.email,
-          fullName: data.fullName,
-          ticketType: data.ticketType,
-          isKnownInstitution: false // Will be set server-side
-        },
-      });
-      
-      if (verificationError) {
-        console.error("Error sending verification email:", verificationError);
-        throw verificationError;
-      }
-      
-      toast({
-        title: "Verification email sent",
-        description: `We've sent a verification code to ${data.email}. Please check your inbox and enter the code.`,
-      });
-      
-      setVerificationEmailSent(true);
       setRegistrationData(data);
-      setShowEmailVerification(true);
+      setShowPayment(true);
     } catch (error) {
-      console.error("Verification error:", error);
+      console.error("Registration error:", error);
       toast({
-        title: "Verification failed",
-        description: "There was an error sending the verification email. Please try again.",
+        title: "Registration failed",
+        description: "There was an error processing your registration. Please try again.",
         variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleVerificationSuccess = () => {
-    setShowEmailVerification(false);
-    setShowPayment(true);
-  };
-
-  const handleVerificationError = (errorMessage: string) => {
-    toast({
-      title: "Verification failed",
-      description: errorMessage,
-      variant: "destructive",
-    });
   };
 
   const handlePaymentSuccess = async () => {
@@ -167,10 +127,8 @@ const ConferenceRegistrationForm = () => {
       // Reset form and state
       reset();
       setShowPayment(false);
-      setShowEmailVerification(false);
       setRegistrationData(null);
       setEmailValidationResult(null);
-      setVerificationEmailSent(false);
     } catch (error) {
       console.error("Registration error:", error);
       toast({
@@ -199,7 +157,7 @@ const ConferenceRegistrationForm = () => {
         <CardDescription>Please fill out the form below to register for the conference.</CardDescription>
       </CardHeader>
       <CardContent>
-        {!showEmailVerification && !showPayment ? (
+        {!showPayment ? (
           <form onSubmit={handleSubmit(handleInitialSubmit)} className="space-y-6">
             <RegistrationFormFields 
               register={register}
@@ -222,20 +180,11 @@ const ConferenceRegistrationForm = () => {
                 </>
               ) : (
                 <>
-                  Continue to Verification
+                  Continue to Payment
                 </>
               )}
             </Button>
           </form>
-        ) : showEmailVerification && registrationData ? (
-          <EmailVerification 
-            email={registrationData.email}
-            fullName={registrationData.fullName}
-            ticketType={registrationData.ticketType}
-            emailSent={verificationEmailSent}
-            onVerificationSuccess={handleVerificationSuccess}
-            onVerificationError={handleVerificationError}
-          />
         ) : (
           <PaymentSection 
             registrationData={registrationData!}
@@ -244,7 +193,6 @@ const ConferenceRegistrationForm = () => {
             onPaymentError={handlePaymentError}
             onBackClick={() => {
               setShowPayment(false);
-              setShowEmailVerification(true);
             }}
           />
         )}
