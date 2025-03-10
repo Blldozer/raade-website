@@ -10,9 +10,14 @@ import CountdownTimer from "./CountdownTimer";
 interface NavigationProps {
   isHeroPage?: boolean;
   forceDarkMode?: boolean;
+  useShortFormLogo?: boolean;
 }
 
-const Navigation = ({ isHeroPage = false, forceDarkMode = false }: NavigationProps) => {
+const Navigation = ({ 
+  isHeroPage = false, 
+  forceDarkMode = false,
+  useShortFormLogo = false 
+}: NavigationProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isPastHero, setIsPastHero] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -27,6 +32,8 @@ const Navigation = ({ isHeroPage = false, forceDarkMode = false }: NavigationPro
 
   // Determine if dark mode should be forced based on route or background color
   const isConferencePage = location.pathname === "/conference";
+  const isStudiosPage = location.pathname === "/studios";
+  
   // For conference page, we want dark elements (black logo, dark text buttons)
   // because the background is white/light
   const shouldForceDarkMode = forceDarkMode || (isConferencePage && !isHeroPage);
@@ -77,7 +84,8 @@ const Navigation = ({ isHeroPage = false, forceDarkMode = false }: NavigationPro
           <NavLogo 
             isScrolled={isScrolled} 
             isHeroPage={heroPage} 
-            forceDarkMode={shouldForceDarkMode || !isDarkBackground} 
+            forceDarkMode={shouldForceDarkMode || !isDarkBackground}
+            useShortForm={useShortFormLogo}
           />
           
           <div className="flex items-center">

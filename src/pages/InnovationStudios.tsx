@@ -5,7 +5,7 @@ import StudioOverview from "@/components/studios/StudioOverview";
 import StudioCTA from "@/components/studios/StudioCTA";
 import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 const InnovationStudios = () => {
@@ -13,8 +13,47 @@ const InnovationStudios = () => {
   const overviewRef = useRef<HTMLDivElement>(null);
   const projectsRef = useRef<HTMLDivElement>(null);
   const applyRef = useRef<HTMLDivElement>(null);
+  const [currentSection, setCurrentSection] = useState<string>("hero");
 
+  // Track scroll position to determine current section for proper nav contrast
   useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const viewportHeight = window.innerHeight;
+      
+      // Set dark mode for hero section (which has dark background)
+      if (scrollPosition < viewportHeight * 0.7) {
+        setCurrentSection("hero");
+        document.body.setAttribute('data-nav-background', 'dark');
+      } 
+      // Check if we're in overview section
+      else if (overviewRef.current && 
+          scrollPosition >= overviewRef.current.offsetTop - 100 && 
+          scrollPosition < projectsRef.current?.offsetTop! - 100) {
+        setCurrentSection("overview");
+        document.body.setAttribute('data-nav-background', 'light');
+      }
+      // Check if we're in projects section
+      else if (projectsRef.current && 
+          scrollPosition >= projectsRef.current.offsetTop - 100 && 
+          scrollPosition < applyRef.current?.offsetTop! - 100) {
+        setCurrentSection("projects");
+        document.body.setAttribute('data-nav-background', 'light');
+      }
+      // Check if we're in apply section
+      else if (applyRef.current && 
+          scrollPosition >= applyRef.current.offsetTop - 100) {
+        setCurrentSection("apply");
+        document.body.setAttribute('data-nav-background', 'light');
+      }
+    };
+
+    // Initial call to set the correct section
+    handleScroll();
+    
+    // Add scroll event listener
+    window.addEventListener("scroll", handleScroll);
+    
     // Handle scrolling to sections based on hash
     if (location.hash) {
       setTimeout(() => {
@@ -34,6 +73,9 @@ const InnovationStudios = () => {
         }
       }, 100);
     }
+    
+    // Cleanup
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [location]);
 
   const Hero = () => {
@@ -87,7 +129,7 @@ const InnovationStudios = () => {
   };
 
   return <div>
-      <Navigation isHeroPage={true} />
+      <Navigation isHeroPage={true} forceDarkMode={currentSection !== "hero"} />
       <div>
         <Hero />
         <div ref={overviewRef} id="overview">
