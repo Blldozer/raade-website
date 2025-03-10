@@ -1,7 +1,9 @@
+
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Calendar, MapPin, ChevronDown, Sparkles, Globe, Users } from "lucide-react";
+import { Calendar, MapPin, ChevronDown } from "lucide-react";
+
 const ConferenceHero = () => {
   const navigate = useNavigate();
   return <div className="relative min-h-screen overflow-hidden">
@@ -15,38 +17,7 @@ const ConferenceHero = () => {
           </svg>
         </div>
 
-        {/* Floating icons */}
-        <div className="absolute inset-0 z-10">
-          <motion.div className="absolute top-[20%] left-[15%]" animate={{
-          y: [0, 15, 0]
-        }} transition={{
-          duration: 5,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}>
-            <Sparkles className="w-12 h-12 text-white/20" />
-          </motion.div>
-          <motion.div className="absolute top-[30%] right-[20%]" animate={{
-          y: [0, -15, 0]
-        }} transition={{
-          duration: 4,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 1
-        }}>
-            <Globe className="w-16 h-16 text-white/20" />
-          </motion.div>
-          <motion.div className="absolute bottom-[25%] left-[25%]" animate={{
-          y: [0, 10, 0]
-        }} transition={{
-          duration: 6,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 0.5
-        }}>
-            <Users className="w-14 h-14 text-white/20" />
-          </motion.div>
-        </div>
+        {/* Removed floating icons section */}
       </div>
 
       <div className="container max-w-7xl mx-auto relative z-20 pt-20 px-4 md:px-6 lg:px-8 min-h-screen flex flex-col lg:flex-row items-center">
@@ -121,26 +92,15 @@ const ConferenceHero = () => {
               advancing Africa's future.
             </p>
 
-            <div className="pt-4 flex flex-wrap gap-4">
-              <motion.button whileHover={{
-              scale: 1.05
-            }} whileTap={{
-              scale: 0.95
-            }} onClick={() => navigate("/conference/register")} className="px-8 py-3 bg-[#FBB03B] text-white rounded-md font-medium transition-all hover:bg-[#FBB03B]/90 font-lora shadow-md">
+            {/* Center the Register Now button and hide View Schedule button */}
+            <div className="pt-4 flex justify-center">
+              <motion.button 
+                whileHover={{ scale: 1.05 }} 
+                whileTap={{ scale: 0.95 }} 
+                onClick={() => navigate("/conference/register")} 
+                className="px-8 py-3 bg-[#FBB03B] text-white rounded-md font-medium transition-all hover:bg-[#FBB03B]/90 font-lora shadow-md"
+              >
                 Register Now
-              </motion.button>
-              
-              <motion.button whileHover={{
-              scale: 1.05
-            }} whileTap={{
-              scale: 0.95
-            }} onClick={() => {
-              const scheduleSection = document.getElementById('schedule');
-              scheduleSection?.scrollIntoView({
-                behavior: 'smooth'
-              });
-            }} className="px-8 py-3 border-2 border-white text-white rounded-md font-medium transition-all hover:bg-white/10 font-lora">
-                View Schedule
               </motion.button>
             </div>
           </motion.div>
