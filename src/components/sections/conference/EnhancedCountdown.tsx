@@ -16,7 +16,7 @@ const EnhancedCountdown = () => {
     >
       <div className="text-center mb-8">
         <motion.h3 
-          className="text-2xl md:text-3xl font-bold text-white font-simula mb-6"
+          className="text-3xl md:text-4xl font-bold text-white font-simula mb-6"
           whileHover={{ scale: 1.05, color: "#FFA726" }}
           transition={{ duration: 0.2 }}
         >
@@ -26,27 +26,29 @@ const EnhancedCountdown = () => {
         
         {/* Enlarged countdown timer with better visibility */}
         <motion.div
-          className="p-6 md:p-8 rounded-xl backdrop-blur-md bg-gradient-to-br from-[#1E3A6C]/70 to-[#274675]/70 border border-white/10 overflow-hidden relative"
+          className="p-8 md:p-12 rounded-xl backdrop-blur-md bg-gradient-to-br from-[#1E3A6C]/70 to-[#274675]/70 border border-white/10 overflow-hidden relative"
           whileHover={{ 
             scale: 1.03,
             boxShadow: "0 0 30px rgba(251, 176, 59, 0.3)"
           }}
           transition={{ duration: 0.3 }}
         >
-          <CountdownTimer 
-            targetDate="2025-04-11T09:00:00" 
-            variant="floating"
-            colorScheme={{
-              text: "text-white",
-              accent: "text-[#FFA726]",
-              dropdownBg: "bg-[#274675]"
-            }}
-          />
+          <div className="transform scale-125 md:scale-150">
+            <CountdownTimer 
+              targetDate="2025-04-11T09:00:00" 
+              variant="floating"
+              colorScheme={{
+                text: "text-white",
+                accent: "text-[#FFA726]",
+                dropdownBg: "bg-[#274675]"
+              }}
+            />
+          </div>
           
           {/* Animated elements for the countdown */}
           <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
             <motion.div 
-              className="absolute top-0 left-1/4 w-36 h-1.5 bg-gradient-to-r from-[#FFA726]/0 via-[#FFA726] to-[#FFA726]/0 rounded-full"
+              className="absolute top-0 left-1/4 w-48 h-2 bg-gradient-to-r from-[#FFA726]/0 via-[#FFA726] to-[#FFA726]/0 rounded-full"
               animate={{
                 left: ["25%", "75%", "25%"],
                 opacity: [0, 1, 0]
@@ -58,7 +60,7 @@ const EnhancedCountdown = () => {
               }}
             />
             <motion.div 
-              className="absolute bottom-0 right-1/4 w-36 h-1.5 bg-gradient-to-r from-[#FFA726]/0 via-[#FFA726] to-[#FFA726]/0 rounded-full"
+              className="absolute bottom-0 right-1/4 w-48 h-2 bg-gradient-to-r from-[#FFA726]/0 via-[#FFA726] to-[#FFA726]/0 rounded-full"
               animate={{
                 right: ["25%", "75%", "25%"],
                 opacity: [0, 1, 0]
