@@ -5,7 +5,7 @@ import TransitionStat from "@/components/sections/TransitionStat";
 import FutureShowcase from "@/components/sections/FutureShowcase";
 import TransitionHook from "@/components/sections/TransitionHook";
 import JoinSection from "@/components/sections/JoinSection";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import ScrollToPlugin from "gsap/ScrollToPlugin";
@@ -14,8 +14,6 @@ import ScrollToPlugin from "gsap/ScrollToPlugin";
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 const Index = () => {
-  const cardDeckRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     // Initialize main page transitions
     const sections = document.querySelectorAll("section");
@@ -33,51 +31,26 @@ const Index = () => {
       });
     });
     
-    // Create a special card-deck transition between TransitionStat and FutureShowcase
+    // Create a special transition between TransitionStat and FutureShowcase
     const statSection = document.getElementById('transition-stat');
     const futureSection = document.getElementById('future-showcase');
-    const cardDeckContainer = cardDeckRef.current;
     
-    if (statSection && futureSection && cardDeckContainer) {
-      // Pin the card deck container during the transition
-      const cardDeckTrigger = ScrollTrigger.create({
-        trigger: cardDeckContainer,
-        start: "top 15%", 
-        end: "bottom -50%",
-        pin: true,
-        pinSpacing: false,
-        markers: false // Set to true for debugging
-      });
-      
-      // Create the card deck animation
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: cardDeckContainer,
-          start: "top 20%",
-          end: "bottom -100%",
-          scrub: 0.5,
-          markers: false, // Set to true for debugging
-          onUpdate: self => {
-            // Update classes based on progress
-            if (self.progress > 0.1) {
-              statSection.classList.add('transitioning-out');
-              futureSection.classList.add('transitioning-in');
-            } else {
-              statSection.classList.remove('transitioning-out');
-              futureSection.classList.remove('transitioning-in');
-            }
+    if (statSection && futureSection) {
+      // This marker helps coordinate the two animations
+      ScrollTrigger.create({
+        trigger: statSection,
+        start: "bottom 60%",
+        endTrigger: futureSection,
+        end: "top 40%",
+        markers: false, // Set to true for debugging
+        toggleClass: "transitioning",
+        onToggle: (self) => {
+          if (self.isActive) {
+            // If we're in the transition zone, make sure both sections are visible
+            gsap.set([statSection, futureSection], { visibility: "visible" });
           }
         }
-      })
-      .fromTo(futureSection, 
-        { y: "100%", scale: 0.85, opacity: 0.6, rotateX: "5deg", transformOrigin: "bottom center" },
-        { y: "0%", scale: 1, opacity: 1, rotateX: "0deg", ease: "power2.out" }, 
-        0
-      )
-      .to(statSection, 
-        { y: "-10%", scale: 0.9, opacity: 0, rotateX: "-5deg", transformOrigin: "top center", ease: "power2.in" }, 
-        0
-      );
+      });
     }
     
     return () => {
@@ -102,26 +75,19 @@ const Index = () => {
         <ConferencePromo />
       </section>
       
-      {/* Card deck container for the transition effect */}
-      <div 
-        ref={cardDeckRef} 
-        className="relative w-full min-h-[100vh] overflow-hidden"
-        style={{ perspective: "1200px" }}
+      <section 
+        className="relative w-full min-h-screen" 
+        id="transition-stat"
       >
-        <section 
-          className="absolute top-0 left-0 w-full min-h-screen z-20 will-change-transform" 
-          id="transition-stat"
-        >
-          <TransitionStat />
-        </section>
-        
-        <section 
-          className="absolute top-0 left-0 w-full min-h-screen z-10 will-change-transform bg-white" 
-          id="future-showcase"
-        >
-          <FutureShowcase />
-        </section>
-      </div>
+        <TransitionStat />
+      </section>
+      
+      <section 
+        className="relative w-full min-h-screen bg-white" 
+        id="future-showcase"
+      >
+        <FutureShowcase />
+      </section>
       
       <section 
         className="relative w-full min-h-screen bg-[#F5F5F0]" 
