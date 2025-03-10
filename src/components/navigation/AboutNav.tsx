@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import NavLogo from "./NavLogo";
 import DesktopNav from "./DesktopNav";
 import MobileNav from "./MobileNav";
-import CountdownTimer from "../CountdownTimer";
+import CountdownTimer from "./CountdownTimer";
 
 const AboutNav = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -16,11 +16,19 @@ const AboutNav = () => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       
-      // Control navbar visibility based on scroll direction
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setIsVisible(false); // Scrolling down - hide navbar
-      } else {
-        setIsVisible(true); // Scrolling up - show navbar
+      // Improved navbar visibility control:
+      // 1. Always show at the very top (first 50px)
+      // 2. Hide when scrolling down past threshold
+      // 3. Show when scrolling up
+      if (currentScrollY < 50) {
+        // Always show navbar at the top of the page
+        setIsVisible(true);
+      } else if (currentScrollY > lastScrollY + 10) {
+        // Hide navbar when scrolling down (with a small threshold to prevent flickering)
+        setIsVisible(false);
+      } else if (currentScrollY < lastScrollY - 10) {
+        // Show navbar when scrolling up (with a small threshold to prevent flickering)
+        setIsVisible(true);
       }
       
       setLastScrollY(currentScrollY);
