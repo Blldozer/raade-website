@@ -86,7 +86,7 @@ const TransitionStat = () => {
       });
     }
   };
-  return <section ref={sectionRef} className="min-h-screen flex flex-col justify-center items-center py-10 relative overflow-hidden bg-[#3c403a]">
+  return <section ref={sectionRef} className="min-h-screen flex flex-col justify-center items-center py-10 relative overflow-hidden bg-[#3C403A]">
       {/* Background gradient for depth */}
       <div className="absolute inset-0 bg-gradient-to-b from-white via-white to-[#F5F5F0]/50 pointer-events-none"></div>
       
