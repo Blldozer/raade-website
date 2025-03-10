@@ -28,9 +28,16 @@ export const useSectionParallax = () => {
     });
     
     return () => {
-      // Clean up parallax effects
+      // Fix: Don't try to access the animation directly
+      // Instead, kill all ScrollTrigger instances that are related to section backgrounds
       ScrollTrigger.getAll().forEach(trigger => {
-        if (trigger.vars.animation?.targets?.includes('.section-background')) {
+        // Get the trigger element
+        const triggerElement = trigger.vars.trigger;
+        
+        // Check if it's a section and has a background element
+        if (triggerElement instanceof Element && 
+            triggerElement.tagName.toLowerCase() === 'section' &&
+            triggerElement.querySelector('.section-background')) {
           trigger.kill();
         }
       });
