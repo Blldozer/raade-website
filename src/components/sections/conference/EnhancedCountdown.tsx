@@ -2,9 +2,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import CountdownTimer from '../../CountdownTimer';
+import { useCountdown } from '../../countdown/useCountdown';
+import { formatTimeUnit } from '../../countdown/timerUtils';
 
 const EnhancedCountdown = () => {
+  // Get the time remaining until the conference
+  const targetDate = new Date('2025-04-11T09:00:00');
+  const timeLeft = useCountdown(targetDate);
+
   return (
     <motion.div 
       initial={{ opacity: 0, scale: 0.95 }}
@@ -33,16 +38,47 @@ const EnhancedCountdown = () => {
           }}
           transition={{ duration: 0.3 }}
         >
-          <div className="transform scale-125 md:scale-150">
-            <CountdownTimer 
-              targetDate="2025-04-11T09:00:00" 
-              variant="floating"
-              colorScheme={{
-                text: "text-white",
-                accent: "text-[#FFA726]",
-                dropdownBg: "bg-[#274675]"
-              }}
-            />
+          {/* Direct display of time digits inside the window */}
+          <div className="grid grid-cols-4 gap-4">
+            {/* Days */}
+            <div className="text-center">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                <div className="text-5xl md:text-7xl font-bold text-white font-montserrat">
+                  {timeLeft.days}
+                </div>
+                <div className="text-lg md:text-xl mt-2 text-white/80">Days</div>
+              </div>
+            </div>
+            
+            {/* Hours */}
+            <div className="text-center">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                <div className="text-5xl md:text-7xl font-bold text-white font-montserrat">
+                  {formatTimeUnit(timeLeft.hours)}
+                </div>
+                <div className="text-lg md:text-xl mt-2 text-white/80">Hours</div>
+              </div>
+            </div>
+            
+            {/* Minutes */}
+            <div className="text-center">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                <div className="text-5xl md:text-7xl font-bold text-white font-montserrat">
+                  {formatTimeUnit(timeLeft.minutes)}
+                </div>
+                <div className="text-lg md:text-xl mt-2 text-white/80">Minutes</div>
+              </div>
+            </div>
+            
+            {/* Seconds */}
+            <div className="text-center">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                <div className="text-5xl md:text-7xl font-bold text-white font-montserrat">
+                  {formatTimeUnit(timeLeft.seconds)}
+                </div>
+                <div className="text-lg md:text-xl mt-2 text-white/80">Seconds</div>
+              </div>
+            </div>
           </div>
           
           {/* Animated elements for the countdown */}
