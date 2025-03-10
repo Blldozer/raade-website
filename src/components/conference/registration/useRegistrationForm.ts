@@ -9,30 +9,40 @@ export const useRegistrationForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [registrationData, setRegistrationData] = useState<RegistrationFormData | null>(null);
-  const [emailValidationResult, setEmailValidationResult] = useState<{ isValid: boolean; message?: string } | null>(null);
   const { toast } = useToast();
 
+  // Initialize form with zod schema validation
   const form = useForm<RegistrationFormData>({
     resolver: zodResolver(registrationSchema),
     defaultValues: {
       ticketType: "",
+      fullName: "",
+      email: "",
+      organization: "",
+      role: "",
       specialRequests: "",
       groupEmails: [],
+      groupSize: undefined,
     },
+    mode: "onChange", // Enable real-time validation
   });
 
-  const handleInitialSubmit = async (data: RegistrationFormData) => {
-    if (!emailValidationResult?.isValid) {
+  const handleEmailValidation = async (result: { isValid: boolean; message?: string }) => {
+    if (!result.isValid) {
       toast({
         title: "Email validation error",
-        description: emailValidationResult?.message || "Please provide a valid email for the selected ticket type.",
+        description: result.message || "Please provide a valid email for the selected ticket type.",
         variant: "destructive",
       });
-      return;
+      return false;
     }
-    
+    return true;
+  };
+
+  const handleInitialSubmit = async (data: RegistrationFormData) => {
     setIsSubmitting(true);
     try {
+      // Store the registration data for payment processing
       setRegistrationData(data);
       setShowPayment(true);
     } catch (error) {
@@ -52,8 +62,7 @@ export const useRegistrationForm = () => {
     isSubmitting,
     showPayment,
     registrationData,
-    emailValidationResult,
-    setEmailValidationResult,
+    handleEmailValidation,
     handleInitialSubmit,
     setShowPayment,
   };
