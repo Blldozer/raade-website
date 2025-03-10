@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import NavLogo from "./NavLogo";
 import DesktopNav from "./DesktopNav";
@@ -11,6 +11,15 @@ const AboutNav = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isDarkBackground, setIsDarkBackground] = useState(true);
+  const navRef = useRef<HTMLElement>(null);
+
+  // Set CSS variable for navbar height after component mounts
+  useEffect(() => {
+    if (navRef.current) {
+      const height = navRef.current.offsetHeight;
+      document.documentElement.style.setProperty('--navbar-height', `${height}px`);
+    }
+  }, []); 
 
   useEffect(() => {
     const handleScroll = () => {
@@ -49,6 +58,7 @@ const AboutNav = () => {
 
   return (
     <nav
+      ref={navRef}
       className={cn(
         "fixed w-full z-[9999] transition-all duration-300 pointer-events-auto pt-2 sm:pt-3 md:pt-4 isolate", 
         isScrolled
@@ -60,7 +70,7 @@ const AboutNav = () => {
       )}
     >
       <div className="w-full">
-        <div className="flex h-20">
+        <div className="flex h-16 sm:h-18 md:h-20">
           {/* Left section (39%) */}
           <div className="w-[39%] flex justify-center items-center border-r border-gray-200">
             <NavLogo isScrolled={isScrolled} isHeroPage={true} forceDarkMode={!isDarkBackground} />
