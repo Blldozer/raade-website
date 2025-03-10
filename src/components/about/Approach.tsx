@@ -39,34 +39,34 @@ const Approach = () => {
               real needs and create meaningful change.
             </p>
           </motion.div>
-          {/* Image Collage replacing the placeholder */}
+          {/* Image Collage with original image sizes */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.4, duration: 0.6 }}
-            className="lg:w-[61%] h-[400px] mt-8 lg:mt-0 relative"
+            className="lg:w-[61%] mt-8 lg:mt-0 relative"
           >
-            <div className="w-full h-full rounded-xl overflow-hidden grid grid-cols-2 grid-rows-2 gap-2">
-              <div className="overflow-hidden rounded-tl-xl">
+            <div className="w-full h-full rounded-xl grid grid-cols-2 grid-rows-2 gap-4">
+              <div className="rounded-tl-xl bg-gray-100 flex items-center justify-center overflow-hidden">
                 <img 
                   src="/about-page-images/RAADE-HCD-Image-boy-center-flower.png" 
                   alt="Boy surrounded by colorful flower petals" 
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  className="max-w-full max-h-full hover:scale-105 transition-transform duration-500"
                 />
               </div>
-              <div className="overflow-hidden rounded-tr-xl">
+              <div className="rounded-tr-xl bg-gray-100 flex items-center justify-center overflow-hidden">
                 <img 
                   src="/about-page-images/RAADE-HCD-boy-center-community.png" 
                   alt="Boy in center of community" 
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  className="max-w-full max-h-full hover:scale-105 transition-transform duration-500"
                 />
               </div>
-              <div className="overflow-hidden col-span-2 rounded-b-xl">
+              <div className="col-span-2 rounded-b-xl bg-gray-100 flex items-center justify-center overflow-hidden">
                 <img 
                   src="/about-page-images/RAADE-HCD-person-center-africa.png" 
                   alt="Person in center of Africa" 
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  className="max-w-full max-h-full hover:scale-105 transition-transform duration-500"
                 />
               </div>
             </div>
