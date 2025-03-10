@@ -1,5 +1,8 @@
+
 import { motion } from "framer-motion";
 import CountUp from "react-countup";
+import ImageCollage from "./ImageCollage";
+
 const Impact = () => {
   return <section className="py-24 bg-white">
       <div className="max-w-[1600px] mx-auto px-6 md:px-12">
@@ -25,7 +28,27 @@ const Impact = () => {
 
         {/* Subtitle Section - 39/61 split */}
         <div className="flex flex-col lg:flex-row mb-16">
-          <div className="lg:w-[39%]"></div>
+          <div className="lg:w-[39%]">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+              className="mt-8 lg:mt-0"
+            >
+              <ImageCollage 
+                variant="grid" 
+                images={[
+                  "/lovable-uploads/b5ad6ef6-d0dc-473a-a096-05bf5c57449e.png",
+                  "/RAADE-Innovation-Studios-Izesan.jpg",
+                  "/RAADE-Innovation-Studio-1-Hawa-Ife-Hamza.jpg",
+                  "/Raade-innov-team-core-2.jpg",
+                  "/RAADE-Prototyping-Gustavo-Vives.jpeg",
+                  "/RAADE-Design-Sprint-Edith-Ibeke.jpg"
+                ]} 
+              />
+            </motion.div>
+          </div>
           <motion.div initial={{
           opacity: 0,
           x: 20

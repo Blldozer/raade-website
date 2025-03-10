@@ -1,6 +1,7 @@
 
 import { motion } from "framer-motion";
 import { ArrowLeftRight } from "lucide-react";
+import ImageCollage from "./ImageCollage";
 
 const NewModel = () => {
   return (
@@ -24,7 +25,20 @@ const NewModel = () => {
 
         {/* Content Section with reversed 39/61 split */}
         <div className="flex flex-col lg:flex-row mt-16">
-          <div className="lg:w-[39%]"></div> {/* Spacer div */}
+          <div className="lg:w-[39%] relative mb-12 lg:mb-0">
+            <ImageCollage 
+              variant="africa" 
+              images={[
+                "/lovable-uploads/01329b6e-7667-47f0-9c6c-d308158644e8.png",
+                "/lovable-uploads/5f474a9c-ca13-4875-b29c-a91ae8f15738.png",
+                "/lovable-uploads/98ae9a06-bde0-482e-8844-28a4bf0ef528.png",
+                "/RAADE-Innovation-Studio-1.jpg",
+                "/lovable-uploads/bcc47310-6fc2-4473-804d-7f5f0620d040.png",
+                "/raade-eboard-baker-institute-cmp.jpg"
+              ]} 
+              className="transform -rotate-6 scale-90"
+            />
+          </div>
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
