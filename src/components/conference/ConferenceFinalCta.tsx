@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, Users, Globe, ChevronRight } from "lucide-react";
@@ -115,7 +116,7 @@ const ConferenceFinalCta = () => {
           className="mt-12 text-center text-white/80"
         >
           <p className="font-lora italic">
-            "Join <span className="text-white font-semibold">100+ innovators</span> from <span className="text-white font-semibold">universities all across the U.S.</span> or so"
+            "Join <span className="text-white font-semibold">100+ innovators</span> from <span className="text-white font-semibold">universities all across the U.S.</span>"
           </p>
         </motion.div>
       </div>
