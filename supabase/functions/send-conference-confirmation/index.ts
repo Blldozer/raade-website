@@ -101,10 +101,10 @@ serve(async (req) => {
       </html>
     `;
 
-    // Send email using Resend
+    // Send email using Resend with proper domain email
     try {
       const { data, error } = await resend.emails.send({
-        from: "RAADE Conference <onboarding@resend.dev>",
+        from: "RAADE Conference <info@rice-raade.com>",
         to: [email],
         subject: "RAADE Conference 2025 - Registration Confirmation",
         html: emailContent,
