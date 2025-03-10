@@ -71,12 +71,7 @@ const ProjectsShowcase = () => {
           duration: 0.6
         }} className="w-full lg:w-[61%]">
             <div className="space-y-8 text-xl leading-relaxed font-lora text-gray-700 max-w-[800px]">
-              <p>
-                We focus on high-impact sectors where innovative solutions can create 
-                transformative change at scale. Each project addresses challenges affecting 
-                millions of people across Africa, designed not just to solve immediate problems, 
-                but to create ripple effects that transform entire communities and markets. Here are our 204-2025 challenges.
-              </p>
+              <p>We focus on high-impact sectors where innovative solutions can create transformative change at scale. Each project addresses challenges affecting millions of people across Africa, designed not just to solve immediate problems, but to create ripple effects that transform entire communities and markets. Here are our 2024-2025 challenges.</p>
             </div>
           </motion.div>
         </div>
