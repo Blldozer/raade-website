@@ -19,7 +19,7 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "transition-colors duration-200",
-          (isHeroPage && !isScrolled) || forceDarkMode ? "text-white" : "text-[#FBB03B]"
+          forceDarkMode ? "text-[#FBB03B]" : "text-white"
         )}
       >
         {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -37,7 +37,7 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
             onClick={() => setIsOpen(false)}
             isScrolled={isScrolled}
             isHeroPage={isHeroPage}
-            forceDarkMode={forceDarkMode}
+            forceDarkMode={true}  // Always force dark mode for dropdown contents against white background
           />
         </div>
       </div>

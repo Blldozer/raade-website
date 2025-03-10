@@ -10,6 +10,7 @@ const AboutNav = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isDarkBackground, setIsDarkBackground] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,9 +24,17 @@ const AboutNav = () => {
       
       setLastScrollY(currentScrollY);
       setIsScrolled(currentScrollY > 20);
+      
+      // Check the current background from the body attribute
+      const navBackground = document.body.getAttribute('data-nav-background');
+      setIsDarkBackground(navBackground === 'dark');
     };
 
     window.addEventListener("scroll", handleScroll);
+    
+    // Initial check
+    handleScroll();
+    
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
@@ -45,21 +54,24 @@ const AboutNav = () => {
         <div className="flex h-20">
           {/* Left section (39%) */}
           <div className="w-[39%] flex justify-center items-center border-r border-gray-200">
-            <NavLogo isScrolled={isScrolled} isHeroPage={true} />
+            <NavLogo isScrolled={isScrolled} isHeroPage={true} forceDarkMode={!isDarkBackground} />
           </div>
           
           {/* Right section (61%) */}
           <div className="w-[61%] flex justify-end items-center pr-8">
             {/* Conference Countdown Timer */}
             <div className="hidden md:block mr-6">
-              <CountdownTimer variant="nav" targetDate="2025-04-11T09:00:00" colorScheme="auto" />
+              <CountdownTimer 
+                variant="nav" 
+                colorScheme={isDarkBackground ? "light" : "dark"} 
+              />
             </div>
             
             <div className="hidden md:block">
-              <DesktopNav isScrolled={isScrolled} isHeroPage={true} className="justify-end" />
+              <DesktopNav isScrolled={isScrolled} isHeroPage={true} className="justify-end" forceDarkMode={!isDarkBackground} />
             </div>
             <div className="md:hidden">
-              <MobileNav isScrolled={isScrolled} isHeroPage={true} />
+              <MobileNav isScrolled={isScrolled} isHeroPage={true} forceDarkMode={!isDarkBackground} />
             </div>
           </div>
         </div>

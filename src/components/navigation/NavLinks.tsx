@@ -48,21 +48,26 @@ interface NavLinksProps {
 
 const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = false, forceDarkMode = false }: NavLinksProps) => {
   const location = useLocation();
-  const isConferencePage = location.pathname === "/conference";
   
   const getTextColor = () => {
-    // For conference page with no hero section (i.e., white background), use dark text
-    if (isConferencePage && !isHeroPage) {
+    // When forceDarkMode is true, we need dark text for light backgrounds
+    if (forceDarkMode) {
       return "text-[#274675] hover:text-[#FBB03B]";
     }
     
-    // For normal cases (hero pages when not scrolled or when force dark mode is true)
-    if ((isHeroPage && !isScrolled) || forceDarkMode) {
-      return "text-white hover:text-[#FBB03B]";
+    // When forceDarkMode is false, we need light text for dark backgrounds
+    return "text-white hover:text-[#FBB03B]";
+  };
+
+  // Get button styles based on background
+  const getButtonStyles = () => {
+    // For dark backgrounds (forceDarkMode is false)
+    if (!forceDarkMode) {
+      return "border-white text-white hover:bg-[#FBB03B] hover:border-[#FBB03B] hover:text-white";
     }
     
-    // Default case
-    return "text-[#274675] hover:text-[#FBB03B]";
+    // For light backgrounds (forceDarkMode is true)
+    return "border-[#FBB03B] bg-[#FBB03B] text-white hover:bg-[#274675] hover:border-[#274675] shadow-md";
   };
 
   return (
@@ -111,11 +116,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
         <NavigationMenuItem>
           <Link
             to="/studios#apply"
-            className={`px-6 py-2 rounded-md transition-all duration-300 border-2 text-lg font-alegreyasans font-bold ${
-              (isHeroPage && !isScrolled) || (forceDarkMode && !isConferencePage)
-                ? "border-white text-white hover:bg-[#FBB03B] hover:border-[#FBB03B] hover:text-white" 
-                : "border-[#FBB03B] bg-[#FBB03B] text-white hover:bg-[#274675] hover:border-[#274675] shadow-md"
-            }`}
+            className={`px-6 py-2 rounded-md transition-all duration-300 border-2 text-lg font-alegreyasans font-bold ${getButtonStyles()}`}
             onClick={onClick}
           >
             Join Us

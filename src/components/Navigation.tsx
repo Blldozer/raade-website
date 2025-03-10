@@ -17,6 +17,7 @@ const Navigation = ({ isHeroPage = false, forceDarkMode = false }: NavigationPro
   const [isPastHero, setIsPastHero] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isDarkBackground, setIsDarkBackground] = useState(true);
   const location = useLocation();
   
   // If isHeroPage is explicitly passed, use that value, otherwise determine it from the path
@@ -45,9 +46,17 @@ const Navigation = ({ isHeroPage = false, forceDarkMode = false }: NavigationPro
       setLastScrollY(currentScrollY);
       setIsScrolled(currentScrollY > 20);
       setIsPastHero(currentScrollY > heroHeight);
+      
+      // Check the current background from the body attribute
+      const navBackground = document.body.getAttribute('data-nav-background');
+      setIsDarkBackground(navBackground === 'dark');
     };
 
     window.addEventListener("scroll", handleScroll);
+    
+    // Initial check
+    handleScroll();
+    
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
@@ -68,7 +77,7 @@ const Navigation = ({ isHeroPage = false, forceDarkMode = false }: NavigationPro
           <NavLogo 
             isScrolled={isScrolled} 
             isHeroPage={heroPage} 
-            forceDarkMode={shouldForceDarkMode} 
+            forceDarkMode={shouldForceDarkMode || !isDarkBackground} 
           />
           
           <div className="flex items-center">
@@ -76,19 +85,19 @@ const Navigation = ({ isHeroPage = false, forceDarkMode = false }: NavigationPro
             <div className="hidden md:block mr-6">
               <CountdownTimer 
                 variant="nav" 
-                colorScheme="auto" 
+                colorScheme={isDarkBackground ? "light" : "dark"} 
               />
             </div>
             
             <DesktopNav 
               isScrolled={isScrolled} 
               isHeroPage={heroPage} 
-              forceDarkMode={shouldForceDarkMode} 
+              forceDarkMode={shouldForceDarkMode || !isDarkBackground} 
             />
             <MobileNav 
               isScrolled={isScrolled} 
               isHeroPage={heroPage} 
-              forceDarkMode={shouldForceDarkMode} 
+              forceDarkMode={shouldForceDarkMode || !isDarkBackground} 
             />
           </div>
         </div>

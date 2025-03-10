@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef } from 'react';
 import Navigation from '../Navigation';
 import AnimatedText from './AnimatedText';
@@ -48,13 +49,16 @@ const Hero = () => {
       }
     });
 
+    // Set the initial background state
+    document.body.setAttribute('data-nav-background', 'dark');
+    
     return () => {
       tl.kill();
     };
   }, []);
   
   return (
-    <div className="relative h-screen overflow-hidden">
+    <div className="relative h-screen overflow-hidden" data-background="dark">
       <div className="absolute inset-0 z-0">
         <video
           ref={videoRef}
