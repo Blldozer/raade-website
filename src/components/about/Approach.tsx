@@ -54,7 +54,7 @@ const Approach = () => {
                 <img 
                   src="/about-page-images/RAADE-HCD-Image-boy-center-flower.png" 
                   alt="Boy surrounded by colorful flower petals" 
-                  className="scale-35 hover:scale-[0.38] transition-transform duration-500"
+                  className="scale-[0.3] hover:scale-[0.35] transition-transform duration-500"
                 />
               </div>
               
@@ -63,7 +63,7 @@ const Approach = () => {
                 <img 
                   src="/about-page-images/RAADE-HCD-boy-center-community.png" 
                   alt="Boy in center of community" 
-                  className="scale-35 hover:scale-[0.38] transition-transform duration-500"
+                  className="scale-[0.3] hover:scale-[0.35] transition-transform duration-500"
                 />
               </div>
               
@@ -72,7 +72,7 @@ const Approach = () => {
                 <img 
                   src="/about-page-images/RAADE-HCD-person-center-africa.png" 
                   alt="Person in center of Africa" 
-                  className="scale-35 hover:scale-[0.38] transition-transform duration-500"
+                  className="scale-[0.3] hover:scale-[0.35] transition-transform duration-500"
                 />
               </div>
               
@@ -81,7 +81,7 @@ const Approach = () => {
                 <img 
                   src="/about-page-images/RAADE-HCD-Flower-from-heas.png" 
                   alt="Flower formed from human heads" 
-                  className="scale-35 hover:scale-[0.38] transition-transform duration-500"
+                  className="scale-[0.3] hover:scale-[0.35] transition-transform duration-500"
                 />
               </div>
             </div>
