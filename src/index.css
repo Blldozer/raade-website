@@ -84,12 +84,6 @@
     --fluid-body: clamp(1rem, 1vw + 0.25rem, 1.25rem);
     --fluid-small: clamp(0.875rem, 0.5vw + 0.5rem, 1rem);
     
-    /* New fluid typography variables for specific text elements */
-    --fluid-hero: clamp(2.5rem, 6vw + 1rem, 7rem);
-    --fluid-studio-heading: clamp(4rem, 10vw, 9rem);
-    --fluid-subheading: clamp(1.5rem, 2vw + 1rem, 2.5rem);
-    --fluid-org-name: clamp(0.875rem, 1vw + 0.5rem, 2rem);
-    
     /* Responsive spacing variables */
     --section-padding-small: clamp(1.5rem, 3vw, 3rem);
     --section-padding: clamp(2rem, 5vw, 6rem);
@@ -251,27 +245,6 @@
   .fluid-small {
     font-size: var(--fluid-small);
     line-height: 1.5;
-  }
-
-  /* New fluid typography utility classes */
-  .text-fluid-hero {
-    font-size: var(--fluid-hero);
-    line-height: 1.1;
-  }
-
-  .text-fluid-studio-heading {
-    font-size: var(--fluid-studio-heading);
-    line-height: 1;
-  }
-
-  .text-fluid-subheading {
-    font-size: var(--fluid-subheading);
-    line-height: 1.3;
-  }
-
-  .text-fluid-org-name {
-    font-size: var(--fluid-org-name);
-    line-height: 1.4;
   }
 
   /* Animation utilities */

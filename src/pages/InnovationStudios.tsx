@@ -109,7 +109,7 @@ const InnovationStudios = () => {
               delay: index * 0.2 + 0.3,
               duration: 0.5
             }}>
-                  <h1 className="text-fluid-studio-heading font-simula text-white">
+                  <h1 className="text-7xl md:text-9xl font-simula text-white">
                     {word}
                   </h1>
                 </motion.div>)}
@@ -122,7 +122,7 @@ const InnovationStudios = () => {
           }} transition={{
             delay: 1.2,
             duration: 0.5
-          }} className="mt-12 text-fluid-subheading text-white/90 font-lora max-w-2xl"> A project-driven innovation studio creating market-based solutions for Africa's most pressing challenges.</motion.p>
+          }} className="mt-12 text-xl md:text-2xl text-white/90 font-lora max-w-2xl"> A project-driven innovation studio creating market-based solutions for Africa's most pressing challenges.</motion.p>
           </div>
         </div>
       </div>;
