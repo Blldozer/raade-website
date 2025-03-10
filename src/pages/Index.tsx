@@ -8,7 +8,7 @@ import JoinSection from "@/components/sections/JoinSection";
 import { useSectionTransitions } from "@/hooks/useSectionTransitions";
 
 const Index = () => {
-  // Use our new hook for section transitions
+  // Use our hook for section transitions
   useSectionTransitions();
   
   return (
@@ -17,23 +17,23 @@ const Index = () => {
         <Hero />
       </section>
       
-      <section className="relative w-full min-h-screen section-content" id="conference-promo">
+      <section className="relative w-full min-h-screen" id="conference-promo">
         <ConferencePromo />
       </section>
       
-      <section className="relative w-full min-h-screen section-content" id="transition-stat">
+      <section className="relative w-full min-h-screen" id="transition-stat">
         <TransitionStat />
       </section>
       
-      <section className="relative w-full min-h-screen section-content bg-white" id="future-showcase">
+      <section className="relative w-full min-h-screen bg-white" id="future-showcase">
         <FutureShowcase />
       </section>
       
-      <section className="relative w-full min-h-screen section-content bg-[#3C403A]" id="transition-hook">
+      <section className="relative w-full min-h-screen bg-[#3C403A]" id="transition-hook">
         <TransitionHook />
       </section>
       
-      <section className="relative w-full min-h-screen section-content" id="join">
+      <section className="relative w-full min-h-screen" id="join">
         <JoinSection />
       </section>
     </div>

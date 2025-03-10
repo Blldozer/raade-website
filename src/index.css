@@ -177,6 +177,26 @@
     animation: gradient-x 15s ease infinite;
   }
   
+  /* Add new appear animations for content elements */
+  @keyframes appear {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .appear {
+    animation: appear 0.6s ease-out forwards;
+  }
+  
+  /* Staggered appear animations */
+  .appear-1 { animation-delay: 0.1s; }
+  .appear-2 { animation-delay: 0.2s; }
+  .appear-3 { animation-delay: 0.3s; }
+  
+  /* Content element base styles */
+  .content-element {
+    opacity: 0;
+  }
+  
   /* Scroll animations */
   .scroll-animate {
     opacity: 0;
@@ -189,31 +209,20 @@
     transform: translateY(0);
   }
 
-  /* Add smooth section transitions */
-  .section-content {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-    will-change: transform, opacity;
-  }
-
-  .section-content.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
   /* Progressive enhancement for higher-end devices */
   @media (prefers-reduced-motion: no-preference) {
-    .section-content {
+    .scroll-animate {
       transition-duration: 0.8s;
     }
   }
 
   /* Fallback for devices that prefer reduced motion */
   @media (prefers-reduced-motion: reduce) {
-    .section-content {
+    .scroll-animate,
+    .content-element {
       transition: opacity 0.3s ease-out;
-      transform: none;
+      transform: none !important;
+      opacity: 1 !important;
     }
   }
 }

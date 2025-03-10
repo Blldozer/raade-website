@@ -7,13 +7,6 @@ gsap.registerPlugin(ScrollTrigger);
 
 export const useSectionTransitions = () => {
   useEffect(() => {
-    // Initialize performance optimizations
-    const sections = document.querySelectorAll('section');
-    sections.forEach(section => {
-      section.style.willChange = 'transform, opacity';
-      section.style.transform = 'translateZ(0)';
-    });
-
     // Mark sections with data attributes for light/dark backgrounds
     document.querySelectorAll('#hero, #transition-hook').forEach(section => {
       section.setAttribute('data-background', 'dark');
@@ -23,56 +16,16 @@ export const useSectionTransitions = () => {
       section.setAttribute('data-background', 'light');
     });
 
-    // Create scroll-triggered animations for each section
-    sections.forEach((section, index) => {
-      // Skip the hero section
-      if (index === 0) return;
-
-      // Fade and slide animation for section entry
-      gsap.fromTo(section,
-        { 
-          opacity: 0,
-          y: 50,
-          scale: 1
-        },
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 1,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: section,
-            start: "top 80%",
-            end: "top 20%",
-            toggleActions: "play none none reverse",
-            scrub: 1
-          }
-        }
-      );
-
-      // Subtle parallax effect for section content
-      const content = section.querySelector('.section-content');
-      if (content) {
-        gsap.to(content, {
-          y: -30,
-          ease: "none",
-          scrollTrigger: {
-            trigger: section,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: true
-          }
-        });
-      }
-    });
-
+    // Get all sections except hero (which doesn't need a transition effect)
+    const sections = document.querySelectorAll('section:not(#hero)');
+    
     // Setup background detection for navigation
     const updateNavBackground = () => {
       const scrollPosition = window.scrollY + 40; // Check slightly below the top of viewport where navbar is
       let currentBackground = 'dark'; // Default to dark (for hero section)
       
-      sections.forEach(section => {
+      const allSections = document.querySelectorAll('section');
+      allSections.forEach(section => {
         const sectionTop = section.offsetTop;
         const sectionBottom = sectionTop + section.offsetHeight;
         
@@ -85,11 +38,97 @@ export const useSectionTransitions = () => {
       // Set data attribute on document body for global access
       document.body.setAttribute('data-nav-background', currentBackground);
     };
+    
+    // Apply different transition effects to each section
+    sections.forEach((section, index) => {
+      // Initial setup - hide sections until they enter viewport
+      gsap.set(section, { 
+        autoAlpha: 0,
+        y: 50,  // Start slightly below final position
+      });
+      
+      // Create ScrollTrigger for each section
+      ScrollTrigger.create({
+        trigger: section,
+        start: "top 80%", // Start when top of section is 80% from top of viewport
+        end: "top 20%",   // End when top of section is 20% from top of viewport
+        onEnter: () => {
+          // Fade in and slide up when entering viewport
+          gsap.to(section, {
+            duration: 0.8,
+            autoAlpha: 1,
+            y: 0,
+            ease: "power2.out",
+            overwrite: "auto"
+          });
+          
+          // Unique section-specific animations (progressive enhancement)
+          if (section.id === "conference-promo") {
+            // Reveal conference promo elements sequentially
+            const elements = section.querySelectorAll(".content-element");
+            gsap.to(elements, {
+              autoAlpha: 1,
+              y: 0,
+              stagger: 0.1,
+              duration: 0.6,
+              ease: "power2.out",
+              delay: 0.2
+            });
+          }
+          else if (section.id === "transition-stat") {
+            // Special reveal animation for stats
+            const counter = section.querySelector(".stat-counter");
+            if (counter) {
+              gsap.fromTo(counter, 
+                { scale: 0.8, autoAlpha: 0 },
+                { scale: 1, autoAlpha: 1, duration: 0.8, ease: "back.out" }
+              );
+            }
+          }
+          else if (section.id === "future-showcase") {
+            // Slide in project cards from sides alternately
+            const projectCards = section.querySelectorAll(".project-card");
+            projectCards.forEach((card, i) => {
+              gsap.fromTo(card,
+                { x: i % 2 === 0 ? -50 : 50, autoAlpha: 0 },
+                { x: 0, autoAlpha: 1, duration: 0.7, delay: i * 0.15, ease: "power2.out" }
+              );
+            });
+          }
+        },
+        onLeaveBack: () => {
+          // Fade out and slide down when scrolling back up
+          gsap.to(section, {
+            duration: 0.6,
+            autoAlpha: 0,
+            y: 50,
+            ease: "power2.in",
+            overwrite: "auto"
+          });
+        }
+      });
+      
+      // Add subtle parallax effect to section backgrounds
+      // This is a lightweight effect that won't cause performance issues
+      const background = section.querySelector('.section-background');
+      if (background) {
+        gsap.to(background, {
+          y: "-20%",
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 0.5
+          }
+        });
+      }
+    });
 
-    // Initial update
+    // Initial update for navigation
     updateNavBackground();
     
-    // Update on scroll
+    // Update navigation background on scroll
     window.addEventListener('scroll', updateNavBackground);
     
     return () => {
