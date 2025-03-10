@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import RegistrationFormFields from "./RegistrationFormFields";
 import PaymentSection from "./PaymentSection";
@@ -5,6 +6,7 @@ import StepIndicator from "./registration/StepIndicator";
 import { useRegistrationForm } from "./registration/useRegistrationForm";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const ConferenceRegistrationForm = () => {
   const {
@@ -18,6 +20,8 @@ const ConferenceRegistrationForm = () => {
     setShowPayment,
   } = useRegistrationForm();
 
+  const { toast } = useToast();
+
   const handlePaymentSuccess = () => {
     form.reset();
     setShowPayment(false);
@@ -29,10 +33,7 @@ const ConferenceRegistrationForm = () => {
       description: errorMessage || "There was an error processing your payment. Please try again.",
       variant: "destructive",
     });
-    setIsSubmitting(false);
   };
-
-  const { toast } = useToast();
 
   return (
     <Card className="shadow-lg border-[#FBB03B]/10">
