@@ -29,19 +29,26 @@ const NavLogo = ({
   const blackRegularLogo = "/logos/RAADE-logo-final-black.png";
   const whiteRegularLogo = "/logos/RAADE-logo-final-white.png";
   
+  // Always use white logo for project detail pages
+  const isProjectPage = location.pathname.includes('/projects/');
+  
   // Determine which logos to use (black or white)
-  const primaryLogo = forceDarkMode
-    ? (useShortForm ? blackShortFormLogo : blackRegularLogo)
-    : (useShortForm ? whiteShortFormLogo : whiteRegularLogo);
-    
-  const secondaryLogo = forceDarkMode
+  const primaryLogo = isProjectPage 
     ? (useShortForm ? whiteShortFormLogo : whiteRegularLogo)
-    : (useShortForm ? blackShortFormLogo : blackRegularLogo);
+    : (forceDarkMode 
+        ? (useShortForm ? blackShortFormLogo : blackRegularLogo)
+        : (useShortForm ? whiteShortFormLogo : whiteRegularLogo));
+    
+  const secondaryLogo = isProjectPage
+    ? (useShortForm ? blackShortFormLogo : blackRegularLogo)
+    : (forceDarkMode
+        ? (useShortForm ? whiteShortFormLogo : whiteRegularLogo)
+        : (useShortForm ? blackShortFormLogo : blackRegularLogo));
 
-  // Reset the state when forceDarkMode changes
+  // Reset the state when forceDarkMode changes or when on project pages
   useEffect(() => {
     setShowSecondary(false);
-  }, [forceDarkMode, useShortForm]);
+  }, [forceDarkMode, useShortForm, isProjectPage]);
 
   return (
     <div className="flex-shrink-0 flex items-center">

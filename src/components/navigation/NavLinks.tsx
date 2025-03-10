@@ -49,7 +49,15 @@ interface NavLinksProps {
 const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = false, forceDarkMode = false }: NavLinksProps) => {
   const location = useLocation();
   
+  // Always use light text for project detail pages
+  const isProjectPage = location.pathname.includes('/projects/');
+  
   const getTextColor = () => {
+    // Always use light text on project pages
+    if (isProjectPage) {
+      return "text-white hover:text-[#FBB03B]";
+    }
+    
     // When forceDarkMode is true, we need dark text for light backgrounds
     if (forceDarkMode) {
       return "text-[#274675] hover:text-[#FBB03B]";
@@ -61,6 +69,11 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
 
   // Get button styles based on background
   const getButtonStyles = () => {
+    // Always use light style buttons on project pages
+    if (isProjectPage) {
+      return "border-white text-white hover:bg-[#FBB03B] hover:border-[#FBB03B] hover:text-white";
+    }
+    
     // For dark backgrounds (forceDarkMode is false)
     if (!forceDarkMode) {
       return "border-white text-white hover:bg-[#FBB03B] hover:border-[#FBB03B] hover:text-white";

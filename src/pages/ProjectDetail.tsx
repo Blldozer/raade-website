@@ -26,6 +26,14 @@ const ProjectDetail = () => {
     
     // Scroll to top when component mounts
     window.scrollTo(0, 0);
+    
+    // Set the nav background data attribute to 'dark' for this page
+    document.body.setAttribute('data-nav-background', 'dark');
+    
+    // Cleanup function to remove the attribute when unmounting
+    return () => {
+      document.body.removeAttribute('data-nav-background');
+    };
   }, [project, navigate]);
   
   if (!project) return null;
