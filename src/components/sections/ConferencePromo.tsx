@@ -1,18 +1,22 @@
 
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, MapPin, ChevronRight } from 'lucide-react';
+import { Calendar, MapPin, ChevronRight, Sparkles } from 'lucide-react';
 import CountdownTimer from '../CountdownTimer';
 import gsap from 'gsap';
 import { motion } from 'framer-motion';
 
 const ConferencePromo = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
   
   useEffect(() => {
     const section = sectionRef.current;
-    if (!section) return;
+    const title = titleRef.current;
     
+    if (!section || !title) return;
+    
+    // Main content animation on scroll
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
@@ -28,21 +32,122 @@ const ConferencePromo = () => {
       { y: 0, opacity: 1, duration: 0.8, ease: "power2.out" }
     );
     
+    // Animated text for title
+    const titleAnimation = gsap.timeline({ repeat: -1, repeatDelay: 5 });
+    
+    titleAnimation
+      .to(title, { 
+        duration: 0.3, 
+        color: "#FFA726", 
+        ease: "power2.inOut",
+        stagger: 0.05
+      })
+      .to(title, { 
+        duration: 0.3, 
+        color: "white", 
+        delay: 0.5,
+        ease: "power2.inOut",
+        stagger: 0.05
+      });
+    
     return () => {
       tl.kill();
+      titleAnimation.kill();
     };
   }, []);
 
+  // Gradient background animation
+  const gradientVariants = {
+    animate: {
+      backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+      transition: {
+        duration: 15,
+        ease: "linear",
+        repeat: Infinity
+      }
+    }
+  };
+
   return (
-    <div 
+    <motion.div 
       ref={sectionRef}
-      className="relative py-20 md:py-28 bg-raade-navy overflow-hidden"
+      className="relative py-20 md:py-28 overflow-hidden"
+      variants={gradientVariants}
+      animate="animate"
+      style={{
+        background: "linear-gradient(135deg, #274675 0%, #1E3A6C 25%, #8B5CF6 50%, #1E3A6C 75%, #274675 100%)",
+        backgroundSize: "200% 200%"
+      }}
     >
-      {/* Background pattern/decoration */}
+      {/* Abstract shapes in background */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full opacity-10">
-          <div className="absolute top-[-5%] left-[-10%] w-[40%] h-[40%] rounded-full bg-raade-gold-start blur-[100px]"></div>
-          <div className="absolute bottom-[-15%] right-[-5%] w-[35%] h-[50%] rounded-full bg-raade-gold-end blur-[100px]"></div>
+        <div className="absolute top-0 left-0 w-full h-full opacity-20">
+          {/* Animated shapes */}
+          <motion.div 
+            className="absolute top-[-5%] left-[-10%] w-[40%] h-[40%] rounded-full bg-gradient-to-r from-[#FFA726] to-[#FF8A6A] blur-[100px]"
+            animate={{ 
+              x: [0, 20, 0], 
+              y: [0, -20, 0],
+              scale: [1, 1.1, 1] 
+            }}
+            transition={{ 
+              duration: 10, 
+              repeat: Infinity,
+              ease: "easeInOut" 
+            }}
+          />
+          <motion.div 
+            className="absolute bottom-[-15%] right-[-5%] w-[35%] h-[50%] rounded-full bg-gradient-to-r from-[#9B69FF] to-[#FF8A6A] blur-[100px]"
+            animate={{ 
+              x: [0, -20, 0], 
+              y: [0, 20, 0],
+              scale: [1, 1.2, 1] 
+            }}
+            transition={{ 
+              duration: 12, 
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 2 
+            }}
+          />
+        </div>
+        
+        {/* Subtle pattern overlay */}
+        <div className="absolute inset-0 opacity-5">
+          <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="1"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+          </svg>
+        </div>
+        
+        {/* Floating sparkles */}
+        <div className="absolute inset-0">
+          {[...Array(6)].map((_, i) => (
+            <motion.div 
+              key={i}
+              className="absolute"
+              style={{
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+              }}
+              animate={{ 
+                y: [0, -20, 0],
+                opacity: [0.2, 0.8, 0.2]
+              }}
+              transition={{ 
+                duration: 3 + Math.random() * 5,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: Math.random() * 2
+              }}
+            >
+              <Sparkles className="text-white/20 h-6 w-6" />
+            </motion.div>
+          ))}
         </div>
       </div>
       
@@ -56,11 +161,22 @@ const ConferencePromo = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <p className="text-raade-gold-start font-medium tracking-wider uppercase text-sm mb-3">
+              <p className="text-[#FFA726] font-medium tracking-wider uppercase text-sm mb-3">
                 Mark Your Calendar
               </p>
-              <h2 className="text-4xl md:text-5xl font-bold font-simula leading-tight">
-                RAADE Annual Conference 2025
+              <h2 
+                ref={titleRef}
+                className="text-4xl md:text-5xl font-bold font-simula leading-tight relative group"
+              >
+                <span className="relative inline-block">
+                  RAADE Annual Conference 2025
+                  <motion.span 
+                    className="absolute -bottom-2 left-0 w-0 h-1 bg-[#FFA726]"
+                    whileInView={{ width: "100%" }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1, delay: 0.5 }}
+                  />
+                </span>
               </h2>
               <p className="mt-4 text-xl text-white/80 font-lora">
                 Join us for a transformative gathering focused on innovative solutions 
@@ -75,13 +191,13 @@ const ConferencePromo = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="flex flex-col sm:flex-row gap-6"
             >
-              <div className="flex items-center">
-                <Calendar className="h-5 w-5 text-raade-gold-start mr-2" />
-                <span className="font-lora text-white/90">April 11-12, 2025</span>
+              <div className="flex items-center group">
+                <Calendar className="h-5 w-5 text-[#FFA726] mr-2 group-hover:scale-110 transition-transform duration-300" />
+                <span className="font-lora text-white/90 group-hover:text-[#FFA726] transition-colors duration-300">April 11-12, 2025</span>
               </div>
-              <div className="flex items-center">
-                <MapPin className="h-5 w-5 text-raade-gold-start mr-2" />
-                <span className="font-lora text-white/90">Rice University, Houston</span>
+              <div className="flex items-center group">
+                <MapPin className="h-5 w-5 text-[#FFA726] mr-2 group-hover:scale-110 transition-transform duration-300" />
+                <span className="font-lora text-white/90 group-hover:text-[#FFA726] transition-colors duration-300">Rice University, Houston</span>
               </div>
             </motion.div>
             
@@ -93,10 +209,13 @@ const ConferencePromo = () => {
             >
               <Link 
                 to="/conference" 
-                className="inline-flex items-center mt-6 px-6 py-3 bg-raade-gold-start text-raade-navy rounded-lg font-bold text-lg hover:bg-raade-gold-end transition-all duration-300 group"
+                className="relative inline-flex items-center mt-6 px-8 py-4 overflow-hidden rounded-lg font-bold text-lg group"
               >
-                Learn More
-                <ChevronRight className="ml-2 h-5 w-5 transform group-hover:translate-x-1 transition-transform duration-300" />
+                <span className="absolute w-full h-full bg-gradient-to-r from-[#FFA726] to-[#FF8A6A] group-hover:from-[#FF8A6A] group-hover:to-[#FFA726] transition-all duration-500"></span>
+                <span className="relative flex items-center justify-center text-white w-full">
+                  Learn More
+                  <ChevronRight className="ml-2 h-5 w-5 transform group-hover:translate-x-1 transition-transform duration-300" />
+                </span>
               </Link>
             </motion.div>
           </div>
@@ -107,10 +226,17 @@ const ConferencePromo = () => {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-white/20"
+            whileHover={{ scale: 1.02 }}
+            className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-white/20 hover:border-white/30 transition-all duration-300"
           >
             <div className="text-center mb-6">
-              <h3 className="text-2xl font-bold text-white font-simula">Time Remaining</h3>
+              <motion.h3 
+                className="text-2xl font-bold text-white font-simula"
+                whileHover={{ scale: 1.05, color: "#FFA726" }}
+                transition={{ duration: 0.2 }}
+              >
+                Time Remaining
+              </motion.h3>
               <p className="text-white/70 font-lora mt-2">Don't miss this opportunity to connect and collaborate</p>
             </div>
             
@@ -120,19 +246,28 @@ const ConferencePromo = () => {
                 variant="floating"
                 colorScheme={{
                   text: "text-white",
-                  accent: "text-raade-gold-start",
-                  dropdownBg: "bg-raade-navy"
+                  accent: "text-[#FFA726]",
+                  dropdownBg: "bg-[#274675]"
                 }}
               />
             </div>
             
             <div className="text-center">
-              <Link 
-                to="/conference/register" 
-                className="inline-block px-8 py-4 bg-raade-gold-start text-raade-navy rounded-lg font-bold text-lg hover:bg-raade-gold-end transition-all duration-300 w-full sm:w-auto"
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                Register Now
-              </Link>
+                <Link 
+                  to="/conference/register" 
+                  className="relative inline-block px-8 py-4 w-full sm:w-auto overflow-hidden rounded-lg font-bold text-lg group"
+                >
+                  <span className="absolute inset-0 w-full h-full transition-all duration-300 ease-out transform translate-x-0 bg-gradient-to-r from-[#FFA726] to-[#FF8A6A] group-hover:translate-x-0"></span>
+                  <span className="absolute inset-0 w-full h-full transition-all duration-300 ease-out transform translate-x-full bg-gradient-to-l from-[#FFA726] to-[#FF8A6A] group-hover:translate-x-0"></span>
+                  <span className="relative flex justify-center items-center text-white w-full">
+                    Register Now
+                  </span>
+                </Link>
+              </motion.div>
               <p className="mt-3 text-sm text-white/60 font-lora">
                 Early bird registration now open
               </p>
@@ -140,7 +275,7 @@ const ConferencePromo = () => {
           </motion.div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
