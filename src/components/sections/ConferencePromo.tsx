@@ -131,7 +131,7 @@ const ConferencePromo = () => {
                 className="text-4xl md:text-5xl font-bold font-simula leading-tight relative group"
               >
                 <span className="relative inline-block">
-                  RAADE Annual Conference 2025
+                  RAADE African Development Forum 2025
                   <motion.span 
                     className="absolute -bottom-2 left-0 w-0 h-1 bg-[#FFA726]"
                     whileInView={{ width: "100%" }}
@@ -183,28 +183,28 @@ const ConferencePromo = () => {
             </motion.div>
           </div>
           
-          {/* Right side: Countdown */}
+          {/* Right side: Countdown - INCREASED SIZE */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
             whileHover={{ scale: 1.02 }}
-            className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-white/20 hover:border-white/30 transition-all duration-300"
+            className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 md:p-10 shadow-xl border border-white/20 hover:border-white/30 transition-all duration-300"
           >
-            <div className="text-center mb-6">
+            <div className="text-center mb-8">
               <motion.h3 
-                className="text-2xl font-bold text-white font-simula mb-4"
+                className="text-2xl md:text-3xl font-bold text-white font-simula mb-6"
                 whileHover={{ scale: 1.05, color: "#FFA726" }}
                 transition={{ duration: 0.2 }}
               >
                 Time Remaining
               </motion.h3>
-              <p className="text-white/70 font-lora mb-6">Don't miss this opportunity to connect and collaborate</p>
+              <p className="text-white/70 font-lora mb-8 text-lg">Don't miss this opportunity to connect and collaborate</p>
               
-              {/* Enhanced countdown timer */}
+              {/* Enlarged countdown timer with better visibility */}
               <motion.div
-                className="p-4 rounded-xl backdrop-blur-md bg-gradient-to-br from-[#1E3A6C]/70 to-[#274675]/70 border border-white/10 overflow-hidden relative"
+                className="p-6 md:p-8 rounded-xl backdrop-blur-md bg-gradient-to-br from-[#1E3A6C]/70 to-[#274675]/70 border border-white/10 overflow-hidden relative"
                 whileHover={{ 
                   scale: 1.03,
                   boxShadow: "0 0 30px rgba(251, 176, 59, 0.3)"
@@ -224,7 +224,7 @@ const ConferencePromo = () => {
                 {/* Animated elements for the countdown */}
                 <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
                   <motion.div 
-                    className="absolute top-0 left-1/4 w-24 h-1 bg-gradient-to-r from-[#FFA726]/0 via-[#FFA726] to-[#FFA726]/0 rounded-full"
+                    className="absolute top-0 left-1/4 w-36 h-1.5 bg-gradient-to-r from-[#FFA726]/0 via-[#FFA726] to-[#FFA726]/0 rounded-full"
                     animate={{
                       left: ["25%", "75%", "25%"],
                       opacity: [0, 1, 0]
@@ -236,7 +236,7 @@ const ConferencePromo = () => {
                     }}
                   />
                   <motion.div 
-                    className="absolute bottom-0 right-1/4 w-24 h-1 bg-gradient-to-r from-[#FFA726]/0 via-[#FFA726] to-[#FFA726]/0 rounded-full"
+                    className="absolute bottom-0 right-1/4 w-36 h-1.5 bg-gradient-to-r from-[#FFA726]/0 via-[#FFA726] to-[#FFA726]/0 rounded-full"
                     animate={{
                       right: ["25%", "75%", "25%"],
                       opacity: [0, 1, 0]
@@ -268,9 +268,7 @@ const ConferencePromo = () => {
                   </span>
                 </Link>
               </motion.div>
-              <p className="mt-3 text-sm text-white/60 font-lora">
-                Early bird registration now open
-              </p>
+              {/* Removed "Early bird registration now open" text */}
             </div>
           </motion.div>
         </div>
