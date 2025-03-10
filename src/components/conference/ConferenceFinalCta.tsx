@@ -1,26 +1,15 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
 const ConferenceFinalCta = () => {
   const navigate = useNavigate();
-  
-  return (
-    <section className="py-16 px-4 md:px-8 bg-raade-navy text-white">
+  return <section className="py-16 px-4 md:px-8 bg-raade-navy text-white">
       <div className="max-w-3xl mx-auto text-center">
         <h2 className="text-4xl font-bold mb-6 font-simula">Be Part of Africa's Innovation Journey</h2>
-        <p className="text-lg mb-8 font-lora text-white/80">
-          Join us at the RAADE Conference 2025 to connect, collaborate, and create sustainable solutions
-          for Africa's development challenges.
-        </p>
+        <p className="text-lg mb-8 font-lora text-white/80">Join us at the RAADE African Development Forum 2025 to connect, collaborate, and create sustainable solutions for Africa's development challenges.</p>
         
-        <Button 
-          size="lg" 
-          className="bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora px-8 py-6 text-lg"
-          onClick={() => navigate("/conference/register")}
-        >
+        <Button size="lg" className="bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora px-8 py-6 text-lg" onClick={() => navigate("/conference/register")}>
           Register Now
         </Button>
         
@@ -35,8 +24,6 @@ const ConferenceFinalCta = () => {
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default ConferenceFinalCta;
