@@ -1,33 +1,31 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Star, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
 const ConferenceRegistration = () => {
   const navigate = useNavigate();
-  
-  return (
-    <section id="registration" className="py-16 px-4 md:px-8 bg-white">
+  return <section id="registration" className="py-16 px-4 md:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12 scroll-animate">
           <h2 className="text-4xl font-bold text-raade-navy mb-4 font-simula">Registration Options</h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto font-lora">
-            Secure your spot at the RAADE Conference 2025. Registration is now open!
-          </p>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto font-lora">Secure your spot at the RAADE 2025 African Development Forum. Registration is now open!</p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {/* Rice Student Ticket */}
-          <motion.div 
-            className="scroll-animate" 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
+          <motion.div className="scroll-animate" initial={{
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }} transition={{
+          duration: 0.5
+        }}>
             <Card className="border-t-4 border-t-[#FBB03B] hover:shadow-xl transition-all relative h-full">
               <div className="absolute top-4 right-4 bg-[#FBB03B] text-white text-sm font-medium py-1 px-3 rounded-full">
                 Rice Student
@@ -56,10 +54,7 @@ const ConferenceRegistration = () => {
                     <span className="text-gray-600 font-lora">Lunch and refreshments</span>
                   </li>
                 </ul>
-                <Button 
-                  className="w-full bg-raade-navy hover:bg-raade-navy/90 text-white font-lora"
-                  onClick={() => navigate("/conference/register")}
-                >
+                <Button className="w-full bg-raade-navy hover:bg-raade-navy/90 text-white font-lora" onClick={() => navigate("/conference/register")}>
                   Register Now
                 </Button>
               </CardContent>
@@ -67,13 +62,18 @@ const ConferenceRegistration = () => {
           </motion.div>
           
           {/* Non-Rice Student Ticket */}
-          <motion.div 
-            className="scroll-animate" 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
+          <motion.div className="scroll-animate" initial={{
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }} transition={{
+          duration: 0.5,
+          delay: 0.2
+        }}>
             <Card className="border-t-4 border-t-[#FBB03B] hover:shadow-xl transition-all relative h-full">
               <div className="absolute top-4 right-4 bg-[#FBB03B] text-white text-sm font-medium py-1 px-3 rounded-full">
                 Student
@@ -102,10 +102,7 @@ const ConferenceRegistration = () => {
                     <span className="text-gray-600 font-lora">Lunch and refreshments</span>
                   </li>
                 </ul>
-                <Button 
-                  className="w-full bg-raade-navy hover:bg-raade-navy/90 text-white font-lora"
-                  onClick={() => navigate("/conference/register")}
-                >
+                <Button className="w-full bg-raade-navy hover:bg-raade-navy/90 text-white font-lora" onClick={() => navigate("/conference/register")}>
                   Register Now
                 </Button>
               </CardContent>
@@ -113,13 +110,18 @@ const ConferenceRegistration = () => {
           </motion.div>
           
           {/* Young Professional Ticket */}
-          <motion.div 
-            className="scroll-animate" 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
+          <motion.div className="scroll-animate" initial={{
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }} transition={{
+          duration: 0.5,
+          delay: 0.4
+        }}>
             <Card className="border-t-4 border-t-[#FBB03B] hover:shadow-xl transition-all h-full">
               <div className="absolute top-4 right-4 bg-[#FBB03B] text-white text-sm font-medium py-1 px-3 rounded-full">
                 Professional
@@ -148,10 +150,7 @@ const ConferenceRegistration = () => {
                     <span className="text-gray-600 font-lora">Lunch and refreshments</span>
                   </li>
                 </ul>
-                <Button 
-                  className="w-full bg-raade-navy hover:bg-raade-navy/90 text-white font-lora"
-                  onClick={() => navigate("/conference/register")}
-                >
+                <Button className="w-full bg-raade-navy hover:bg-raade-navy/90 text-white font-lora" onClick={() => navigate("/conference/register")}>
                   Register Now
                 </Button>
               </CardContent>
@@ -165,17 +164,11 @@ const ConferenceRegistration = () => {
           <p className="text-gray-600 mb-6 font-lora">
             Student groups of 5 or more can register at a discounted rate of $50 per person. Select the Student Group option during registration.
           </p>
-          <Button 
-            variant="outline" 
-            className="border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-lora"
-            onClick={() => navigate("/conference/register")}
-          >
+          <Button variant="outline" className="border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-lora" onClick={() => navigate("/conference/register")}>
             Register Now
           </Button>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default ConferenceRegistration;
