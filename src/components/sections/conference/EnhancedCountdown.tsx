@@ -29,9 +29,9 @@ const EnhancedCountdown = () => {
         </motion.h3>
         <p className="text-white/70 font-lora mb-6 text-base">Don't miss this opportunity to connect and collaborate</p>
         
-        {/* Scaled down countdown timer (75% of original size) */}
+        {/* Enhanced countdown timer with sharper background */}
         <motion.div
-          className="p-6 md:p-9 rounded-xl backdrop-blur-md bg-gradient-to-br from-[#1E3A6C]/70 to-[#274675]/70 border border-white/10 overflow-hidden relative"
+          className="p-6 md:p-9 rounded-xl backdrop-blur-lg bg-gradient-to-br from-[#274675]/85 to-[#1E3A6C]/90 border border-white/15 overflow-hidden relative shadow-[0_10px_25px_-12px_rgba(0,0,0,0.25)]"
           whileHover={{ 
             scale: 1.03,
             boxShadow: "0 0 30px rgba(251, 176, 59, 0.3)"
@@ -42,49 +42,49 @@ const EnhancedCountdown = () => {
           <div className="grid grid-cols-4 gap-3">
             {/* Days */}
             <div className="text-center">
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3">
+              <div className="bg-white/15 backdrop-blur-lg rounded-lg p-3 shadow-inner">
                 <div className="text-4xl md:text-5xl font-bold text-white font-montserrat">
                   {timeLeft.days}
                 </div>
-                <div className="text-base md:text-lg mt-1 text-white/80">Days</div>
+                <div className="text-base md:text-lg mt-1 text-white/90">Days</div>
               </div>
             </div>
             
             {/* Hours */}
             <div className="text-center">
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3">
+              <div className="bg-white/15 backdrop-blur-lg rounded-lg p-3 shadow-inner">
                 <div className="text-4xl md:text-5xl font-bold text-white font-montserrat">
                   {formatTimeUnit(timeLeft.hours)}
                 </div>
-                <div className="text-base md:text-lg mt-1 text-white/80">Hours</div>
+                <div className="text-base md:text-lg mt-1 text-white/90">Hours</div>
               </div>
             </div>
             
             {/* Minutes */}
             <div className="text-center">
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3">
+              <div className="bg-white/15 backdrop-blur-lg rounded-lg p-3 shadow-inner">
                 <div className="text-4xl md:text-5xl font-bold text-white font-montserrat">
                   {formatTimeUnit(timeLeft.minutes)}
                 </div>
-                <div className="text-base md:text-lg mt-1 text-white/80">Minutes</div>
+                <div className="text-base md:text-lg mt-1 text-white/90">Minutes</div>
               </div>
             </div>
             
             {/* Seconds */}
             <div className="text-center">
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3">
+              <div className="bg-white/15 backdrop-blur-lg rounded-lg p-3 shadow-inner">
                 <div className="text-4xl md:text-5xl font-bold text-white font-montserrat">
                   {formatTimeUnit(timeLeft.seconds)}
                 </div>
-                <div className="text-base md:text-lg mt-1 text-white/80">Seconds</div>
+                <div className="text-base md:text-lg mt-1 text-white/90">Seconds</div>
               </div>
             </div>
           </div>
           
-          {/* Animated elements for the countdown */}
+          {/* Enhanced animated elements for the countdown */}
           <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
             <motion.div 
-              className="absolute top-0 left-1/4 w-36 h-1.5 bg-gradient-to-r from-[#FFA726]/0 via-[#FFA726] to-[#FFA726]/0 rounded-full"
+              className="absolute top-0 left-1/4 w-48 h-2 bg-gradient-to-r from-[#FFA726]/0 via-[#FFA726] to-[#FFA726]/0 rounded-full"
               animate={{
                 left: ["25%", "75%", "25%"],
                 opacity: [0, 1, 0]
@@ -96,7 +96,7 @@ const EnhancedCountdown = () => {
               }}
             />
             <motion.div 
-              className="absolute bottom-0 right-1/4 w-36 h-1.5 bg-gradient-to-r from-[#FFA726]/0 via-[#FFA726] to-[#FFA726]/0 rounded-full"
+              className="absolute bottom-0 right-1/4 w-48 h-2 bg-gradient-to-r from-[#FFA726]/0 via-[#FFA726] to-[#FFA726]/0 rounded-full"
               animate={{
                 right: ["25%", "75%", "25%"],
                 opacity: [0, 1, 0]
