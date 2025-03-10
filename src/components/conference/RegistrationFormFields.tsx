@@ -46,6 +46,7 @@ const RegistrationFormFields = ({
   control,
   onEmailValidation
 }: RegistrationFormFieldsProps) => {
+  
   const watchTicketType = watch("ticketType");
   const watchEmail = watch("email");
   const { toast } = useToast();
@@ -144,6 +145,7 @@ const RegistrationFormFields = ({
 
   return (
     <div className="space-y-4">
+      
       <div>
         <Label htmlFor="fullName">Full Name</Label>
         <Input
@@ -211,7 +213,6 @@ const RegistrationFormFields = ({
             <SelectItem value={TICKET_TYPES.NON_RICE_STUDENT}>Non-Rice Student {getTicketPriceText(TICKET_TYPES.NON_RICE_STUDENT)}</SelectItem>
             <SelectItem value={TICKET_TYPES.YOUNG_PROFESSIONAL}>Young Professional {getTicketPriceText(TICKET_TYPES.YOUNG_PROFESSIONAL)}</SelectItem>
             <SelectItem value={TICKET_TYPES.STUDENT_GROUP}>Student Group {getTicketPriceText(TICKET_TYPES.STUDENT_GROUP)}</SelectItem>
-            <SelectItem value={TICKET_TYPES.SPEAKER}>Speaker {getTicketPriceText(TICKET_TYPES.SPEAKER)}</SelectItem>
           </SelectContent>
         </Select>
         {errors.ticketType && (
@@ -229,6 +230,7 @@ const RegistrationFormFields = ({
             Student tickets require a valid .edu email address.
           </p>
         )}
+        
         
         {isStudentGroup && (
           <div className="mt-4 space-y-4">

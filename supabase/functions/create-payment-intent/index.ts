@@ -49,10 +49,6 @@ serve(async (req) => {
         amount = 5000 * (groupSize || 5); // $50.00 per person
         description = `Student Group (${groupSize || 5} members) - RAADE Conference 2025`;
         break;
-      case "speaker":
-        amount = 0; // Free for speakers
-        description = "Speaker Pass - RAADE Conference 2025";
-        break;
       default:
         return new Response(
           JSON.stringify({ error: "Invalid ticket type" }),
@@ -63,39 +59,22 @@ serve(async (req) => {
         );
     }
 
-    // Verify email is verified for non-speaker tickets
-    if (ticketType !== "speaker") {
-      const { data: verification, error: verificationError } = await supabase
-        .from('email_verifications')
-        .select('verified')
-        .eq('email', email)
-        .eq('ticket_type', ticketType)
-        .single();
-      
-      if (verificationError || !verification || !verification.verified) {
-        return new Response(
-          JSON.stringify({ 
-            error: "Email not verified",
-            message: "Please verify your email before proceeding to payment."
-          }),
-          { 
-            status: 400, 
-            headers: { ...corsHeaders, "Content-Type": "application/json" } 
-          }
-        );
-      }
-    }
-
-    // If it's a free ticket (speakers), just return success without creating a payment intent
-    if (amount === 0) {
+    // Verify email is verified
+    const { data: verification, error: verificationError } = await supabase
+      .from('email_verifications')
+      .select('verified')
+      .eq('email', email)
+      .eq('ticket_type', ticketType)
+      .single();
+    
+    if (verificationError || !verification || !verification.verified) {
       return new Response(
         JSON.stringify({ 
-          success: true, 
-          freeTicket: true,
-          message: "No payment required for speaker tickets" 
+          error: "Email not verified",
+          message: "Please verify your email before proceeding to payment."
         }),
         { 
-          status: 200, 
+          status: 400, 
           headers: { ...corsHeaders, "Content-Type": "application/json" } 
         }
       );

@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, CreditCard } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { registrationSchema, RegistrationFormData, TICKET_TYPES } from "./RegistrationFormTypes";
+import { registrationSchema, RegistrationFormData } from "./RegistrationFormTypes";
 import RegistrationFormFields from "./RegistrationFormFields";
 import PaymentSection from "./PaymentSection";
 import EmailVerification from "./EmailVerification";
@@ -63,7 +63,7 @@ const ConferenceRegistrationForm = () => {
     
     try {
       // For student group registrations, validate all emails
-      if (data.ticketType === TICKET_TYPES.STUDENT_GROUP && data.groupEmails) {
+      if (data.ticketType === "student-group" && data.groupEmails) {
         // Check if the group has at least the selected number of members
         if (!data.groupSize || data.groupEmails.length < data.groupSize) {
           toast({
@@ -74,43 +74,32 @@ const ConferenceRegistrationForm = () => {
           setIsSubmitting(false);
           return;
         }
-        
-        // TODO: Validate all group member emails
-        // This would be implemented here
       }
       
-      // Send verification email for all ticket types except SPEAKER
-      if (data.ticketType !== TICKET_TYPES.SPEAKER) {
-        console.log("Sending verification email to:", data.email);
-        
-        const { error: verificationError } = await supabase.functions.invoke("send-verification-email", {
-          body: {
-            email: data.email,
-            fullName: data.fullName,
-            ticketType: data.ticketType,
-            isKnownInstitution: false // Will be set server-side
-          },
-        });
-        
-        if (verificationError) {
-          console.error("Error sending verification email:", verificationError);
-          throw verificationError;
-        }
-        
-        toast({
-          title: "Verification email sent",
-          description: `We've sent a verification code to ${data.email}. Please check your inbox and enter the code.`,
-        });
-        
-        setVerificationEmailSent(true);
-        setRegistrationData(data);
-        setShowEmailVerification(true);
-      } else {
-        // Skip verification for speakers
-        setRegistrationData(data);
-        setShowPayment(true);
+      console.log("Sending verification email to:", data.email);
+      
+      const { error: verificationError } = await supabase.functions.invoke("send-verification-email", {
+        body: {
+          email: data.email,
+          fullName: data.fullName,
+          ticketType: data.ticketType,
+          isKnownInstitution: false // Will be set server-side
+        },
+      });
+      
+      if (verificationError) {
+        console.error("Error sending verification email:", verificationError);
+        throw verificationError;
       }
       
+      toast({
+        title: "Verification email sent",
+        description: `We've sent a verification code to ${data.email}. Please check your inbox and enter the code.`,
+      });
+      
+      setVerificationEmailSent(true);
+      setRegistrationData(data);
+      setShowEmailVerification(true);
     } catch (error) {
       console.error("Verification error:", error);
       toast({
@@ -233,10 +222,7 @@ const ConferenceRegistrationForm = () => {
                 </>
               ) : (
                 <>
-                  {watchTicketType === TICKET_TYPES.SPEAKER ? (
-                    <CreditCard className="mr-2 h-4 w-4" />
-                  ) : null}
-                  Continue {watchTicketType === TICKET_TYPES.SPEAKER ? "to Registration" : "to Verification"}
+                  Continue to Verification
                 </>
               )}
             </Button>

@@ -6,7 +6,6 @@ export const TICKET_TYPES = {
   RICE_STUDENT: "rice-student",
   NON_RICE_STUDENT: "non-rice-student",
   YOUNG_PROFESSIONAL: "young-professional",
-  SPEAKER: "speaker",
   STUDENT_GROUP: "student-group"
 };
 
@@ -39,7 +38,6 @@ export const getTicketPriceText = (ticketType: string) => {
     case TICKET_TYPES.NON_RICE_STUDENT: return "($65)";
     case TICKET_TYPES.YOUNG_PROFESSIONAL: return "($85)";
     case TICKET_TYPES.STUDENT_GROUP: return "($50/person, min 5)";
-    case TICKET_TYPES.SPEAKER: return "(Free)";
     default: return "";
   }
 };
@@ -50,7 +48,6 @@ export const getTicketPrice = (ticketType: string): number => {
     case TICKET_TYPES.NON_RICE_STUDENT: return 65;
     case TICKET_TYPES.YOUNG_PROFESSIONAL: return 85;
     case TICKET_TYPES.STUDENT_GROUP: return 50; // Per person
-    case TICKET_TYPES.SPEAKER: return 0;
     default: return 0;
   }
 };
