@@ -11,21 +11,21 @@ const ConferenceHero = () => {
       {/* Background with gradient, team image, and Africa outline */}
       <HeroBackground />
       
-      {/* Main content container - using full width with higher z-index to ensure visibility */}
+      {/* Main content container */}
       <div className="container max-w-7xl mx-auto relative z-10 pt-20 px-4 md:px-6 lg:px-8 min-h-screen flex flex-col items-center justify-center">
         {/* Small Countdown Timer at the top */}
         <div className="w-full flex justify-end mb-4">
           <CountdownTimer 
             variant="nav" 
             colorScheme={{
-              text: "text-white",
-              highlight: "text-white",
+              text: "text-raade-navy",
+              highlight: "text-raade-navy",
               accent: "text-[#FBB03B]",
               iconColor: "text-[#FBB03B]",
-              hoverBg: "hover:bg-white/10",
-              dropdownBg: "bg-[#274675]/95",
-              dropdownText: "text-white",
-              dropdownBorder: "border-white/20"
+              hoverBg: "hover:bg-raade-navy/10",
+              dropdownBg: "bg-white/90",
+              dropdownText: "text-raade-navy",
+              dropdownBorder: "border-raade-navy/20"
             }}
           />
         </div>
