@@ -1,31 +1,19 @@
 
-import React, { useRef, useEffect } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import React, { useRef } from "react";
+import { motion } from "framer-motion";
 
 const HeroBackground = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end start"]
-  });
-  
-  // Reduced parallax effect with a smaller range of motion
-  // Starting with a higher initial position to match the "scrolled" look
-  const imageY = useTransform(scrollYProgress, [0, 1], ["10%", "20%"]);
   
   return (
     <div ref={containerRef} className="absolute inset-0 overflow-hidden pointer-events-none z-0">
       {/* Warm base gradient layer */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#FEF7CD] via-[#FEC6A1] to-[#FDE1D3] z-0"></div>
       
-      {/* Team image with reduced parallax effect - increased opacity and softer blend */}
-      <motion.div 
-        className="absolute inset-0 z-1"
-        style={{ y: imageY }}
-        initial={{ y: "10%" }} // Set initial position to match the "scrolled" look
-      >
+      {/* Team image - full size with no parallax */}
+      <div className="absolute inset-0 z-1">
         <div className="absolute inset-0 bg-[url('/raade-eboard-baker-institute-cmp.jpg')] bg-cover bg-center opacity-55 mix-blend-soft-light"></div>
-      </motion.div>
+      </div>
       
       {/* Subtle warm overlay for consistent coloring */}
       <div className="absolute inset-0 bg-gradient-to-r from-[#FBB03B]/15 to-[#FF8A6A]/15 z-2"></div>
