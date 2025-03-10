@@ -9,11 +9,13 @@ import StudentAcademicInfo from "@/components/forms/StudentAcademicInfo";
 import StudentAdditionalInfo from "@/components/forms/StudentAdditionalInfo";
 import SubmitButton from "@/components/forms/SubmitButton";
 import Navigation from "@/components/Navigation";
+import SubmissionConfirmation from "@/components/forms/SubmissionConfirmation";
 
 const StudentApplication = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     full_name: "",
     email: "",
@@ -58,23 +60,8 @@ const StudentApplication = () => {
         variant: "default",
       });
       
-      // Reset form
-      setFormData({
-        full_name: "",
-        email: "",
-        phone: "",
-        university: "",
-        major: "",
-        graduation_year: "",
-        why_join_raade: "",
-        skills: "",
-        portfolio_link: "",
-      });
-      
-      // Redirect back to studios page after 2 seconds
-      setTimeout(() => {
-        navigate("/studios");
-      }, 2000);
+      // Show confirmation screen instead of redirecting
+      setIsSubmitted(true);
       
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "There was an error submitting your application. Please try again.";
@@ -94,16 +81,23 @@ const StudentApplication = () => {
       <div className="container mx-auto px-6 py-12 md:px-12 pt-24">
         <StudentFormHeader />
 
-        <form onSubmit={handleSubmit} className="space-y-8 bg-[#121212] p-8 rounded-lg border border-[#333] max-w-3xl mx-auto">
-          <StudentPersonalInfo formData={formData} handleChange={handleChange} />
-          <StudentAcademicInfo formData={formData} handleChange={handleChange} />
-          <StudentAdditionalInfo formData={formData} handleChange={handleChange} />
-          <SubmitButton 
-            isSubmitting={isSubmitting} 
-            text="Submit Application" 
-            submittingText="Submitting..." 
+        {isSubmitted ? (
+          <SubmissionConfirmation 
+            title="Application Submitted Successfully!"
+            message="Thank you for your interest in RAADE Innovation Studios! We'll review your application and be in touch soon."
           />
-        </form>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-8 bg-[#121212] p-8 rounded-lg border border-[#333] max-w-3xl mx-auto">
+            <StudentPersonalInfo formData={formData} handleChange={handleChange} />
+            <StudentAcademicInfo formData={formData} handleChange={handleChange} />
+            <StudentAdditionalInfo formData={formData} handleChange={handleChange} />
+            <SubmitButton 
+              isSubmitting={isSubmitting} 
+              text="Submit Application" 
+              submittingText="Submitting..." 
+            />
+          </form>
+        )}
       </div>
     </div>
   );

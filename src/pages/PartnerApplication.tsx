@@ -9,11 +9,13 @@ import PartnerContactInfo from "@/components/forms/PartnerContactInfo";
 import PartnerProjectInfo from "@/components/forms/PartnerProjectInfo";
 import SubmitButton from "@/components/forms/SubmitButton";
 import Navigation from "@/components/Navigation";
+import SubmissionConfirmation from "@/components/forms/SubmissionConfirmation";
 
 const PartnerApplication = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     organization_name: "",
     contact_name: "",
@@ -58,23 +60,8 @@ const PartnerApplication = () => {
         variant: "default",
       });
       
-      // Reset form
-      setFormData({
-        organization_name: "",
-        contact_name: "",
-        email: "",
-        phone: "",
-        organization_type: "",
-        country: "",
-        project_idea: "",
-        expected_outcome: "",
-        timeline: "",
-      });
-      
-      // Redirect back to studios page after 2 seconds
-      setTimeout(() => {
-        navigate("/studios");
-      }, 2000);
+      // Show confirmation screen instead of redirecting
+      setIsSubmitted(true);
       
     } catch (error: Error | unknown) {
       toast({
@@ -93,16 +80,23 @@ const PartnerApplication = () => {
       <div className="container mx-auto px-6 py-12 md:px-12 pt-24">
         <PartnerFormHeader />
 
-        <form onSubmit={handleSubmit} className="space-y-8 bg-[#121212] p-8 rounded-lg border border-[#333] max-w-3xl mx-auto">
-          <PartnerOrganizationInfo formData={formData} handleChange={handleChange} />
-          <PartnerContactInfo formData={formData} handleChange={handleChange} />
-          <PartnerProjectInfo formData={formData} handleChange={handleChange} />
-          <SubmitButton 
-            isSubmitting={isSubmitting} 
-            text="Submit Partnership Request" 
-            submittingText="Submitting..." 
+        {isSubmitted ? (
+          <SubmissionConfirmation 
+            title="Partnership Request Submitted Successfully!"
+            message="Thank you for your interest in partnering with RAADE! We'll review your request and be in touch soon to discuss your project."
           />
-        </form>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-8 bg-[#121212] p-8 rounded-lg border border-[#333] max-w-3xl mx-auto">
+            <PartnerOrganizationInfo formData={formData} handleChange={handleChange} />
+            <PartnerContactInfo formData={formData} handleChange={handleChange} />
+            <PartnerProjectInfo formData={formData} handleChange={handleChange} />
+            <SubmitButton 
+              isSubmitting={isSubmitting} 
+              text="Submit Partnership Request" 
+              submittingText="Submitting..." 
+            />
+          </form>
+        )}
       </div>
     </div>
   );
