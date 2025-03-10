@@ -22,25 +22,25 @@ const BackgroundEffects = () => {
         <div className="absolute inset-0 bg-[url('/raade-eboard-sally-port-cmp.jpg')] bg-cover bg-center opacity-25 mix-blend-multiply"></div>
       </div>
       
-      {/* Gradient overlay with animation */}
+      {/* Gradient overlay with animation - Restored to original orange/gold gradient */}
       <motion.div 
         className="absolute inset-0 overflow-hidden"
         variants={gradientVariants}
         animate="animate"
         style={{
-          background: "linear-gradient(135deg, #274675 0%, #1E3A6C 25%, #8B5CF6 50%, #1E3A6C 75%, #274675 100%)",
+          background: "linear-gradient(135deg, #FBB03B 0%, #FF9848 25%, #FF8A6A 50%, #FF9848 75%, #FBB03B 100%)",
           backgroundSize: "200% 200%",
           opacity: 0.80,
           mixBlendMode: "overlay"
         }}
       />
       
-      {/* Abstract shapes in background */}
+      {/* Abstract shapes in background - Updated to warm color palette */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-0 w-full h-full opacity-20">
-          {/* Animated shapes */}
+          {/* Animated shapes - Colors updated to match RAADE brand */}
           <motion.div 
-            className="absolute top-[-5%] left-[-10%] w-[40%] h-[40%] rounded-full bg-gradient-to-r from-[#FFA726] to-[#FF8A6A] blur-[100px]"
+            className="absolute top-[-5%] left-[-10%] w-[40%] h-[40%] rounded-full bg-gradient-to-r from-[#FBB03B] to-[#FF8A6A] blur-[100px]"
             animate={{ 
               x: [0, 20, 0], 
               y: [0, -20, 0],
@@ -53,7 +53,7 @@ const BackgroundEffects = () => {
             }}
           />
           <motion.div 
-            className="absolute bottom-[-15%] right-[-5%] w-[35%] h-[50%] rounded-full bg-gradient-to-r from-[#9B69FF] to-[#FF8A6A] blur-[100px]"
+            className="absolute bottom-[-15%] right-[-5%] w-[35%] h-[50%] rounded-full bg-gradient-to-r from-[#FF9848] to-[#FF8A6A] blur-[100px]"
             animate={{ 
               x: [0, -20, 0], 
               y: [0, 20, 0],
