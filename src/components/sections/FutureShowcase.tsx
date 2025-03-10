@@ -43,9 +43,10 @@ const ProjectCard = ({
   slug: string;
   index: number;
 }) => {
-  const textColorClass = index === 0 ? 'text-[#1A365D]' : 'text-[#1A365D]';
-  const textOpacityClass = index === 0 ? 'text-[#1A365D]/90' : 'text-[#1A365D]/90';
-  const descriptionClass = index === 0 ? 'text-[#1A365D]/80' : 'text-[#1A365D]/80';
+  // Using RAADE brand colors for better visibility against white background
+  const textColorClass = 'text-raade-navy';
+  const textOpacityClass = 'text-raade-navy/80';
+  const descriptionClass = 'text-raade-navy/70';
   
   return (
     <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 min-h-[600px] group`} style={{
@@ -70,7 +71,7 @@ const ProjectCard = ({
         <p className={`${descriptionClass} font-lora leading-relaxed text-lg`}>
           {description}
         </p>
-        <Link to={`/projects/${slug}`} className={`inline-flex items-center text-[#FBB03B] text-lg font-alegreyasans group-hover:translate-x-2 transition-all duration-300 ease-out`}>
+        <Link to={`/projects/${slug}`} className={`inline-flex items-center text-raade-yellow-orange hover:text-raade-yellow-orange/80 text-lg font-alegreyasans group-hover:translate-x-2 transition-all duration-300 ease-out`}>
           Learn More 
           <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
         </Link>
@@ -89,14 +90,14 @@ const FutureShowcase = () => {
     }}>
       <div className="max-w-[90vw] xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-40 content-element">
-          <span className="block text-sm font-medium tracking-wider text-[#1A365D]/70 mb-4 uppercase">
+          <span className="block text-sm font-medium tracking-wider text-raade-navy/70 mb-4 uppercase">
             Our Projects
           </span>
-          <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-[#1A365D] mb-8">
+          <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-raade-navy mb-8">
             Building in Progress
           </h2>
-          <div className="w-24 h-1 bg-[#FBB03B] mx-auto mb-8"></div>
-          <p className="text-lg md:text-xl text-[#1A365D]/80 max-w-3xl mx-auto font-lora leading-relaxed">
+          <div className="w-24 h-1 bg-raade-yellow-orange mx-auto mb-8"></div>
+          <p className="text-lg md:text-xl text-raade-navy/80 max-w-3xl mx-auto font-lora leading-relaxed">
             Step into the future we're creating. Each project is a window into tomorrow,
             where innovation meets impact in real time.
           </p>
