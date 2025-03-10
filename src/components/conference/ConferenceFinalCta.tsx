@@ -116,7 +116,7 @@ const ConferenceFinalCta = () => {
           className="mt-12 text-center text-white/80"
         >
           <p className="font-lora italic">
-            "Join over <span className="text-white font-semibold">200+ attendees</span> from <span className="text-white font-semibold">25+ countries</span> committed to innovation in African development."
+            "Join <span className="text-white font-semibold">100+ innovators</span> from <span className="text-white font-semibold">universities all across the U.S.</span>"
           </p>
         </motion.div>
       </div>
