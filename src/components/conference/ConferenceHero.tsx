@@ -159,7 +159,7 @@ const ConferenceHero = () => {
                   }} whileTap={{
                     scale: 0.95
                   }}>
-                      <p className="text-white font-lora font-medium">25+ Speakers</p>
+                      <p className="text-white font-lora font-medium">10+ Speakers</p>
                     </motion.div>
                     <motion.div className="group px-5 py-2 bg-white/10 rounded-full cursor-pointer hover:bg-white/20 transition-all" whileHover={{
                     scale: 1.05
