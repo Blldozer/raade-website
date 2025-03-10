@@ -27,7 +27,7 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
 
       <div
         className={cn(
-          "md:hidden transition-all duration-300 ease-in-out absolute top-full right-0 mt-2 w-64",
+          "md:hidden transition-all duration-300 ease-in-out",
           isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0 overflow-hidden"
         )}
       >
