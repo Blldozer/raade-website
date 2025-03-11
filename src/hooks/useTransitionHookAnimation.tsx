@@ -2,84 +2,107 @@
 import { useEffect } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
+import { useResponsive } from './useResponsive';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export const useTransitionHookAnimation = () => {
+  const { isMobile } = useResponsive();
+  
   useEffect(() => {
     const section = document.querySelector('#transition-hook');
     
     if (!section) return;
     
-    // Create ScrollTrigger for the section
+    // Create a single animation timeline for better performance
+    const tl = gsap.timeline({
+      paused: true,
+      defaults: { 
+        ease: "power2.out",
+        clearProps: "scale,opacity" // Clear properties for better performance
+      }
+    });
+    
+    // Get all elements we need to animate
+    const heading = section.querySelector("h2");
+    const paragraphText = section.querySelector("p");
+    const scrollButton = section.querySelector("button");
+    
+    // Add all animations to the timeline
+    if (heading) {
+      tl.fromTo(heading, 
+        { y: 30, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, duration: 0.8 }
+      );
+    }
+    
+    if (paragraphText) {
+      tl.fromTo(paragraphText,
+        { y: 15, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, duration: 0.6 },
+        "-=0.2" // Slight overlap
+      );
+    }
+    
+    if (scrollButton) {
+      tl.fromTo(scrollButton,
+        { y: 15, autoAlpha: 0 },
+        { 
+          y: 0, 
+          autoAlpha: 1, 
+          duration: 0.6,
+          onComplete: () => {
+            // Separate timeline for continual bounce animation
+            // Only run this animation when visible for better performance
+            const buttonTl = gsap.timeline({
+              repeat: -1, 
+              yoyo: true,
+              defaults: { ease: "sine.inOut" }
+            });
+            
+            buttonTl.to(scrollButton, {
+              y: "8px", // Reduced movement
+              duration: 1
+            });
+            
+            // Add to ScrollTrigger for visibility control
+            ScrollTrigger.create({
+              trigger: scrollButton,
+              start: "top bottom",
+              end: "bottom top",
+              onEnter: () => buttonTl.play(),
+              onLeave: () => buttonTl.pause(),
+              onEnterBack: () => buttonTl.play(),
+              onLeaveBack: () => buttonTl.pause()
+            });
+          }
+        },
+        "-=0.2" // Slight overlap
+      );
+    }
+    
+    // Create a single ScrollTrigger with performance optimizations
     ScrollTrigger.create({
       trigger: section,
-      start: "top 80%",
-      end: "top 20%",
+      start: isMobile ? "top 85%" : "top 75%",
+      once: true, // Only trigger once for better performance
+      fastScrollEnd: true,
       onEnter: () => {
-        // Animate the heading separately with a more dramatic reveal
-        const heading = section.querySelector("h2");
-        if (heading) {
-          gsap.fromTo(heading, 
-            { y: 50, autoAlpha: 0 },
-            { 
-              y: 0, 
-              autoAlpha: 1, 
-              duration: 1, 
-              ease: "power3.out",
-              delay: 0.3
-            }
-          );
-        }
-        
-        // Animate the paragraph text
-        const paragraphText = section.querySelector("p");
-        if (paragraphText) {
-          gsap.fromTo(paragraphText,
-            { y: 20, autoAlpha: 0 },
-            { 
-              y: 0,
-              autoAlpha: 1,
-              duration: 0.8,
-              delay: 1.1,
-              ease: "power2.out"
-            }
-          );
-        }
-        
-        // Animate the scroll button with a continuous bounce
-        const scrollButton = section.querySelector("button");
-        if (scrollButton) {
-          gsap.fromTo(scrollButton,
-            { y: 20, autoAlpha: 0 },
-            { 
-              y: 0, 
-              autoAlpha: 1, 
-              duration: 0.8,
-              delay: 1.5,
-              ease: "power2.out",
-              onComplete: () => {
-                // Add the continuous bounce animation after the entrance animation
-                gsap.to(scrollButton, {
-                  y: "10px",
-                  repeat: -1,
-                  yoyo: true,
-                  duration: 1,
-                  ease: "sine.inOut"
-                });
-              }
-            }
-          );
-        }
+        // Use RAF for smoother animation start
+        requestAnimationFrame(() => {
+          tl.play();
+        });
       }
     });
     
     return () => {
+      // Proper cleanup
+      tl.kill();
       ScrollTrigger.getAll().forEach(trigger => {
         if (trigger.vars.trigger === section) {
           trigger.kill();
         }
       });
     };
-  }, []);
+  }, [isMobile]);
 };

@@ -1,10 +1,15 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
+import { useResponsive } from './useResponsive';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export const useGeneralSectionAnimations = () => {
+  const { isMobile } = useResponsive();
+  // Fix the type of the Set to properly store gsap timelines
+  const animationsSet = useRef<Set<gsap.core.Timeline>>(new Set());
+  
   useEffect(() => {
     // OPTIMIZATION: Reduce animations by focusing only on visible sections
     const visibleSections = ['conference-promo', 'join'];
@@ -12,40 +17,60 @@ export const useGeneralSectionAnimations = () => {
     // Get specific sections instead of all sections
     const sections = visibleSections.map(id => document.getElementById(id)).filter(Boolean);
     
-    // OPTIMIZATION: Create a single batch of ScrollTriggers with shared config
-    ScrollTrigger.batch(sections, {
-      interval: 0.3, // time delay between capturing batches
-      batchMax: 2,   // maximum batch size (reduce CPU usage)
-      onEnter: batch => {
-        gsap.to(batch, {
-          autoAlpha: 1,
-          stagger: 0.15,
-          overwrite: true
-        });
-        
-        // Animate content elements within each section
-        batch.forEach(section => {
-          const contentElements = section.querySelectorAll('.content-element:not(.opacity-100)');
-          if (contentElements.length) {
-            gsap.fromTo(contentElements,
-              { y: 15, autoAlpha: 0 }, // Reduced movement for better performance
-              { 
-                y: 0,
-                autoAlpha: 1,
-                duration: 0.6, // Shorter duration
-                stagger: 0.2,  // Smaller stagger
-                ease: "power1.out" // Simpler easing function
-              }
-            );
-          }
-        });
-      },
-      start: "top 85%", 
-      once: true // OPTIMIZATION: Only trigger animations once
+    // Create one timeline per section for better performance
+    sections.forEach((section) => {
+      const contentElements = section.querySelectorAll(".content-element:not(.opacity-100)");
+      if (!contentElements.length) return;
+      
+      // Create a timeline for this section
+      const tl = gsap.timeline({ 
+        paused: true,
+        defaults: { 
+          ease: "power1.out", // Simpler easing function for better performance
+          clearProps: "opacity" // Clear props after animation
+        }
+      });
+      
+      // Add animations with reduced values on mobile
+      const yOffset = isMobile ? 10 : 15; // Reduced movement for better performance
+      const staggerAmount = isMobile ? 0.15 : 0.2; // Smaller stagger
+      
+      tl.fromTo(contentElements,
+        { y: yOffset, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, duration: 0.6, stagger: staggerAmount }
+      );
+      
+      // Track this timeline to ensure proper cleanup
+      animationsSet.current.add(tl);
+      
+      // Create a ScrollTrigger with performance flags
+      ScrollTrigger.create({
+        trigger: section,
+        start: isMobile ? "top 90%" : "top 85%",
+        once: true, // OPTIMIZATION: Only trigger animations once
+        fastScrollEnd: true,
+        onEnter: () => {
+          // Use RAF for smoother animation
+          requestAnimationFrame(() => {
+            tl.play();
+          });
+        }
+      });
     });
     
+    // Improved cleanup function
     return () => {
-      // Clear all ScrollTriggers for these specific sections
+      // Kill all timelines we created
+      animationsSet.current.forEach(tl => {
+        if (tl && typeof tl.kill === 'function') {
+          tl.kill();
+        }
+      });
+      
+      // Clear the set
+      animationsSet.current.clear();
+      
+      // Kill ScrollTriggers
       ScrollTrigger.getAll()
         .filter(trigger => {
           const triggerElement = trigger.vars.trigger;
@@ -54,5 +79,5 @@ export const useGeneralSectionAnimations = () => {
         })
         .forEach(trigger => trigger.kill());
     };
-  }, []);
+  }, [isMobile]);
 };

@@ -1,10 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useNavBackground } from './useNavBackground';
-import { useSectionParallax } from './useSectionParallax';
+import { useOptimizedParallax } from './useOptimizedParallax';
 import { useTransitionStatAnimation } from './useTransitionStatAnimation';
 import { useTransitionHookAnimation } from './useTransitionHookAnimation';
 import { useFutureShowcaseAnimation } from './useFutureShowcaseAnimation';
 import { useGeneralSectionAnimations } from './useGeneralSectionAnimations';
+import gsap from 'gsap';
+import ScrollTrigger from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
+
+// Add type declaration for Device Memory API
+declare global {
+  interface Navigator {
+    deviceMemory?: number;
+  }
+}
 
 // Helper to detect device performance capabilities
 const detectLowPerformanceDevice = () => {
@@ -34,6 +45,12 @@ export const useSectionTransitions = () => {
   // Detect device performance on component mount
   useEffect(() => {
     setIsLowPerformanceDevice(detectLowPerformanceDevice());
+    
+    // Set up ScrollTrigger optimization globally
+    ScrollTrigger.config({
+      ignoreMobileResize: true,
+      autoRefreshEvents: "visibilitychange,DOMContentLoaded,load,resize", // Reduce refresh events
+    });
   }, []);
   
   // Always use navigation background updates (optimized version)
@@ -51,15 +68,14 @@ export const useSectionTransitions = () => {
       };
     }, []);
     
+    // Still use general section animations but they'll respect the low-performance CSS
+    useGeneralSectionAnimations();
     return;
   }
   
   // For higher performance devices, use optimized animations
-  // Apply parallax with reduced intensity
-  useSectionParallax('conference-promo', 0.1); // Reduced from 0.2
-  useSectionParallax('transition-stat', 0.05); // Reduced from 0.15
-  useSectionParallax('future-showcase', 0.1); // Reduced from 0.25
-  
+  // Use the new optimized parallax implementation instead of individual hooks
+  useOptimizedParallax();
   useTransitionStatAnimation();
   useTransitionHookAnimation();
   useFutureShowcaseAnimation();
@@ -112,5 +128,14 @@ export const useSectionTransitions = () => {
     };
     
     return addScrollIndicator();
+  }, []);
+  
+  // Add global ScrollTrigger cleanup
+  useEffect(() => {
+    return () => {
+      // Clean up all ScrollTrigger instances when component unmounts
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      ScrollTrigger.clearMatchMedia();
+    };
   }, []);
 };
