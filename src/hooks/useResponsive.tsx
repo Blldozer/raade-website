@@ -1,9 +1,10 @@
-
 import { useState, useEffect } from 'react';
 
 type DeviceType = 'mobile' | 'tablet' | 'laptop' | 'desktop';
 type Orientation = 'portrait' | 'landscape';
 type OSType = 'iOS' | 'Android' | 'Windows' | 'macOS' | 'Linux' | 'unknown';
+type PerformanceLevel = 'low' | 'medium' | 'high';
+type TouchCapability = 'none' | 'basic' | 'advanced';
 
 interface ResponsiveData {
   width: number;
@@ -18,6 +19,12 @@ interface ResponsiveData {
   isMacDevice: boolean;
   isTouchDevice: boolean;
   breakpoint: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
+  hasPrecisePointer: boolean;
+  hasHoverCapability: boolean;
+  hasCoarsePointer: boolean;
+  performanceLevel: PerformanceLevel;
+  touchCapability: TouchCapability;
+  preferReducedMotion: boolean;
 }
 
 const detectOS = (): OSType => {
@@ -42,6 +49,48 @@ const getBreakpoint = (width: number): ResponsiveData['breakpoint'] => {
   return '3xl';
 };
 
+const detectPerformanceLevel = (): PerformanceLevel => {
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  
+  const hasLimitedMemory = navigator.deviceMemory && navigator.deviceMemory < 4;
+  
+  const cpuCheck = () => {
+    const startTime = performance.now();
+    let count = 0;
+    for (let i = 0; i < 1000000; i++) {
+      count += i;
+    }
+    const endTime = performance.now();
+    return endTime - startTime > 100; 
+  };
+  
+  if (isMobile || hasLimitedMemory || cpuCheck()) {
+    return 'low';
+  }
+  
+  if (
+    /iPad/.test(navigator.userAgent) || 
+    (/Android/.test(navigator.userAgent) && !/Mobile/.test(navigator.userAgent))
+  ) {
+    return 'medium';
+  }
+  
+  return 'high';
+};
+
+const detectTouchCapability = (): TouchCapability => {
+  if (!('ontouchstart' in window)) {
+    return 'none';
+  }
+  
+  const hasAdvancedTouch = 
+    'maxTouchPoints' in navigator && 
+    navigator.maxTouchPoints > 1 && 
+    ('ontouchforcechange' in window || 'onwebkitmouseforcechanged' in window);
+    
+  return hasAdvancedTouch ? 'advanced' : 'basic';
+};
+
 export const useResponsive = (): ResponsiveData => {
   const [state, setState] = useState<ResponsiveData>({
     width: typeof window !== 'undefined' ? window.innerWidth : 0,
@@ -56,6 +105,12 @@ export const useResponsive = (): ResponsiveData => {
     isMacDevice: false,
     isTouchDevice: false,
     breakpoint: 'lg',
+    hasPrecisePointer: true,
+    hasHoverCapability: true,
+    hasCoarsePointer: false,
+    performanceLevel: 'high',
+    touchCapability: 'none',
+    preferReducedMotion: false
   });
 
   useEffect(() => {
@@ -70,6 +125,20 @@ export const useResponsive = (): ResponsiveData => {
       return width > height ? 'landscape' : 'portrait';
     };
 
+    const detectPointerCapabilities = () => {
+      const hasHover = window.matchMedia('(hover: hover)').matches;
+      
+      const hasCoarse = window.matchMedia('(pointer: coarse)').matches;
+      
+      const hasPrecise = window.matchMedia('(pointer: fine)').matches;
+      
+      return { hasHover, hasCoarse, hasPrecise };
+    };
+    
+    const checkReducedMotion = () => {
+      return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    };
+
     const updateState = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
@@ -77,6 +146,10 @@ export const useResponsive = (): ResponsiveData => {
       const orientation = getOrientation(width, height);
       const os = detectOS();
       const breakpoint = getBreakpoint(width);
+      const pointerCapabilities = detectPointerCapabilities();
+      const performanceLevel = detectPerformanceLevel();
+      const touchCapability = detectTouchCapability();
+      const preferReducedMotion = checkReducedMotion();
       
       setState({
         width,
@@ -91,22 +164,28 @@ export const useResponsive = (): ResponsiveData => {
         isMacDevice: os === 'macOS',
         isTouchDevice: 'ontouchstart' in window,
         breakpoint,
+        hasPrecisePointer: pointerCapabilities.hasPrecise,
+        hasHoverCapability: pointerCapabilities.hasHover,
+        hasCoarsePointer: pointerCapabilities.hasCoarse,
+        performanceLevel,
+        touchCapability,
+        preferReducedMotion
       });
     };
 
-    // Initial update
     updateState();
 
-    // Add event listener for resize
     window.addEventListener('resize', updateState);
     
-    // Add event listener for orientation change
     window.addEventListener('orientationchange', updateState);
+    
+    const motionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    motionMediaQuery.addEventListener('change', updateState);
 
-    // Clean up
     return () => {
       window.removeEventListener('resize', updateState);
       window.removeEventListener('orientationchange', updateState);
+      motionMediaQuery.removeEventListener('change', updateState);
     };
   }, []);
 

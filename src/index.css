@@ -424,3 +424,220 @@
     }
   }
 }
+
+/* Enhanced Touch Interactions for Mobile */
+@media (pointer: coarse) {
+  /* Increase touch target sizes for better usability */
+  button, 
+  a, 
+  [role="button"],
+  input,
+  select,
+  textarea {
+    min-height: 44px; /* Apple's recommended minimum touch target size */
+    min-width: 44px;
+  }
+  
+  /* Add active state for touch feedback */
+  a:active,
+  button:active,
+  [role="button"]:active {
+    transform: scale(0.98);
+    transition: transform 0.1s;
+  }
+  
+  /* Prevent text selection during touch interactions */
+  nav, 
+  .nav-item, 
+  button, 
+  .button, 
+  .clickable {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Add touch feedback to clickable cards */
+  .card:active,
+  .clickable:active {
+    transform: scale(0.99);
+    transition: transform 0.2s;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.05);
+  }
+  
+  /* Improve scrolling on touch devices */
+  body {
+    -webkit-overflow-scrolling: touch;
+    scroll-padding-top: var(--navbar-height);
+  }
+  
+  /* Ensure proper scroll snap for touch devices */
+  .snap-container {
+    scroll-snap-type: y mandatory;
+    overflow-y: scroll;
+  }
+  
+  .snap-item {
+    scroll-snap-align: start;
+  }
+  
+  /* Add visual feedback for active touches */
+  .touch-feedback::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+  }
+  
+  .touch-feedback:active::after {
+    opacity: 1;
+  }
+}
+
+/* Enhanced Fluid Typography System */
+:root {
+  /* Base font size responsive adjustment */
+  font-size: clamp(14px, 0.5vw + 13px, 18px);
+  
+  /* Advanced fluid type scale with better control points */
+  --fluid-h1: clamp(2.5rem, 6vw, 4.5rem);
+  --fluid-h2: clamp(2rem, 4vw, 3.5rem);
+  --fluid-h3: clamp(1.5rem, 3vw, 2.5rem);
+  --fluid-h4: clamp(1.25rem, 2vw, 1.75rem);
+  --fluid-h5: clamp(1.1rem, 1.5vw, 1.5rem);
+  --fluid-body-large: clamp(1.125rem, 1.2vw, 1.375rem);
+  --fluid-body: clamp(1rem, 1vw, 1.125rem);
+  --fluid-body-small: clamp(0.875rem, 0.8vw, 1rem);
+  --fluid-caption: clamp(0.75rem, 0.7vw, 0.875rem);
+  
+  /* Responsive line heights */
+  --lh-tight: clamp(1.1, 1 + 0.2vw, 1.3);
+  --lh-normal: clamp(1.4, 1.3 + 0.2vw, 1.6);
+  --lh-loose: clamp(1.6, 1.5 + 0.2vw, 1.8);
+  
+  /* Responsive letter spacing */
+  --ls-tight: -0.01em;
+  --ls-normal: 0em;
+  --ls-wide: 0.02em;
+  --ls-wider: 0.05em;
+  
+  /* Fluid spacing for consistent rhythm */
+  --space-3xs: clamp(0.25rem, 0.2vw, 0.375rem);
+  --space-2xs: clamp(0.5rem, 0.3vw, 0.75rem);
+  --space-xs: clamp(0.75rem, 0.5vw, 1rem);
+  --space-s: clamp(1rem, 0.8vw, 1.5rem);
+  --space-m: clamp(1.5rem, 1.5vw, 2rem);
+  --space-l: clamp(2rem, 2.5vw, 3rem);
+  --space-xl: clamp(3rem, 4vw, 4rem);
+  --space-2xl: clamp(4rem, 6vw, 6rem);
+}
+
+/* Optimize font rendering further */
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-synthesis: none;
+}
+
+/* Update typography utilities */
+.fluid-h1 {
+  font-size: var(--fluid-h1);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+}
+
+.fluid-h2 {
+  font-size: var(--fluid-h2);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+}
+
+.fluid-h3 {
+  font-size: var(--fluid-h3);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-normal);
+}
+
+.fluid-h4 {
+  font-size: var(--fluid-h4);
+  line-height: var(--lh-normal);
+  letter-spacing: var(--ls-normal);
+}
+
+.fluid-h5 {
+  font-size: var(--fluid-h5);
+  line-height: var(--lh-normal);
+  letter-spacing: var(--ls-normal);
+}
+
+.fluid-body-large {
+  font-size: var(--fluid-body-large);
+  line-height: var(--lh-normal);
+  letter-spacing: var(--ls-normal);
+}
+
+.fluid-body {
+  font-size: var(--fluid-body);
+  line-height: var(--lh-normal);
+  letter-spacing: var(--ls-normal);
+}
+
+.fluid-body-small {
+  font-size: var(--fluid-body-small);
+  line-height: var(--lh-normal);
+  letter-spacing: var(--ls-normal);
+}
+
+.fluid-caption {
+  font-size: var(--fluid-caption);
+  line-height: var(--lh-normal);
+  letter-spacing: var(--ls-wide);
+}
+
+/* Space utilities using the fluid spacing scale */
+.space-3xs { margin-bottom: var(--space-3xs); }
+.space-2xs { margin-bottom: var(--space-2xs); }
+.space-xs { margin-bottom: var(--space-xs); }
+.space-s { margin-bottom: var(--space-s); }
+.space-m { margin-bottom: var(--space-m); }
+.space-l { margin-bottom: var(--space-l); }
+.space-xl { margin-bottom: var(--space-xl); }
+.space-2xl { margin-bottom: var(--space-2xl); }
+
+/* Padding utilities using the fluid spacing scale */
+.pad-3xs { padding: var(--space-3xs); }
+.pad-2xs { padding: var(--space-2xs); }
+.pad-xs { padding: var(--space-xs); }
+.pad-s { padding: var(--space-s); }
+.pad-m { padding: var(--space-m); }
+.pad-l { padding: var(--space-l); }
+.pad-xl { padding: var(--space-xl); }
+.pad-2xl { padding: var(--space-2xl); }
+
+/* Touch-specific hover states */
+@media (hover: hover) {
+  .hover-effect:hover {
+    transform: translateY(-2px);
+    transition: transform 0.3s ease;
+  }
+  
+  .hover-scale:hover {
+    transform: scale(1.02);
+    transition: transform 0.3s ease;
+  }
+}
+
+/* Prevent hover effects on touch devices */
+@media (hover: none) {
+  .hover-effect:hover,
+  .hover-scale:hover {
+    transform: none;
+  }
+}
