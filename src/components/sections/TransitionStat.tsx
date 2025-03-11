@@ -15,7 +15,7 @@ const TransitionStat = () => {
   };
   
   return (
-    <section ref={sectionRef} className="min-h-screen flex flex-col justify-center items-center py-10 relative overflow-hidden bg-[#3C403A]">
+    <section id="transition-stat" ref={sectionRef} className="min-h-screen flex flex-col justify-center items-center py-10 relative overflow-hidden bg-[#3C403A]">
       {/* Decorative elements */}
       <div className="absolute -right-20 top-20 w-80 h-80 rounded-full bg-raade-gold-start/10 blur-3xl pointer-events-none section-background"></div>
       <div className="absolute -left-20 bottom-20 w-80 h-80 rounded-full bg-white/10 blur-3xl pointer-events-none section-background"></div>
@@ -27,7 +27,7 @@ const TransitionStat = () => {
             By 2050, <span className="text-raade-gold-start"><CountUp end={25} duration={2.5} />%</span> of people
             <br />will be African.
           </div>
-          <p className="text-xl md:text-3xl text-white/80 max-w-3xl mx-auto font-merriweather content-element">
+          <p className="text-xl md:text-3xl text-white/80 max-w-3xl mx-auto font-merriweather content-element opacity-100">
             The systems we build today will shape their tomorrow.
           </p>
         </div>
@@ -35,7 +35,7 @@ const TransitionStat = () => {
       
       {/* Bottom navigation */}
       <div className="text-center absolute bottom-10 z-10">
-        <p className="text-lg text-white/60 font-merriweather mb-6 content-element">
+        <p className="text-lg text-white/60 font-merriweather mb-6 content-element opacity-100">
           Here's what we are building...
         </p>
         <button 

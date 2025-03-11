@@ -25,7 +25,7 @@ export const useTransitionStatAnimation = () => {
     
     // Batch animations in a single timeline
     const statCounter = section.querySelector(".stat-counter");
-    const contentElements = section.querySelectorAll(".content-element:not(.opacity-100)");
+    const contentElements = section.querySelectorAll(".content-element");
     
     if (statCounter) {
       tl.fromTo(statCounter, 
