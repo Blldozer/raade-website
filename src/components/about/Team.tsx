@@ -9,7 +9,7 @@ const teamMembers = [{
 }, {
   name: "Ife Idakolo",
   classYear: "'26",
-  position: "Co-founder and Co-executive Director",
+  position: "Co-founder & Co-executive Director",
   linkedin: "https://www.linkedin.com/in/ifeoluwaidakolo/"
 }, {
   name: "Precious Akinrinmade",
