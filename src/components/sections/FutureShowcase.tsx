@@ -61,10 +61,10 @@ const ProjectCard = ({
       <div className="project-content flex flex-col justify-center space-y-4 sm:space-y-8 p-4 sm:p-6 md:p-10" style={{
       gridArea: 'content'
     }}>
-        <p className={`text-sm font-bold ${textOpacityClass} tracking-wider`}>
+        <p className={`text-sm font-extrabold ${textOpacityClass} tracking-wider`}>
           {category}
         </p>
-        <h3 className={`fluid-h3 font-bold ${textColorClass} font-simula leading-tight`}>
+        <h3 className={`fluid-h3 font-extrabold ${textColorClass} font-simula leading-tight`}>
           {title}
         </h3>
         <p className={`${descriptionClass} font-lora leading-relaxed fluid-body`}>
@@ -77,6 +77,7 @@ const ProjectCard = ({
       </div>
     </div>;
 };
+
 const FutureShowcase = () => {
   const sectionRef = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -102,6 +103,7 @@ const FutureShowcase = () => {
       }
     };
   }, []);
+  
   return <section id="future-showcase" ref={sectionRef} className="relative py-16 sm:py-24 md:py-32 lg:py-40 bg-white" style={{
     height: 'auto',
     minHeight: '100vh',
@@ -109,10 +111,10 @@ const FutureShowcase = () => {
   }}>
       <div className="fluid-container mx-auto">
         <div className="text-center mb-16 sm:mb-24 md:mb-32 lg:mb-40 section-header">
-          <span className="block text-sm font-bold tracking-wider text-raade-navy/70 mb-4 uppercase opacity-100">
+          <span className="block text-sm font-extrabold tracking-wider text-raade-navy/70 mb-4 uppercase opacity-100">
             Our Projects
           </span>
-          <h2 className="fluid-h2 leading-[1.15] font-simula text-raade-navy mb-8 opacity-100 font-extrabold">
+          <h2 className="fluid-h2 leading-[1.15] font-simula text-raade-navy mb-8 opacity-100 font-black">
             Building in Progress
           </h2>
           <div className="w-16 sm:w-24 h-1 bg-raade-yellow-orange mx-auto mb-8 opacity-100"></div>
@@ -130,4 +132,5 @@ const FutureShowcase = () => {
       </div>
     </section>;
 };
+
 export default FutureShowcase;
