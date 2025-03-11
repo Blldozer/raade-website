@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, MapPin, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -15,8 +15,23 @@ const ConferenceInfo = () => {
     
     if (!title) return;
     
-    // Animated text for title
-    const titleAnimation = gsap.timeline({ repeat: -1, repeatDelay: 5 });
+    // Animated text for title - optimized with reduced frequency
+    const titleAnimation = gsap.timeline({ 
+      repeat: -1, 
+      repeatDelay: 8, // Increased delay between animations
+      onStart: () => {
+        // Ensure hardware acceleration
+        if (title) {
+          gsap.set(title, { willChange: "color" });
+        }
+      },
+      onComplete: () => {
+        // Clean up willChange after animation
+        if (title) {
+          gsap.set(title, { willChange: "auto" });
+        }
+      }
+    });
     
     titleAnimation
       .to(title, { 
@@ -33,14 +48,21 @@ const ConferenceInfo = () => {
         stagger: 0.05
       });
       
-    // Add subtle pulse to tagline
+    // Add subtle pulse to tagline - optimized
     if (taglineRef.current) {
+      gsap.set(taglineRef.current, { willChange: "opacity" });
+      
       gsap.to(taglineRef.current, {
         opacity: 0.9,
-        duration: 1.5,
+        duration: 2, // Slowed down
         repeat: -1,
         yoyo: true,
-        ease: "power1.inOut"
+        ease: "power1.inOut",
+        onComplete: () => {
+          if (taglineRef.current) {
+            gsap.set(taglineRef.current, { willChange: "auto" });
+          }
+        }
       });
     }
     
@@ -57,6 +79,7 @@ const ConferenceInfo = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
+        style={{ willChange: "transform, opacity" }}
       >
         <p className="text-[#FFB347] font-medium tracking-wider uppercase text-xs sm:text-sm mb-2 sm:mb-3">
           Mark Your Calendar
@@ -73,6 +96,7 @@ const ConferenceInfo = () => {
               whileInView={{ width: "100%" }}
               viewport={{ once: true }}
               transition={{ duration: 1, delay: 0.5 }}
+              style={{ willChange: "width" }}
             />
           </span>
         </h2>
@@ -91,6 +115,7 @@ const ConferenceInfo = () => {
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 0.2 }}
         className="flex flex-col sm:flex-row gap-4 sm:gap-6"
+        style={{ willChange: "transform, opacity" }}
       >
         <div className="flex items-center group">
           <div className="relative">
@@ -114,6 +139,7 @@ const ConferenceInfo = () => {
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 0.3 }}
         className="pt-2"
+        style={{ willChange: "transform, opacity" }}
       >
         <Link 
           to="/conference" 
@@ -131,4 +157,5 @@ const ConferenceInfo = () => {
   );
 };
 
-export default ConferenceInfo;
+// Use memo to prevent unnecessary re-renders
+export default memo(ConferenceInfo);

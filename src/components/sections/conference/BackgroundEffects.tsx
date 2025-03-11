@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { motion } from 'framer-motion';
 
 const BackgroundEffects = () => {
-  // Gradient background animation
+  // Simplified gradient background animation with reduced complexity
   const gradientVariants = {
     animate: {
       backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
       transition: {
-        duration: 15,
+        duration: 20, // Slowed down for better performance
         ease: "linear",
         repeat: Infinity
       }
@@ -16,12 +16,15 @@ const BackgroundEffects = () => {
 
   return (
     <>
-      {/* Base image layer */}
+      {/* Base image layer - using will-change for hardware acceleration */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/raade-eboard-sally-port-cmp.jpg')] bg-cover bg-center opacity-35 mix-blend-color-burn"></div>
+        <div 
+          className="absolute inset-0 bg-[url('/raade-eboard-sally-port-cmp.jpg')] bg-cover bg-center opacity-35 mix-blend-color-burn"
+          style={{ willChange: "transform" }}
+        ></div>
       </div>
       
-      {/* Gradient overlay with animation */}
+      {/* Gradient overlay with animation - optimized with will-change */}
       <motion.div 
         className="absolute inset-0 overflow-hidden"
         variants={gradientVariants}
@@ -30,11 +33,12 @@ const BackgroundEffects = () => {
           background: "linear-gradient(135deg, #1A2E5C 0%, #2D3A8C 25%, #6C2BD9 50%, #2D3A8C 75%, #1A2E5C 100%)",
           backgroundSize: "200% 200%",
           opacity: 0.75,
-          mixBlendMode: "multiply"
+          mixBlendMode: "multiply",
+          willChange: "background-position"
         }}
       />
       
-      {/* Line pattern overlay */}
+      {/* Line pattern overlay - static, no animation */}
       <div 
         className="absolute inset-0 opacity-[0.05] mix-blend-soft-light pointer-events-none"
         style={{
@@ -43,60 +47,28 @@ const BackgroundEffects = () => {
         }}
       ></div>
       
-      {/* Abstract shapes in background */}
+      {/* Reduced number of animated shapes - only keeping one primary shape */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-0 w-full h-full opacity-50">
-          {/* Animated shapes */}
+          {/* Single animated shape with optimized animation */}
           <motion.div 
             className="absolute top-[-5%] left-[-10%] w-[40%] h-[40%] rounded-full bg-gradient-to-r from-[#FF9F43] to-[#FF8A6A] blur-[60px]"
             animate={{ 
               x: [0, 20, 0], 
               y: [0, -20, 0],
-              scale: [1, 1.1, 1],
               opacity: [0.7, 0.9, 0.7]
             }}
             transition={{ 
-              duration: 10, 
+              duration: 15, // Slowed down
               repeat: Infinity,
               ease: "easeInOut" 
             }}
-          />
-          <motion.div 
-            className="absolute bottom-[-15%] right-[-5%] w-[35%] h-[50%] rounded-full bg-gradient-to-r from-[#38B2AC] to-[#3730A3] blur-[60px]"
-            animate={{ 
-              x: [0, -20, 0], 
-              y: [0, 20, 0],
-              scale: [1, 1.2, 1],
-              opacity: [0.6, 0.8, 0.6]  
-            }}
-            transition={{ 
-              duration: 12, 
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 2 
-            }}
-          />
-          
-          {/* New third shape for added depth */}
-          <motion.div 
-            className="absolute top-[40%] right-[20%] w-[25%] h-[25%] rounded-full bg-gradient-to-r from-[#6C2BD9] to-[#A78BFA] blur-[50px]"
-            animate={{ 
-              x: [0, 10, 0], 
-              y: [0, -15, 0],
-              scale: [1, 1.15, 1],
-              opacity: [0.5, 0.7, 0.5]
-            }}
-            transition={{ 
-              duration: 8, 
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 1
-            }}
+            style={{ willChange: "transform, opacity" }}
           />
         </div>
       </div>
       
-      {/* Grain texture overlay */}
+      {/* Grain texture overlay - static, no animation */}
       <div 
         className="absolute inset-0 opacity-10 mix-blend-overlay pointer-events-none"
         style={{
@@ -107,4 +79,5 @@ const BackgroundEffects = () => {
   );
 };
 
-export default BackgroundEffects;
+// Use React.memo to prevent unnecessary re-renders
+export default memo(BackgroundEffects);
