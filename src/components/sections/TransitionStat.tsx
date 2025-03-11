@@ -1,10 +1,15 @@
-import React, { useRef } from 'react';
+
+import React, { useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import CountUp from 'react-countup';
 import { ArrowDown } from 'lucide-react';
+import { useTransitionStatAnimation } from '@/hooks/useTransitionStatAnimation';
 
 const TransitionStat = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
+  
+  // Use the animation hook
+  useTransitionStatAnimation();
   
   const scrollToNextSection = () => {
     const nextSection = document.getElementById('future-showcase');
@@ -22,11 +27,11 @@ const TransitionStat = () => {
       {/* Main content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
         <div className="space-y-8">
-          <div className="text-4xl md:text-7xl lg:text-8xl font-bold text-white mb-8 font-Montserrat rounded-3xl stat-counter">
+          <div className="text-4xl md:text-7xl lg:text-8xl font-bold text-white mb-8 font-Montserrat rounded-3xl stat-counter transition-opacity duration-500">
             By 2050, <span className="text-raade-gold-start"><CountUp end={25} duration={2.5} />%</span> of people
             <br />will be African.
           </div>
-          <p className="text-xl md:text-3xl text-white/80 max-w-3xl mx-auto font-merriweather content-element opacity-100">
+          <p className="text-xl md:text-3xl text-white/80 max-w-3xl mx-auto font-merriweather content-element opacity-100 transition-opacity duration-500">
             The systems we build today will shape their tomorrow.
           </p>
         </div>
@@ -34,7 +39,7 @@ const TransitionStat = () => {
       
       {/* Bottom navigation */}
       <div className="text-center absolute bottom-10 z-10">
-        <p className="text-lg text-white/60 font-merriweather mb-6 content-element opacity-100">
+        <p className="text-lg text-white/60 font-merriweather mb-6 content-element opacity-100 transition-opacity duration-500">
           Here's what we are building...
         </p>
         <button 

@@ -25,6 +25,7 @@ export const useTransitionStatAnimation = () => {
     
     // Batch animations in a single timeline
     const statCounter = section.querySelector(".stat-counter");
+    // Target all content elements regardless of their opacity class
     const contentElements = section.querySelectorAll(".content-element");
     
     if (statCounter) {
@@ -34,6 +35,7 @@ export const useTransitionStatAnimation = () => {
       );
     }
     
+    // Only animate content elements if they exist
     if (contentElements.length) {
       tl.fromTo(contentElements,
         { y: 15, autoAlpha: 0 },
@@ -45,7 +47,7 @@ export const useTransitionStatAnimation = () => {
     // Create a single ScrollTrigger with optimization settings
     ScrollTrigger.create({
       trigger: section,
-      start: isMobile ? "top 80%" : "top 70%", 
+      start: isMobile ? "top 85%" : "top 75%", // Trigger earlier
       once: true, // Only trigger once for better performance
       fastScrollEnd: true,
       onEnter: () => {

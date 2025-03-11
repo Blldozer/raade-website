@@ -82,11 +82,13 @@ const ProjectCard = ({
 
 const FutureShowcase = () => {
   const sectionRef = useRef<HTMLElement>(null);
+  
   useEffect(() => {
     // When leaving this section (scrolling down), trigger transition to the hook section
     const onSectionExit = () => {
       document.dispatchEvent(new CustomEvent('transitionToHook'));
     };
+    
     const observer = new IntersectionObserver(entries => {
       const entry = entries[0];
       // When the section is no longer intersecting and scrolling down
@@ -96,9 +98,11 @@ const FutureShowcase = () => {
     }, {
       threshold: 0.1
     });
+    
     if (sectionRef.current) {
       observer.observe(sectionRef.current);
     }
+    
     return () => {
       if (sectionRef.current) {
         observer.unobserve(sectionRef.current);
@@ -106,11 +110,17 @@ const FutureShowcase = () => {
     };
   }, []);
   
-  return <section id="future-showcase" ref={sectionRef} className="relative py-16 sm:py-24 md:py-32 lg:py-40 bg-white" style={{
-    height: 'auto',
-    minHeight: '100vh',
-    zIndex: 1 // Ensure proper stacking context
-  }}>
+  return (
+    <section 
+      id="future-showcase" 
+      ref={sectionRef} 
+      className="relative py-16 sm:py-24 md:py-32 lg:py-40 bg-white" 
+      style={{
+        height: 'auto',
+        minHeight: '100vh',
+        zIndex: 1 // Ensure proper stacking context
+      }}
+    >
       <div className="fluid-container mx-auto">
         <div className="text-center mb-16 sm:mb-24 md:mb-32 lg:mb-40 section-header">
           <span className="block text-sm font-normal tracking-wider text-raade-navy/70 mb-4 uppercase opacity-100">
@@ -127,12 +137,15 @@ const FutureShowcase = () => {
         </div>
 
         <div className="space-y-16 sm:space-y-24 md:space-y-32">
-          {showcaseProjects.map((project, index) => <div key={project.title} className="project-card">
+          {showcaseProjects.map((project, index) => (
+            <div key={project.title} className="project-card">
               <ProjectCard {...project} index={index} slug={project.slug} />
-            </div>)}
+            </div>
+          ))}
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
 
 export default FutureShowcase;
