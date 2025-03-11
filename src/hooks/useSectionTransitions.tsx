@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useNavBackground } from './useNavBackground';
 import { useOptimizedParallax } from './useOptimizedParallax';
@@ -68,6 +69,9 @@ export const useSectionTransitions = () => {
       };
     }, []);
     
+    // Still use Future Showcase animations even on low performance devices
+    useFutureShowcaseAnimation();
+    
     // Still use general section animations but they'll respect the low-performance CSS
     useGeneralSectionAnimations();
     return;
@@ -78,7 +82,11 @@ export const useSectionTransitions = () => {
   useOptimizedParallax();
   useTransitionStatAnimation();
   useTransitionHookAnimation();
+  
+  // Future Showcase animations - load this before general animations
   useFutureShowcaseAnimation();
+  
+  // General section animations (for non-specific sections)
   useGeneralSectionAnimations();
   
   // Add a special effect to indicate scrolling is enabled

@@ -1,3 +1,4 @@
+
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
@@ -12,6 +13,7 @@ export const useGeneralSectionAnimations = () => {
   
   useEffect(() => {
     // OPTIMIZATION: Reduce animations by focusing only on visible sections
+    // Remove future-showcase from this list to prevent animation conflicts
     const visibleSections = ['conference-promo', 'join'];
     
     // Get specific sections instead of all sections

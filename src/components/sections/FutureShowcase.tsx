@@ -124,15 +124,15 @@ const FutureShowcase = () => {
       zIndex: 1 // Ensure proper stacking context
     }}>
       <div className="fluid-container mx-auto">
-        <div className="text-center mb-16 sm:mb-24 md:mb-32 lg:mb-40 content-element">
-          <span className="block text-sm font-medium tracking-wider text-raade-navy/70 mb-4 uppercase">
+        <div className="text-center mb-16 sm:mb-24 md:mb-32 lg:mb-40 section-header">
+          <span className="block text-sm font-medium tracking-wider text-raade-navy/70 mb-4 uppercase opacity-100">
             Our Projects
           </span>
-          <h2 className="fluid-h2 leading-[1.15] font-simula text-raade-navy mb-8">
+          <h2 className="fluid-h2 leading-[1.15] font-simula text-raade-navy mb-8 opacity-100">
             Building in Progress
           </h2>
-          <div className="w-16 sm:w-24 h-1 bg-raade-yellow-orange mx-auto mb-8"></div>
-          <p className="fluid-body text-raade-navy/80 max-w-3xl mx-auto font-lora leading-relaxed">
+          <div className="w-16 sm:w-24 h-1 bg-raade-yellow-orange mx-auto mb-8 opacity-100"></div>
+          <p className="fluid-body text-raade-navy/80 max-w-3xl mx-auto font-lora leading-relaxed opacity-100">
             Step into the future we're creating. Each project is a window into tomorrow,
             where innovation meets impact in real time.
           </p>

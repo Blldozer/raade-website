@@ -23,15 +23,16 @@ export const useFutureShowcaseAnimation = () => {
       }
     });
     
-    // Get all elements we need to animate
-    const header = section.querySelector('.content-element:not(.opacity-100)');
+    // Specifically target the heading elements with more precise selectors
+    const sectionHeader = section.querySelector('.section-header');
+    const headingElements = sectionHeader ? sectionHeader.querySelectorAll('*') : [];
     const projectCards = section.querySelectorAll('.project-card');
     
-    // Add animations to timeline
-    if (header) {
-      tl.fromTo(header,
+    // Add animations to timeline for the heading elements
+    if (headingElements.length) {
+      tl.fromTo(headingElements,
         { y: 20, autoAlpha: 0 },
-        { y: 0, autoAlpha: 1, duration: 0.7 }
+        { y: 0, autoAlpha: 1, duration: 0.7, stagger: 0.1 }
       );
     }
     
