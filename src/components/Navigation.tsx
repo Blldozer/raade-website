@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useLocation } from "react-router-dom";
@@ -97,12 +96,13 @@ const Navigation = ({
       )}
     >
       <div className={`max-w-7xl mx-auto ${getPadding()}`}>
-        <div className="flex justify-between items-center h-16 sm:h-18 md:h-20">
+        <div className="flex justify-between items-center">
           <NavLogo 
             isScrolled={isScrolled} 
             isHeroPage={heroPage} 
             forceDarkMode={shouldForceDarkMode || !isDarkBackground}
-            useShortForm={useShortFormLogo || width < 640}
+            useShortForm={useShortFormLogo}
+            // No forceSize here to allow dynamic sizing
           />
           
           <div className="flex items-center">

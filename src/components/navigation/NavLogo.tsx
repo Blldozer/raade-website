@@ -1,7 +1,7 @@
-
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import useResponsive from "@/hooks/useResponsive";
 
 interface NavLogoProps {
   isScrolled?: boolean;
@@ -15,11 +15,23 @@ const NavLogo = ({
   isScrolled = false, 
   isHeroPage = false, 
   forceDarkMode = false,
-  forceSize = "h-20", // Using h-20 for both black and white logos
+  forceSize,
   useShortForm = false
 }: NavLogoProps) => {
   const location = useLocation();
   const [showSecondary, setShowSecondary] = useState(false);
+  const { isMobile, isTablet, width } = useResponsive();
+  
+  // Dynamically determine logo size based on screen width if not forced
+  const getLogoSize = () => {
+    if (forceSize) return forceSize;
+    
+    if (width < 375) return "h-10"; // Extra small screens
+    if (width < 640) return "h-12"; // Small mobile screens
+    if (width < 768) return "h-16"; // Larger mobile screens
+    if (width < 1024) return "h-18"; // Tablet screens
+    return "h-20"; // Desktop screens
+  };
   
   // For short form logos
   const blackShortFormLogo = "/logos/RAADE-logo-short-form-black.png";
@@ -32,37 +44,42 @@ const NavLogo = ({
   // Always use white logo for project detail pages
   const isProjectPage = location.pathname.includes('/projects/');
   
+  // Determine if short form should be used based on screen width if not explicitly set
+  const shouldUseShortForm = useShortForm || width < 480;
+  
   // Determine which logos to use (black or white)
   const primaryLogo = isProjectPage 
-    ? (useShortForm ? whiteShortFormLogo : whiteRegularLogo)
+    ? (shouldUseShortForm ? whiteShortFormLogo : whiteRegularLogo)
     : (forceDarkMode 
-        ? (useShortForm ? blackShortFormLogo : blackRegularLogo)
-        : (useShortForm ? whiteShortFormLogo : whiteRegularLogo));
+        ? (shouldUseShortForm ? blackShortFormLogo : blackRegularLogo)
+        : (shouldUseShortForm ? whiteShortFormLogo : whiteRegularLogo));
     
   const secondaryLogo = isProjectPage
-    ? (useShortForm ? blackShortFormLogo : blackRegularLogo)
+    ? (shouldUseShortForm ? blackShortFormLogo : blackRegularLogo)
     : (forceDarkMode
-        ? (useShortForm ? whiteShortFormLogo : whiteRegularLogo)
-        : (useShortForm ? blackShortFormLogo : blackRegularLogo));
+        ? (shouldUseShortForm ? whiteShortFormLogo : whiteRegularLogo)
+        : (shouldUseShortForm ? blackShortFormLogo : blackRegularLogo));
 
   // Reset the state when forceDarkMode changes or when on project pages
   useEffect(() => {
     setShowSecondary(false);
   }, [forceDarkMode, useShortForm, isProjectPage]);
 
+  const logoSize = getLogoSize();
+
   return (
     <div className="flex-shrink-0 flex items-center">
       <Link to="/" className="flex items-center relative">
         {/* Primary logo (visible when showSecondary is false) */}
         <img
-          className={`${forceSize} w-auto transition-opacity duration-300 ease-in-out z-10 ${showSecondary ? 'opacity-0' : 'opacity-100'}`}
+          className={`${logoSize} w-auto transition-all duration-300 ease-in-out z-10 ${showSecondary ? 'opacity-0' : 'opacity-100'}`}
           src={primaryLogo}
           alt="RAADE"
         />
         
         {/* Secondary logo (visible when showSecondary is true) */}
         <img
-          className={`${forceSize} w-auto absolute top-0 left-0 transition-opacity duration-300 ease-in-out pointer-events-none ${showSecondary ? 'opacity-100' : 'opacity-0'}`}
+          className={`${logoSize} w-auto absolute top-0 left-0 transition-all duration-300 ease-in-out pointer-events-none ${showSecondary ? 'opacity-100' : 'opacity-0'}`}
           src={secondaryLogo}
           alt="RAADE"
         />
