@@ -41,10 +41,6 @@ serve(async (req) => {
         amount = 5000 * (groupSize || 5); // $50.00 per person
         description = `Student Group (${groupSize || 5} members) - RAADE Conference 2025`;
         break;
-      case "test":
-        amount = 100; // $1.00
-        description = "Test Ticket - RAADE Conference 2025";
-        break;
       default:
         return new Response(
           JSON.stringify({ error: "Invalid ticket type" }),
