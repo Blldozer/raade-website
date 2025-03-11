@@ -75,13 +75,13 @@ const Hero = () => {
       {/* Gradient Overlay - low z-index but above video */}
       <div className="absolute inset-0 z-10 bg-gradient-to-br from-[#1A365D]/60 via-[#2A466D]/65 to-[#1A365D]/70 backdrop-blur-[4px]" />
       
-      {/* Navigation - highest z-index */}
-      <div className="absolute top-0 left-0 right-0 z-[9999]">
+      {/* Navigation - highest z-index but now relative */}
+      <div className="relative z-[9999]">
         <Navigation isHeroPage={true} />
       </div>
       
       {/* Main Content - high z-index but below navigation */}
-      <div className="relative z-30 pt-[var(--navbar-height)]" ref={contentRef}>
+      <div className="relative z-30" ref={contentRef}>
         <div className="fluid-container h-screen flex flex-col justify-center">
           <div className="space-y-[clamp(1rem,2vw,2rem)] max-w-[min(90%,1200px)] mx-auto pointer-events-auto">
             <AnimatedText />

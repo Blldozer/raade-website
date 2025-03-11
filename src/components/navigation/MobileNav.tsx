@@ -54,7 +54,7 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
       <div
         id="mobile-menu"
         className={cn(
-          "fixed top-[var(--navbar-height)] left-0 right-0 z-50 transition-transform duration-300 ease-in-out max-h-[calc(100vh-var(--navbar-height))] overflow-y-auto",
+          "absolute top-[var(--navbar-height)] left-0 right-0 z-50 transition-transform duration-300 ease-in-out max-h-[calc(100vh-var(--navbar-height))] overflow-y-auto",
           isOpen ? "translate-y-0" : "-translate-y-full"
         )}
       >
