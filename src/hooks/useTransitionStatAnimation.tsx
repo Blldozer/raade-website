@@ -2,60 +2,68 @@
 import { useEffect } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
+import { useResponsive } from './useResponsive';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export const useTransitionStatAnimation = () => {
+  const { isMobile } = useResponsive();
+  
   useEffect(() => {
     const section = document.querySelector('#transition-stat');
     
     if (!section) return;
     
-    // Create ScrollTrigger for the section
+    // Create a single animation timeline for better performance
+    const tl = gsap.timeline({
+      paused: true,
+      defaults: { 
+        ease: "power2.out",
+        clearProps: "scale" // Important for performance
+      }
+    });
+    
+    // Batch animations in a single timeline
+    const statCounter = section.querySelector(".stat-counter");
+    const contentElements = section.querySelectorAll(".content-element:not(.opacity-100)");
+    
+    if (statCounter) {
+      tl.fromTo(statCounter, 
+        { scale: 0.95, autoAlpha: 0 },
+        { scale: 1, autoAlpha: 1, duration: 1, ease: "back.out(1.1)" }
+      );
+    }
+    
+    if (contentElements.length) {
+      tl.fromTo(contentElements,
+        { y: 15, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, duration: 0.6, stagger: 0.25 },
+        "-=0.3" // Overlap with previous animation
+      );
+    }
+    
+    // Create a single ScrollTrigger with optimization settings
     ScrollTrigger.create({
       trigger: section,
-      start: "top 80%",
-      end: "top 20%",
+      start: isMobile ? "top 80%" : "top 70%", 
+      once: true, // Only trigger once for better performance
+      fastScrollEnd: true,
       onEnter: () => {
-        // Animate stat counter with a scale effect
-        const statCounter = section.querySelector(".stat-counter");
-        if (statCounter) {
-          gsap.fromTo(statCounter, 
-            { scale: 0.9, autoAlpha: 0 },
-            { 
-              scale: 1, 
-              autoAlpha: 1, 
-              duration: 1.2, 
-              ease: "back.out(1.2)",
-              delay: 0.3
-            }
-          );
-        }
-        
-        // Animate the description text that appears after the stat
-        const contentElements = section.querySelectorAll(".content-element:not(.opacity-100)");
-        if (contentElements.length) {
-          gsap.fromTo(contentElements,
-            { y: 20, autoAlpha: 0 },
-            { 
-              y: 0,
-              autoAlpha: 1,
-              duration: 0.8,
-              stagger: 0.4,
-              delay: 1.2,
-              ease: "power2.out"
-            }
-          );
-        }
+        // Use RAF for smoother animation start
+        requestAnimationFrame(() => {
+          tl.play();
+        });
       }
     });
     
     return () => {
+      // Proper cleanup
+      tl.kill();
       ScrollTrigger.getAll().forEach(trigger => {
         if (trigger.vars.trigger === section) {
           trigger.kill();
         }
       });
     };
-  }, []);
+  }, [isMobile]);
 };

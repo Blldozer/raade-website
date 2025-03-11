@@ -1,30 +1,41 @@
 
 import { useEffect } from 'react';
 import { useNavBackground } from './useNavBackground';
-import { useSectionParallax } from './useSectionParallax';
+import { useOptimizedParallax } from './useOptimizedParallax';
 import { useTransitionStatAnimation } from './useTransitionStatAnimation';
 import { useTransitionHookAnimation } from './useTransitionHookAnimation';
 import { useFutureShowcaseAnimation } from './useFutureShowcaseAnimation';
 import { useGeneralSectionAnimations } from './useGeneralSectionAnimations';
+import gsap from 'gsap';
+import ScrollTrigger from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export const useSectionTransitions = () => {
-  // Use all our specialized hooks
+  // Use our navigation background hook
   useNavBackground();
   
-  // Initialize parallax effect for each section that needs it
-  useSectionParallax('conference-promo', 0.2);
-  useSectionParallax('transition-stat', 0.15);
-  useSectionParallax('future-showcase', 0.25);
+  // Use optimized parallax for sections that need it
+  useOptimizedParallax();
   
-  useTransitionStatAnimation();
-  useTransitionHookAnimation();
-  useFutureShowcaseAnimation();
-  useGeneralSectionAnimations();
-  
-  // Additional cleanup for any ScrollTrigger instances
+  // Set up ScrollTrigger optimization globally
   useEffect(() => {
+    // Global ScrollTrigger settings for better performance
+    ScrollTrigger.config({
+      ignoreMobileResize: true,
+      autoRefreshEvents: "visibilitychange,DOMContentLoaded,load,resize", // Reduce refresh events
+    });
+    
+    // Initialize all section-specific animations after DOM is fully loaded
+    useTransitionStatAnimation();
+    useTransitionHookAnimation();
+    useFutureShowcaseAnimation();
+    useGeneralSectionAnimations();
+    
     return () => {
-      // This is now handled in each individual hook
+      // Clean up all ScrollTrigger instances when component unmounts
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      ScrollTrigger.clearMatchMedia();
     };
   }, []);
 };
