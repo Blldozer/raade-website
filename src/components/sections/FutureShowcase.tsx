@@ -66,7 +66,7 @@ const ProjectCard = ({
           {category}
         </p>
         <h3 className={`fluid-h3 font-extrabold ${textColorClass} font-simula leading-tight font-bold`}>
-          {title}
+          <strong>{title}</strong>
         </h3>
         <p className={`${descriptionClass} font-lora leading-relaxed fluid-body`}>
           {description}
@@ -126,7 +126,7 @@ const FutureShowcase = () => {
             Our Projects
           </span>
           <h2 className="fluid-h2 leading-[1.15] font-simula text-raade-navy mb-8 opacity-100 font-black font-bold">
-            Building in Progress
+            <strong>Building in Progress</strong>
           </h2>
           <div className="w-16 sm:w-24 h-1 bg-raade-yellow-orange mx-auto mb-8 opacity-100"></div>
           <p className="fluid-body text-raade-navy/80 max-w-3xl mx-auto font-lora leading-relaxed opacity-100">
