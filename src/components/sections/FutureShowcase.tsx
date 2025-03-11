@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -26,6 +27,7 @@ const showcaseProjects = [{
   category: "BUSINESS",
   slug: womenProject?.slug || "womens-entrepreneurship-program"
 }];
+
 const ProjectCard = ({
   title,
   image,
@@ -111,7 +113,7 @@ const FutureShowcase = () => {
   }}>
       <div className="fluid-container mx-auto">
         <div className="text-center mb-16 sm:mb-24 md:mb-32 lg:mb-40 section-header">
-          <span className="block text-sm font-extrabold tracking-wider text-raade-navy/70 mb-4 uppercase opacity-100">
+          <span className="block text-sm font-normal tracking-wider text-raade-navy/70 mb-4 uppercase opacity-100">
             Our Projects
           </span>
           <h2 className="fluid-h2 leading-[1.15] font-simula text-raade-navy mb-8 opacity-100 font-black">
