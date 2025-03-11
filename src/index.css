@@ -173,6 +173,79 @@
     height: auto;
     display: block;
   }
+  
+  /* Performance Optimizations */
+  html {
+    scroll-behavior: auto !important; /* Override smooth scrolling for better performance */
+  }
+  
+  /* When JavaScript detects low performance, these styles are activated */
+  .low-performance-mode {
+    /* Disable hover effects that might cause repaints */
+    --hover-transition-speed: 0s;
+    
+    /* Use simplistic animations in CSS instead of JavaScript */
+    --content-animation-speed: 0.3s;
+  }
+  
+  /* Optimize all scroll-based animations */
+  .low-performance-mode .parallax-element {
+    transform: none !important; /* Disable parallax entirely on low performance devices */
+    transition: none !important;
+  }
+  
+  /* Use CSS transitions instead of GSAP for content animations in low performance mode */
+  .low-performance-mode .content-element {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity var(--content-animation-speed) ease-out, 
+                transform var(--content-animation-speed) ease-out;
+  }
+  
+  .low-performance-mode .content-element.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  /* Add will-change hints for browser optimization */
+  video, .parallax-element, .content-element {
+    will-change: transform, opacity;
+  }
+  
+  /* Optimize video elements */
+  video {
+    backface-visibility: hidden; /* Helps with hardware acceleration */
+  }
+  
+  /* Add composite layer hint for fixed elements to improve scrolling */
+  .fixed, .sticky, nav, header {
+    will-change: transform;
+    transform: translateZ(0); /* Create a new composite layer */
+  }
+  
+  /* Optimize scrolling with passive listeners hint */
+  * {
+    touch-action: manipulation; /* Optimize for touch */
+  }
+  
+  /* Fix for Chrome-specific rendering issues with certain transforms */
+  .chrome-fix {
+    transform: translateZ(0);
+  }
+  
+  /* Reduce motion for users who prefer it */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01s !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01s !important;
+      scroll-behavior: auto !important;
+    }
+    
+    .parallax-element {
+      transform: none !important;
+    }
+  }
 }
 
 @layer utilities {

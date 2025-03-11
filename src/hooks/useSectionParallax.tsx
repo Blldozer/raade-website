@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
@@ -17,8 +16,8 @@ export const useSectionParallax = (sectionId: string, depth: number = 0.2) => {
     
     if (parallaxElements.length === 0) return;
     
-    // Reduce parallax effect on mobile to prevent elements from overlapping
-    const adjustedDepth = isMobile ? depth * 0.4 : isTablet ? depth * 0.7 : depth;
+    // OPTIMIZATION 1: Reduce parallax depth further to improve performance
+    const adjustedDepth = isMobile ? depth * 0.2 : isTablet ? depth * 0.3 : depth * 0.5;
     
     // Create a container for all animations in this section
     const sectionTimeline = gsap.timeline({
@@ -26,42 +25,37 @@ export const useSectionParallax = (sectionId: string, depth: number = 0.2) => {
         trigger: section,
         start: "top bottom",
         end: "bottom top",
-        scrub: true,
+        // OPTIMIZATION 2: Add a lower refresh rate to reduce calculations
+        scrub: 2, // Increased value for smoother but less CPU-intensive parallax
+        invalidateOnRefresh: false, // Don't recalculate on window resize
       }
     });
     
-    parallaxElements.forEach((element, index) => {
-      // Calculate a slightly different depth for each element to create layering
-      // Use smaller values on mobile for better visibility
-      const elementDepth = adjustedDepth * (1 + (index * (isMobile ? 0.05 : 0.1)));
+    // OPTIMIZATION 3: Limit the number of parallax elements we process
+    const maxParallaxElements = 4; // Only apply parallax to a limited number of elements
+    const elementsToAnimate = Array.from(parallaxElements).slice(0, maxParallaxElements);
+    
+    elementsToAnimate.forEach((element, index) => {
+      // Reduce the depth variation between elements to minimize overlapping issues
+      const elementDepth = adjustedDepth * (1 + (index * 0.05));
       
-      // Make sure z-index is properly applied to avoid overlap issues
       if (element instanceof Element) {
         const currentStyles = window.getComputedStyle(element);
         const currentZIndex = parseInt(currentStyles.zIndex) || 0;
-        
-        // Apply z-index in reverse order of parallax depth to prevent background elements
-        // from appearing in front of foreground elements
         element.setAttribute('style', `${element.getAttribute('style') || ''}; z-index: ${100 - Math.round(elementDepth * 100)};`);
       }
       
       sectionTimeline.to(element, {
         y: `${elementDepth * 100}%`,
         ease: "none",
-      }, 0); // The '0' means all animations start together
+      }, 0);
     });
     
     return () => {
-      // Clean up all ScrollTriggers related to this section
-      ScrollTrigger.getAll().forEach(trigger => {
-        const triggerVars = trigger.vars;
-        // Check if the trigger element is our section
-        if (triggerVars.trigger && 
-            triggerVars.trigger instanceof Element && 
-            triggerVars.trigger.id === sectionId) {
-          trigger.kill();
-        }
-      });
+      // Clean up the ScrollTrigger
+      if (sectionTimeline.scrollTrigger) {
+        sectionTimeline.scrollTrigger.kill();
+      }
     };
   }, [sectionId, depth, isMobile, isTablet]);
 };

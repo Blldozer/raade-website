@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
@@ -7,44 +6,53 @@ gsap.registerPlugin(ScrollTrigger);
 
 export const useGeneralSectionAnimations = () => {
   useEffect(() => {
-    // Get sections that aren't handled by specific hooks
-    const sections = document.querySelectorAll('section:not(#hero, #transition-stat, #transition-hook, #future-showcase)');
+    // OPTIMIZATION: Reduce animations by focusing only on visible sections
+    const visibleSections = ['conference-promo', 'join'];
     
-    sections.forEach((section) => {
-      // Create ScrollTrigger for each section
-      ScrollTrigger.create({
-        trigger: section,
-        start: "top 80%",
-        end: "top 20%",
-        onEnter: () => {
-          // For other sections, identify and animate any content elements that don't have opacity-100
-          const contentElements = section.querySelectorAll(".content-element:not(.opacity-100)");
+    // Get specific sections instead of all sections
+    const sections = visibleSections.map(id => document.getElementById(id)).filter(Boolean);
+    
+    // OPTIMIZATION: Create a single batch of ScrollTriggers with shared config
+    ScrollTrigger.batch(sections, {
+      interval: 0.3, // time delay between capturing batches
+      batchMax: 2,   // maximum batch size (reduce CPU usage)
+      onEnter: batch => {
+        gsap.to(batch, {
+          autoAlpha: 1,
+          stagger: 0.15,
+          overwrite: true
+        });
+        
+        // Animate content elements within each section
+        batch.forEach(section => {
+          const contentElements = section.querySelectorAll('.content-element:not(.opacity-100)');
           if (contentElements.length) {
             gsap.fromTo(contentElements,
-              { y: 20, autoAlpha: 0 },
+              { y: 15, autoAlpha: 0 }, // Reduced movement for better performance
               { 
                 y: 0,
                 autoAlpha: 1,
-                duration: 0.8,
-                stagger: 0.3,
-                ease: "power2.out"
+                duration: 0.6, // Shorter duration
+                stagger: 0.2,  // Smaller stagger
+                ease: "power1.out" // Simpler easing function
               }
             );
           }
-        }
-      });
+        });
+      },
+      start: "top 85%", 
+      once: true // OPTIMIZATION: Only trigger animations once
     });
     
     return () => {
-      // Fix: Instead of trying to match directly, iterate through all triggers and check
-      // if the trigger element is one of our target sections
-      ScrollTrigger.getAll().forEach(trigger => {
-        const triggerElement = trigger.vars.trigger;
-        if (triggerElement instanceof Element &&
-            !triggerElement.matches('#hero, #transition-stat, #transition-hook, #future-showcase')) {
-          trigger.kill();
-        }
-      });
+      // Clear all ScrollTriggers for these specific sections
+      ScrollTrigger.getAll()
+        .filter(trigger => {
+          const triggerElement = trigger.vars.trigger;
+          return triggerElement instanceof Element && 
+                 visibleSections.some(id => triggerElement.id === id);
+        })
+        .forEach(trigger => trigger.kill());
     };
   }, []);
 };
