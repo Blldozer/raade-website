@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -66,7 +65,7 @@ const ProjectCard = ({
         <p className={`text-sm font-extrabold ${textOpacityClass} tracking-wider`}>
           {category}
         </p>
-        <h3 className={`fluid-h3 font-extrabold ${textColorClass} font-simula leading-tight`}>
+        <h3 className={`fluid-h3 font-extrabold ${textColorClass} font-simula leading-tight font-bold`}>
           {title}
         </h3>
         <p className={`${descriptionClass} font-lora leading-relaxed fluid-body`}>
@@ -126,7 +125,7 @@ const FutureShowcase = () => {
           <span className="block text-sm font-normal tracking-wider text-raade-navy/70 mb-4 uppercase opacity-100">
             Our Projects
           </span>
-          <h2 className="fluid-h2 leading-[1.15] font-simula text-raade-navy mb-8 opacity-100 font-black">
+          <h2 className="fluid-h2 leading-[1.15] font-simula text-raade-navy mb-8 opacity-100 font-black font-bold">
             Building in Progress
           </h2>
           <div className="w-16 sm:w-24 h-1 bg-raade-yellow-orange mx-auto mb-8 opacity-100"></div>
