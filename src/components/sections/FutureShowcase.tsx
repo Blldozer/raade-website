@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -27,7 +26,6 @@ const showcaseProjects = [{
   category: "BUSINESS",
   slug: womenProject?.slug || "womens-entrepreneurship-program"
 }];
-
 const ProjectCard = ({
   title,
   image,
@@ -47,27 +45,22 @@ const ProjectCard = ({
   const textColorClass = 'text-raade-navy';
   const textOpacityClass = 'text-raade-navy/80';
   const descriptionClass = 'text-raade-navy/70';
-  
-  return (
-    <div 
-      className={`grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 min-h-[clamp(400px,50vh,600px)] group`} 
-      style={{
-        gridTemplateAreas: {
-          xs: '"image" "content"',
-          md: index % 2 === 1 ? '"content image"' : '"image content"'
-        }[window.innerWidth < 768 ? 'xs' : 'md']
-      }}
-    >
+  return <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 min-h-[clamp(400px,50vh,600px)] group`} style={{
+    gridTemplateAreas: {
+      xs: '"image" "content"',
+      md: index % 2 === 1 ? '"content image"' : '"image content"'
+    }[window.innerWidth < 768 ? 'xs' : 'md']
+  }}>
       <Link to={`/projects/${slug}`} className="project-image relative overflow-hidden rounded-2xl shadow-lg transform transition-transform duration-700 group-hover:scale-[1.02]" style={{
-        gridArea: 'image'
-      }}>
+      gridArea: 'image'
+    }}>
         <img src={image} alt={title} className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       </Link>
       
       <div className="project-content flex flex-col justify-center space-y-4 sm:space-y-8 p-4 sm:p-6 md:p-10" style={{
-        gridArea: 'content'
-      }}>
+      gridArea: 'content'
+    }}>
         <p className={`text-sm font-bold ${textOpacityClass} tracking-wider`}>
           {category}
         </p>
@@ -82,53 +75,44 @@ const ProjectCard = ({
           <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
         </Link>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 const FutureShowcase = () => {
   const sectionRef = useRef<HTMLElement>(null);
-  
   useEffect(() => {
     // When leaving this section (scrolling down), trigger transition to the hook section
     const onSectionExit = () => {
       document.dispatchEvent(new CustomEvent('transitionToHook'));
     };
-    
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        // When the section is no longer intersecting and scrolling down
-        if (!entry.isIntersecting && entry.boundingClientRect.y < 0) {
-          onSectionExit();
-        }
-      },
-      { threshold: 0.1 }
-    );
-    
+    const observer = new IntersectionObserver(entries => {
+      const entry = entries[0];
+      // When the section is no longer intersecting and scrolling down
+      if (!entry.isIntersecting && entry.boundingClientRect.y < 0) {
+        onSectionExit();
+      }
+    }, {
+      threshold: 0.1
+    });
     if (sectionRef.current) {
       observer.observe(sectionRef.current);
     }
-    
     return () => {
       if (sectionRef.current) {
         observer.unobserve(sectionRef.current);
       }
     };
   }, []);
-  
-  return (
-    <section id="future-showcase" ref={sectionRef} className="relative py-16 sm:py-24 md:py-32 lg:py-40 bg-white" style={{
-      height: 'auto',
-      minHeight: '100vh',
-      zIndex: 1 // Ensure proper stacking context
-    }}>
+  return <section id="future-showcase" ref={sectionRef} className="relative py-16 sm:py-24 md:py-32 lg:py-40 bg-white" style={{
+    height: 'auto',
+    minHeight: '100vh',
+    zIndex: 1 // Ensure proper stacking context
+  }}>
       <div className="fluid-container mx-auto">
         <div className="text-center mb-16 sm:mb-24 md:mb-32 lg:mb-40 section-header">
           <span className="block text-sm font-bold tracking-wider text-raade-navy/70 mb-4 uppercase opacity-100">
             Our Projects
           </span>
-          <h2 className="fluid-h2 font-bold leading-[1.15] font-simula text-raade-navy mb-8 opacity-100">
+          <h2 className="fluid-h2 leading-[1.15] font-simula text-raade-navy mb-8 opacity-100 font-extrabold">
             Building in Progress
           </h2>
           <div className="w-16 sm:w-24 h-1 bg-raade-yellow-orange mx-auto mb-8 opacity-100"></div>
@@ -139,15 +123,11 @@ const FutureShowcase = () => {
         </div>
 
         <div className="space-y-16 sm:space-y-24 md:space-y-32">
-          {showcaseProjects.map((project, index) => (
-            <div key={project.title} className="project-card">
+          {showcaseProjects.map((project, index) => <div key={project.title} className="project-card">
               <ProjectCard {...project} index={index} slug={project.slug} />
-            </div>
-          ))}
+            </div>)}
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default FutureShowcase;
