@@ -1,5 +1,4 @@
-
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -48,6 +47,7 @@ interface NavLinksProps {
 
 const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = false, forceDarkMode = false }: NavLinksProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
   
   // Always use light text for project detail pages
   const isProjectPage = location.pathname.includes('/projects/');
@@ -83,6 +83,12 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
     return "border-[#FBB03B] bg-[#FBB03B] text-white hover:bg-[#274675] hover:border-[#274675] shadow-md";
   };
 
+  // Handle navigation with React Router
+  const handleNavigation = (path: string) => {
+    if (onClick) onClick();
+    navigate(path);
+  };
+
   return (
     <NavigationMenu>
       <NavigationMenuList className="flex space-x-6">
@@ -92,10 +98,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
               <>
                 <NavigationMenuTrigger 
                   className={`group bg-transparent hover:bg-transparent ${getTextColor()} transition-colors duration-300 text-lg font-alegreyasans font-bold`}
-                  onClick={() => {
-                    if (onClick) onClick();
-                    window.location.href = item.href;
-                  }}
+                  onClick={() => handleNavigation(item.href)}
                 >
                   {item.name}
                 </NavigationMenuTrigger>
@@ -106,7 +109,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
                         <Link
                           to={dropdownItem.href}
                           className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-[#FBB03B]/10 hover:text-[#FBB03B] text-[#1A365D] text-lg font-alegreyasans font-bold"
-                          onClick={onClick}
+                          onClick={() => handleNavigation(dropdownItem.href)}
                         >
                           {dropdownItem.name}
                         </Link>
@@ -119,7 +122,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
               <Link
                 to={item.href}
                 className={`${getTextColor()} transition-colors duration-300 ${className} text-lg font-alegreyasans font-bold`}
-                onClick={onClick}
+                onClick={() => handleNavigation(item.href)}
               >
                 {item.name}
               </Link>
@@ -130,7 +133,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
           <Link
             to="/studios#apply"
             className={`px-6 py-2 rounded-md transition-all duration-300 border-2 text-lg font-alegreyasans font-bold ${getButtonStyles()}`}
-            onClick={onClick}
+            onClick={() => handleNavigation("/studios#apply")}
           >
             Join Us
           </Link>
