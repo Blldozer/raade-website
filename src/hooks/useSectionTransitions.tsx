@@ -12,25 +12,21 @@ import ScrollTrigger from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 export const useSectionTransitions = () => {
-  // Use our navigation background hook
+  // Call all animation hooks at the top level of the component
+  // This ensures React's rules of hooks are followed
   useNavBackground();
-  
-  // Use optimized parallax for sections that need it
   useOptimizedParallax();
+  useTransitionStatAnimation();
+  useTransitionHookAnimation();
+  useFutureShowcaseAnimation();
+  useGeneralSectionAnimations();
   
-  // Set up ScrollTrigger optimization globally
   useEffect(() => {
-    // Global ScrollTrigger settings for better performance
+    // Set up ScrollTrigger optimization globally
     ScrollTrigger.config({
       ignoreMobileResize: true,
       autoRefreshEvents: "visibilitychange,DOMContentLoaded,load,resize", // Reduce refresh events
     });
-    
-    // Initialize all section-specific animations after DOM is fully loaded
-    useTransitionStatAnimation();
-    useTransitionHookAnimation();
-    useFutureShowcaseAnimation();
-    useGeneralSectionAnimations();
     
     return () => {
       // Clean up all ScrollTrigger instances when component unmounts
