@@ -68,7 +68,7 @@ const ProjectCard = ({
       <div className="project-content flex flex-col justify-center space-y-4 sm:space-y-8 p-4 sm:p-6 md:p-10" style={{
         gridArea: 'content'
       }}>
-        <p className={`text-sm font-medium ${textOpacityClass} tracking-wider`}>
+        <p className={`text-sm font-bold ${textOpacityClass} tracking-wider`}>
           {category}
         </p>
         <h3 className={`fluid-h3 font-bold ${textColorClass} font-simula leading-tight`}>
@@ -125,10 +125,10 @@ const FutureShowcase = () => {
     }}>
       <div className="fluid-container mx-auto">
         <div className="text-center mb-16 sm:mb-24 md:mb-32 lg:mb-40 section-header">
-          <span className="block text-sm font-medium tracking-wider text-raade-navy/70 mb-4 uppercase opacity-100">
+          <span className="block text-sm font-bold tracking-wider text-raade-navy/70 mb-4 uppercase opacity-100">
             Our Projects
           </span>
-          <h2 className="fluid-h2 leading-[1.15] font-simula text-raade-navy mb-8 opacity-100">
+          <h2 className="fluid-h2 font-bold leading-[1.15] font-simula text-raade-navy mb-8 opacity-100">
             Building in Progress
           </h2>
           <div className="w-16 sm:w-24 h-1 bg-raade-yellow-orange mx-auto mb-8 opacity-100"></div>
