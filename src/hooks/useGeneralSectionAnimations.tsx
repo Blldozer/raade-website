@@ -8,7 +8,8 @@ gsap.registerPlugin(ScrollTrigger);
 
 export const useGeneralSectionAnimations = () => {
   const { isMobile } = useResponsive();
-  const animationsSet = useRef(new Set());
+  // Fix the type of the Set to properly store gsap timelines
+  const animationsSet = useRef<Set<gsap.core.Timeline>>(new Set());
   
   useEffect(() => {
     // Get sections that aren't handled by specific hooks
