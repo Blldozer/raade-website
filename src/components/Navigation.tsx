@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useLocation } from "react-router-dom";
 import NavLogo from "./navigation/NavLogo";
@@ -26,7 +26,6 @@ const Navigation = ({
   const [isDarkBackground, setIsDarkBackground] = useState(true);
   const location = useLocation();
   const { isMobile, isTablet, width } = useResponsive();
-  const navRef = useRef<HTMLElement>(null);
   
   // If isHeroPage is explicitly passed, use that value, otherwise determine it from the path
   const heroPage = isHeroPage !== undefined 
@@ -40,14 +39,6 @@ const Navigation = ({
   // For conference page, we want dark elements (black logo, dark text buttons)
   // because the background is white/light
   const shouldForceDarkMode = forceDarkMode || (isConferencePage && !isHeroPage);
-
-  // Set CSS variable for navbar height after component mounts
-  useEffect(() => {
-    if (navRef.current) {
-      const height = navRef.current.offsetHeight;
-      document.documentElement.style.setProperty('--navbar-height', `${height}px`);
-    }
-  }, [width]); // Update when screen width changes
 
   useEffect(() => {
     const handleScroll = () => {
@@ -95,7 +86,6 @@ const Navigation = ({
 
   return (
     <nav
-      ref={navRef}
       className={cn(
         "fixed w-full z-[9999] transition-all duration-300 pointer-events-auto pt-2 sm:pt-3 md:pt-4 isolate", 
         isScrolled

@@ -44,28 +44,15 @@ interface NavLinksProps {
   isScrolled?: boolean;
   isHeroPage?: boolean;
   forceDarkMode?: boolean;
-  isMobileMenu?: boolean;
 }
 
-const NavLinks = ({ 
-  className = "", 
-  onClick, 
-  isScrolled = false, 
-  isHeroPage = false, 
-  forceDarkMode = false,
-  isMobileMenu = false
-}: NavLinksProps) => {
+const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = false, forceDarkMode = false }: NavLinksProps) => {
   const location = useLocation();
   
   // Always use light text for project detail pages
   const isProjectPage = location.pathname.includes('/projects/');
   
   const getTextColor = () => {
-    // For mobile menu, always use dark text
-    if (isMobileMenu) {
-      return "text-[#274675] hover:text-[#FBB03B]";
-    }
-    
     // Always use light text on project pages
     if (isProjectPage) {
       return "text-white hover:text-[#FBB03B]";
@@ -82,11 +69,6 @@ const NavLinks = ({
 
   // Get button styles based on background
   const getButtonStyles = () => {
-    // For mobile menu, use a full-width style
-    if (isMobileMenu) {
-      return "border-[#FBB03B] bg-[#FBB03B] text-white hover:bg-[#274675] hover:border-[#274675] w-full mt-4 flex justify-center";
-    }
-    
     // Always use light style buttons on project pages
     if (isProjectPage) {
       return "border-white text-white hover:bg-[#FBB03B] hover:border-[#FBB03B] hover:text-white";
@@ -101,49 +83,6 @@ const NavLinks = ({
     return "border-[#FBB03B] bg-[#FBB03B] text-white hover:bg-[#274675] hover:border-[#274675] shadow-md";
   };
 
-  // Conditionally render either mobile navigation or desktop navigation
-  if (isMobileMenu) {
-    return (
-      <div className="flex flex-col space-y-2">
-        {navItems.map((item) => (
-          <div key={item.name} className="py-2">
-            <Link
-              to={item.href}
-              className={`block text-center ${getTextColor()} transition-colors duration-300 ${className} text-xl font-alegreyasans font-bold`}
-              onClick={onClick}
-            >
-              {item.name}
-            </Link>
-            
-            {item.dropdownItems && (
-              <div className="mt-2 pl-4 border-l-2 border-gray-200">
-                {item.dropdownItems.map((subItem) => (
-                  <Link 
-                    key={subItem.name}
-                    to={subItem.href}
-                    className="block py-2 text-[#274675]/80 hover:text-[#FBB03B] text-lg font-alegreyasans"
-                    onClick={onClick}
-                  >
-                    {subItem.name}
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
-        
-        <Link
-          to="/studios#apply"
-          className={`py-3 px-6 rounded-md transition-all duration-300 border-2 text-xl font-alegreyasans font-bold ${getButtonStyles()}`}
-          onClick={onClick}
-        >
-          Join Us
-        </Link>
-      </div>
-    );
-  }
-
-  // Desktop navigation with NavigationMenu
   return (
     <NavigationMenu>
       <NavigationMenuList className="flex space-x-6">
