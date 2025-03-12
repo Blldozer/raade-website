@@ -48,12 +48,15 @@ const StudioCTA = () => {
                 Students from any university can join our Innovation Studios to work on 
                 real-world challenges and develop market-based solutions.
               </p>
-              <Link 
-                to="/apply/student" 
-                className="mt-4 inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-md px-8 py-2 text-sm font-medium bg-raade-yellow-orange hover:bg-raade-yellow-orange/90 text-[#2b212e] font-lora transition-all duration-300 hover:shadow-[0_0_15px_rgba(251,176,59,0.4)]"
+              <Button
+                size="lg"
+                className="mt-4 bg-raade-yellow-orange hover:bg-raade-yellow-orange/90 text-[#2b212e] font-lora transition-all duration-300 hover:shadow-[0_0_15px_rgba(251,176,59,0.4)]"
+                asChild
               >
-                Apply Now
-              </Link>
+                <Link to="/apply/student">
+                  Apply Now
+                </Link>
+              </Button>
             </div>
           </motion.div>
           
@@ -74,12 +77,15 @@ const StudioCTA = () => {
                 Have a development challenge that needs innovative solutions? Partner with us and 
                 work with our talented student teams.
               </p>
-              <Link 
-                to="/apply/partner" 
-                className="mt-4 inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-md px-8 py-2 text-sm font-medium bg-transparent border-2 border-raade-yellow-orange hover:bg-raade-yellow-orange/20 text-white font-lora transition-all duration-300 hover:shadow-[0_0_15px_rgba(251,176,59,0.3)]"
+              <Button
+                size="lg"
+                className="mt-4 bg-transparent border-2 border-raade-yellow-orange hover:bg-raade-yellow-orange/20 text-white font-lora transition-all duration-300 hover:shadow-[0_0_15px_rgba(251,176,59,0.3)]"
+                asChild
               >
-                Partner With Us
-              </Link>
+                <Link to="/apply/partner">
+                  Partner With Us
+                </Link>
+              </Button>
             </div>
           </motion.div>
         </div>
