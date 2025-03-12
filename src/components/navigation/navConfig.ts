@@ -13,7 +13,7 @@ export const navItems: NavItem[] = [
     name: "About",
     href: "/about",
     dropdownItems: [
-      { name: "New Model", href: "/about" },
+      { name: "Overview", href: "/about" },
       { name: "Our Approach", href: "/about#approach" },
       { name: "Our Impact", href: "/about#impact" },
       { name: "Meet the Team", href: "/about#team" }
