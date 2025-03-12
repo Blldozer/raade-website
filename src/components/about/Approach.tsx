@@ -1,10 +1,9 @@
-
 import { motion } from "framer-motion";
 import { Users, Scale, Shapes } from "lucide-react";
 
 const Approach = () => {
   return (
-    <section className="py-24 bg-white">
+    <section id="approach" className="py-24 bg-white">
       <div className="max-w-[1600px] mx-auto px-6 md:px-12">
         {/* Title Section */}
         <div className="flex flex-col lg:flex-row mb-24">

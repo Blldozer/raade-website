@@ -134,7 +134,7 @@ const Team = () => {
   };
 
   return (
-    <section className="py-24 bg-white" ref={sectionRef}>
+    <section id="team" className="py-24 bg-white" ref={sectionRef}>
       <div className="max-w-[1600px] mx-auto px-6 md:px-12">
         <div className="flex flex-col lg:flex-row mb-12">
           <motion.div 

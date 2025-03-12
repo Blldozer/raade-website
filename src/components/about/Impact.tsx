@@ -1,7 +1,9 @@
 import { motion } from "framer-motion";
 import CountUp from "react-countup";
+
 const Impact = () => {
-  return <section className="py-24 bg-white">
+  return (
+    <section id="impact" className="py-24 bg-white">
       <div className="max-w-[1600px] mx-auto px-6 md:px-12">
         {/* Title Section - 39/61 split */}
         <div className="flex flex-col lg:flex-row mb-12">
@@ -144,6 +146,8 @@ const Impact = () => {
           </motion.div>
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default Impact;
