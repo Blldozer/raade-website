@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import {
   NavigationMenu,
@@ -19,9 +18,9 @@ export const navItems = [
     name: "Innovation Studios",
     href: "/studios",
     dropdownItems: [
-      { name: "Program Overview", href: "/studios#overview" },
+      { name: "Overview", href: "/studios#overview" },
       { name: "Current Projects", href: "/studios#projects" },
-      { name: "Apply", href: "/studios#apply" },
+      { name: "Join Us", href: "/studios#apply" },
     ],
   },
   {
@@ -29,12 +28,9 @@ export const navItems = [
     href: "/conference",
     dropdownItems: [
       { name: "Overview", href: "/conference" },
-      { name: "Registration", href: "/conference#registration" },
-      // Hidden temporarily as requested:
-      // { name: "Speakers", href: "/conference#speakers" },
-      // { name: "Schedule", href: "/conference#schedule" },
-      // { name: "Venue", href: "/conference#venue" },
-      // { name: "Sponsorship", href: "/conference#sponsorship" },
+      { name: "Registration", href: "/conference/registration" },
+      { name: "Speakers", href: "/conference#speakers" },
+      { name: "Schedule", href: "/conference#schedule" },
     ],
   },
 ];
@@ -51,44 +47,34 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
   const location = useLocation();
   const navigate = useNavigate();
   
-  // Always use light text for project detail pages
   const isProjectPage = location.pathname.includes('/projects/');
   
   const getTextColor = () => {
-    // Always use light text on project pages
     if (isProjectPage) {
       return "text-white hover:text-[#FBB03B]";
     }
     
-    // When forceDarkMode is true, we need dark text for light backgrounds
     if (forceDarkMode) {
       return "text-[#274675] hover:text-[#FBB03B]";
     }
     
-    // When forceDarkMode is false, we need light text for dark backgrounds
     return "text-white hover:text-[#FBB03B]";
   };
 
-  // Get button styles based on background
   const getButtonStyles = () => {
-    // Always use light style buttons on project pages
     if (isProjectPage) {
       return "border-white text-white hover:bg-[#FBB03B] hover:border-[#FBB03B] hover:text-white";
     }
     
-    // For dark backgrounds (forceDarkMode is false)
     if (!forceDarkMode) {
       return "border-white text-white hover:bg-[#FBB03B] hover:border-[#FBB03B] hover:text-white";
     }
     
-    // For light backgrounds (forceDarkMode is true)
     return "border-[#FBB03B] bg-[#FBB03B] text-white hover:bg-[#274675] hover:border-[#274675] shadow-md";
   };
 
-  // Handle navigation with React Router
   const handleNavigation = (path: string) => {
     if (onClick) onClick();
-    // Use navigate for client-side routing
     navigate(path);
   };
 
@@ -99,7 +85,6 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
           <NavigationMenuItem key={item.name} className="relative">
             {item.dropdownItems ? (
               <>
-                {/* Use Link instead of NavigationMenuTrigger with onClick for main items */}
                 <Link
                   to={item.href}
                   className={`group bg-transparent hover:bg-transparent ${getTextColor()} transition-colors duration-300 text-lg font-alegreyasans font-bold flex items-center`}
