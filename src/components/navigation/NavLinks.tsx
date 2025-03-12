@@ -130,9 +130,13 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
                   onClick={onClick}
                 >
                   {item.name}
-                  <ChevronDown 
-                    className={`h-4 w-4 ml-1 transition-transform duration-200 ${hoveredItem === item.name ? 'rotate-180' : ''}`} 
-                  />
+                  <span className="inline-block ml-1 w-4 h-4 relative">
+                    <ChevronDown 
+                      className={`absolute top-0 left-0 w-4 h-4 transition-transform duration-300 ease-in-out ${
+                        hoveredItem === item.name ? 'rotate-180' : 'rotate-0'
+                      }`}
+                    />
+                  </span>
                 </Link>
                 {hoveredItem === item.name && (
                   <div className="absolute top-full left-0 min-w-[200px] z-50">

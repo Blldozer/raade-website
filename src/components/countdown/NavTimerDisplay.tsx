@@ -1,5 +1,4 @@
-
-import { Timer, ChevronDown, ChevronUp } from "lucide-react";
+import { Timer, ChevronDown } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
@@ -38,8 +37,9 @@ const NavTimerDisplay = ({
         <div className="text-sm font-medium">
           <span className="font-bold">{timeLeft.days}d</span>:{formatTimeUnit(timeLeft.hours)}h:{formatTimeUnit(timeLeft.minutes)}m:{formatTimeUnit(timeLeft.seconds)}s
         </div>
-        <ChevronDown size={16} className="group-hover:hidden" />
-        <ChevronUp size={16} className="hidden group-hover:block" />
+        <div className="relative inline-flex items-center justify-center w-4 h-4 overflow-hidden">
+          <ChevronDown size={16} className="transition-transform duration-300 ease-in-out group-hover:rotate-180" />
+        </div>
       </div>
       
       {/* Improved dropdown with better visibility */}
