@@ -48,15 +48,12 @@ const StudioCTA = () => {
                 Students from any university can join our Innovation Studios to work on 
                 real-world challenges and develop market-based solutions.
               </p>
-              <Button
-                size="lg"
-                className="mt-4 bg-raade-yellow-orange hover:bg-raade-yellow-orange/90 text-[#2b212e] font-lora transition-all duration-300 hover:shadow-[0_0_15px_rgba(251,176,59,0.4)]"
-                asChild
+              <Link 
+                to="/apply/student" 
+                className="mt-4 inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-md px-8 py-2 text-sm font-medium bg-raade-yellow-orange hover:bg-raade-yellow-orange/90 text-[#2b212e] font-lora transition-all duration-300 hover:shadow-[0_0_15px_rgba(251,176,59,0.4)]"
               >
-                <Link to="/apply/student">
-                  Apply Now
-                </Link>
-              </Button>
+                Apply Now
+              </Link>
             </div>
           </motion.div>
           
@@ -77,15 +74,12 @@ const StudioCTA = () => {
                 Have a development challenge that needs innovative solutions? Partner with us and 
                 work with our talented student teams.
               </p>
-              <Button
-                size="lg"
-                className="mt-4 bg-transparent border-2 border-raade-yellow-orange hover:bg-raade-yellow-orange/20 text-white font-lora transition-all duration-300 hover:shadow-[0_0_15px_rgba(251,176,59,0.3)]"
-                asChild
+              <Link 
+                to="/apply/partner" 
+                className="mt-4 inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-md px-8 py-2 text-sm font-medium bg-transparent border-2 border-raade-yellow-orange hover:bg-raade-yellow-orange/20 text-white font-lora transition-all duration-300 hover:shadow-[0_0_15px_rgba(251,176,59,0.3)]"
               >
-                <Link to="/apply/partner">
-                  Partner With Us
-                </Link>
-              </Button>
+                Partner With Us
+              </Link>
             </div>
           </motion.div>
         </div>
