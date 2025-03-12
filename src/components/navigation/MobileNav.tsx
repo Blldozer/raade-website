@@ -1,3 +1,4 @@
+
 import { Menu, X, ChevronDown, ChevronUp, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import NavLogo from "./NavLogo";
@@ -15,47 +16,39 @@ interface MobileNavProps {
 const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = false }: MobileNavProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdowns, setOpenDropdowns] = useState<string[]>([]);
-  const [isInitialized, setIsInitialized] = useState(false);
   const location = useLocation();
-
-  // Initialize component
-  useEffect(() => {
-    setIsInitialized(true);
-    return () => {
-      // Make sure to reset body overflow when component unmounts
-      document.body.style.removeProperty('overflow');
-    };
-  }, []);
 
   // Close menu when route changes
   useEffect(() => {
-    setIsOpen(false);
-    setOpenDropdowns([]);
-    // Ensure body overflow is reset when navigation occurs
-    if (isInitialized) {
-      document.body.style.removeProperty('overflow');
-    }
-  }, [location.pathname, isInitialized]);
-
-  // Prevent background scrolling when menu is open
-  useEffect(() => {
-    // Only modify body style if component is initialized to prevent issues during hydration
-    if (!isInitialized) return;
-
     if (isOpen) {
-      // Store original overflow value to restore later
-      const originalOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
+      setIsOpen(false);
+      setOpenDropdowns([]);
+    }
+  }, [location.pathname]);
+
+  // Handle body overflow to prevent scrolling when menu is open
+  useEffect(() => {
+    if (isOpen) {
+      // Store the current scroll position
+      const scrollY = window.scrollY;
+      // Add a class to the body instead of directly manipulating style
+      document.body.classList.add('overflow-hidden');
+      // Preserve scroll position
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
       
       return () => {
-        // Use the stored value or default to 'auto' instead of 'unset' for better browser compatibility
-        document.body.style.overflow = originalOverflow || 'auto';
+        // Clean up when component unmounts or effect reruns
+        document.body.classList.remove('overflow-hidden');
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        // Restore scroll position
+        window.scrollTo(0, scrollY);
       };
-    } else {
-      // When closing, reset to auto (more compatible than 'unset')
-      document.body.style.overflow = 'auto';
     }
-  }, [isOpen, isInitialized]);
+  }, [isOpen]);
 
   const toggleDropdown = (name: string) => {
     setOpenDropdowns(prev => 
@@ -79,9 +72,9 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
         <Menu size={24} />
       </button>
 
-      {/* Full Screen Menu Overlay */}
+      {/* Full Screen Menu Overlay - Using fixed positioning and better animation */}
       {isOpen && (
-        <div className="fixed inset-0 bg-[#F4F5F4] z-[9999]">
+        <div className="fixed inset-0 bg-[#F4F5F4] z-[9999] flex flex-col">
           {/* Header */}
           <div className="flex justify-between items-center p-4 border-b border-gray-200">
             <NavLogo 
@@ -103,8 +96,8 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
             </div>
           </div>
 
-          {/* Navigation Links */}
-          <div className="overflow-y-auto h-[calc(100vh-70px)] px-6 py-8">
+          {/* Navigation Links - Using flex-grow to fill available space */}
+          <div className="flex-grow overflow-y-auto pb-safe px-6 pt-8">
             <nav>
               <ul className="space-y-6">
                 {navItems.map((item) => (
