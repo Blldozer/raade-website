@@ -56,9 +56,7 @@ const HeroContent = () => {
                 transition-all duration-300 text-[length:var(--fluid-body)] font-alegreyasans relative overflow-hidden hover:shadow-[0_0_20px_rgba(251,176,59,0.5)]"
             >
               <span className="relative z-10">Start Building Today</span>
-              <a 
-                href="/#join"
-                onClick={handleJoinClick}
+              <div 
                 className="absolute inset-0 bg-gradient-to-r from-raade-gold-start via-raade-gold-middle to-raade-gold-end opacity-0 group-hover:opacity-100 transition-opacity duration-300"
               />
             </a>
