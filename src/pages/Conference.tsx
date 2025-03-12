@@ -1,9 +1,11 @@
-
 import React, { useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import Conference from "@/components/Conference";
+import { useLocation } from "react-router-dom";
 
 const ConferencePage = () => {
+  const location = useLocation();
+  
   useEffect(() => {
     // Scroll to top when page loads
     window.scrollTo(0, 0);
@@ -19,6 +21,35 @@ const ConferencePage = () => {
       document.body.removeAttribute('data-nav-background');
     };
   }, []);
+  
+  // Handle scrolling to a specific section when navigated with state
+  useEffect(() => {
+    if (location.state && location.state.scrollToSection) {
+      const sectionId = location.state.scrollToSection;
+      // Small delay to ensure the section is rendered
+      const timer = setTimeout(() => {
+        const section = document.getElementById(sectionId);
+        if (section) {
+          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
+    
+    // Check if URL has hash
+    if (window.location.hash) {
+      const sectionId = window.location.hash.substring(1); // Remove the # character
+      const timer = setTimeout(() => {
+        const section = document.getElementById(sectionId);
+        if (section) {
+          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [location]);
   
   return (
     <div className="relative">

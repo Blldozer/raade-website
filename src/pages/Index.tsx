@@ -1,9 +1,9 @@
-
 import React, { useEffect, Suspense } from 'react';
 import { lazy } from 'react';
 import Hero from "@/components/hero/Hero";
 import { useSectionTransitions } from "@/hooks/useSectionTransitions";
 import { useResponsive } from "@/hooks/useResponsive";
+import { useLocation } from 'react-router-dom';
 
 // Lazy load components for better initial performance
 const ConferencePromo = lazy(() => import("@/components/sections/ConferencePromo"));
@@ -16,6 +16,7 @@ const Index = () => {
   // Use our optimized hook for section transitions
   useSectionTransitions();
   const { isMobile } = useResponsive();
+  const location = useLocation();
   
   useEffect(() => {
     // Add passive:true to touch events for better scroll performance
@@ -36,6 +37,34 @@ const Index = () => {
       document.removeEventListener('touchmove', () => {});
     };
   }, []);
+  
+  // Handle scrolling to the join section when navigating from another page
+  useEffect(() => {
+    if (location.state && location.state.scrollToJoin) {
+      // Small delay to ensure the section is rendered
+      const timer = setTimeout(() => {
+        const joinSection = document.getElementById('join');
+        if (joinSection) {
+          joinSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
+    
+    // Check if URL has #join hash
+    if (window.location.hash === '#join') {
+      // Small delay to ensure the section is rendered
+      const timer = setTimeout(() => {
+        const joinSection = document.getElementById('join');
+        if (joinSection) {
+          joinSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [location]);
   
   return (
     <div className="min-h-screen overflow-hidden">

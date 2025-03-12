@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import {
   NavigationMenu,
@@ -77,6 +76,42 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
     navigate(path);
   };
 
+  // Handle scroll to the join section
+  const handleJoinClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (onClick) onClick();
+    
+    // If we're not on the home page, navigate to home and then scroll
+    if (location.pathname !== '/') {
+      navigate('/', { state: { scrollToJoin: true } });
+    } else {
+      // If we're already on home page, just scroll to the section
+      const joinSection = document.getElementById('join');
+      if (joinSection) {
+        joinSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
+  
+  // Handle navigation to specified section of a page
+  const handleSectionNavigation = (e: React.MouseEvent, path: string, sectionId: string) => {
+    e.preventDefault();
+    if (onClick) onClick();
+    
+    const currentPath = path.split('#')[0]; // Get the path without the hash
+    
+    // If we're not on the target page, navigate to it and then scroll
+    if (location.pathname !== currentPath) {
+      navigate(currentPath, { state: { scrollToSection: sectionId } });
+    } else {
+      // If we're already on the page, just scroll to the section
+      const targetSection = document.getElementById(sectionId);
+      if (targetSection) {
+        targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
+
   return (
     <NavigationMenu>
       <NavigationMenuList className="flex space-x-6">
@@ -102,17 +137,33 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
                 {hoveredItem === item.name && (
                   <div className="absolute top-full left-0 min-w-[200px] z-50">
                     <ul className="mt-2 bg-white/90 backdrop-blur-sm rounded-md shadow-lg p-2">
-                      {item.dropdownItems.map((dropdownItem) => (
-                        <li key={dropdownItem.name}>
-                          <Link
-                            to={dropdownItem.href}
-                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-[#FBB03B]/10 hover:text-[#FBB03B] text-[#1A365D] text-lg font-alegreyasans font-bold"
-                            onClick={onClick}
-                          >
-                            {dropdownItem.name}
-                          </Link>
-                        </li>
-                      ))}
+                      {item.dropdownItems.map((dropdownItem) => {
+                        // Check if this is the Tickets link
+                        const isTicketsLink = item.name === "Conference" && dropdownItem.name === "Tickets";
+                        
+                        // Return the appropriate link component
+                        return (
+                          <li key={dropdownItem.name}>
+                            {isTicketsLink ? (
+                              <a
+                                href={dropdownItem.href}
+                                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-[#FBB03B]/10 hover:text-[#FBB03B] text-[#1A365D] text-lg font-alegreyasans font-bold"
+                                onClick={(e) => handleSectionNavigation(e, dropdownItem.href, 'registration')}
+                              >
+                                {dropdownItem.name}
+                              </a>
+                            ) : (
+                              <Link
+                                to={dropdownItem.href}
+                                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-[#FBB03B]/10 hover:text-[#FBB03B] text-[#1A365D] text-lg font-alegreyasans font-bold"
+                                onClick={onClick}
+                              >
+                                {dropdownItem.name}
+                              </Link>
+                            )}
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
                 )}
@@ -129,13 +180,13 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
           </NavigationMenuItem>
         ))}
         <NavigationMenuItem>
-          <Link
-            to="/#join"
+          <a
+            href="/#join"
             className={`px-6 py-2 rounded-md transition-all duration-300 border-2 text-lg font-alegreyasans font-bold ${getButtonStyles()}`}
-            onClick={onClick}
+            onClick={handleJoinClick}
           >
             Join Us
-          </Link>
+          </a>
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
