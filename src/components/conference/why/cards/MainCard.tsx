@@ -118,7 +118,7 @@ const MainCard = ({
         animate={combinedAnimation}
         exit="exit"
         whileHover={isTabTransitioning ? {} : "hover"}
-        className="relative w-[320px] h-[500px] rounded-xl shadow-2xl overflow-hidden perspective-1000"
+        className="relative w-[350px] md:w-[400px] h-[500px] rounded-xl shadow-2xl overflow-hidden perspective-1000"
         style={{ 
           backgroundColor: activeAttendee.color, 
           zIndex: 3,

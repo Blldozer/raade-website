@@ -113,7 +113,7 @@ const WhyAttendTabs = () => {
         </TabsTrigger>
       </TabsList>
       
-      <div className="mt-4">
+      <div className="mt-4 max-w-6xl mx-auto">
         <TabsContent value="established" className="mt-0">
           <motion.div 
             initial={{ opacity: 0 }}
