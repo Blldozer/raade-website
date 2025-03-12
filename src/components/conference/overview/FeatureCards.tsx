@@ -5,7 +5,7 @@ import { Rocket, Globe, Lightbulb } from "lucide-react";
 
 const FeatureCards = () => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 lg:gap-16 mb-12">
       <FeatureCard 
         icon={Rocket}
         title="Innovation Showcase"
