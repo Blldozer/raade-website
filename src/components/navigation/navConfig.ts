@@ -37,3 +37,15 @@ export const navItems: NavItem[] = [
     ],
   },
 ];
+
+// Additional items for mobile nav footer menu (events, contact)
+export const mobileFooterItems: NavItem[] = [
+  {
+    name: "Events",
+    href: "/conference",
+  },
+  {
+    name: "Contact",
+    href: "/contact",
+  },
+];

@@ -1,7 +1,6 @@
 
-import { Menu, X, ChevronDown, ChevronUp } from "lucide-react";
+import { Menu, X, ChevronDown, ChevronUp, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
-import NavLinks from "./NavLinks";
 import NavLogo from "./NavLogo";
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
@@ -73,25 +72,27 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
 
   return (
     <div className="md:hidden mobile-nav-container">
-      {/* Hamburger/Menu Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={cn(
-          "mobile-menu-button flex items-center justify-center p-2 rounded-md transition-all duration-200 hover:bg-white/10",
-          forceDarkMode ? "text-[#274675] hover:bg-[#274675]/10" : "text-white",
-          "relative z-50"
-        )}
-        aria-label={isOpen ? "Close menu" : "Open menu"}
-        aria-expanded={isOpen}
-        aria-controls="mobile-menu-panel"
-      >
-        {isOpen ? <X size={24} /> : <Menu size={24} />}
-      </button>
+      {/* Hamburger Menu Button */}
+      <div className="flex items-center space-x-2">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className={cn(
+            "mobile-menu-button flex items-center justify-center p-2 transition-all duration-200",
+            forceDarkMode ? "text-[#274675]" : "text-white",
+            "relative z-50"
+          )}
+          aria-label={isOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isOpen}
+          aria-controls="mobile-menu-panel"
+        >
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
 
-      {/* Overlay */}
+      {/* Full-screen Overlay */}
       <div
         className={cn(
-          "fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 z-40",
+          "fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity duration-300 z-40",
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
         aria-hidden="true"
@@ -103,37 +104,30 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
         id="mobile-menu-panel"
         ref={panelRef}
         className={cn(
-          "fixed top-0 right-0 bottom-0 w-[80%] max-w-[300px] bg-white shadow-lg z-50 transition-transform duration-300 ease-in-out overflow-hidden",
-          isOpen ? "translate-x-0" : "translate-x-full"
+          "fixed top-0 left-0 bottom-0 w-[85%] max-w-[320px] bg-cream shadow-lg z-50 transition-transform duration-300 ease-in-out overflow-hidden",
+          isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         {/* Panel Header */}
-        <div className="flex justify-between items-center p-4 border-b border-gray-100">
+        <div className="p-6 border-b border-gray-200">
           <NavLogo 
             isScrolled={isScrolled} 
             forceDarkMode={true}
             useShortForm={true}
             forceSize="h-8"
           />
-          <button
-            onClick={() => setIsOpen(false)}
-            className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-            aria-label="Close menu"
-          >
-            <X size={20} />
-          </button>
         </div>
         
         {/* Nav Links */}
-        <div className="py-4 overflow-y-auto max-h-[calc(100vh-76px)]">
-          <ul className="flex flex-col space-y-2 px-4">
+        <div className="py-8 overflow-y-auto max-h-[calc(100vh-76px)]">
+          <ul className="flex flex-col space-y-1 px-6">
             {navItems.map((item) => (
               <li key={item.name} className="py-1">
                 {item.dropdownItems ? (
                   <div className="w-full">
                     <button 
                       onClick={() => toggleDropdown(item.name)}
-                      className="flex items-center justify-between w-full px-4 py-2 text-[#274675] hover:bg-gray-100 rounded-md transition-all duration-200 text-lg font-alegreyasans font-bold"
+                      className="flex items-center justify-between w-full py-3 text-[#274675] transition-all duration-200 text-2xl font-simula"
                     >
                       <span>{item.name}</span>
                       {isDropdownOpen(item.name) ? (
@@ -144,16 +138,16 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
                     </button>
                     <div 
                       className={cn(
-                        "overflow-hidden transition-all duration-300 ease-in-out pl-4",
+                        "overflow-hidden transition-all duration-300 ease-in-out",
                         isDropdownOpen(item.name) ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
                       )}
                     >
-                      <ul className="mt-2 border-l-2 border-[#FBB03B]/30 pl-4">
+                      <ul className="ml-4 border-l border-[#FBB03B]/30 pl-4">
                         {item.dropdownItems.map((subItem) => (
-                          <li key={subItem.name} className="mb-2">
+                          <li key={subItem.name} className="mb-3">
                             <a 
                               href={subItem.href}
-                              className="block px-4 py-2 rounded-md text-[#274675] hover:bg-[#FBB03B]/10 hover:text-[#FBB03B] transition-colors duration-200 text-base font-alegreyasans font-bold"
+                              className="block py-2 text-gray-700 hover:text-[#FBB03B] transition-colors duration-200 text-xl font-lora"
                               onClick={() => setIsOpen(false)}
                             >
                               {subItem.name}
@@ -166,7 +160,7 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
                 ) : (
                   <a 
                     href={item.href}
-                    className="block px-4 py-2 rounded-md text-[#274675] hover:bg-gray-100 transition-colors duration-200 text-lg font-alegreyasans font-bold"
+                    className="block py-3 text-[#274675] transition-colors duration-200 text-2xl font-simula"
                     onClick={() => setIsOpen(false)}
                   >
                     {item.name}
@@ -174,13 +168,30 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
                 )}
               </li>
             ))}
-            <li className="mt-6 px-4">
-              <JoinButton 
-                buttonStyles="w-full justify-center border-[#FBB03B] bg-[#FBB03B] text-white hover:bg-[#274675] hover:border-[#274675] shadow-md"
-                onClick={() => setIsOpen(false)}
-              />
-            </li>
           </ul>
+          
+          {/* Additional items like in reference design */}
+          <div className="mt-12 px-6">
+            <ul className="flex flex-col space-y-3">
+              <li>
+                <a href="/conference" className="block py-3 text-[#274675] text-2xl font-simula">
+                  Events
+                </a>
+              </li>
+              <li>
+                <a href="/contact" className="block py-3 text-[#274675] text-2xl font-simula">
+                  Contact
+                </a>
+              </li>
+            </ul>
+          </div>
+          
+          <div className="mt-12 px-6">
+            <JoinButton 
+              buttonStyles="w-full justify-center border-[#FBB03B] bg-[#FBB03B] text-white hover:bg-[#274675] hover:border-[#274675] shadow-md text-lg"
+              onClick={() => setIsOpen(false)}
+            />
+          </div>
         </div>
       </div>
     </div>
