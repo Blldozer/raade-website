@@ -98,7 +98,7 @@ const InnovationStudios = () => {
         </div>
         
         <div className="container mx-auto px-4 relative z-20 flex flex-col justify-between h-[calc(100vh-120px)]">
-          <div className="max-w-4xl pl-8 sm:pl-12 pt-20">
+          <div className="max-w-4xl pl-8 sm:pl-12 pt-32 sm:pt-36">
             <motion.div initial={{
             opacity: 0,
             y: 20
