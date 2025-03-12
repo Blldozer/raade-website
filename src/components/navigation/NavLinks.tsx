@@ -1,3 +1,4 @@
+
 import { Link, useNavigate } from "react-router-dom";
 import {
   NavigationMenu,
@@ -105,23 +106,25 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
                   onClick={onClick}
                 >
                   {item.name}
-                  <ChevronDown className="h-4 w-4 ml-1 transition-transform duration-200" />
+                  <ChevronDown className="h-4 w-4 ml-1 transition-transform duration-200 group-hover:rotate-180" />
                 </Link>
-                <NavigationMenuContent>
-                  <ul className="min-w-[200px] gap-2 p-4 bg-white/90 backdrop-blur-sm rounded-md shadow-lg">
-                    {item.dropdownItems.map((dropdownItem) => (
-                      <li key={dropdownItem.name}>
-                        <Link
-                          to={dropdownItem.href}
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-[#FBB03B]/10 hover:text-[#FBB03B] text-[#1A365D] text-lg font-alegreyasans font-bold"
-                          onClick={onClick}
-                        >
-                          {dropdownItem.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
+                <div className="absolute top-full left-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto z-50">
+                  <NavigationMenuContent>
+                    <ul className="min-w-[200px] gap-2 p-4 bg-white/90 backdrop-blur-sm rounded-md shadow-lg">
+                      {item.dropdownItems.map((dropdownItem) => (
+                        <li key={dropdownItem.name}>
+                          <Link
+                            to={dropdownItem.href}
+                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-[#FBB03B]/10 hover:text-[#FBB03B] text-[#1A365D] text-lg font-alegreyasans font-bold"
+                            onClick={onClick}
+                          >
+                            {dropdownItem.name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </NavigationMenuContent>
+                </div>
               </>
             ) : (
               <Link

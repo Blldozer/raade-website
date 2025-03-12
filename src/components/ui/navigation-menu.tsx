@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import * as NavigationMenuPrimitive from "@radix-ui/react-navigation-menu"
 import { cva } from "class-variance-authority"
@@ -55,7 +56,7 @@ const NavigationMenuTrigger = React.forwardRef<
   >
     {children}{" "}
     <ChevronDown
-      className="relative top-[1px] ml-1 h-3 w-3 transition duration-200 group-data-[state=open]:rotate-180"
+      className="relative top-[1px] ml-1 h-3 w-3 transition duration-200 group-data-[state=open]:rotate-180 group-hover:rotate-180"
       aria-hidden="true"
     />
   </NavigationMenuPrimitive.Trigger>
