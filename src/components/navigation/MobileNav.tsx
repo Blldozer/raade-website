@@ -1,10 +1,11 @@
-import { Menu, X, ChevronDown, ChevronUp } from "lucide-react";
+
+import { Menu, X, ChevronDown, ChevronUp, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import NavLogo from "./NavLogo";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { navItems } from "./navConfig";
-import JoinButton from "./JoinButton";
+import { Link } from "react-router-dom";
 
 interface MobileNavProps {
   isScrolled?: boolean;
@@ -15,35 +16,25 @@ interface MobileNavProps {
 const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = false }: MobileNavProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdowns, setOpenDropdowns] = useState<string[]>([]);
-  const panelRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
-
-  // Prevent background scrolling when menu is open, with a safer implementation
-  useEffect(() => {
-    // Store the original overflow value to restore it properly
-    const originalOverflow = document.body.style.overflow;
-    
-    if (isOpen) {
-      // Instead of directly setting overflow, add a class for better control
-      document.body.classList.add('mobile-menu-open');
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.classList.remove('mobile-menu-open');
-      document.body.style.overflow = originalOverflow;
-    }
-    
-    // Cleanup function that ensures overflow is restored properly
-    return () => {
-      document.body.classList.remove('mobile-menu-open');
-      document.body.style.overflow = originalOverflow;
-    };
-  }, [isOpen]);
 
   // Close menu when route changes
   useEffect(() => {
     setIsOpen(false);
     setOpenDropdowns([]);
   }, [location.pathname]);
+
+  // Prevent background scrolling when menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
   const toggleDropdown = (name: string) => {
     setOpenDropdowns(prev => 
@@ -53,109 +44,111 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
     );
   };
 
-  const isDropdownOpen = (name: string) => openDropdowns.includes(name);
-
   return (
-    <div className="md:hidden mobile-nav-container">
-      {/* Hamburger/Menu Button */}
+    <div className="md:hidden">
+      {/* Hamburger Menu Button */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => setIsOpen(true)}
         className={cn(
-          "mobile-menu-button flex items-center justify-center p-2 rounded-md transition-all duration-200 hover:bg-white/10",
-          forceDarkMode ? "text-[#274675] hover:bg-[#274675]/10" : "text-white",
-          "relative z-[99999]" // Increased z-index
+          "p-2 hover:bg-white/10 rounded-md transition-all duration-200",
+          forceDarkMode ? "text-[#274675]" : "text-white"
         )}
-        aria-label={isOpen ? "Close menu" : "Open menu"}
-        aria-expanded={isOpen}
-        aria-controls="mobile-menu-panel"
+        aria-label="Open menu"
       >
-        {isOpen ? <X size={24} /> : <Menu size={24} />}
+        <Menu size={24} />
       </button>
 
-      {/* Full-screen Menu */}
+      {/* Full Screen Menu Overlay */}
       {isOpen && (
-        <div
-          id="mobile-menu-panel"
-          ref={panelRef}
-          className="fixed inset-0 bg-white z-[99990] flex flex-col"
-          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
-        >
-          {/* Panel Header */}
-          <div className="flex justify-between items-center p-4 border-b border-gray-100">
-            <div className="flex items-center">
-              <NavLogo 
-                isScrolled={isScrolled} 
-                forceDarkMode={true}
-                useShortForm={true}
-                forceSize="h-8"
-              />
+        <div className="fixed inset-0 bg-[#F4F5F4] z-[9999]">
+          {/* Header */}
+          <div className="flex justify-between items-center p-4 border-b border-gray-200">
+            <NavLogo 
+              forceDarkMode={true}
+              useShortForm={true}
+              forceSize="h-8"
+            />
+            <div className="flex items-center gap-4">
+              <button className="p-2 text-[#274675] hover:bg-gray-100 rounded-md">
+                <Search size={24} />
+              </button>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="p-2 text-[#274675] hover:bg-gray-100 rounded-md"
+                aria-label="Close menu"
+              >
+                <X size={24} />
+              </button>
             </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-              aria-label="Close menu"
-            >
-              <X size={20} />
-            </button>
           </div>
-          
-          {/* Nav Links */}
-          <div className="flex-grow py-4 overflow-y-auto">
-            <ul className="flex flex-col space-y-4 px-6">
-              {navItems.map((item) => (
-                <li key={item.name} className="py-1">
-                  {item.dropdownItems ? (
-                    <div className="w-full">
-                      <button 
-                        onClick={() => toggleDropdown(item.name)}
-                        className="flex items-center justify-between w-full py-2 text-[#274675] text-xl font-alegreyasans font-bold"
-                      >
-                        <span>{item.name}</span>
-                        {isDropdownOpen(item.name) ? (
-                          <ChevronUp className="w-5 h-5 ml-2 transition-transform" />
-                        ) : (
-                          <ChevronDown className="w-5 h-5 ml-2 transition-transform" />
+
+          {/* Navigation Links */}
+          <div className="overflow-y-auto h-[calc(100vh-70px)] px-6 py-8">
+            <nav>
+              <ul className="space-y-6">
+                {navItems.map((item) => (
+                  <li key={item.name}>
+                    {item.dropdownItems ? (
+                      <div>
+                        <button
+                          onClick={() => toggleDropdown(item.name)}
+                          className="flex items-center justify-between w-full text-2xl text-[#274675] font-alegreyasans"
+                        >
+                          <span>{item.name}</span>
+                          {openDropdowns.includes(item.name) ? (
+                            <ChevronUp className="ml-2 text-[#274675]" />
+                          ) : (
+                            <ChevronDown className="ml-2 text-[#274675]" />
+                          )}
+                        </button>
+                        {openDropdowns.includes(item.name) && (
+                          <ul className="mt-4 ml-4 space-y-4 border-l-2 border-[#FBB03B] pl-4">
+                            {item.dropdownItems.map((subItem) => (
+                              <li key={subItem.name}>
+                                <Link
+                                  to={subItem.href}
+                                  className="block text-xl text-[#274675] hover:text-[#FBB03B] transition-colors"
+                                  onClick={() => setIsOpen(false)}
+                                >
+                                  {subItem.name}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
                         )}
-                      </button>
-                      <div 
-                        className={cn(
-                          "overflow-hidden transition-all duration-300 ease-in-out pl-4",
-                          isDropdownOpen(item.name) ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
-                        )}
-                      >
-                        <ul className="mt-2 border-l-2 border-[#FBB03B]/30 pl-4">
-                          {item.dropdownItems.map((subItem) => (
-                            <li key={subItem.name} className="mb-3">
-                              <a 
-                                href={subItem.href}
-                                className="block py-1 text-[#274675] hover:text-[#FBB03B] transition-colors duration-200 text-lg font-alegreyasans font-bold"
-                                onClick={() => setIsOpen(false)}
-                              >
-                                {subItem.name}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
                       </div>
-                    </div>
-                  ) : (
-                    <a 
-                      href={item.href}
-                      className="block py-2 text-[#274675] hover:text-[#FBB03B] transition-colors duration-200 text-xl font-alegreyasans font-bold"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {item.name}
-                    </a>
-                  )}
+                    ) : (
+                      <Link
+                        to={item.href}
+                        className="block text-2xl text-[#274675] hover:text-[#FBB03B] transition-colors font-alegreyasans"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {item.name}
+                      </Link>
+                    )}
+                  </li>
+                ))}
+                {/* Additional footer links */}
+                <li className="pt-6 border-t border-gray-200">
+                  <Link
+                    to="/conference"
+                    className="block text-2xl text-[#274675] hover:text-[#FBB03B] transition-colors font-alegreyasans"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Events
+                  </Link>
                 </li>
-              ))}
-              <li className="mt-10">
-                <JoinButton 
-                  buttonStyles="w-full justify-center border-[#FBB03B] bg-[#FBB03B] text-white hover:bg-[#274675] hover:border-[#274675] shadow-md"
-                  onClick={() => setIsOpen(false)}
-                />
-              </li>
-            </ul>
+                <li>
+                  <Link
+                    to="/contact"
+                    className="block text-2xl text-[#274675] hover:text-[#FBB03B] transition-colors font-alegreyasans"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Contact
+                  </Link>
+                </li>
+              </ul>
+            </nav>
           </div>
         </div>
       )}
