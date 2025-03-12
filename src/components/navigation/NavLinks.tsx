@@ -1,3 +1,4 @@
+
 import { Link, useNavigate } from "react-router-dom";
 import {
   NavigationMenu,
@@ -27,7 +28,7 @@ export const navItems = [
     href: "/conference",
     dropdownItems: [
       { name: "Overview", href: "/conference" },
-      { name: "Tickets", href: "/conference/registration" },
+      { name: "Tickets", href: "/conference#registration" },
     ],
   },
 ];
