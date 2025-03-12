@@ -1,14 +1,25 @@
-import React, { useEffect, useRef, memo, useState } from 'react';
+
+import React, { useRef, memo, useState } from 'react';
 import Navigation from '../Navigation';
-import AnimatedText from './AnimatedText';
+import { useContentAnimation } from './hooks/useContentAnimation';
+import { useHeroAnimation } from './hooks/useHeroAnimation';
+import VideoBackground from './components/VideoBackground';
+import GradientOverlay from './components/GradientOverlay';
+import HeroContent from './components/HeroContent';
+import ScrollDownButton from './components/ScrollDownButton';
 import gsap from 'gsap';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import ScrollToPlugin from 'gsap/ScrollToPlugin';
+
+gsap.registerPlugin(ScrollToPlugin);
 
 const Hero = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [videoLoaded, setVideoLoaded] = useState(false);
+  
+  // Use our animation hooks
+  useContentAnimation(contentRef);
+  useHeroAnimation(videoRef);
   
   const scrollToNextSection = () => {
     const nextSection = document.getElementById('transition-stat');
@@ -24,153 +35,13 @@ const Hero = () => {
     }
   };
 
-  useEffect(() => {
-    const video = videoRef.current;
-    const content = contentRef.current;
-    
-    if (!video || !content) return;
-
-    // Optimize video playback
-    video.preload = "auto"; // Preload the video
-    video.playsInline = true;
-    video.muted = true;
-    
-    // Add hardware acceleration
-    video.style.transform = 'translateZ(0)';
-    video.style.willChange = 'transform';
-    
-    // Set playback quality
-    if (window.innerWidth < 768) {
-      // For mobile devices, reduce quality to improve performance
-      if ('mediaSource' in HTMLVideoElement.prototype) {
-        // @ts-ignore - Some browsers support this property
-        video.mediaSource = 'optimize-for-performance';
-      }
-      
-      // Lower resolution for mobile
-      video.style.objectFit = 'cover';
-      
-      // Reduce playback quality on mobile
-      if (video.canPlayType('video/mp4; codecs="avc1.42E01E"')) {
-        // Use lower quality H.264 profile if supported
-        const source = video.querySelector('source');
-        if (source) {
-          source.type = 'video/mp4; codecs="avc1.42E01E"';
-        }
-      }
-    } else {
-      // For desktop, prioritize quality
-      if ('mediaSource' in HTMLVideoElement.prototype) {
-        // @ts-ignore - Some browsers support this property
-        video.mediaSource = 'optimize-for-quality';
-      }
-    }
-    
-    // Handle video loading
-    video.addEventListener('loadeddata', () => {
-      setVideoLoaded(true);
-    });
-    
-    // Play video when it's ready
-    video.addEventListener('canplaythrough', () => {
-      video.play().catch(e => console.log("Video autoplay prevented:", e));
-    });
-
-    const tl = gsap.timeline();
-    
-    tl.fromTo(content,
-      { opacity: 0, y: 30 },
-      { opacity: 1, y: 0, duration: 1 }
-    );
-
-    // Optimize scroll animation with reduced impact
-    gsap.to(video, {
-      y: '20vh',
-      ease: "none",
-      force3D: true, // Force 3D transforms for better performance
-      scrollTrigger: {
-        trigger: video,
-        start: "top top",
-        end: "bottom top",
-        scrub: 1.5 // Slightly smoother scrubbing for better performance
-      }
-    });
-
-    // Set the initial background state for proper navigation contrast
-    document.body.setAttribute('data-nav-background', 'dark');
-    
-    // Pause video when not visible to save resources
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          if (videoLoaded) {
-            video.play().catch(e => console.log("Video autoplay prevented:", e));
-          }
-        } else {
-          video.pause();
-        }
-      });
-    }, { threshold: 0.1 });
-    
-    observer.observe(video);
-    
-    // Reduce frame rate for better performance on mobile
-    const reduceFrameRate = () => {
-      if (window.innerWidth < 768 && video) {
-        // This technique creates a visual effect similar to reducing frame rate
-        // by adding a slight blur and reducing opacity transitions
-        video.style.filter = 'blur(1px)';
-        video.style.transition = 'opacity 0.2s ease-out';
-      } else if (video) {
-        video.style.filter = '';
-        video.style.transition = '';
-      }
-    };
-    
-    reduceFrameRate();
-    window.addEventListener('resize', reduceFrameRate);
-    
-    return () => {
-      tl.kill();
-      window.removeEventListener('resize', reduceFrameRate);
-      observer.disconnect();
-    };
-  }, [videoLoaded]);
-  
   return (
     <div className="relative h-screen overflow-hidden" data-background="dark">
       {/* Video Background - lowest z-index */}
-      <div className="absolute inset-0 z-0">
-        {/* Placeholder/fallback while video loads */}
-        {!videoLoaded && (
-          <div 
-            className="absolute inset-0 bg-gradient-to-br from-[#1A365D] via-[#2A466D] to-[#1A365D]"
-            style={{ opacity: videoLoaded ? 0 : 1, transition: 'opacity 0.5s ease-out' }}
-          />
-        )}
-        <video
-          ref={videoRef}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 w-full h-[120%] object-cover"
-          style={{ 
-            transform: 'translateZ(0)', // Hardware acceleration
-            willChange: 'transform',
-            backfaceVisibility: 'hidden',
-            opacity: videoLoaded ? 1 : 0,
-            transition: 'opacity 0.5s ease-out'
-          }}
-        >
-          <source src="/hero-background.mp4" type="video/mp4" />
-          {/* Fallback for browsers that don't support video */}
-          Your browser does not support the video tag.
-        </video>
-      </div>
+      <VideoBackground videoLoaded={videoLoaded} setVideoLoaded={setVideoLoaded} />
       
       {/* Gradient Overlay - low z-index but above video */}
-      <div className="absolute inset-0 z-10 bg-gradient-to-br from-[#1A365D]/60 via-[#2A466D]/65 to-[#1A365D]/70 backdrop-blur-[4px]" />
+      <GradientOverlay />
       
       {/* Navigation - highest z-index */}
       <div className="absolute top-0 left-0 right-0 z-[9999]">
@@ -178,57 +49,10 @@ const Hero = () => {
       </div>
       
       {/* Main Content - high z-index but below navigation */}
-      <div className="relative z-30 pt-[var(--navbar-height)]" ref={contentRef}>
-        <div className="fluid-container h-screen flex flex-col justify-center">
-          <div className="space-y-[clamp(1rem,2vw,2rem)] max-w-[min(90%,1200px)] mx-auto pointer-events-auto">
-            <AnimatedText />
-
-            <p className="text-[length:var(--fluid-body)] text-white/90 max-w-[min(100%,800px)] font-merriweather">
-              The future of Africa isn't a distant dream - it's being built today, by innovators and changemakers
-              like you. Join a community of students and partners creating sustainable solutions through market-driven innovation.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-[clamp(0.5rem,1vw,1rem)]">
-              <Link 
-                to="/studios#apply"
-                className="group w-full sm:w-auto px-[clamp(1.5rem,2vw,2rem)] py-[clamp(0.75rem,1.5vw,1rem)] bg-raade-gold-start text-[#1A365D] rounded-lg font-semibold 
-                  transition-all duration-300 text-[length:var(--fluid-body)] font-alegreyasans relative overflow-hidden hover:shadow-[0_0_20px_rgba(251,176,59,0.5)]"
-              >
-                <span className="relative z-10">Start Building Today</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-raade-gold-start via-raade-gold-middle to-raade-gold-end opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </Link>
-              <Link 
-                to="/studios" 
-                className="group w-full sm:w-auto px-[clamp(1.5rem,2vw,2rem)] py-[clamp(0.75rem,1.5vw,1rem)] border-2 border-raade-gold-start text-raade-gold-start rounded-lg 
-                  font-semibold transition-all duration-300 text-[length:var(--fluid-body)] font-alegreyasans hover:bg-raade-gold-start hover:text-white relative overflow-hidden"
-              >
-                <span className="relative z-10">Explore Our Impact</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 0.8 }}
-          className="absolute bottom-[clamp(2rem,4vw,3rem)] left-1/2 transform -translate-x-1/2 text-center z-50"
-        >
-          <motion.button
-            animate={{ y: [0, 10, 0] }}
-            transition={{ 
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-            onClick={scrollToNextSection}
-            className="cursor-pointer p-4 group"
-            aria-label="Scroll to next section"
-          >
-            <div className="w-[clamp(1.25rem,2vw,1.5rem)] h-[clamp(1.25rem,2vw,1.5rem)] mx-auto border-b-2 border-r-2 border-white/30 rotate-45 transition-all duration-300 group-hover:border-white group-hover:scale-110" />
-          </motion.button>
-        </motion.div>
-      </div>
+      <HeroContent />
+      
+      {/* Scroll down button */}
+      <ScrollDownButton onClick={scrollToNextSection} />
     </div>
   );
 };
