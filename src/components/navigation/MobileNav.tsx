@@ -4,8 +4,9 @@ import { cn } from "@/lib/utils";
 import NavLogo from "./NavLogo";
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
-import { navItems } from "./navConfig";
+import { navItems, mobileFooterItems } from "./navConfig";
 import JoinButton from "./JoinButton";
+import { Button } from "../ui/button";
 
 interface MobileNavProps {
   isScrolled?: boolean;
@@ -108,18 +109,50 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Panel Header */}
-        <div className="p-6 border-b border-gray-200">
-          <NavLogo 
-            isScrolled={isScrolled} 
-            forceDarkMode={true}
-            useShortForm={true}
-            forceSize="h-8"
-          />
+        {/* Panel Header - Now with navigation buttons */}
+        <div className="p-4 border-b border-gray-200">
+          <div className="flex items-center justify-between">
+            <NavLogo 
+              isScrolled={isScrolled} 
+              forceDarkMode={true}
+              useShortForm={true}
+              forceSize="h-8"
+            />
+            
+            {/* Close button */}
+            <button
+              onClick={() => setIsOpen(false)}
+              className="p-2 text-[#274675] hover:text-[#FBB03B] transition-colors"
+              aria-label="Close menu"
+            >
+              <X size={20} />
+            </button>
+          </div>
+          
+          {/* Navigation Quick Buttons */}
+          <div className="flex justify-between mt-4 gap-2">
+            {navItems.slice(0, 3).map((item) => (
+              <Button
+                key={item.name}
+                onClick={() => {
+                  if (item.dropdownItems) {
+                    toggleDropdown(item.name);
+                  } else {
+                    window.location.href = item.href;
+                    setIsOpen(false);
+                  }
+                }}
+                variant="outline"
+                className="flex-1 py-1 px-2 h-auto text-sm border-[#274675] text-[#274675] hover:bg-[#FBB03B]/10 hover:text-[#FBB03B] hover:border-[#FBB03B]"
+              >
+                {item.name}
+              </Button>
+            ))}
+          </div>
         </div>
         
         {/* Nav Links */}
-        <div className="py-8 overflow-y-auto max-h-[calc(100vh-76px)]">
+        <div className="py-8 overflow-y-auto max-h-[calc(100vh-130px)]">
           <ul className="flex flex-col space-y-1 px-6">
             {navItems.map((item) => (
               <li key={item.name} className="py-1">
@@ -173,16 +206,13 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
           {/* Additional items like in reference design */}
           <div className="mt-12 px-6">
             <ul className="flex flex-col space-y-3">
-              <li>
-                <a href="/conference" className="block py-3 text-[#274675] text-2xl font-simula">
-                  Events
-                </a>
-              </li>
-              <li>
-                <a href="/contact" className="block py-3 text-[#274675] text-2xl font-simula">
-                  Contact
-                </a>
-              </li>
+              {mobileFooterItems.map(item => (
+                <li key={item.name}>
+                  <a href={item.href} className="block py-3 text-[#274675] text-2xl font-simula">
+                    {item.name}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
           
