@@ -1,4 +1,3 @@
-
 import { Menu, X, ChevronDown, ChevronUp, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import NavLogo from "./NavLogo";
@@ -16,25 +15,47 @@ interface MobileNavProps {
 const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = false }: MobileNavProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdowns, setOpenDropdowns] = useState<string[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
   const location = useLocation();
+
+  // Initialize component
+  useEffect(() => {
+    setIsInitialized(true);
+    return () => {
+      // Make sure to reset body overflow when component unmounts
+      document.body.style.removeProperty('overflow');
+    };
+  }, []);
 
   // Close menu when route changes
   useEffect(() => {
     setIsOpen(false);
     setOpenDropdowns([]);
-  }, [location.pathname]);
+    // Ensure body overflow is reset when navigation occurs
+    if (isInitialized) {
+      document.body.style.removeProperty('overflow');
+    }
+  }, [location.pathname, isInitialized]);
 
   // Prevent background scrolling when menu is open
   useEffect(() => {
+    // Only modify body style if component is initialized to prevent issues during hydration
+    if (!isInitialized) return;
+
     if (isOpen) {
+      // Store original overflow value to restore later
+      const originalOverflow = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
+      
+      return () => {
+        // Use the stored value or default to 'auto' instead of 'unset' for better browser compatibility
+        document.body.style.overflow = originalOverflow || 'auto';
+      };
     } else {
-      document.body.style.overflow = 'unset';
+      // When closing, reset to auto (more compatible than 'unset')
+      document.body.style.overflow = 'auto';
     }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen]);
+  }, [isOpen, isInitialized]);
 
   const toggleDropdown = (name: string) => {
     setOpenDropdowns(prev => 
