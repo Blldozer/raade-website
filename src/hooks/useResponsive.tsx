@@ -54,17 +54,9 @@ const detectPerformanceLevel = (): PerformanceLevel => {
   
   const hasLimitedMemory = navigator.deviceMemory && navigator.deviceMemory < 4;
   
-  const cpuCheck = () => {
-    const startTime = performance.now();
-    let count = 0;
-    for (let i = 0; i < 1000000; i++) {
-      count += i;
-    }
-    const endTime = performance.now();
-    return endTime - startTime > 100; 
-  };
+  // Removed expensive CPU check that could cause initial render delays
   
-  if (isMobile || hasLimitedMemory || cpuCheck()) {
+  if (isMobile || hasLimitedMemory) {
     return 'low';
   }
   
@@ -92,101 +84,112 @@ const detectTouchCapability = (): TouchCapability => {
 };
 
 export const useResponsive = (): ResponsiveData => {
-  const [state, setState] = useState<ResponsiveData>({
-    width: typeof window !== 'undefined' ? window.innerWidth : 0,
-    height: typeof window !== 'undefined' ? window.innerHeight : 0,
-    deviceType: 'desktop',
-    orientation: 'landscape',
-    os: 'unknown',
-    isMobile: false,
-    isTablet: false,
-    isDesktop: true,
-    isWindowsDevice: false,
-    isMacDevice: false,
-    isTouchDevice: false,
-    breakpoint: 'lg',
-    hasPrecisePointer: true,
-    hasHoverCapability: true,
-    hasCoarsePointer: false,
-    performanceLevel: 'high',
-    touchCapability: 'none',
-    preferReducedMotion: false
+  // Default state now initialized with safer values to prevent flash
+  const [state, setState] = useState<ResponsiveData>(() => {
+    const width = typeof window !== 'undefined' ? window.innerWidth : 0;
+    const height = typeof window !== 'undefined' ? window.innerHeight : 0;
+    
+    // Initial simple device detection
+    const isMobileDevice = typeof window !== 'undefined' && 
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    return {
+      width,
+      height,
+      deviceType: isMobileDevice ? 'mobile' : 'desktop',
+      orientation: width > height ? 'landscape' : 'portrait',
+      os: 'unknown',
+      isMobile: isMobileDevice,
+      isTablet: false,
+      isDesktop: !isMobileDevice,
+      isWindowsDevice: false,
+      isMacDevice: false,
+      isTouchDevice: isMobileDevice,
+      breakpoint: 'lg',
+      hasPrecisePointer: !isMobileDevice,
+      hasHoverCapability: !isMobileDevice,
+      hasCoarsePointer: isMobileDevice,
+      performanceLevel: isMobileDevice ? 'low' : 'high',
+      touchCapability: isMobileDevice ? 'basic' : 'none',
+      preferReducedMotion: false
+    };
   });
 
   useEffect(() => {
-    const getDeviceType = (width: number): DeviceType => {
-      if (width < 640) return 'mobile';
-      if (width < 1024) return 'tablet';
-      if (width < 1280) return 'laptop';
-      return 'desktop';
-    };
-
-    const getOrientation = (width: number, height: number): Orientation => {
-      return width > height ? 'landscape' : 'portrait';
-    };
-
-    const detectPointerCapabilities = () => {
-      const hasHover = window.matchMedia('(hover: hover)').matches;
+    // Defer complex device detection to after first render using a small timeout
+    const timer = setTimeout(() => {
+      const getDeviceType = (width: number): DeviceType => {
+        if (width < 640) return 'mobile';
+        if (width < 1024) return 'tablet';
+        if (width < 1280) return 'laptop';
+        return 'desktop';
+      };
+  
+      const getOrientation = (width: number, height: number): Orientation => {
+        return width > height ? 'landscape' : 'portrait';
+      };
+  
+      const detectPointerCapabilities = () => {
+        const hasHover = window.matchMedia('(hover: hover)').matches;
+        const hasCoarse = window.matchMedia('(pointer: coarse)').matches;
+        const hasPrecise = window.matchMedia('(pointer: fine)').matches;
+        return { hasHover, hasCoarse, hasPrecise };
+      };
       
-      const hasCoarse = window.matchMedia('(pointer: coarse)').matches;
+      const checkReducedMotion = () => {
+        return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      };
+  
+      const updateState = () => {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const deviceType = getDeviceType(width);
+        const orientation = getOrientation(width, height);
+        const os = detectOS();
+        const breakpoint = getBreakpoint(width);
+        const pointerCapabilities = detectPointerCapabilities();
+        const performanceLevel = detectPerformanceLevel();
+        const touchCapability = detectTouchCapability();
+        const preferReducedMotion = checkReducedMotion();
+        
+        setState({
+          width,
+          height,
+          deviceType,
+          orientation,
+          os,
+          isMobile: deviceType === 'mobile',
+          isTablet: deviceType === 'tablet',
+          isDesktop: deviceType === 'laptop' || deviceType === 'desktop',
+          isWindowsDevice: os === 'Windows',
+          isMacDevice: os === 'macOS',
+          isTouchDevice: 'ontouchstart' in window,
+          breakpoint,
+          hasPrecisePointer: pointerCapabilities.hasPrecise,
+          hasHoverCapability: pointerCapabilities.hasHover,
+          hasCoarsePointer: pointerCapabilities.hasCoarse,
+          performanceLevel,
+          touchCapability,
+          preferReducedMotion
+        });
+      };
+  
+      updateState();
+  
+      window.addEventListener('resize', updateState);
+      window.addEventListener('orientationchange', updateState);
       
-      const hasPrecise = window.matchMedia('(pointer: fine)').matches;
-      
-      return { hasHover, hasCoarse, hasPrecise };
-    };
+      const motionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+      motionMediaQuery.addEventListener('change', updateState);
+  
+      return () => {
+        window.removeEventListener('resize', updateState);
+        window.removeEventListener('orientationchange', updateState);
+        motionMediaQuery.removeEventListener('change', updateState);
+      };
+    }, 0); // Minimal timeout to let the first render complete
     
-    const checkReducedMotion = () => {
-      return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    };
-
-    const updateState = () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      const deviceType = getDeviceType(width);
-      const orientation = getOrientation(width, height);
-      const os = detectOS();
-      const breakpoint = getBreakpoint(width);
-      const pointerCapabilities = detectPointerCapabilities();
-      const performanceLevel = detectPerformanceLevel();
-      const touchCapability = detectTouchCapability();
-      const preferReducedMotion = checkReducedMotion();
-      
-      setState({
-        width,
-        height,
-        deviceType,
-        orientation,
-        os,
-        isMobile: deviceType === 'mobile',
-        isTablet: deviceType === 'tablet',
-        isDesktop: deviceType === 'laptop' || deviceType === 'desktop',
-        isWindowsDevice: os === 'Windows',
-        isMacDevice: os === 'macOS',
-        isTouchDevice: 'ontouchstart' in window,
-        breakpoint,
-        hasPrecisePointer: pointerCapabilities.hasPrecise,
-        hasHoverCapability: pointerCapabilities.hasHover,
-        hasCoarsePointer: pointerCapabilities.hasCoarse,
-        performanceLevel,
-        touchCapability,
-        preferReducedMotion
-      });
-    };
-
-    updateState();
-
-    window.addEventListener('resize', updateState);
-    
-    window.addEventListener('orientationchange', updateState);
-    
-    const motionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    motionMediaQuery.addEventListener('change', updateState);
-
-    return () => {
-      window.removeEventListener('resize', updateState);
-      window.removeEventListener('orientationchange', updateState);
-      motionMediaQuery.removeEventListener('change', updateState);
-    };
+    return () => clearTimeout(timer);
   }, []);
 
   return state;
