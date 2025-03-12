@@ -1,5 +1,5 @@
 
-import { Mail, Link, Globe, Copyright, Shield, ArrowUp } from "lucide-react";
+import { Mail, Link, Globe, Copyright, Shield, ArrowUp, Instagram, Linkedin } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 
@@ -79,24 +79,24 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-800 mb-6">Connect</h3>
             <div className="space-y-3">
-              {[
-                { href: "https://www.linkedin.com/company/rice-association-for-african-development/", text: "LinkedIn" },
-                { href: "https://twitter.com/raade", text: "Twitter" }
-              ].map((social) => (
-                <a
-                  key={social.href}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors duration-200"
-                >
-                  <Link className={cn(
-                    "h-4 w-4",
-                    "group-hover:text-[#0077B5]"
-                  )} />
-                  {social.text}
-                </a>
-              ))}
+              <a
+                href="https://www.linkedin.com/company/rice-association-for-african-development/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors duration-200"
+              >
+                <Linkedin className="h-4 w-4" />
+                LinkedIn
+              </a>
+              <a
+                href="https://www.instagram.com/rice_aade?igsh=amhrYTR5a2M4cHlv"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors duration-200"
+              >
+                <Instagram className="h-4 w-4" />
+                Instagram
+              </a>
             </div>
           </div>
         </div>
