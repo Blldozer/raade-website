@@ -49,31 +49,31 @@ export const getColorClasses = (
   colorScheme: 'light' | 'dark' | 'auto' | ColorScheme, 
   isDarkBackground: boolean
 ): ColorScheme => {
-  // Default color schemes
+  // Updated default color schemes with higher contrast colors
   const lightColorScheme: ColorScheme = {
     text: "text-gray-800",
     highlight: "text-raade-navy",
-    accent: "text-raade-gold",
-    iconColor: "text-raade-gold",
+    accent: "text-[#FF9848]", // Changed from gold to bright orange for better visibility
+    iconColor: "text-[#FF9848]", // Changed from gold to bright orange for better visibility
     hoverBg: "hover:bg-gray-100",
     dropdownBg: "bg-white/95",
     dropdownText: "text-gray-800",
     dropdownBorder: "border-gray-200",
     progressBg: "bg-gray-200",
-    progressFill: "bg-raade-gold"
+    progressFill: "bg-[#FF9848]" // Changed from gold to bright orange for better visibility
   };
 
   const darkColorScheme: ColorScheme = {
     text: "text-white",
     highlight: "text-white",
-    accent: "text-raade-gold",
-    iconColor: "text-raade-gold",
+    accent: "text-[#FF9848]", // Changed from gold to bright orange for better visibility
+    iconColor: "text-[#FF9848]", // Changed from gold to bright orange for better visibility
     hoverBg: "hover:bg-white/10",
     dropdownBg: "bg-raade-navy/95",
     dropdownText: "text-white",
     dropdownBorder: "border-gray-700",
     progressBg: "bg-white/20",
-    progressFill: "bg-raade-gold"
+    progressFill: "bg-[#FF9848]" // Changed from gold to bright orange for better visibility
   };
 
   // If a custom color scheme is provided, use it

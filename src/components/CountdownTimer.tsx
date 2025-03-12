@@ -14,7 +14,6 @@ interface CountdownTimerProps {
   colorScheme?: 'light' | 'dark' | 'auto' | ColorScheme;
   accentColor?: string;
   textColor?: string;
-  // Remove the announcementDate prop as it's not being used
 }
 
 const CountdownTimer = ({
@@ -71,6 +70,10 @@ const CountdownTimer = ({
   if (accentColor) {
     customColorScheme.accent = accentColor;
     customColorScheme.iconColor = accentColor;
+  } else {
+    // Use bright orange by default for better visibility
+    customColorScheme.accent = "text-[#FF9848]";
+    customColorScheme.iconColor = "text-[#FF9848]";
   }
   
   if (textColor) {

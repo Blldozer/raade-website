@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useAnimation } from 'framer-motion';
@@ -86,7 +87,7 @@ const EnhancedCountdown = () => {
                 }}
               >
                 <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="text-4xl md:text-5xl font-bold text-white font-montserrat relative">
+                <div className="text-4xl md:text-5xl font-bold text-[#FF9848] font-montserrat relative">
                   {formatTimeUnit(timeLeft.seconds)}
                 </div>
                 <div className="text-base md:text-lg mt-1 text-white/90 relative">Seconds</div>
@@ -118,7 +119,7 @@ const EnhancedCountdown = () => {
           to="/conference/register" 
           className="inline-block px-6 py-3 w-full sm:w-auto rounded-lg font-bold text-base group relative overflow-hidden"
         >
-          <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-[#FFB347] to-[#FF8A6A]"></span>
+          <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-[#FF9848] to-[#FF8A4D]"></span>
           <span className="relative flex justify-center items-center text-white">
             Register Now
           </span>
