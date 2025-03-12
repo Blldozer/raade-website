@@ -41,8 +41,8 @@ const NavDropdown = ({ name, href, dropdownItems, textColor, onClick }: NavDropd
         </span>
       </Link>
       {isHovered && (
-        <div className="absolute top-full left-0 min-w-[200px] z-50">
-          <ul className="mt-2 bg-white/90 backdrop-blur-sm rounded-md shadow-lg p-2">
+        <div className="absolute top-full left-0 min-w-[220px] z-50">
+          <ul className="mt-2 bg-white/95 backdrop-blur-sm rounded-md shadow-lg p-2 transition-all duration-200 animate-fade-in">
             {dropdownItems.map((item) => (
               <NavDropdownItem 
                 key={item.name}

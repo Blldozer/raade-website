@@ -1,10 +1,12 @@
 
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import NavLinks from "./NavLinks";
 import NavLogo from "./NavLogo";
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
+import { navItems } from "./navConfig";
+import JoinButton from "./JoinButton";
 
 interface MobileNavProps {
   isScrolled?: boolean;
@@ -14,6 +16,7 @@ interface MobileNavProps {
 
 const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = false }: MobileNavProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [openDropdowns, setOpenDropdowns] = useState<string[]>([]);
   const panelRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
 
@@ -55,7 +58,18 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
   // Close menu when route changes
   useEffect(() => {
     setIsOpen(false);
+    setOpenDropdowns([]);
   }, [location.pathname]);
+
+  const toggleDropdown = (name: string) => {
+    setOpenDropdowns(prev => 
+      prev.includes(name) 
+        ? prev.filter(item => item !== name) 
+        : [...prev, name]
+    );
+  };
+
+  const isDropdownOpen = (name: string) => openDropdowns.includes(name);
 
   return (
     <div className="md:hidden mobile-nav-container">
@@ -89,7 +103,7 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
         id="mobile-menu-panel"
         ref={panelRef}
         className={cn(
-          "fixed top-0 right-0 bottom-0 w-[80%] max-w-[300px] bg-white shadow-lg z-50 transition-transform duration-300 ease-in-out",
+          "fixed top-0 right-0 bottom-0 w-[80%] max-w-[300px] bg-white shadow-lg z-50 transition-transform duration-300 ease-in-out overflow-hidden",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
@@ -112,13 +126,61 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
         
         {/* Nav Links */}
         <div className="py-4 overflow-y-auto max-h-[calc(100vh-76px)]">
-          <NavLinks
-            className="block w-full px-6 py-3 text-gray-800 hover:bg-gray-100 transition-colors text-lg"
-            onClick={() => setIsOpen(false)}
-            isScrolled={isScrolled}
-            isHeroPage={isHeroPage}
-            forceDarkMode={true}
-          />
+          <ul className="flex flex-col space-y-2 px-4">
+            {navItems.map((item) => (
+              <li key={item.name} className="py-1">
+                {item.dropdownItems ? (
+                  <div className="w-full">
+                    <button 
+                      onClick={() => toggleDropdown(item.name)}
+                      className="flex items-center justify-between w-full px-4 py-2 text-[#274675] hover:bg-gray-100 rounded-md transition-all duration-200 text-lg font-alegreyasans font-bold"
+                    >
+                      <span>{item.name}</span>
+                      {isDropdownOpen(item.name) ? (
+                        <ChevronUp className="w-5 h-5 ml-2 transition-transform" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 ml-2 transition-transform" />
+                      )}
+                    </button>
+                    <div 
+                      className={cn(
+                        "overflow-hidden transition-all duration-300 ease-in-out pl-4",
+                        isDropdownOpen(item.name) ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+                      )}
+                    >
+                      <ul className="mt-2 border-l-2 border-[#FBB03B]/30 pl-4">
+                        {item.dropdownItems.map((subItem) => (
+                          <li key={subItem.name} className="mb-2">
+                            <a 
+                              href={subItem.href}
+                              className="block px-4 py-2 rounded-md text-[#274675] hover:bg-[#FBB03B]/10 hover:text-[#FBB03B] transition-colors duration-200 text-base font-alegreyasans font-bold"
+                              onClick={() => setIsOpen(false)}
+                            >
+                              {subItem.name}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                ) : (
+                  <a 
+                    href={item.href}
+                    className="block px-4 py-2 rounded-md text-[#274675] hover:bg-gray-100 transition-colors duration-200 text-lg font-alegreyasans font-bold"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {item.name}
+                  </a>
+                )}
+              </li>
+            ))}
+            <li className="mt-6 px-4">
+              <JoinButton 
+                buttonStyles="w-full justify-center border-[#FBB03B] bg-[#FBB03B] text-white hover:bg-[#274675] hover:border-[#274675] shadow-md"
+                onClick={() => setIsOpen(false)}
+              />
+            </li>
+          </ul>
         </div>
       </div>
     </div>
