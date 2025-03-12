@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 
 type DeviceType = 'mobile' | 'tablet' | 'laptop' | 'desktop';
