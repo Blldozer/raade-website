@@ -7,6 +7,7 @@ import {
   NavigationMenuContent,
 } from "@/components/ui/navigation-menu";
 import { useLocation } from "react-router-dom";
+import { ChevronDown } from "lucide-react";
 
 export const navItems = [
   {
@@ -104,7 +105,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
                   onClick={onClick}
                 >
                   {item.name}
-                  <span className="ml-1">▼</span>
+                  <ChevronDown className="h-4 w-4 ml-1 transition-transform duration-200" />
                 </Link>
                 <NavigationMenuContent>
                   <ul className="min-w-[200px] gap-2 p-4 bg-white/90 backdrop-blur-sm rounded-md shadow-lg">
