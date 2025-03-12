@@ -1,0 +1,17 @@
+
+{
+  "name": "RAADE - Rice Association for African Development",
+  "short_name": "RAADE",
+  "description": "Empowering innovation across the African continent through student-led Innovation Studios and global connections",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F4F5F4",
+  "theme_color": "#274675",
+  "icons": [
+    {
+      "src": "/logos/RAADE-Logo-Symbol.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
