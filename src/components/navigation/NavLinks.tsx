@@ -1,3 +1,4 @@
+
 import { Link, useNavigate } from "react-router-dom";
 import {
   NavigationMenu,
@@ -12,6 +13,12 @@ export const navItems = [
   {
     name: "About",
     href: "/about",
+    dropdownItems: [
+      { name: "Overview", href: "/about" },
+      { name: "Our Approach", href: "/about#approach" },
+      { name: "Our Impact", href: "/about#impact" },
+      { name: "Meet the Team", href: "/about#team" }
+    ],
   },
   {
     name: "Innovation Studios",
