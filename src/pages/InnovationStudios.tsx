@@ -1,4 +1,3 @@
-
 import InnovationStudiosSection from "@/components/InnovationStudios";
 import ProjectsShowcase from "@/components/ProjectsShowcase";
 import StudioOverview from "@/components/studios/StudioOverview";
@@ -7,6 +6,7 @@ import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
+import ScrollDownButton from "@/components/hero/components/ScrollDownButton";
 
 const InnovationStudios = () => {
   const location = useLocation();
@@ -78,6 +78,14 @@ const InnovationStudios = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [location]);
 
+  const scrollToContent = () => {
+    if (overviewRef.current) {
+      overviewRef.current.scrollIntoView({
+        behavior: 'smooth'
+      });
+    }
+  };
+
   const Hero = () => {
     return <div className="min-h-screen relative overflow-hidden flex items-center">
         {/* Animated gradient background */}
@@ -125,6 +133,9 @@ const InnovationStudios = () => {
           }} className="mt-12 text-xl md:text-2xl text-white/90 font-lora max-w-2xl"> A project-driven innovation studio creating market-based solutions for Africa's most pressing challenges.</motion.p>
           </div>
         </div>
+
+        {/* Add scroll down indicator */}
+        <ScrollDownButton onClick={scrollToContent} />
       </div>;
   };
 
