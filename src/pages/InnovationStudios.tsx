@@ -107,7 +107,7 @@ const InnovationStudios = () => {
             y: 0
           }} transition={{
             duration: 0.6
-          }} className="space-y-20 md:space-y-28"> {/* Further increased spacing here */}
+          }} className="space-y-14 md:space-y-20"> {/* Reduced spacing here from space-y-20 md:space-y-28 */}
               {["Design.", "Build.", "Scale."].map((word, index) => <motion.div key={word} initial={{
               opacity: 0,
               x: -20
