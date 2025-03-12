@@ -1,3 +1,4 @@
+
 import InnovationStudiosSection from "@/components/InnovationStudios";
 import ProjectsShowcase from "@/components/ProjectsShowcase";
 import StudioOverview from "@/components/studios/StudioOverview";
@@ -106,7 +107,7 @@ const InnovationStudios = () => {
             y: 0
           }} transition={{
             duration: 0.6
-          }} className="space-y-6">
+          }} className="space-y-12 md:space-y-16"> {/* Increased spacing here */}
               {["Design.", "Build.", "Scale."].map((word, index) => <motion.div key={word} initial={{
               opacity: 0,
               x: -20
