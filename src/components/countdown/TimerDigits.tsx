@@ -12,6 +12,7 @@ interface TimerDigitsProps {
     dropdownText?: string;
   };
   compact?: boolean;
+  size?: "sm" | "md" | "lg";
 }
 
 const TimerDigits = ({ 
@@ -21,55 +22,64 @@ const TimerDigits = ({
   seconds, 
   showLabels = true,
   colorClasses,
-  compact = false
+  compact = false,
+  size = "md"
 }: TimerDigitsProps) => {
-  // Default accent color (bright orange) if none provided
+  // Default accent color if none provided
   const accentColor = colorClasses.accent || 'text-[#FF9848]';
-  // Default text color (white with opacity) if none provided
+  // Default text color if none provided
   const textColor = colorClasses.dropdownText || 'text-white/80';
+  
+  // Dynamic sizing based on size prop
+  const getSizeClasses = () => {
+    switch(size) {
+      case "sm":
+        return {
+          digit: compact ? "text-base" : "text-sm",
+          label: "text-xs",
+          gap: "gap-1",
+          padding: "p-0.5"
+        };
+      case "lg":
+        return {
+          digit: compact ? "text-2xl md:text-3xl" : "text-xl md:text-2xl",
+          label: "text-sm",
+          gap: "gap-3",
+          padding: "p-1.5"
+        };
+      case "md":
+      default:
+        return {
+          digit: compact ? "text-xl" : "text-lg",
+          label: "text-xs",
+          gap: "gap-2",
+          padding: "p-1"
+        };
+    }
+  };
+
+  const sizeClasses = getSizeClasses();
+
+  // Create a reusable time unit component
+  const TimeUnit = ({ value, label }: { value: number | string, label: string }) => (
+    <div className={sizeClasses.padding}>
+      <div className={`${sizeClasses.digit} font-montserrat font-bold ${accentColor}`}>
+        {value}
+      </div>
+      {showLabels && (
+        <div className={`${sizeClasses.label} capitalize ${textColor}`}>
+          {compact ? label.slice(0, 3) : label}
+        </div>
+      )}
+    </div>
+  );
 
   return (
-    <div className={`grid grid-cols-4 gap-${compact ? '1' : '2'} text-center`}>
-      <div className="p-1">
-        <div className={`${compact ? 'text-xl' : 'text-lg'} font-montserrat font-bold ${accentColor}`}>
-          {days}
-        </div>
-        {showLabels && (
-          <div className={`text-xs capitalize ${textColor}`}>
-            {compact ? 'days' : 'days'}
-          </div>
-        )}
-      </div>
-      <div className="p-1">
-        <div className={`${compact ? 'text-xl' : 'text-lg'} font-montserrat font-bold ${accentColor}`}>
-          {formatTimeUnit(hours)}
-        </div>
-        {showLabels && (
-          <div className={`text-xs capitalize ${textColor}`}>
-            {compact ? 'hrs' : 'hours'}
-          </div>
-        )}
-      </div>
-      <div className="p-1">
-        <div className={`${compact ? 'text-xl' : 'text-lg'} font-montserrat font-bold ${accentColor}`}>
-          {formatTimeUnit(minutes)}
-        </div>
-        {showLabels && (
-          <div className={`text-xs capitalize ${textColor}`}>
-            {compact ? 'min' : 'minutes'}
-          </div>
-        )}
-      </div>
-      <div className="p-1">
-        <div className={`${compact ? 'text-xl' : 'text-lg'} font-montserrat font-bold ${accentColor}`}>
-          {formatTimeUnit(seconds)}
-        </div>
-        {showLabels && (
-          <div className={`text-xs capitalize ${textColor}`}>
-            {compact ? 'sec' : 'seconds'}
-          </div>
-        )}
-      </div>
+    <div className={`grid grid-cols-4 ${sizeClasses.gap} text-center`}>
+      <TimeUnit value={days} label="days" />
+      <TimeUnit value={formatTimeUnit(hours)} label="hours" />
+      <TimeUnit value={formatTimeUnit(minutes)} label="minutes" />
+      <TimeUnit value={formatTimeUnit(seconds)} label="seconds" />
     </div>
   );
 };
