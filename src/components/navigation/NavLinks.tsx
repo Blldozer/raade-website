@@ -1,3 +1,4 @@
+
 import { Link, useNavigate } from "react-router-dom";
 import {
   NavigationMenu,
@@ -91,7 +92,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
                   onClick={onClick}
                 >
                   {item.name}
-                  <ChevronDown className="h-4 w-4 ml-1 transition-transform duration-200 group-hover:rotate-180" />
+                  <ChevronDown className="h-4 w-4 ml-1 group-data-[state=open]:rotate-180 group-hover:rotate-180" />
                 </Link>
                 <div className="absolute top-full left-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto z-50">
                   <NavigationMenuContent>
