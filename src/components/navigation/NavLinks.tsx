@@ -1,13 +1,13 @@
+
 import { Link, useNavigate } from "react-router-dom";
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuList,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
 } from "@/components/ui/navigation-menu";
 import { useLocation } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
+import { useState } from "react";
 
 export const navItems = [
   {
@@ -46,6 +46,7 @@ interface NavLinksProps {
 const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = false, forceDarkMode = false }: NavLinksProps) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   
   const isProjectPage = location.pathname.includes('/projects/');
   
@@ -82,32 +83,41 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
     <NavigationMenu>
       <NavigationMenuList className="flex space-x-6">
         {navItems.map((item) => (
-          <NavigationMenuItem key={item.name} className="relative group">
+          <NavigationMenuItem 
+            key={item.name} 
+            className="relative"
+            onMouseEnter={() => setHoveredItem(item.name)}
+            onMouseLeave={() => setHoveredItem(null)}
+          >
             {item.dropdownItems ? (
               <>
                 <Link
                   to={item.href}
-                  className={`group bg-transparent hover:bg-transparent ${getTextColor()} transition-colors duration-300 text-lg font-alegreyasans font-bold flex items-center`}
+                  className={`bg-transparent hover:bg-transparent ${getTextColor()} transition-colors duration-300 text-lg font-alegreyasans font-bold flex items-center`}
                   onClick={onClick}
                 >
                   {item.name}
-                  <ChevronDown className="h-4 w-4 ml-1 group-data-[state=open]:rotate-180 group-hover:rotate-180 transition-transform duration-200" />
+                  <ChevronDown 
+                    className={`h-4 w-4 ml-1 transition-transform duration-200 ${hoveredItem === item.name ? 'rotate-180' : ''}`} 
+                  />
                 </Link>
-                <div className="absolute top-full left-0 min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto z-50">
-                  <ul className="mt-2 bg-white/90 backdrop-blur-sm rounded-md shadow-lg p-2">
-                    {item.dropdownItems.map((dropdownItem) => (
-                      <li key={dropdownItem.name}>
-                        <Link
-                          to={dropdownItem.href}
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-[#FBB03B]/10 hover:text-[#FBB03B] text-[#1A365D] text-lg font-alegreyasans font-bold"
-                          onClick={onClick}
-                        >
-                          {dropdownItem.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                {hoveredItem === item.name && (
+                  <div className="absolute top-full left-0 min-w-[200px] z-50">
+                    <ul className="mt-2 bg-white/90 backdrop-blur-sm rounded-md shadow-lg p-2">
+                      {item.dropdownItems.map((dropdownItem) => (
+                        <li key={dropdownItem.name}>
+                          <Link
+                            to={dropdownItem.href}
+                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-[#FBB03B]/10 hover:text-[#FBB03B] text-[#1A365D] text-lg font-alegreyasans font-bold"
+                            onClick={onClick}
+                          >
+                            {dropdownItem.name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </>
             ) : (
               <Link
