@@ -9,9 +9,15 @@ export const useEmailValidation = (
   onEmailValidation?: (result: { isValid: boolean; message?: string }) => void
 ) => {
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+  const [validationMessage, setValidationMessage] = useState<string | null>(null);
+  const [isValid, setIsValid] = useState<boolean | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
+    // Reset validation state when email or ticket type changes
+    setValidationMessage(null);
+    setIsValid(null);
+    
     // When email changes and ticket type is set, validate the email domain
     const validateEmail = () => {
       if (email && ticketType) {
@@ -21,19 +27,26 @@ export const useEmailValidation = (
           // Client-side validation only
           const validationResult = validateTicketEmailDomain(email, ticketType);
           
+          setIsValid(validationResult.isValid);
+          setValidationMessage(validationResult.isValid ? null : validationResult.message);
+          
           if (onEmailValidation) {
             onEmailValidation(validationResult);
           }
           
-          if (!validationResult.isValid) {
+          // Only show toast for severe errors, not domain mismatch
+          if (!validationResult.isValid && validationResult.message?.includes("Error")) {
             toast({
-              title: "Email domain not valid",
+              title: "Email validation error",
               description: validationResult.message,
               variant: "destructive",
             });
           }
         } catch (error) {
           console.error("Error in email validation:", error);
+          setIsValid(false);
+          setValidationMessage("Error validating email");
+          
           if (onEmailValidation) {
             onEmailValidation({ isValid: false, message: "Error validating email" });
           }
@@ -50,5 +63,5 @@ export const useEmailValidation = (
     return () => clearTimeout(debounceTimeout);
   }, [email, ticketType, toast, onEmailValidation]);
 
-  return { isCheckingEmail };
+  return { isCheckingEmail, validationMessage, isValid };
 };

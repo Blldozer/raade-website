@@ -9,13 +9,17 @@ interface BasicInformationProps {
   errors: FormState<RegistrationFormData>["errors"];
   watch: UseFormWatch<RegistrationFormData>;
   isCheckingEmail: boolean;
+  emailValidationMessage?: string | null;
+  emailIsValid?: boolean | null;
 }
 
 const BasicInformation = ({ 
   register, 
   errors, 
   watch, 
-  isCheckingEmail 
+  isCheckingEmail,
+  emailValidationMessage,
+  emailIsValid
 }: BasicInformationProps) => {
   return (
     <>
@@ -38,10 +42,13 @@ const BasicInformation = ({
           type="email"
           placeholder="your.email@example.com"
           {...register("email")}
-          className={isCheckingEmail ? "bg-gray-100" : ""}
+          className={`${isCheckingEmail ? "bg-gray-100" : ""} ${emailIsValid === false ? "border-orange-400" : ""}`}
         />
         {isCheckingEmail && (
           <p className="text-gray-500 text-sm mt-1">Checking email...</p>
+        )}
+        {emailValidationMessage && !isCheckingEmail && (
+          <p className="text-orange-500 text-sm mt-1">{emailValidationMessage}</p>
         )}
         {errors.email && (
           <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>

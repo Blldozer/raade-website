@@ -30,7 +30,11 @@ const RegistrationFormFields = ({
   const watchEmail = watch("email");
   const isStudentGroup = watchTicketType === TICKET_TYPES.STUDENT_GROUP;
   
-  const { isCheckingEmail } = useEmailValidation(watchEmail, watchTicketType, onEmailValidation);
+  const { isCheckingEmail, validationMessage, isValid } = useEmailValidation(
+    watchEmail, 
+    watchTicketType, 
+    onEmailValidation
+  );
   
   useEffect(() => {
     // Reset group size when ticket type changes
@@ -48,7 +52,9 @@ const RegistrationFormFields = ({
         register={register} 
         errors={errors} 
         watch={watch} 
-        isCheckingEmail={isCheckingEmail} 
+        isCheckingEmail={isCheckingEmail}
+        emailValidationMessage={validationMessage}
+        emailIsValid={isValid}
       />
       
       <TicketTypeSelection 
