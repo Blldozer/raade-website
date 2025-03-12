@@ -1,9 +1,10 @@
+
 import { motion } from "framer-motion";
 import { ArrowLeftRight } from "lucide-react";
 
 const NewModel = () => {
   return (
-    <section id="new-model" className="py-32 bg-white">
+    <section id="overview" className="py-32 bg-white">
       <div className="max-w-[1600px] mx-auto px-6 md:px-12">
         {/* Title Section with 39/61 split */}
         <div className="flex flex-col lg:flex-row">

@@ -1,5 +1,6 @@
 import { Menu, X, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import NavLogo from "./NavLogo";
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { navItems } from "./navConfig";
@@ -82,10 +83,11 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
           {/* Panel Header */}
           <div className="flex justify-between items-center p-4 border-b border-gray-100">
             <div className="flex items-center">
-              <img 
-                src="/logos/RAADE-logo-final-black.png" 
-                alt="RAADE" 
-                className="h-8 w-auto"
+              <NavLogo 
+                isScrolled={isScrolled} 
+                forceDarkMode={true}
+                useShortForm={true}
+                forceSize="h-8"
               />
             </div>
             <button
