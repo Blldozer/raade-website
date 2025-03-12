@@ -24,7 +24,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-16 gap-8">
           <div className="flex flex-col items-start gap-6">
             <img
-              src="/logos/RAADE-logo-name-svg.svg"
+              src="/logos/RAADE-logo-final-black.png"
               alt="RAADE Logo"
               className="h-20 w-auto"
             />
