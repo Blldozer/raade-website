@@ -15,7 +15,9 @@ const ProjectsShowcase = () => {
   
   // Create a memoized filtered projects array that only updates when selectedSector changes
   const filteredProjects = projects.filter(project => 
-    selectedSector === "All" || project.sector === selectedSector
+    selectedSector === "All" || 
+    project.sector === selectedSector || 
+    project.sectors?.includes(selectedSector)
   );
 
   const handleSectorChange = (sector: typeof sectors[number]) => {
@@ -49,6 +51,14 @@ const ProjectsShowcase = () => {
         duration: 0.6
       }
     }
+  };
+
+  // Function to get all project sectors for display
+  const getProjectSectors = (project: typeof projects[0]) => {
+    if (project.sectors) {
+      return project.sectors;
+    }
+    return [project.sector];
   };
 
   return (
@@ -135,10 +145,17 @@ const ProjectsShowcase = () => {
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                   />
                   
-                  {/* Category Badge */}
-                  <Badge className="absolute top-4 right-4 bg-[#2b212e] border-none text-white font-lora z-10">
-                    {project.sector}
-                  </Badge>
+                  {/* Multiple Category Badges */}
+                  <div className="absolute top-4 right-4 flex flex-wrap justify-end gap-2 z-10">
+                    {getProjectSectors(project).map((sector, index) => (
+                      <Badge 
+                        key={`${project.name}-${sector}-${index}`} 
+                        className="bg-[#2b212e] border-none text-white font-lora"
+                      >
+                        {sector}
+                      </Badge>
+                    ))}
+                  </div>
                   
                   {/* Gradient Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-80"></div>

@@ -5,6 +5,7 @@ export type Project = {
   partnerLink?: string; // Adding optional partner website link
   challenge: string;
   sector: "Healthcare" | "Technology" | "Education" | "Energy" | "Business";
+  sectors?: Array<"Healthcare" | "Technology" | "Education" | "Energy" | "Business">; // Multiple sectors
   image: string;
   slug: string;
   description: string;
@@ -26,7 +27,8 @@ export const projects: Project[] = [
     partner: "SunFi Energy",
     partnerLink: "https://www.sunfi.co/",
     challenge: "Limited access to clean energy in rural Nigerian communities; decentralized market with price verification challenges",
-    sector: "Energy",
+    sector: "Energy", // Keep primary sector for backwards compatibility
+    sectors: ["Energy", "Business"], // Add multiple sectors
     image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&q=80",
     slug: "sunfi-solar-initiative",
     description: "The SunFi Solar Access Program addresses Nigeria's significant energy gap, where nearly half the population lacks reliable electricity access. In partnership with SunFi Energy, we're reimagining how distributed energy partners (DEPs) can expand solar power access across Nigeria. Our team is developing strategies to optimize this entrepreneurial distribution model, enabling more efficient deployment of affordable solar solutions to underserved communities. By enhancing the effectiveness of local energy entrepreneurs, this initiative aims to create pathways to clean energy that can scale nationwide.",
@@ -97,7 +99,8 @@ export const projects: Project[] = [
     partner: "Izesan Limited",
     partnerLink: "https://izesan.com/",
     challenge: "UNESCO predicts many Nigerian languages may vanish by 2025; limited documentation and educational integration",
-    sector: "Education",
+    sector: "Education", // Keep primary sector for backwards compatibility
+    sectors: ["Education", "Technology"], // Add multiple sectors
     image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&q=80",
     slug: "language-preservation-platform",
     description: "Nigeria is home to over 520 languages, many of which face extinction within a generation. In partnership with Izesan Limited, our team is designing digital resources to revitalize critically endangered indigenous languages in Taraba and Bayelsa states. We're developing innovative learning experiences for children aged 2-10 that incorporate indigenous languages as the medium of instruction, aligning with Nigeria's National Language Policy. By combining educational technology with community engagement strategies, this project aims to preserve cultural heritage while creating new pathways for mother-tongue education across Nigeria.",
