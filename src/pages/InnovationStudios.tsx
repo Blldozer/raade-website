@@ -98,7 +98,7 @@ const InnovationStudios = () => {
         </div>
         
         <div className="container mx-auto px-4 relative z-20 flex flex-col justify-between h-[calc(100vh-120px)]">
-          <div className="max-w-4xl pt-20">
+          <div className="max-w-4xl pl-8 sm:pl-12 pt-20">
             <motion.div initial={{
             opacity: 0,
             y: 20
@@ -132,7 +132,7 @@ const InnovationStudios = () => {
         }} transition={{
           delay: 1.2,
           duration: 0.5
-        }} className="mt-auto mb-24 text-xl md:text-2xl text-white/90 font-lora max-w-2xl"> A project-driven innovation studio creating market-based solutions for Africa's most pressing challenges.</motion.p>
+        }} className="mt-auto mb-24 text-xl md:text-2xl text-white/90 font-lora max-w-2xl pl-8 sm:pl-12"> A project-driven innovation studio creating market-based solutions for Africa's most pressing challenges.</motion.p>
         </div>
 
         {/* Add scroll down indicator */}
