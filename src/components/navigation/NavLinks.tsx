@@ -130,7 +130,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
         ))}
         <NavigationMenuItem>
           <Link
-            to="/studios#apply"
+            to="/#join"
             className={`px-6 py-2 rounded-md transition-all duration-300 border-2 text-lg font-alegreyasans font-bold ${getButtonStyles()}`}
             onClick={onClick}
           >
