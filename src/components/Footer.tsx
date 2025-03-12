@@ -24,9 +24,9 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-16 gap-8">
           <div className="flex flex-col items-start gap-6">
             <img
-              src="/logos/RAADE-logo-final-black.png"
+              src="/logos/RAADE-logo-name-svg.svg"
               alt="RAADE Logo"
-              className="h-72 w-auto" /* Increased from h-24 to h-72 (3x larger) */
+              className="h-20 w-auto"
             />
             <p className="text-gray-600 max-w-xl text-base leading-relaxed">
               We are a student-led organization pioneering innovative approaches to African 

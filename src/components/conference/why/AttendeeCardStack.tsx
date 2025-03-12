@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -117,7 +118,7 @@ const AttendeeCardStack = ({ attendees, activeId, onTabChange }: AttendeeCardSta
       <Button
         variant="ghost"
         size="icon"
-        className="absolute left-8 md:left-20 lg:left-32 top-1/2 -translate-y-1/2 bg-white/30 hover:bg-white/50 text-black z-10 rounded-full h-12 w-12 shadow-lg transition-transform hover:scale-110 active:scale-95"
+        className="absolute left-4 sm:left-12 md:left-28 lg:left-40 top-1/2 -translate-y-1/2 bg-white/30 hover:bg-white/50 text-black z-10 rounded-full h-12 w-12 shadow-lg transition-transform hover:scale-110 active:scale-95"
         onClick={handlePrevTab}
         disabled={isTabTransitioning}
         aria-label="Previous attendee type"
@@ -128,7 +129,7 @@ const AttendeeCardStack = ({ attendees, activeId, onTabChange }: AttendeeCardSta
       <Button
         variant="ghost"
         size="icon"
-        className="absolute right-8 md:right-20 lg:right-32 top-1/2 -translate-y-1/2 bg-white/30 hover:bg-white/50 text-black z-10 rounded-full h-12 w-12 shadow-lg transition-transform hover:scale-110 active:scale-95"
+        className="absolute right-4 sm:right-12 md:right-28 lg:right-40 top-1/2 -translate-y-1/2 bg-white/30 hover:bg-white/50 text-black z-10 rounded-full h-12 w-12 shadow-lg transition-transform hover:scale-110 active:scale-95"
         onClick={handleNextTab}
         disabled={isTabTransitioning}
         aria-label="Next attendee type"
