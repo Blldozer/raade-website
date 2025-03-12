@@ -121,6 +121,7 @@ const VideoBackground = ({ videoLoaded, setVideoLoaded }: VideoBackgroundProps) 
           transition: 'opacity 0.5s ease-out'
         }}
       >
+        <source src="/hero-background.webm" type="video/webm" />
         <source src="/hero-background.mp4" type="video/mp4" />
         {/* Fallback for browsers that don't support video */}
         Your browser does not support the video tag.
