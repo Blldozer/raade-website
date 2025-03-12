@@ -97,8 +97,8 @@ const InnovationStudios = () => {
           </div>
         </div>
         
-        <div className="container mx-auto px-4 relative z-20">
-          <div className="max-w-4xl mx-auto">
+        <div className="container mx-auto px-4 relative z-20 flex flex-col justify-between h-[calc(100vh-120px)]">
+          <div className="max-w-4xl mx-auto pt-20">
             <motion.div initial={{
             opacity: 0,
             y: 20
@@ -107,7 +107,7 @@ const InnovationStudios = () => {
             y: 0
           }} transition={{
             duration: 0.6
-          }} className="space-y-12 md:space-y-16"> {/* Increased spacing here */}
+          }} className="space-y-20 md:space-y-28"> {/* Further increased spacing here */}
               {["Design.", "Build.", "Scale."].map((word, index) => <motion.div key={word} initial={{
               opacity: 0,
               x: -20
@@ -123,16 +123,16 @@ const InnovationStudios = () => {
                   </h1>
                 </motion.div>)}
             </motion.div>
-            
-            <motion.p initial={{
-            opacity: 0
-          }} animate={{
-            opacity: 1
-          }} transition={{
-            delay: 1.2,
-            duration: 0.5
-          }} className="mt-12 text-xl md:text-2xl text-white/90 font-lora max-w-2xl"> A project-driven innovation studio creating market-based solutions for Africa's most pressing challenges.</motion.p>
           </div>
+          
+          <motion.p initial={{
+          opacity: 0
+        }} animate={{
+          opacity: 1
+        }} transition={{
+          delay: 1.2,
+          duration: 0.5
+        }} className="mt-auto mb-24 text-xl md:text-2xl text-white/90 font-lora max-w-2xl"> A project-driven innovation studio creating market-based solutions for Africa's most pressing challenges.</motion.p>
         </div>
 
         {/* Add scroll down indicator */}
