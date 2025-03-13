@@ -1,7 +1,34 @@
-
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { useResponsive } from "../../hooks/useResponsive";
 
 const AboutHero = () => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const { isMobile } = useResponsive();
+
+  // Preload the image
+  useEffect(() => {
+    const img = new Image();
+    img.src = "/raade-innov-team-core-2.jpg"; // Make sure there's a leading slash for public directory
+    
+    img.onload = () => {
+      console.log("Hero image loaded successfully");
+      setImageLoaded(true);
+    };
+    
+    img.onerror = () => {
+      console.error("Failed to load hero image");
+      setImageError(true);
+    };
+    
+    return () => {
+      // Clean up to prevent memory leaks
+      img.onload = null;
+      img.onerror = null;
+    };
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left Side - Text */}
@@ -31,11 +58,36 @@ const AboutHero = () => {
         transition={{ duration: 0.6 }}
         className="w-full lg:w-[61%] h-screen relative"
       >
-        <img
-          src="raade-innov-team-core-2.jpg"
-          alt="RAADE Innovation Studio Team at Rice Business School"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+        {/* Show a placeholder while image is loading */}
+        {!imageLoaded && !imageError && (
+          <div className="absolute inset-0 bg-[#4C504A] flex items-center justify-center">
+            <div className="text-white text-xl">Loading RAADE's story...</div>
+          </div>
+        )}
+        
+        {/* Show image once loaded */}
+        {(imageLoaded || !isMobile) && !imageError && (
+          <img
+            src="/raade-innov-team-core-2.jpg" 
+            alt="RAADE Innovation Studio Team at Rice Business School"
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ display: imageLoaded ? 'block' : 'none' }}
+            // On mobile, don't wait for onLoad event which might never fire if there are issues
+            onLoad={() => !isMobile && setImageLoaded(true)} 
+          />
+        )}
+        
+        {/* Fallback if image fails to load */}
+        {imageError && (
+          <div className="absolute inset-0 bg-[#3C403A] flex items-center justify-center">
+            <div className="text-white text-center px-6">
+              <span className="text-4xl font-bold block mb-2">RAADE</span>
+              <span className="text-xl">Revolutionizing African Development</span>
+            </div>
+          </div>
+        )}
+        
+        {/* Overlay that's always visible */}
         <div className="absolute inset-0 bg-black/10" />
       </motion.div>
     </div>
