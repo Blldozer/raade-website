@@ -18,7 +18,8 @@ const InnovationStudios = () => {
   const [currentSection, setCurrentSection] = useState<string>("hero");
 
   // Use the hook to set and manage navigation background
-  useNavBackground('light');
+  // Initialize with 'dark' to ensure white logo on purple background
+  useNavBackground('dark');
 
   // Track scroll position to determine current section
   useEffect(() => {
@@ -91,7 +92,7 @@ const InnovationStudios = () => {
 
   const Hero = () => {
     return (
-      <div className="min-h-screen relative overflow-hidden flex items-center" data-background="light">
+      <div className="min-h-screen relative overflow-hidden flex items-center innovation-studios-hero" data-background="dark">
         {/* Animated gradient background */}
         <div className="absolute inset-0 z-0 bg-[#2b212e]">
           <div className="absolute inset-0 animate-gradient-x bg-gradient-to-r from-[#2b212e] via-[#3b2c40] to-[#2b212e] bg-[length:200%_100%]" />

@@ -31,6 +31,11 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
       section.setAttribute('data-background', 'dark');
     });
     
+    // Set Innovation Studios hero to dark background for correct navbar display
+    document.querySelectorAll('.innovation-studios-hero').forEach(section => {
+      section.setAttribute('data-background', 'dark');
+    });
+    
     // For the Innovation Studios hero section, specifically set to light
     document.querySelectorAll('.min-h-screen[data-background="light"]').forEach(section => {
       section.setAttribute('data-background', 'light');
@@ -68,13 +73,15 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
     // Setup background detection for navigation
     const updateNavBackground = () => {
       const scrollPosition = window.scrollY + 40; // Check slightly below the top of viewport where navbar is
-      let currentBackground: 'light' | 'dark' = initialBackground; // Use the initial background as default
+      let currentBackground = initialBackground as 'light' | 'dark'; // Use the initial background as default with type assertion
       
       // Use cached positions instead of querying DOM on each scroll
       for (const section of sectionPositions) {
         if (scrollPosition >= section.top && scrollPosition < section.bottom) {
           // Type safety: ensure we only assign valid values
-          currentBackground = section.background === 'dark' ? 'dark' : 'light';
+          if (section.background === 'dark' || section.background === 'light') {
+            currentBackground = section.background;
+          }
           break;
         }
       }
