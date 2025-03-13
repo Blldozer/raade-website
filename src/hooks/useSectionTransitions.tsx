@@ -35,13 +35,20 @@ export const useSectionTransitions = () => {
   
   // Detect device performance on component mount
   useEffect(() => {
-    setIsLowPerformanceDevice(detectLowPerformanceDevice());
-    
-    // Set up ScrollTrigger optimization globally
-    ScrollTrigger.config({
-      ignoreMobileResize: true,
-      autoRefreshEvents: "visibilitychange,DOMContentLoaded,load,resize", // Reduce refresh events
-    });
+    // Use a try-catch block to prevent any detection errors from breaking the entire page
+    try {
+      setIsLowPerformanceDevice(detectLowPerformanceDevice());
+      
+      // Set up ScrollTrigger optimization globally
+      ScrollTrigger.config({
+        ignoreMobileResize: true,
+        autoRefreshEvents: "visibilitychange,DOMContentLoaded,load,resize", // Reduce refresh events
+      });
+    } catch (error) {
+      console.error("Error detecting device performance:", error);
+      // Default to false in case of errors to avoid potential issues
+      setIsLowPerformanceDevice(false);
+    }
   }, []);
   
   // Always use navigation background updates (optimized version)
@@ -51,78 +58,123 @@ export const useSectionTransitions = () => {
   if (isLowPerformanceDevice) {
     // Apply only critical animations for user experience
     useEffect(() => {
-      // Apply minimal CSS-based animations using classes instead of heavy GSAP animations
-      document.body.classList.add('low-performance-mode');
-      
-      return () => {
-        document.body.classList.remove('low-performance-mode');
-      };
+      // Make sure this won't fail on mobile browsers
+      try {
+        // Apply minimal CSS-based animations using classes instead of heavy GSAP animations
+        document.body.classList.add('low-performance-mode');
+        
+        return () => {
+          document.body.classList.remove('low-performance-mode');
+        };
+      } catch (error) {
+        console.error("Error applying low-performance mode:", error);
+      }
     }, []);
     
     // Still use Future Showcase animations even on low performance devices
-    useFutureShowcaseAnimation();
+    // Wrap each animation hook in try-catch to prevent individual failures from breaking the entire page
+    try {
+      useFutureShowcaseAnimation();
+    } catch (error) {
+      console.error("Error in Future Showcase animations:", error);
+    }
     
     // Still use general section animations but they'll respect the low-performance CSS
-    useGeneralSectionAnimations();
+    try {
+      useGeneralSectionAnimations();
+    } catch (error) {
+      console.error("Error in General Section animations:", error);
+    }
+    
     return;
   }
   
   // For higher performance devices, use optimized animations
   // Use the new optimized parallax implementation instead of individual hooks
-  useOptimizedParallax();
-  useTransitionStatAnimation();
-  useTransitionHookAnimation();
+  // Wrap each animation hook in try-catch to prevent failures from breaking rendering
+  try {
+    useOptimizedParallax();
+  } catch (error) {
+    console.error("Error in Optimized Parallax:", error);
+  }
+  
+  try {
+    useTransitionStatAnimation();
+  } catch (error) {
+    console.error("Error in Transition Stat animations:", error);
+  }
+  
+  try {
+    useTransitionHookAnimation();
+  } catch (error) {
+    console.error("Error in Transition Hook animations:", error);
+  }
   
   // Future Showcase animations - load this before general animations
-  useFutureShowcaseAnimation();
+  try {
+    useFutureShowcaseAnimation();
+  } catch (error) {
+    console.error("Error in Future Showcase animations:", error);
+  }
   
   // General section animations (for non-specific sections)
-  useGeneralSectionAnimations();
+  try {
+    useGeneralSectionAnimations();
+  } catch (error) {
+    console.error("Error in General Section animations:", error);
+  }
   
   // Add a special effect to indicate scrolling is enabled
   useEffect(() => {
     const addScrollIndicator = () => {
-      const indicator = document.createElement('div');
-      indicator.className = 'scroll-performance-indicator';
-      indicator.style.cssText = `
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.2);
-        backdrop-filter: blur(5px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s ease;
-      `;
-      
-      document.body.appendChild(indicator);
-      
-      let scrollTimeout: number | null = null;
-      
-      window.addEventListener('scroll', () => {
-        indicator.style.opacity = '1';
+      try {
+        const indicator = document.createElement('div');
+        indicator.className = 'scroll-performance-indicator';
+        indicator.style.cssText = `
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.2);
+          backdrop-filter: blur(5px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.3s ease;
+        `;
         
-        if (scrollTimeout) {
-          window.clearTimeout(scrollTimeout);
-        }
+        document.body.appendChild(indicator);
         
-        scrollTimeout = window.setTimeout(() => {
-          indicator.style.opacity = '0';
-        }, 500);
-      });
-      
-      return () => {
-        document.body.removeChild(indicator);
-        window.removeEventListener('scroll', () => {});
-        if (scrollTimeout) window.clearTimeout(scrollTimeout);
-      };
+        let scrollTimeout: number | null = null;
+        
+        window.addEventListener('scroll', () => {
+          indicator.style.opacity = '1';
+          
+          if (scrollTimeout) {
+            window.clearTimeout(scrollTimeout);
+          }
+          
+          scrollTimeout = window.setTimeout(() => {
+            indicator.style.opacity = '0';
+          }, 500);
+        });
+        
+        return () => {
+          if (document.body.contains(indicator)) {
+            document.body.removeChild(indicator);
+          }
+          window.removeEventListener('scroll', () => {});
+          if (scrollTimeout) window.clearTimeout(scrollTimeout);
+        };
+      } catch (error) {
+        console.error("Error adding scroll indicator:", error);
+        return () => {};
+      }
     };
     
     return addScrollIndicator();
@@ -131,9 +183,13 @@ export const useSectionTransitions = () => {
   // Add global ScrollTrigger cleanup
   useEffect(() => {
     return () => {
-      // Clean up all ScrollTrigger instances when component unmounts
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-      ScrollTrigger.clearMatchMedia();
+      try {
+        // Clean up all ScrollTrigger instances when component unmounts
+        ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+        ScrollTrigger.clearMatchMedia();
+      } catch (error) {
+        console.error("Error cleaning up ScrollTrigger:", error);
+      }
     };
   }, []);
 };

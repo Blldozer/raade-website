@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Linkedin } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useInView } from "framer-motion";
 
 const teamMembers = [
@@ -80,6 +80,7 @@ const teamMembers = [
 const Team = () => {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, amount: 0.1 });
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
 
   const container = {
     hidden: { opacity: 0 },
@@ -131,6 +132,13 @@ const Team = () => {
         ease: "easeOut"
       }
     }
+  };
+
+  const handleImageError = (name: string) => {
+    setImageErrors(prev => ({
+      ...prev,
+      [name]: true
+    }));
   };
 
   return (
@@ -186,16 +194,25 @@ const Team = () => {
                   className="rounded-t-lg overflow-hidden"
                   variants={photoAnimation}
                 >
-                  <motion.img
-                    src={`/raade-individual-e-board-photos-webp/${member.name.split(" ").join("-")}-raade-website-image.webp`} 
-                    alt={member.name} 
-                    className="w-full h-full object-cover"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                    loading="lazy"
-                    whileHover={{ scale: 1.05, transition: { duration: 0.4 } }}
-                  />
+                  {!imageErrors[member.name] ? (
+                    <motion.img
+                      src={`/raade-individual-e-board-photos-webp/${member.name.split(" ").join("-")}-raade-website-image.webp`}
+                      alt={member.name}
+                      className="w-full h-full object-cover"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.5 }}
+                      loading="lazy"
+                      whileHover={{ scale: 1.05, transition: { duration: 0.4 } }}
+                      onError={() => handleImageError(member.name)}
+                    />
+                  ) : (
+                    <div className="w-full aspect-[4/3] bg-[#4C504A] flex items-center justify-center">
+                      <span className="text-white text-3xl font-bold">
+                        {member.name.split(" ")[0][0]}{member.name.split(" ")[1]?.[0] || ''}
+                      </span>
+                    </div>
+                  )}
                 </motion.div>
                 <motion.div 
                   className="p-8"
