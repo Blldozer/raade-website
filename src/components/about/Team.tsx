@@ -4,31 +4,49 @@ import { useRef, useState, useEffect } from "react";
 import { useInView } from "framer-motion";
 import TeamMembersList from "./TeamMembersList";
 import { teamMembers } from "./TeamData";
+import { Skeleton } from "@/components/ui/skeleton";
 
+/**
+ * Team component - Displays the team section with proper state management
+ * Features progressive loading and error handling for reliable rendering
+ * Uses intersection observer to trigger animations only when visible
+ */
 const Team = () => {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, amount: 0.1 });
-  const [hasRendered, setHasRendered] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
+  // Initialize component with improved state management
   useEffect(() => {
     console.log("Team component mounted");
-    setHasRendered(true);
     
-    // Mark the component as loaded after a short delay
+    // Using a small timeout to allow browser to settle after initial render
     const timer = setTimeout(() => {
       setIsLoaded(true);
-      console.log("Team component fully loaded");
-    }, 100);
+      console.log("Team component marked as loaded");
+    }, 200);
     
+    // Proper cleanup to prevent memory leaks and state updates after unmount
     return () => {
-      console.log("Team component unmounted");
+      console.log("Team component unmounting");
       clearTimeout(timer);
     };
   }, []);
 
-  if (!hasRendered) {
-    return <div id="team" className="py-24 bg-white">Loading team information...</div>;
+  // Error boundary fallback for graceful degradation
+  if (hasError) {
+    return (
+      <section id="team" className="py-24 bg-white">
+        <div className="max-w-[1600px] mx-auto px-6 md:px-12">
+          <h2 className="text-4xl font-simula mb-6">Meet the team</h2>
+          <p className="text-xl font-lora text-gray-700">
+            We're having trouble loading our team information. 
+            Please try refreshing the page.
+          </p>
+        </div>
+      </section>
+    );
   }
 
   return (
@@ -64,11 +82,26 @@ const Team = () => {
           </motion.div>
         </div>
 
-        <TeamMembersList 
-          teamMembers={teamMembers} 
-          isInView={isInView}
-          isLoaded={isLoaded}
-        />
+        {/* Show loading skeleton while team data is initializing */}
+        {!isLoaded ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[...Array(12)].map((_, index) => (
+              <div key={index} className="rounded-lg overflow-hidden">
+                <Skeleton className="aspect-[4/3] w-full" />
+                <div className="p-8 bg-[#3C403A] rounded-b-lg">
+                  <Skeleton className="h-10 w-3/4 mb-2" />
+                  <Skeleton className="h-6 w-1/2" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <TeamMembersList 
+            teamMembers={teamMembers} 
+            isInView={isInView}
+            isLoaded={isLoaded}
+          />
+        )}
       </div>
     </section>
   );

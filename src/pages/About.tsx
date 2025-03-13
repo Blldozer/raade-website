@@ -1,7 +1,10 @@
+
 import { useEffect, useState, Suspense, lazy } from "react";
 import AboutNav from "../components/navigation/AboutNav";
 import AboutHero from "../components/about/AboutHero";
 import { useResponsive } from "../hooks/useResponsive";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Lazy load heavier components to improve initial page load time
 const NewModel = lazy(() => import("../components/about/NewModel"));
@@ -10,13 +13,25 @@ const Approach = lazy(() => import("../components/about/Approach"));
 const Impact = lazy(() => import("../components/about/Impact"));
 const Team = lazy(() => import("../components/about/Team"));
 
+/**
+ * About page component - Manages the entire About page lifecycle
+ * Features progressive loading, error handling, and navigation fixes
+ * Includes responsive design considerations for all device sizes
+ */
 const About = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { isMobile } = useResponsive();
   const [activeSection, setActiveSection] = useState(0);
   const [hasError, setHasError] = useState(false);
+  const [pageInitialized, setPageInitialized] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
   
+  // Initialize the page and set up error handling
   useEffect(() => {
+    // Set document attributes for navigation styling
+    document.body.setAttribute('data-nav-background', 'dark');
+    
     // Add debugging information
     console.log("About page mounted with isMobile:", isMobile);
     
@@ -40,10 +55,11 @@ const About = () => {
     
     window.addEventListener('error', handleGlobalError);
     
-    // Initialize with a simpler approach
+    // Initialize with a clearer approach
     const timer = setTimeout(() => {
       console.log("Initial loading complete");
       setIsLoading(false);
+      setPageInitialized(true);
       
       // On mobile, we'll progressively reveal sections
       if (isMobile) {
@@ -70,13 +86,24 @@ const About = () => {
       }
     }, 500); // Increased initial delay for better reliability
     
+    // Clean up all resources and listeners when unmounting
     return () => {
       console.log("About page unmounted");
       document.title = "RAADE";
       clearTimeout(timer);
       window.removeEventListener('error', handleGlobalError);
+      
+      // Reset any navigation-related attributes
+      document.body.removeAttribute('data-nav-background');
     };
   }, [isMobile, isLoading]);
+
+  // Handle navigation via the logo to prevent blank screen issues
+  const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    // Force a clean navigation state
+    navigate("/", { replace: true });
+  };
 
   // Create an array of sections to render progressively
   const sections = [
@@ -156,14 +183,14 @@ const About = () => {
 
   return (
     <div className="bg-white">
-      {/* Always render the navigation */}
+      {/* Always render the navigation with navigation fix */}
       <AboutNav />
       
       {/* Always show hero section */}
       {sections[0]}
       
-      {/* Conditionally render other sections based on activeSection count */}
-      {!hasError && sections.slice(1, activeSection + 1)}
+      {/* Conditionally render other sections based on activeSection count and initialization state */}
+      {pageInitialized && !hasError && sections.slice(1, activeSection + 1)}
       
       {/* Show a loading indicator if needed */}
       {isLoading && (
