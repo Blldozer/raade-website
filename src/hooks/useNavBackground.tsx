@@ -31,6 +31,11 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
       section.setAttribute('data-background', 'dark');
     });
     
+    // For the Innovation Studios hero section, specifically set to light
+    document.querySelectorAll('.min-h-screen[data-background="light"]').forEach(section => {
+      section.setAttribute('data-background', 'light');
+    });
+    
     document.querySelectorAll('#conference-promo, #transition-stat, #future-showcase, #join').forEach(section => {
       section.setAttribute('data-background', 'light');
     });
@@ -41,7 +46,7 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
     // Function to calculate and cache section positions
     const calculateSectionPositions = () => {
       sectionPositions = [];
-      document.querySelectorAll('section').forEach(section => {
+      document.querySelectorAll('section, div[data-background]').forEach(section => {
         const rect = section.getBoundingClientRect();
         const scrollY = window.scrollY;
         sectionPositions.push({
@@ -69,8 +74,7 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
       for (const section of sectionPositions) {
         if (scrollPosition >= section.top && scrollPosition < section.bottom) {
           // Type safety: ensure we only assign valid values
-          const sectionBackground = section.background === 'dark' ? 'dark' : 'light';
-          currentBackground = sectionBackground;
+          currentBackground = section.background === 'dark' ? 'dark' : 'light';
           break;
         }
       }

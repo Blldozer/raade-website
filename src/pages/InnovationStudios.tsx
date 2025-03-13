@@ -8,6 +8,7 @@ import Navigation from "@/components/Navigation";
 import { useEffect, useRef, useState, useLayoutEffect } from "react";
 import { useLocation } from "react-router-dom";
 import ScrollDownButton from "@/components/hero/components/ScrollDownButton";
+import { useNavBackground } from "@/hooks/useNavBackground";
 
 const InnovationStudios = () => {
   const location = useLocation();
@@ -16,42 +17,35 @@ const InnovationStudios = () => {
   const applyRef = useRef<HTMLDivElement>(null);
   const [currentSection, setCurrentSection] = useState<string>("hero");
 
-  // Set initial nav background before any rendering
-  useLayoutEffect(() => {
-    // Set light background immediately on component mount
-    document.body.setAttribute('data-nav-background', 'light');
-  }, []);
+  // Use the hook to set and manage navigation background
+  useNavBackground('light');
 
-  // Track scroll position to determine current section for proper nav contrast
+  // Track scroll position to determine current section
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
       const viewportHeight = window.innerHeight;
       
-      // Set light mode for all sections
+      // Set section based on scroll position
       if (scrollPosition < viewportHeight * 0.7) {
         setCurrentSection("hero");
-        document.body.setAttribute('data-nav-background', 'light');
       } 
       // Check if we're in overview section
       else if (overviewRef.current && 
           scrollPosition >= overviewRef.current.offsetTop - 100 && 
           scrollPosition < projectsRef.current?.offsetTop! - 100) {
         setCurrentSection("overview");
-        document.body.setAttribute('data-nav-background', 'light');
       }
       // Check if we're in projects section
       else if (projectsRef.current && 
           scrollPosition >= projectsRef.current.offsetTop - 100 && 
           scrollPosition < applyRef.current?.offsetTop! - 100) {
         setCurrentSection("projects");
-        document.body.setAttribute('data-nav-background', 'light');
       }
       // Check if we're in apply section
       else if (applyRef.current && 
           scrollPosition >= applyRef.current.offsetTop - 100) {
         setCurrentSection("apply");
-        document.body.setAttribute('data-nav-background', 'light');
       }
     };
 
@@ -84,8 +78,6 @@ const InnovationStudios = () => {
     // Cleanup
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      // Clean up the nav background attribute when component unmounts
-      document.body.removeAttribute('data-nav-background');
     };
   }, [location]);
 
@@ -98,7 +90,8 @@ const InnovationStudios = () => {
   };
 
   const Hero = () => {
-    return <div className="min-h-screen relative overflow-hidden flex items-center">
+    return (
+      <div className="min-h-screen relative overflow-hidden flex items-center" data-background="light">
         {/* Animated gradient background */}
         <div className="absolute inset-0 z-0 bg-[#2b212e]">
           <div className="absolute inset-0 animate-gradient-x bg-gradient-to-r from-[#2b212e] via-[#3b2c40] to-[#2b212e] bg-[length:200%_100%]" />
@@ -147,10 +140,12 @@ const InnovationStudios = () => {
 
         {/* Add scroll down indicator */}
         <ScrollDownButton onClick={scrollToContent} />
-      </div>;
+      </div>
+    );
   };
 
-  return <div>
+  return (
+    <div>
       <Navigation isHeroPage={true} forceDarkMode={false} />
       <div>
         <Hero />
@@ -164,7 +159,8 @@ const InnovationStudios = () => {
           <StudioCTA />
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
 
 export default InnovationStudios;
