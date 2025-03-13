@@ -16,12 +16,17 @@ interface TeamMembersListProps {
 
 /**
  * TeamMembersList component - Renders the grid of team members
- * Features staggered animations for a polished appearance
- * Includes mobile-optimized rendering and error handling
+ * Features:
+ * - Coordinated loading of team member images
+ * - Staggered animations for visual appeal
+ * - Mobile-optimized rendering with adaptable grid layout
+ * - Tracks loading progress for all team members
  */
 const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListProps) => {
   // Track which images are loaded to improve rendering reliability
   const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [networkStatus, setNetworkStatus] = useState<'online'|'offline'>('online');
 
   // Reset animation state when component mounts or visibility changes
   useEffect(() => {
@@ -29,11 +34,40 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
       console.log("TeamMembersList is in view and loaded, preparing animations");
     }
     
+    // Listen for online/offline status
+    const handleOnline = () => {
+      console.log("Browser is online, attempting to reload any failed images");
+      setNetworkStatus('online');
+    };
+    
+    const handleOffline = () => {
+      console.log("Browser is offline, images may fail to load");
+      setNetworkStatus('offline');
+    };
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
     // Clean up animation states when component unmounts
     return () => {
       console.log("TeamMembersList unmounting");
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
     };
   }, [isInView, isLoaded]);
+
+  // Calculate loading progress
+  useEffect(() => {
+    const totalImages = teamMembers.length;
+    const loadedCount = Object.values(loadedImages).filter(Boolean).length;
+    
+    const percent = totalImages > 0 ? (loadedCount / totalImages) * 100 : 0;
+    setLoadingProgress(percent);
+    
+    if (percent === 100) {
+      console.log("All team member images loaded successfully");
+    }
+  }, [loadedImages, teamMembers.length]);
 
   // Notification when an image loads successfully
   const handleImageLoaded = (memberName: string) => {
@@ -57,22 +91,41 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
   };
 
   return (
-    <motion.div 
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-      variants={container}
-      initial="hidden"
-      animate={isInView && isLoaded ? "show" : "hidden"}
-      exit="hidden"
-    >
-      {teamMembers.map((member, index) => (
-        <TeamMember 
-          key={`${member.name}-${index}`} 
-          member={member} 
-          index={index}
-          onImageLoad={() => handleImageLoaded(member.name)}
-        />
-      ))}
-    </motion.div>
+    <>
+      {/* Optional loading progress indicator - only shown during initial load */}
+      {isInView && isLoaded && loadingProgress < 100 && networkStatus === 'online' && (
+        <div className="w-full mb-8 bg-gray-200 rounded-full h-2.5 hidden sm:block">
+          <div 
+            className="bg-[#FBB03B] h-2.5 rounded-full transition-all duration-300" 
+            style={{ width: `${loadingProgress}%` }}
+          />
+        </div>
+      )}
+      
+      {/* Show offline message when needed */}
+      {networkStatus === 'offline' && (
+        <div className="w-full mb-8 p-4 bg-gray-100 text-gray-700 rounded-lg text-center">
+          You appear to be offline. Some team photos may not load properly.
+        </div>
+      )}
+    
+      <motion.div 
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        variants={container}
+        initial="hidden"
+        animate={isInView && isLoaded ? "show" : "hidden"}
+        exit="hidden"
+      >
+        {teamMembers.map((member, index) => (
+          <TeamMember 
+            key={`${member.name}-${index}`} 
+            member={member} 
+            index={index}
+            onImageLoad={() => handleImageLoaded(member.name)}
+          />
+        ))}
+      </motion.div>
+    </>
   );
 };
 
