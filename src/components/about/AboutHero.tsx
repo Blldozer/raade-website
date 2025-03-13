@@ -3,10 +3,15 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useResponsive } from "../../hooks/useResponsive";
 
+/**
+ * AboutHero component - Displays the hero section for the About page
+ * Features a 39%/61% split between text content and image
+ * Includes responsive handling for different device sizes
+ */
 const AboutHero = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const { isMobile } = useResponsive();
+  const { isMobile, isTablet, width } = useResponsive();
 
   // Preload the image
   useEffect(() => {
@@ -58,39 +63,51 @@ const AboutHero = () => {
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
-        className="w-full lg:w-[61%] h-screen relative"
+        className="w-full lg:w-[61%] relative"
       >
-        {/* Show a placeholder while image is loading */}
-        {!imageLoaded && !imageError && (
-          <div className="absolute inset-0 bg-[#4C504A] flex items-center justify-center">
-            <div className="text-white text-xl">Loading RAADE's story...</div>
-          </div>
-        )}
-        
-        {/* Show image once loaded */}
-        {(imageLoaded || !isMobile) && !imageError && (
-          <img
-            src="/raade-innov-team-core-2.jpg" 
-            alt="RAADE Innovation Studio Team at Rice Business School"
-            className="absolute inset-0 w-full h-full object-cover"
-            style={{ display: imageLoaded ? 'block' : 'none' }}
-            // On mobile, don't wait for onLoad event which might never fire if there are issues
-            onLoad={() => !isMobile && setImageLoaded(true)} 
-          />
-        )}
-        
-        {/* Fallback if image fails to load */}
-        {imageError && (
-          <div className="absolute inset-0 bg-[#3C403A] flex items-center justify-center">
-            <div className="text-white text-center px-6">
-              <span className="text-4xl font-bold block mb-2">RAADE</span>
-              <span className="text-xl">Revolutionizing African Development</span>
+        {/* Modified container to adjust height based on screen size */}
+        <div className={`
+          ${isMobile ? 'h-[50vh]' : 'h-screen'}
+          relative overflow-hidden
+        `}>
+          {/* Show a placeholder while image is loading */}
+          {!imageLoaded && !imageError && (
+            <div className="absolute inset-0 bg-[#4C504A] flex items-center justify-center">
+              <div className="text-white text-xl">Loading RAADE's story...</div>
             </div>
-          </div>
-        )}
-        
-        {/* Overlay that's always visible */}
-        <div className="absolute inset-0 bg-black/10" />
+          )}
+          
+          {/* Show image once loaded - Mobile-specific adjustments */}
+          {(imageLoaded || !isMobile) && !imageError && (
+            <img
+              src="/raade-innov-team-core-2.jpg" 
+              alt="RAADE Innovation Studio Team at Rice Business School"
+              className={`
+                absolute inset-0 w-full h-full
+                ${isMobile ? 'object-contain object-center' : 'object-cover'}
+              `}
+              style={{ display: imageLoaded ? 'block' : 'none' }}
+              // On mobile, don't wait for onLoad event which might never fire if there are issues
+              onLoad={() => !isMobile && setImageLoaded(true)} 
+            />
+          )}
+          
+          {/* Fallback if image fails to load */}
+          {imageError && (
+            <div className="absolute inset-0 bg-[#3C403A] flex items-center justify-center">
+              <div className="text-white text-center px-6">
+                <span className="text-4xl font-bold block mb-2">RAADE</span>
+                <span className="text-xl">Revolutionizing African Development</span>
+              </div>
+            </div>
+          )}
+          
+          {/* Overlay that's always visible - with mobile-specific adjustments */}
+          <div className={`
+            absolute inset-0 
+            ${isMobile ? 'bg-black/5' : 'bg-black/10'}
+          `} />
+        </div>
       </motion.div>
     </div>
   );
