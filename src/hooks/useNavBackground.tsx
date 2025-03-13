@@ -63,12 +63,14 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
     // Setup background detection for navigation
     const updateNavBackground = () => {
       const scrollPosition = window.scrollY + 40; // Check slightly below the top of viewport where navbar is
-      let currentBackground = initialBackground; // Use the initial background as default
+      let currentBackground: 'light' | 'dark' = initialBackground; // Use the initial background as default
       
       // Use cached positions instead of querying DOM on each scroll
       for (const section of sectionPositions) {
         if (scrollPosition >= section.top && scrollPosition < section.bottom) {
-          currentBackground = section.background;
+          // Type safety: ensure we only assign valid values
+          const sectionBackground = section.background === 'dark' ? 'dark' : 'light';
+          currentBackground = sectionBackground;
           break;
         }
       }
