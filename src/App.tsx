@@ -25,7 +25,6 @@ const NavigationWrapper = () => {
   const location = useLocation();
   
   // Don't show the main navigation on the About page
-  // We're changing this logic to properly handle the about route
   if (location.pathname === '/about') {
     // Return null so no main navigation is rendered but route still works
     return null;
@@ -44,9 +43,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <div className="min-h-screen flex flex-col">
-          <Routes>
-            <Route path="*" element={<NavigationWrapper />} />
-          </Routes>
+          <NavigationWrapper />
           <div className="flex-grow">
             <Routes>
               <Route path="/" element={<Index />} />

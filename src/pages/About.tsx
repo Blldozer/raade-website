@@ -9,55 +9,81 @@ import Impact from "../components/about/Impact";
 import Team from "../components/about/Team";
 import { useResponsive } from "../hooks/useResponsive";
 
-// Create a simpler version that doesn't depend on heavy animations
 const About = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { isMobile } = useResponsive();
-  const [renderAll, setRenderAll] = useState(!isMobile);
+  const [activeSection, setActiveSection] = useState(0);
   
   useEffect(() => {
     // Add debugging information
-    console.log("About page mounted");
+    console.log("About page mounted with isMobile:", isMobile);
     
     // Force a document title change to verify the page has loaded
     document.title = "About RAADE";
     
-    // Initialize
-    const loadPage = async () => {
-      try {
-        // Log for debugging
-        console.log("Starting About page load sequence");
+    // Initialize with a simpler approach
+    const timer = setTimeout(() => {
+      console.log("Initial loading complete");
+      setIsLoading(false);
+      
+      // On mobile, we'll progressively reveal sections
+      if (isMobile) {
+        console.log("Mobile detected, using progressive section loading");
+        // Start revealing sections one by one
+        const sectionTimer = setInterval(() => {
+          setActiveSection(prev => {
+            const nextSection = prev + 1;
+            console.log(`Activating section ${nextSection}`);
+            
+            if (nextSection >= 5) {
+              console.log("All sections activated, clearing interval");
+              clearInterval(sectionTimer);
+            }
+            return nextSection;
+          });
+        }, 500); // Load a new section every 500ms
         
-        // On mobile, use a simpler loading strategy
-        if (isMobile) {
-          console.log("Mobile detected, using progressive loading");
-          // Short timeout to allow initial render to complete
-          setTimeout(() => {
-            console.log("Rendering all sections on mobile");
-            setRenderAll(true);
-            setIsLoading(false);
-          }, 100);
-        } else {
-          // On desktop, render everything immediately
-          console.log("Desktop detected, rendering all sections");
-          setRenderAll(true);
-          setIsLoading(false);
-        }
-      } catch (error) {
-        console.error("Error in About page initialization:", error);
-        // Even if there's an error, try to show something
-        setRenderAll(true);
-        setIsLoading(false);
+        return () => clearInterval(sectionTimer);
+      } else {
+        // On desktop, show all sections immediately
+        console.log("Desktop detected, showing all sections");
+        setActiveSection(5);
       }
-    };
-    
-    loadPage();
+    }, 100);
     
     return () => {
       console.log("About page unmounted");
       document.title = "RAADE";
+      clearTimeout(timer);
     };
   }, [isMobile]);
+
+  // Create an array of sections to render progressively
+  const sections = [
+    // Section 0: Always visible hero
+    <AboutHero key="hero" />,
+    
+    // Sections 1-5: Progressively loaded
+    <Suspense key="newmodel" fallback={<div className="min-h-[50vh] flex items-center justify-center">Loading New Model...</div>}>
+      <NewModel />
+    </Suspense>,
+    
+    <Suspense key="reality" fallback={<div className="min-h-[50vh] flex items-center justify-center">Loading Reality...</div>}>
+      <Reality />
+    </Suspense>,
+    
+    <Suspense key="approach" fallback={<div className="min-h-[50vh] flex items-center justify-center">Loading Approach...</div>}>
+      <Approach />
+    </Suspense>,
+    
+    <Suspense key="impact" fallback={<div className="min-h-[50vh] flex items-center justify-center">Loading Impact...</div>}>
+      <Impact />
+    </Suspense>,
+    
+    <Suspense key="team" fallback={<div className="min-h-[50vh] flex items-center justify-center">Loading Team...</div>}>
+      <Team />
+    </Suspense>
+  ];
 
   return (
     <div className="bg-white">
@@ -65,32 +91,10 @@ const About = () => {
       <AboutNav />
       
       {/* Always show hero section */}
-      <AboutHero />
+      {sections[0]}
       
-      {/* Conditionally render other sections */}
-      {renderAll && (
-        <>
-          <Suspense fallback={<div className="min-h-[50vh] flex items-center justify-center">Loading...</div>}>
-            <NewModel />
-          </Suspense>
-          
-          <Suspense fallback={<div className="min-h-[50vh] flex items-center justify-center">Loading...</div>}>
-            <Reality />
-          </Suspense>
-          
-          <Suspense fallback={<div className="min-h-[50vh] flex items-center justify-center">Loading...</div>}>
-            <Approach />
-          </Suspense>
-          
-          <Suspense fallback={<div className="min-h-[50vh] flex items-center justify-center">Loading...</div>}>
-            <Impact />
-          </Suspense>
-          
-          <Suspense fallback={<div className="min-h-[50vh] flex items-center justify-center">Loading...</div>}>
-            <Team />
-          </Suspense>
-        </>
-      )}
+      {/* Conditionally render other sections based on activeSection count */}
+      {sections.slice(1, activeSection + 1)}
       
       {/* Show a loading indicator if needed */}
       {isLoading && (

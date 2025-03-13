@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { Linkedin } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
@@ -96,13 +97,21 @@ const Team = () => {
   const isInView = useInView(sectionRef, { once: true, amount: 0.1 });
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
   const [hasRendered, setHasRendered] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     console.log("Team component mounted");
     setHasRendered(true);
     
+    // Mark the component as loaded after a short delay
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+      console.log("Team component fully loaded");
+    }, 100);
+    
     return () => {
       console.log("Team component unmounted");
+      clearTimeout(timer);
     };
   }, []);
 
@@ -207,7 +216,7 @@ const Team = () => {
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           variants={container}
           initial="hidden"
-          animate={isInView ? "show" : "hidden"}
+          animate={isInView && isLoaded ? "show" : "hidden"}
         >
           {teamMembers.map((member, index) => (
             <motion.div 
@@ -248,22 +257,22 @@ const Team = () => {
                   variants={textAnimation}
                 >
                   {member.linkedin ? (
-                    <h3 className="text-5xl font-simula text-white mb-2 flex items-center gap-3">
+                    <h3 className="text-3xl md:text-4xl lg:text-5xl font-simula text-white mb-2 flex items-center gap-3">
                       <a 
                         href={member.linkedin} 
                         target="_blank" 
                         rel="noopener noreferrer" 
                         className="hover:text-[#FBB03B] transition-colors flex items-center gap-2"
                       >
-                        {member.name} <Linkedin className="w-8 h-8 inline text-[#FBB03B]" />
+                        {member.name} <Linkedin className="w-6 h-6 md:w-8 md:h-8 inline text-[#FBB03B]" />
                       </a>
                     </h3>
                   ) : (
-                    <h3 className="text-5xl font-simula text-white mb-2">
+                    <h3 className="text-3xl md:text-4xl lg:text-5xl font-simula text-white mb-2">
                       {member.name}
                     </h3>
                   )}
-                  <p className="text-2xl text-gray-300 font-lora">
+                  <p className="text-xl md:text-2xl text-gray-300 font-lora">
                     {member.position}
                   </p>
                 </motion.div>
