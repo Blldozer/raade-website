@@ -61,8 +61,8 @@ const AboutNav = () => {
     >
       <div className="w-full">
         <div className="flex h-20">
-          {/* Left section (39%) */}
-          <div className="w-[39%] flex justify-center items-center border-r border-gray-200">
+          {/* Left section (39%) - Removed the border-r class */}
+          <div className="w-[39%] flex justify-center items-center">
             <NavLogo isScrolled={isScrolled} isHeroPage={true} forceDarkMode={!isDarkBackground} />
           </div>
           
