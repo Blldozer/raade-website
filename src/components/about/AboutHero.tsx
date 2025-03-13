@@ -6,7 +6,7 @@ import { useResponsive } from "../../hooks/useResponsive";
 /**
  * AboutHero component - Displays the hero section for the About page
  * Features a 39%/61% split between text content and image
- * Includes responsive handling for different device sizes
+ * Includes responsive handling for different device sizes with edge-to-edge image on mobile
  */
 const AboutHero = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -63,12 +63,16 @@ const AboutHero = () => {
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
-        className="w-full lg:w-[61%] relative"
+        className={`
+          w-full lg:w-[61%] relative
+          ${isMobile ? 'mx-[-1rem]' : ''} 
+        `}
       >
-        {/* Modified container to adjust height based on screen size */}
+        {/* Modified container to adjust height based on screen size and remove padding on mobile */}
         <div className={`
           ${isMobile ? 'h-[50vh]' : 'h-screen'}
           relative overflow-hidden
+          ${isMobile ? 'w-screen' : 'w-full'}
         `}>
           {/* Show a placeholder while image is loading */}
           {!imageLoaded && !imageError && (
@@ -84,7 +88,7 @@ const AboutHero = () => {
               alt="RAADE Innovation Studio Team at Rice Business School"
               className={`
                 absolute inset-0 w-full h-full
-                ${isMobile ? 'object-contain object-center' : 'object-cover'}
+                ${isMobile ? 'object-cover object-center' : 'object-cover'}
               `}
               style={{ display: imageLoaded ? 'block' : 'none' }}
               // On mobile, don't wait for onLoad event which might never fire if there are issues
