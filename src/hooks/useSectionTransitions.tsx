@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useNavBackground } from './useNavBackground';
 import { useOptimizedParallax } from './useOptimizedParallax';
@@ -26,18 +25,9 @@ const detectLowPerformanceDevice = () => {
   // Check if device has limited memory
   const hasLimitedMemory = navigator.deviceMemory && navigator.deviceMemory < 4;
   
-  // Check for slower CPU by measuring processing speed
-  const cpuCheck = () => {
-    const startTime = performance.now();
-    let count = 0;
-    for (let i = 0; i < 1000000; i++) {
-      count += i;
-    }
-    const endTime = performance.now();
-    return endTime - startTime > 100; // If the operation takes more than 100ms, it's likely a slower device
-  };
-  
-  return isMobile || hasLimitedMemory || cpuCheck();
+  // Instead of running CPU-intensive tests, assume mobile devices need optimizations
+  // This prevents browser hangs on mobile devices
+  return isMobile || hasLimitedMemory;
 };
 
 export const useSectionTransitions = () => {
