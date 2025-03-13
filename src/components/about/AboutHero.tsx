@@ -65,14 +65,18 @@ const AboutHero = () => {
         transition={{ duration: 0.6 }}
         className={`
           w-full lg:w-[61%] relative
-          ${isMobile ? 'mx-[-1rem]' : ''} 
+          ${isMobile ? 'w-screen mx-[-1rem]' : ''} 
         `}
+        style={{ 
+          marginRight: isMobile ? '-1rem' : '0', // Ensure no right margin on mobile
+          width: isMobile ? 'calc(100% + 2rem)' : '' // Stretch to full viewport width plus padding compensation
+        }}
       >
         {/* Modified container to adjust height based on screen size and remove padding on mobile */}
         <div className={`
           ${isMobile ? 'h-[50vh]' : 'h-screen'}
           relative overflow-hidden
-          ${isMobile ? 'w-screen' : 'w-full'}
+          ${isMobile ? 'w-full' : 'w-full'}
         `}>
           {/* Show a placeholder while image is loading */}
           {!imageLoaded && !imageError && (
