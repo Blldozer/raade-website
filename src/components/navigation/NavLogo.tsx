@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -25,10 +26,11 @@ const NavLogo = ({
   const getLogoSize = () => {
     if (forceSize) return forceSize;
     
-    if (width < 375) return "h-10"; // Extra small screens
-    if (width < 640) return "h-12"; // Small mobile screens
-    if (width < 768) return "h-16"; // Larger mobile screens
-    if (width < 1024) return "h-18"; // Tablet screens
+    // Adjusted sizes for better visibility on various screen sizes
+    if (width < 375) return "h-8"; // Extra small screens - reduced from h-10
+    if (width < 640) return "h-10"; // Small mobile screens - reduced from h-12
+    if (width < 768) return "h-14"; // Larger mobile screens - reduced from h-16
+    if (width < 1024) return "h-16"; // Tablet screens - reduced from h-18
     return "h-20"; // Desktop screens
   };
   
@@ -40,6 +42,7 @@ const NavLogo = ({
   
   const isProjectPage = location.pathname.includes('/projects/');
   
+  // Use short form logo on smaller screens
   const shouldUseShortForm = useShortForm || width < 480;
   
   const primaryLogo = isProjectPage 

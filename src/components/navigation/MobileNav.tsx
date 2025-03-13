@@ -60,7 +60,7 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
 
   return (
     <div className="md:hidden">
-      {/* Hamburger Menu Button */}
+      {/* Hamburger Menu Button - Adjusted for better visibility */}
       <button
         onClick={() => setIsOpen(true)}
         className={cn(
@@ -75,7 +75,7 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
       {/* Full Screen Menu Overlay - Using fixed positioning with blue background */}
       {isOpen && (
         <div className="fixed inset-0 bg-[#274675] z-[9999] flex flex-col animate-in fade-in slide-in-from-right duration-300">
-          {/* Header */}
+          {/* Header - Adjusted for better spacing */}
           <div className="flex justify-between items-center p-4 border-b border-white/20">
             <NavLogo 
               forceDarkMode={false}

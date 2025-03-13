@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useResponsive } from "../../hooks/useResponsive";
@@ -38,7 +39,8 @@ const AboutHero = () => {
         transition={{ duration: 0.6 }}
         className="w-full lg:w-[39%] flex flex-col justify-center bg-[#3C403A] relative"
       >
-        <div className="px-8 lg:px-12 py-16 lg:py-24 max-w-[600px] mx-auto">
+        {/* Add pt-24 on mobile to create space below the navbar, maintain existing padding on larger screens */}
+        <div className="px-8 pt-24 pb-16 lg:py-24 lg:px-12 max-w-[600px] mx-auto">
           <h1 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-white mb-8">
             Who we are
           </h1>

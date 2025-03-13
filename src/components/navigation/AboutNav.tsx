@@ -60,14 +60,14 @@ const AboutNav = () => {
       )}
     >
       <div className="w-full">
-        <div className="flex h-20">
-          {/* Left section (39%) - Removed the border-r class */}
+        <div className="flex h-16 sm:h-18 md:h-20">
+          {/* Left section (39%) - Adjusted height for mobile */}
           <div className="w-[39%] flex justify-center items-center">
             <NavLogo isScrolled={isScrolled} isHeroPage={true} forceDarkMode={!isDarkBackground} />
           </div>
           
           {/* Right section (61%) */}
-          <div className="w-[61%] flex justify-end items-center pr-8">
+          <div className="w-[61%] flex justify-end items-center pr-4 sm:pr-6 md:pr-8">
             {/* Conference Countdown Timer */}
             <div className="hidden md:block mr-6">
               <CountdownTimer 
