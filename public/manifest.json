@@ -9,12 +9,12 @@
   "theme_color": "#274675",
   "icons": [
     {
-      "src": "/logos/RAADE-Logo-Symbol.png",
+      "src": "/logos/RAADE-logo-symbol.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/logos/RAADE-Logo-Symbol-svg.svg",
+      "src": "/logos/RAADE-logo-symbol-svg.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
