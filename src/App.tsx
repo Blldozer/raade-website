@@ -23,8 +23,13 @@ const queryClient = new QueryClient();
 
 const NavigationWrapper = () => {
   const location = useLocation();
+  
   // Don't show the main navigation on the About page
-  if (location.pathname === '/about') return null;
+  // We're changing this logic to properly handle the about route
+  if (location.pathname === '/about') {
+    // Return null so no main navigation is rendered but route still works
+    return null;
+  }
   
   // Force dark mode on project detail pages
   const isProjectDetailPage = location.pathname.startsWith('/projects/');

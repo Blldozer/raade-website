@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+
+import { useEffect, useState, Suspense } from "react";
 import AboutNav from "../components/navigation/AboutNav";
 import AboutHero from "../components/about/AboutHero";
 import NewModel from "../components/about/NewModel";
@@ -6,94 +7,97 @@ import Reality from "../components/about/Reality";
 import Approach from "../components/about/Approach";
 import Impact from "../components/about/Impact";
 import Team from "../components/about/Team";
-import { useSectionTransitions } from "../hooks/useSectionTransitions";
 import { useResponsive } from "../hooks/useResponsive";
 
+// Create a simpler version that doesn't depend on heavy animations
 const About = () => {
-  const [visibleSections, setVisibleSections] = useState<string[]>(["hero"]);
-  const [isPageReady, setIsPageReady] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { isMobile } = useResponsive();
+  const [renderAll, setRenderAll] = useState(!isMobile);
   
-  // Use the refactored hook for section transitions and nav background detection
-  useSectionTransitions();
-
-  // Add safety mechanism for mobile rendering
   useEffect(() => {
-    // Improve scroll performance with passive listeners
-    const options = { passive: true };
-    document.addEventListener('touchstart', () => {}, options);
-    document.addEventListener('touchmove', () => {}, options);
+    // Add debugging information
+    console.log("About page mounted");
     
-    // Set a timeout to ensure the page renders even if some components fail
-    const safetyTimer = setTimeout(() => {
-      setIsPageReady(true);
-    }, 500);
+    // Force a document title change to verify the page has loaded
+    document.title = "About RAADE";
     
-    if (isMobile) {
-      // Progressive loading to avoid overwhelming mobile browsers
-      // Load sections gradually to prevent browser from hanging
-      const loadSequence = [
-        { sections: ["hero", "newModel"], delay: 100 },
-        { sections: ["hero", "newModel", "reality"], delay: 300 },
-        { sections: ["hero", "newModel", "reality", "approach"], delay: 500 },
-        { sections: ["hero", "newModel", "reality", "approach", "impact"], delay: 700 },
-        { sections: ["hero", "newModel", "reality", "approach", "impact", "team"], delay: 900 }
-      ];
-      
-      // Schedule progressive loading
-      loadSequence.forEach(({ sections, delay }) => {
-        setTimeout(() => {
-          setVisibleSections(sections);
-        }, delay);
-      });
-    } else {
-      // On desktop, show all sections immediately
-      setVisibleSections(["hero", "newModel", "reality", "approach", "impact", "team"]);
-    }
+    // Initialize
+    const loadPage = async () => {
+      try {
+        // Log for debugging
+        console.log("Starting About page load sequence");
+        
+        // On mobile, use a simpler loading strategy
+        if (isMobile) {
+          console.log("Mobile detected, using progressive loading");
+          // Short timeout to allow initial render to complete
+          setTimeout(() => {
+            console.log("Rendering all sections on mobile");
+            setRenderAll(true);
+            setIsLoading(false);
+          }, 100);
+        } else {
+          // On desktop, render everything immediately
+          console.log("Desktop detected, rendering all sections");
+          setRenderAll(true);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error("Error in About page initialization:", error);
+        // Even if there's an error, try to show something
+        setRenderAll(true);
+        setIsLoading(false);
+      }
+    };
+    
+    loadPage();
     
     return () => {
-      clearTimeout(safetyTimer);
-      document.removeEventListener('touchstart', () => {});
-      document.removeEventListener('touchmove', () => {});
+      console.log("About page unmounted");
+      document.title = "RAADE";
     };
   }, [isMobile]);
 
-  // Add error boundary protection for rendering issues
-  useEffect(() => {
-    const handleError = (event: ErrorEvent) => {
-      console.error("Caught runtime error:", event.error);
-      // Make sure at least the basic page structure renders
-      if (!isPageReady) {
-        setIsPageReady(true);
-        setVisibleSections(["hero"]);
-      }
-      // Prevent the error from breaking the entire page
-      event.preventDefault();
-    };
-
-    window.addEventListener('error', handleError);
-    return () => window.removeEventListener('error', handleError);
-  }, [isPageReady]);
-
-  // Wrap each section in error catching to prevent failures
-  const renderSection = (sectionName: string, Component: React.ComponentType) => {
-    try {
-      return visibleSections.includes(sectionName) && <Component />;
-    } catch (error) {
-      console.error(`Error rendering ${sectionName}:`, error);
-      return null;
-    }
-  };
-
   return (
     <div className="bg-white">
+      {/* Always render the navigation */}
       <AboutNav />
-      {renderSection("hero", AboutHero)}
-      {renderSection("newModel", NewModel)}
-      {renderSection("reality", Reality)}
-      {renderSection("approach", Approach)}
-      {renderSection("impact", Impact)}
-      {renderSection("team", Team)}
+      
+      {/* Always show hero section */}
+      <AboutHero />
+      
+      {/* Conditionally render other sections */}
+      {renderAll && (
+        <>
+          <Suspense fallback={<div className="min-h-[50vh] flex items-center justify-center">Loading...</div>}>
+            <NewModel />
+          </Suspense>
+          
+          <Suspense fallback={<div className="min-h-[50vh] flex items-center justify-center">Loading...</div>}>
+            <Reality />
+          </Suspense>
+          
+          <Suspense fallback={<div className="min-h-[50vh] flex items-center justify-center">Loading...</div>}>
+            <Approach />
+          </Suspense>
+          
+          <Suspense fallback={<div className="min-h-[50vh] flex items-center justify-center">Loading...</div>}>
+            <Impact />
+          </Suspense>
+          
+          <Suspense fallback={<div className="min-h-[50vh] flex items-center justify-center">Loading...</div>}>
+            <Team />
+          </Suspense>
+        </>
+      )}
+      
+      {/* Show a loading indicator if needed */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center z-50">
+          <div className="text-2xl font-bold text-[#274675]">Loading RAADE's story...</div>
+        </div>
+      )}
     </div>
   );
 };

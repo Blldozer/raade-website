@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useNavBackground } from './useNavBackground';
 import { useOptimizedParallax } from './useOptimizedParallax';
@@ -17,48 +18,94 @@ declare global {
   }
 }
 
-// Helper to detect device performance capabilities
+// Helper to detect device performance capabilities safely
 const detectLowPerformanceDevice = () => {
-  // Check for mobile devices which typically have lower performance
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  
-  // Check if device has limited memory
-  const hasLimitedMemory = navigator.deviceMemory && navigator.deviceMemory < 4;
-  
-  // Instead of running CPU-intensive tests, assume mobile devices need optimizations
-  // This prevents browser hangs on mobile devices
-  return isMobile || hasLimitedMemory;
+  try {
+    // Check for mobile devices which typically have lower performance
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    // Check if device has limited memory
+    const hasLimitedMemory = navigator.deviceMemory && navigator.deviceMemory < 4;
+    
+    return isMobile || hasLimitedMemory;
+  } catch (error) {
+    console.error("Error detecting device performance:", error);
+    // Default to false to avoid breaking functionality
+    return false;
+  }
 };
 
 export const useSectionTransitions = () => {
   const [isLowPerformanceDevice, setIsLowPerformanceDevice] = useState(false);
+  const [animationsEnabled, setAnimationsEnabled] = useState(true);
   
-  // Detect device performance on component mount
+  // Initialization with error handling
   useEffect(() => {
-    // Use a try-catch block to prevent any detection errors from breaking the entire page
+    console.log("Initializing section transitions");
     try {
-      setIsLowPerformanceDevice(detectLowPerformanceDevice());
+      // Detect device performance
+      const isLowPerf = detectLowPerformanceDevice();
+      console.log("Low performance device detected:", isLowPerf);
+      setIsLowPerformanceDevice(isLowPerf);
       
       // Set up ScrollTrigger optimization globally
       ScrollTrigger.config({
         ignoreMobileResize: true,
         autoRefreshEvents: "visibilitychange,DOMContentLoaded,load,resize", // Reduce refresh events
       });
+      
+      // Add an error handling mechanism
+      const originalScrollTriggerRefresh = ScrollTrigger.refresh;
+      ScrollTrigger.refresh = function() {
+        try {
+          originalScrollTriggerRefresh.apply(this, arguments);
+        } catch (error) {
+          console.error("Error in ScrollTrigger.refresh:", error);
+        }
+      };
+      
     } catch (error) {
-      console.error("Error detecting device performance:", error);
-      // Default to false in case of errors to avoid potential issues
-      setIsLowPerformanceDevice(false);
+      console.error("Error in section transitions initialization:", error);
+      // Disable animations if there's an error
+      setAnimationsEnabled(false);
     }
+    
+    return () => {
+      try {
+        // Clean up ScrollTrigger instances
+        ScrollTrigger.getAll().forEach(trigger => {
+          try {
+            trigger.kill();
+          } catch (e) {
+            console.error("Error killing ScrollTrigger:", e);
+          }
+        });
+        ScrollTrigger.clearMatchMedia();
+      } catch (error) {
+        console.error("Error cleaning up ScrollTrigger:", error);
+      }
+    };
   }, []);
   
+  // If animations are disabled, skip all animations
+  if (!animationsEnabled) {
+    console.log("Animations disabled due to previous errors");
+    return;
+  }
+  
   // Always use navigation background updates (optimized version)
-  useNavBackground();
+  try {
+    useNavBackground();
+  } catch (error) {
+    console.error("Error in NavBackground:", error);
+  }
   
   // If device is low performance, apply minimal animations
   if (isLowPerformanceDevice) {
+    console.log("Using minimal animations for low-performance device");
+    
     // Apply only critical animations for user experience
     useEffect(() => {
-      // Make sure this won't fail on mobile browsers
       try {
         // Apply minimal CSS-based animations using classes instead of heavy GSAP animations
         document.body.classList.add('low-performance-mode');
@@ -72,7 +119,6 @@ export const useSectionTransitions = () => {
     }, []);
     
     // Still use Future Showcase animations even on low performance devices
-    // Wrap each animation hook in try-catch to prevent individual failures from breaking the entire page
     try {
       useFutureShowcaseAnimation();
     } catch (error) {
@@ -123,73 +169,4 @@ export const useSectionTransitions = () => {
   } catch (error) {
     console.error("Error in General Section animations:", error);
   }
-  
-  // Add a special effect to indicate scrolling is enabled
-  useEffect(() => {
-    const addScrollIndicator = () => {
-      try {
-        const indicator = document.createElement('div');
-        indicator.className = 'scroll-performance-indicator';
-        indicator.style.cssText = `
-          position: fixed;
-          bottom: 20px;
-          right: 20px;
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          background: rgba(255,255,255,0.2);
-          backdrop-filter: blur(5px);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 1000;
-          opacity: 0;
-          pointer-events: none;
-          transition: opacity 0.3s ease;
-        `;
-        
-        document.body.appendChild(indicator);
-        
-        let scrollTimeout: number | null = null;
-        
-        window.addEventListener('scroll', () => {
-          indicator.style.opacity = '1';
-          
-          if (scrollTimeout) {
-            window.clearTimeout(scrollTimeout);
-          }
-          
-          scrollTimeout = window.setTimeout(() => {
-            indicator.style.opacity = '0';
-          }, 500);
-        });
-        
-        return () => {
-          if (document.body.contains(indicator)) {
-            document.body.removeChild(indicator);
-          }
-          window.removeEventListener('scroll', () => {});
-          if (scrollTimeout) window.clearTimeout(scrollTimeout);
-        };
-      } catch (error) {
-        console.error("Error adding scroll indicator:", error);
-        return () => {};
-      }
-    };
-    
-    return addScrollIndicator();
-  }, []);
-  
-  // Add global ScrollTrigger cleanup
-  useEffect(() => {
-    return () => {
-      try {
-        // Clean up all ScrollTrigger instances when component unmounts
-        ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-        ScrollTrigger.clearMatchMedia();
-      } catch (error) {
-        console.error("Error cleaning up ScrollTrigger:", error);
-      }
-    };
-  }, []);
 };
