@@ -88,14 +88,14 @@ const TeamMember = ({ member, index, onImageLoad }: TeamMemberProps) => {
         <div className="rounded-t-lg overflow-hidden">
           {/* Render fallback if image failed to load */}
           {imageError ? (
-            <div className="w-full aspect-[4/3] bg-[#4C504A] flex items-center justify-center">
+            <div className="w-full aspect-[3/4] bg-[#4C504A] flex items-center justify-center">
               <span className="text-white text-3xl font-bold">
                 {getInitials()}
               </span>
             </div>
           ) : (
             /* Render image with proper loading states */
-            <div className="w-full aspect-[4/3] bg-[#4C504A] relative">
+            <div className="w-full aspect-[3/4] bg-[#4C504A] relative">
               {/* Show skeleton loading state */}
               {!imageLoaded && (
                 <div className="absolute inset-0 flex items-center justify-center">
