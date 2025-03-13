@@ -1,5 +1,5 @@
 
-import { useEffect, useState, Suspense, lazy } from "react";
+import { useEffect, useState, Suspense, lazy, useLayoutEffect } from "react";
 import AboutNav from "../components/navigation/AboutNav";
 import AboutHero from "../components/about/AboutHero";
 import { useResponsive } from "../hooks/useResponsive";
@@ -27,10 +27,15 @@ const About = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
+  // Set the initial background to light immediately before any rendering occurs
+  useLayoutEffect(() => {
+    document.body.setAttribute('data-nav-background', 'light');
+  }, []);
+  
   // Initialize the page and set up error handling
   useEffect(() => {
     // Set document attributes for navigation styling
-    document.body.setAttribute('data-nav-background', 'dark');
+    document.body.setAttribute('data-nav-background', 'light');
     
     // Add debugging information
     console.log("About page mounted with isMobile:", isMobile);

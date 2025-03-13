@@ -1,10 +1,11 @@
+
 import InnovationStudiosSection from "@/components/InnovationStudios";
 import ProjectsShowcase from "@/components/ProjectsShowcase";
 import StudioOverview from "@/components/studios/StudioOverview";
 import StudioCTA from "@/components/studios/StudioCTA";
 import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useLayoutEffect } from "react";
 import { useLocation } from "react-router-dom";
 import ScrollDownButton from "@/components/hero/components/ScrollDownButton";
 
@@ -15,19 +16,22 @@ const InnovationStudios = () => {
   const applyRef = useRef<HTMLDivElement>(null);
   const [currentSection, setCurrentSection] = useState<string>("hero");
 
+  // Set initial nav background before any rendering
+  useLayoutEffect(() => {
+    // Set light background immediately on component mount
+    document.body.setAttribute('data-nav-background', 'light');
+  }, []);
+
   // Track scroll position to determine current section for proper nav contrast
   useEffect(() => {
-    // Set initial nav background on mount
-    document.body.setAttribute('data-nav-background', 'dark');
-    
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
       const viewportHeight = window.innerHeight;
       
-      // Set dark mode for hero section (which has dark background)
+      // Set light mode for all sections
       if (scrollPosition < viewportHeight * 0.7) {
         setCurrentSection("hero");
-        document.body.setAttribute('data-nav-background', 'dark');
+        document.body.setAttribute('data-nav-background', 'light');
       } 
       // Check if we're in overview section
       else if (overviewRef.current && 
@@ -147,7 +151,7 @@ const InnovationStudios = () => {
   };
 
   return <div>
-      <Navigation isHeroPage={true} forceDarkMode={currentSection !== "hero"} />
+      <Navigation isHeroPage={true} forceDarkMode={false} />
       <div>
         <Hero />
         <div ref={overviewRef} id="overview">

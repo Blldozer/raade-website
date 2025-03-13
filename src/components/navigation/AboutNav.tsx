@@ -1,16 +1,28 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import { cn } from "@/lib/utils";
 import NavLogo from "./NavLogo";
 import DesktopNav from "./DesktopNav";
 import MobileNav from "./MobileNav";
 import CountdownTimer from "../CountdownTimer";
 
+/**
+ * AboutNav - Navigation component for the About page
+ * Features auto-hiding behavior and background color detection
+ * Incorporates mobile responsiveness considerations
+ */
 const AboutNav = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [isDarkBackground, setIsDarkBackground] = useState(true);
+  const [isDarkBackground, setIsDarkBackground] = useState(false); // Default to light background
+
+  // Use layout effect to set initial background before first paint
+  useLayoutEffect(() => {
+    // Set light background for initial state immediately
+    document.body.setAttribute('data-nav-background', 'light');
+    setIsDarkBackground(false);
+  }, []);
 
   useEffect(() => {
     // Check initial background without waiting for scroll
@@ -22,9 +34,9 @@ const AboutNav = () => {
       if (navBackground) {
         setIsDarkBackground(navBackground === 'dark');
       } else {
-        // Default to dark background for about page's hero section
-        setIsDarkBackground(true);
-        document.body.setAttribute('data-nav-background', 'dark');
+        // Default to light background
+        setIsDarkBackground(false);
+        document.body.setAttribute('data-nav-background', 'light');
       }
     };
     

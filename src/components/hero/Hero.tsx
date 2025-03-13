@@ -17,10 +17,10 @@ const Hero = () => {
   const contentRef = useRef<HTMLDivElement>(null);
   const [videoLoaded, setVideoLoaded] = useState(false);
   
-  // Set initial nav background on mount
+  // Set initial nav background on mount - changed to light by default
   useEffect(() => {
     // Ensure it's immediately set for correct navbar styling
-    document.body.setAttribute('data-nav-background', 'dark');
+    document.body.setAttribute('data-nav-background', 'light');
     
     return () => {
       // Clean up when unmounting
@@ -47,7 +47,7 @@ const Hero = () => {
   };
 
   return (
-    <div className="relative h-screen overflow-hidden" data-background="dark">
+    <div className="relative h-screen overflow-hidden" data-background="light">
       {/* Video Background - lowest z-index */}
       <VideoBackground videoLoaded={videoLoaded} setVideoLoaded={setVideoLoaded} />
       

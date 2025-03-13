@@ -1,4 +1,5 @@
-import React, { useEffect, Suspense } from 'react';
+
+import React, { useEffect, Suspense, useLayoutEffect } from 'react';
 import { lazy } from 'react';
 import Hero from "@/components/hero/Hero";
 import { useSectionTransitions } from "@/hooks/useSectionTransitions";
@@ -18,6 +19,12 @@ const Index = () => {
   const { isMobile } = useResponsive();
   const location = useLocation();
   
+  // Set initial nav background before any rendering
+  useLayoutEffect(() => {
+    // Set light background immediately on component mount
+    document.body.setAttribute('data-nav-background', 'light');
+  }, []);
+  
   useEffect(() => {
     // Add passive:true to touch events for better scroll performance
     const options = {
@@ -35,6 +42,7 @@ const Index = () => {
     return () => {
       document.removeEventListener('touchstart', () => {});
       document.removeEventListener('touchmove', () => {});
+      document.body.removeAttribute('data-nav-background');
     };
   }, []);
   

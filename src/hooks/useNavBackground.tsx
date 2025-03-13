@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+
+import { useEffect, useLayoutEffect } from 'react';
 
 // Throttle helper function to limit how often a function can run
 const throttle = (func: Function, limit: number) => {
@@ -12,7 +13,18 @@ const throttle = (func: Function, limit: number) => {
   };
 };
 
-export const useNavBackground = () => {
+/**
+ * Hook to manage navigation background color based on current scroll position
+ * Sets appropriate data-nav-background attribute on document.body
+ * Designed to work with both dark and light background sections
+ */
+export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') => {
+  // Use layout effect to set initial background before first paint
+  useLayoutEffect(() => {
+    // Set initial background immediately to prevent flash of incorrect navbar style
+    document.body.setAttribute('data-nav-background', initialBackground);
+  }, [initialBackground]);
+
   useEffect(() => {
     // Mark sections with data attributes for light/dark backgrounds
     document.querySelectorAll('#hero, #transition-hook').forEach(section => {
@@ -51,7 +63,7 @@ export const useNavBackground = () => {
     // Setup background detection for navigation
     const updateNavBackground = () => {
       const scrollPosition = window.scrollY + 40; // Check slightly below the top of viewport where navbar is
-      let currentBackground = 'dark'; // Default to dark (for hero section)
+      let currentBackground = initialBackground; // Use the initial background as default
       
       // Use cached positions instead of querying DOM on each scroll
       for (const section of sectionPositions) {
@@ -81,5 +93,5 @@ export const useNavBackground = () => {
       window.removeEventListener('scroll', throttledScrollHandler);
       window.removeEventListener('resize', handleResize);
     };
-  }, []);
+  }, [initialBackground]);
 };
