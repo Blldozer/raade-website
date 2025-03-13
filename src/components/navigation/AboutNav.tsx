@@ -13,6 +13,24 @@ const AboutNav = () => {
   const [isDarkBackground, setIsDarkBackground] = useState(true);
 
   useEffect(() => {
+    // Check initial background without waiting for scroll
+    const checkInitialBackground = () => {
+      // Get current nav background attribute - if set by another component
+      const navBackground = document.body.getAttribute('data-nav-background');
+      
+      // Set initial isDarkBackground state
+      if (navBackground) {
+        setIsDarkBackground(navBackground === 'dark');
+      } else {
+        // Default to dark background for about page's hero section
+        setIsDarkBackground(true);
+        document.body.setAttribute('data-nav-background', 'dark');
+      }
+    };
+    
+    // Run initial background check
+    checkInitialBackground();
+    
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       

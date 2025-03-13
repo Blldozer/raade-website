@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import Conference from "@/components/Conference";
@@ -14,6 +15,7 @@ const ConferencePage = () => {
     document.title = "RAADE | Day Forum";
     
     // Set initial nav background attribute for proper contrast
+    // Set this immediately to ensure navbar has correct styling on initial render
     document.body.setAttribute('data-nav-background', 'light');
     
     // Clean up function to reset the attribute when component unmounts

@@ -1,4 +1,3 @@
-
 import InnovationStudiosSection from "@/components/InnovationStudios";
 import ProjectsShowcase from "@/components/ProjectsShowcase";
 import StudioOverview from "@/components/studios/StudioOverview";
@@ -18,6 +17,9 @@ const InnovationStudios = () => {
 
   // Track scroll position to determine current section for proper nav contrast
   useEffect(() => {
+    // Set initial nav background on mount
+    document.body.setAttribute('data-nav-background', 'dark');
+    
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
       const viewportHeight = window.innerHeight;
@@ -76,7 +78,11 @@ const InnovationStudios = () => {
     }
     
     // Cleanup
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      // Clean up the nav background attribute when component unmounts
+      document.body.removeAttribute('data-nav-background');
+    };
   }, [location]);
 
   const scrollToContent = () => {

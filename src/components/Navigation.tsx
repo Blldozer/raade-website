@@ -36,6 +36,24 @@ const Navigation = ({
   const shouldForceDarkMode = forceDarkMode || (isConferencePage && !isHeroPage);
 
   useEffect(() => {
+    const checkInitialBackground = () => {
+      const navBackground = document.body.getAttribute('data-nav-background');
+      
+      if (navBackground) {
+        setIsDarkBackground(navBackground === 'dark');
+      } else {
+        if (isConferencePage) {
+          setIsDarkBackground(false);
+          document.body.setAttribute('data-nav-background', 'light');
+        } else {
+          setIsDarkBackground(true);
+          document.body.setAttribute('data-nav-background', 'dark');
+        }
+      }
+    };
+    
+    checkInitialBackground();
+    
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       const heroHeight = window.innerHeight * 0.9;
@@ -61,7 +79,7 @@ const Navigation = ({
     handleScroll();
     
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+  }, [lastScrollY, isConferencePage]);
 
   const getPadding = () => {
     if (isMobile) return "px-4";

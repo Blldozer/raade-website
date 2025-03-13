@@ -1,5 +1,5 @@
 
-import React, { useRef, memo, useState } from 'react';
+import React, { useRef, memo, useState, useEffect } from 'react';
 import Navigation from '../Navigation';
 import { useContentAnimation } from './hooks/useContentAnimation';
 import { useHeroAnimation } from './hooks/useHeroAnimation';
@@ -16,6 +16,17 @@ const Hero = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [videoLoaded, setVideoLoaded] = useState(false);
+  
+  // Set initial nav background on mount
+  useEffect(() => {
+    // Ensure it's immediately set for correct navbar styling
+    document.body.setAttribute('data-nav-background', 'dark');
+    
+    return () => {
+      // Clean up when unmounting
+      document.body.removeAttribute('data-nav-background');
+    };
+  }, []);
   
   // Use our animation hooks
   useContentAnimation(contentRef);
