@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useLocation } from "react-router-dom";
@@ -6,7 +5,7 @@ import NavLogo from "./navigation/NavLogo";
 import DesktopNav from "./navigation/DesktopNav";
 import MobileNav from "./navigation/MobileNav";
 import CountdownTimer from "./CountdownTimer";
-import useResponsive from "@/hooks/useResponsive";
+import { useResponsive } from "@/hooks/useResponsive";
 
 interface NavigationProps {
   isHeroPage?: boolean;
@@ -27,17 +26,13 @@ const Navigation = ({
   const location = useLocation();
   const { isMobile, isTablet, width } = useResponsive();
   
-  // If isHeroPage is explicitly passed, use that value, otherwise determine it from the path
   const heroPage = isHeroPage !== undefined 
     ? isHeroPage 
     : (location.pathname === "/" || location.pathname === "/studios");
 
-  // Determine if dark mode should be forced based on route or background color
   const isConferencePage = location.pathname === "/conference";
   const isStudiosPage = location.pathname === "/studios";
   
-  // For conference page, we want dark elements (black logo, dark text buttons)
-  // because the background is white/light
   const shouldForceDarkMode = forceDarkMode || (isConferencePage && !isHeroPage);
 
   useEffect(() => {
@@ -45,18 +40,11 @@ const Navigation = ({
       const currentScrollY = window.scrollY;
       const heroHeight = window.innerHeight * 0.9;
       
-      // Improved navbar visibility control:
-      // 1. Always show at the very top (first 50px)
-      // 2. Hide when scrolling down past threshold
-      // 3. Show when scrolling up
       if (currentScrollY < 50) {
-        // Always show navbar at the top of the page
         setIsVisible(true);
       } else if (currentScrollY > lastScrollY + 10) {
-        // Hide navbar when scrolling down (with a small threshold to prevent flickering)
         setIsVisible(false);
       } else if (currentScrollY < lastScrollY - 10) {
-        // Show navbar when scrolling up (with a small threshold to prevent flickering)
         setIsVisible(true);
       }
       
@@ -64,20 +52,17 @@ const Navigation = ({
       setIsScrolled(currentScrollY > 20);
       setIsPastHero(currentScrollY > heroHeight);
       
-      // Check the current background from the body attribute
       const navBackground = document.body.getAttribute('data-nav-background');
       setIsDarkBackground(navBackground === 'dark');
     };
 
     window.addEventListener("scroll", handleScroll);
     
-    // Initial check
     handleScroll();
     
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  // Use dynamic padding based on device size
   const getPadding = () => {
     if (isMobile) return "px-4";
     if (isTablet) return "px-6";
@@ -103,11 +88,9 @@ const Navigation = ({
             isHeroPage={heroPage} 
             forceDarkMode={shouldForceDarkMode || !isDarkBackground}
             useShortForm={useShortFormLogo}
-            // No forceSize here to allow dynamic sizing
           />
           
           <div className="flex items-center">
-            {/* Conference Countdown Timer */}
             <div className="hidden md:block mr-6">
               <CountdownTimer 
                 variant="nav" 

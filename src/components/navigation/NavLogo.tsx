@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import useResponsive from "@/hooks/useResponsive";
+import { useResponsive } from "@/hooks/useResponsive";
 
 interface NavLogoProps {
   isScrolled?: boolean;
@@ -22,7 +22,6 @@ const NavLogo = ({
   const [showSecondary, setShowSecondary] = useState(false);
   const { isMobile, isTablet, width } = useResponsive();
   
-  // Dynamically determine logo size based on screen width if not forced
   const getLogoSize = () => {
     if (forceSize) return forceSize;
     
@@ -33,21 +32,16 @@ const NavLogo = ({
     return "h-20"; // Desktop screens
   };
   
-  // For short form logos - using proper logo files
   const blackShortFormLogo = "/logos/RAADE-logo-final-black.png";
   const whiteShortFormLogo = "/logos/RAADE-logo-final-white.png";
     
-  // For regular logos - using the RAADE-logo-final files
   const blackRegularLogo = "/logos/RAADE-logo-final-black.png";
   const whiteRegularLogo = "/logos/RAADE-logo-final-white.png";
   
-  // Always use white logo for project detail pages
   const isProjectPage = location.pathname.includes('/projects/');
   
-  // Determine if short form should be used based on screen width if not explicitly set
   const shouldUseShortForm = useShortForm || width < 480;
   
-  // Determine which logos to use (black or white)
   const primaryLogo = isProjectPage 
     ? (shouldUseShortForm ? whiteShortFormLogo : whiteRegularLogo)
     : (forceDarkMode 
@@ -60,7 +54,6 @@ const NavLogo = ({
         ? (shouldUseShortForm ? whiteShortFormLogo : whiteRegularLogo)
         : (shouldUseShortForm ? blackShortFormLogo : blackRegularLogo));
 
-  // Reset the state when forceDarkMode changes or when on project pages
   useEffect(() => {
     setShowSecondary(false);
   }, [forceDarkMode, useShortForm, isProjectPage]);
@@ -70,14 +63,12 @@ const NavLogo = ({
   return (
     <div className="flex-shrink-0 flex items-center">
       <Link to="/" className="flex items-center relative">
-        {/* Primary logo (visible when showSecondary is false) */}
         <img
           className={`${logoSize} w-auto transition-all duration-300 ease-in-out z-10 ${showSecondary ? 'opacity-0' : 'opacity-100'}`}
           src={primaryLogo}
           alt="RAADE"
         />
         
-        {/* Secondary logo (visible when showSecondary is true) */}
         <img
           className={`${logoSize} w-auto absolute top-0 left-0 transition-all duration-300 ease-in-out pointer-events-none ${showSecondary ? 'opacity-100' : 'opacity-0'}`}
           src={secondaryLogo}
