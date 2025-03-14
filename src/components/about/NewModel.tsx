@@ -1,66 +1,85 @@
+import { motion } from "framer-motion";
+import { ArrowLeftRight } from "lucide-react";
 
-import React from 'react';
-import { motion } from 'framer-motion';
-
-/**
- * NewModel - About page section explaining RAADE's innovative approach
- * Features a light background for proper navbar theming
- */
 const NewModel = () => {
   return (
-    <section 
-      className="py-20 px-4 md:px-8 lg:px-16 bg-white about-content-section"
-      data-background="light"
-    >
-      <div className="max-w-6xl mx-auto">
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          viewport={{ once: true }}
-          className="text-4xl md:text-5xl font-bold text-[#274675] mb-12 text-center"
-        >
-          A New Model for African Development
-        </motion.h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          <motion.div
+    <section id="overview" className="py-32 bg-white">
+      <div className="max-w-[1600px] mx-auto px-6 md:px-12">
+        {/* Title Section with 39/61 split */}
+        <div className="flex flex-col lg:flex-row">
+        <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="w-full lg:w-[39%]"
           >
-            <h3 className="text-2xl font-bold text-[#274675] mb-4">Beyond Traditional Aid</h3>
-            <p className="text-lg text-gray-700 leading-relaxed">
-              RAADE was founded on the principle that traditional development approaches have often failed to create sustainable change in Africa. Instead of imposing external solutions, we believe in co-creating innovations with African partners, leveraging local knowledge and expertise while providing technical skills and resources from Rice University.
-            </p>
+            <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-black max-w-[700px]">
+              A <span className="font-['Simula_Book_Italic']">new</span> model for African development
+            </h2>
           </motion.div>
-          
+          <div className="lg:w-[61%]"></div> {/* Spacer div for maintaining the split */}
+        </div>
+
+        {/* Content Section with reversed 39/61 split */}
+        <div className="flex flex-col lg:flex-row mt-16">
+          <div className="lg:w-[39%]"></div> {/* Spacer div */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="w-full lg:w-[61%]"
           >
-            <h3 className="text-2xl font-bold text-[#274675] mb-4">Student-Driven Innovation</h3>
-            <p className="text-lg text-gray-700 leading-relaxed">
-              We mobilize the creativity, energy, and multidisciplinary expertise of Rice University students to tackle complex challenges. Our approach connects the next generation of leaders with real-world problems, creating a two-way learning experience that benefits both students and our African partners.
-            </p>
+            <div className="space-y-8 text-xl leading-relaxed font-lora text-gray-700 max-w-[800px]">
+              <p>
+                We are pioneering a fundamentally different approach to African development. 
+                One where solutions aren't imported, but co-created. Where innovation isn't 
+                imposed, but inspired. Where students don't just study development—they drive it.
+              </p>
+              <p>
+                Our model bridges two worlds: the innovative spirit of Rice University and 
+                the transformative potential of African organizations. Through this unique 
+                partnership, we're creating solutions that are both groundbreaking and 
+                grounded in local realities.
+              </p>
+              <p>
+                This isn't just another development initiative. It's a movement that brings 
+                together student innovators and African change-makers to solve real challenges, 
+                create lasting impact, and reimagine what's possible.
+              </p>
+            </div>
+            {/* Interactive Diagram */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="mt-24 p-12 bg-[#3C403A] rounded-xl"
+            >
+              <div className="flex flex-col md:flex-row items-center justify-between gap-12">
+                <div className="text-center md:text-left">
+                  <h3 className="text-2xl font-simula mb-6 text-white">Rice Students</h3>
+                  <ul className="space-y-3 text-gray-200">
+                    <li>Innovation Capacity</li>
+                    <li>Technical Expertise</li>
+                    <li>Fresh Perspectives</li>
+                  </ul>
+                </div>
+                <ArrowLeftRight className="w-16 h-16 text-white rotate-90 md:rotate-0" />
+                <div className="text-center md:text-right">
+                  <h3 className="text-2xl font-simula mb-6 text-white">African Partners</h3>
+                  <ul className="space-y-3 text-gray-200">
+                    <li>Local Knowledge</li>
+                    <li>Cultural Context</li>
+                    <li>Implementation Expertise</li>
+                  </ul>
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
-        
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-          viewport={{ once: true }}
-          className="mt-16 text-center"
-        >
-          <p className="text-xl text-[#274675] font-semibold italic">
-            "RAADE represents a fundamental shift in how we think about development - from charity to partnership, from solution imposition to collaborative innovation."
-          </p>
-        </motion.div>
-      </div>
+        </div>
     </section>
   );
 };
