@@ -15,13 +15,13 @@ const AboutNav = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [isDarkBackground, setIsDarkBackground] = useState(false); // Default to light background
+  const [isDarkBackground, setIsDarkBackground] = useState(true); // Default to dark background for hero
 
   // Use layout effect to set initial background before first paint
   useLayoutEffect(() => {
-    // Set light background for initial state immediately
-    document.body.setAttribute('data-nav-background', 'light');
-    setIsDarkBackground(false);
+    // Set dark background for initial state immediately (hero section has dark background)
+    document.body.setAttribute('data-nav-background', 'dark');
+    setIsDarkBackground(true);
   }, []);
 
   useEffect(() => {
@@ -34,9 +34,9 @@ const AboutNav = () => {
       if (navBackground) {
         setIsDarkBackground(navBackground === 'dark');
       } else {
-        // Default to light background
-        setIsDarkBackground(false);
-        document.body.setAttribute('data-nav-background', 'light');
+        // Default to dark background for hero
+        setIsDarkBackground(true);
+        document.body.setAttribute('data-nav-background', 'dark');
       }
     };
     

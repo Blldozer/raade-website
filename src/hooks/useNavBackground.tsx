@@ -36,6 +36,11 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
       section.setAttribute('data-background', 'dark');
     });
     
+    // Set About page hero section to dark background
+    document.querySelectorAll('.about-hero-section').forEach(section => {
+      section.setAttribute('data-background', 'dark');
+    });
+    
     // For the Innovation Studios hero section, specifically set to light
     document.querySelectorAll('.min-h-screen[data-background="light"]').forEach(section => {
       section.setAttribute('data-background', 'light');

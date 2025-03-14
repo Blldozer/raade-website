@@ -36,7 +36,8 @@ const AboutHero = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row">
+    // Add about-hero-section class and dark background data attribute
+    <div className="min-h-screen flex flex-col lg:flex-row about-hero-section" data-background="dark">
       {/* Left Side - Text */}
       <motion.div 
         initial={{ opacity: 0, x: -20 }}

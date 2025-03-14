@@ -6,6 +6,7 @@ import { useAboutPage } from "../hooks/useAboutPage";
 import ErrorBoundaryFallback from "../components/about/ErrorBoundaryFallback";
 import LoadingIndicator from "../components/about/LoadingIndicator";
 import AboutSections from "../components/about/AboutSections";
+import { useNavBackground } from "@/hooks/useNavBackground";
 
 /**
  * About page component - Manages the entire About page lifecycle
@@ -20,6 +21,10 @@ const About = () => {
     pageInitialized,
     isMobile,
   } = useAboutPage();
+
+  // Use the hook to ensure the navbar background is properly set
+  // Initialize with 'dark' for the hero section's dark background
+  useNavBackground('dark');
 
   // Optional: provide a simpler view if errors are detected
   if (hasError && !isMobile) {
