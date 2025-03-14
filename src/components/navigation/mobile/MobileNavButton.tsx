@@ -16,14 +16,21 @@ interface MobileNavButtonProps {
  * @param forceDarkMode - Whether to force dark styling regardless of context
  */
 const MobileNavButton = ({ onClick, forceDarkMode = false }: MobileNavButtonProps) => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent event bubbling
+    console.log("Mobile nav button clicked");
+    onClick();
+  };
+
   return (
     <button
-      onClick={onClick}
+      onClick={handleClick}
       className={cn(
         "p-2 hover:bg-white/10 rounded-md transition-all duration-200",
         forceDarkMode ? "text-[#274675]" : "text-white"
       )}
       aria-label="Open menu"
+      type="button"
     >
       <span className="sr-only">Menu</span>
       <svg 

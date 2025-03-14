@@ -37,6 +37,7 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
   // Handle body overflow to prevent scrolling when menu is open
   useEffect(() => {
     if (isOpen) {
+      console.log("Mobile menu opened - locking body scroll");
       // Store the current scroll position
       const scrollY = window.scrollY;
       // Lock body scroll
@@ -46,6 +47,7 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
       document.body.style.overflow = 'hidden';
       
       return () => {
+        console.log("Mobile menu closed - restoring body scroll");
         // Restore scroll position when component unmounts or effect reruns
         document.body.style.position = '';
         document.body.style.top = '';
@@ -56,7 +58,12 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
     }
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  // Early return if menu is not open
+  if (!isOpen) {
+    return null;
+  }
+
+  console.log("Rendering mobile menu overlay");
 
   return (
     <div 

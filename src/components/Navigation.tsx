@@ -1,10 +1,9 @@
-
 import { useState, useEffect, useLayoutEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useLocation } from "react-router-dom";
 import NavLogo from "./navigation/NavLogo";
 import DesktopNav from "./navigation/DesktopNav";
-import MobileNav from "./navigation/MobileNav";
+import MobileNav from "./navigation/mobile/MobileNav";
 import CountdownTimer from "./CountdownTimer";
 import { useResponsive } from "@/hooks/useResponsive";
 
@@ -48,21 +47,16 @@ const Navigation = ({
   const isIndexPage = location.pathname === "/" || location.pathname === "";
   const isApplicationPage = location.pathname === "/studios/apply" || location.pathname === "/studios/partner";
   
-  // Force dark mode (light navbar) for application pages with dark backgrounds
   const shouldForceDarkMode = forceDarkMode || (isConferencePage && !isHeroPage) || isApplicationPage;
 
-  // Immediately check background configuration on component mount
-  // This ensures proper contrast without requiring any user interaction
   useLayoutEffect(() => {
     const checkInitialBackground = () => {
-      // For index page, we always want to start with light navbar (over dark hero)
       if (isIndexPage) {
         setIsDarkBackground(true);
         document.body.setAttribute('data-nav-background', 'light');
         return;
       }
       
-      // For application pages (student/partner), always use light navbar
       if (isApplicationPage) {
         setIsDarkBackground(true);
         document.body.setAttribute('data-nav-background', 'light');
@@ -131,7 +125,6 @@ const Navigation = ({
 
     window.addEventListener("scroll", handleScroll);
     
-    // Initial call to handle scroll ensures correct state without user scrolling
     handleScroll();
     
     return () => window.removeEventListener("scroll", handleScroll);
