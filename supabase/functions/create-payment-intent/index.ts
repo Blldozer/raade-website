@@ -13,6 +13,7 @@ const corsHeaders = {
  * Processes payment requests for conference registrations by:
  * - Creating a Stripe payment intent based on ticket type
  * - Calculating correct pricing based on ticket selection and group size
+ * - Validating group size for group registrations
  * - Returning payment information to the client
  * 
  * Handles CORS and proper error reporting
@@ -51,11 +52,41 @@ serve(async (req) => {
     // Log request for debugging
     console.log("Received payment intent request:", requestData);
     
+    // Validate input data
+    if (!ticketType || !email || !fullName) {
+      return new Response(
+        JSON.stringify({ 
+          error: "Missing required fields",
+          details: "Ticket type, email, and full name are required"
+        }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
+    }
+    
+    // Validate group size for student-group tickets
+    const isGroupRegistration = ticketType === "student-group";
+    if (isGroupRegistration) {
+      if (!groupSize || groupSize < 5) {
+        return new Response(
+          JSON.stringify({ 
+            error: "Invalid group size",
+            details: "Group registrations require a minimum of 5 people"
+          }),
+          { 
+            status: 400, 
+            headers: { ...corsHeaders, "Content-Type": "application/json" } 
+          }
+        );
+      }
+    }
+    
     let amount = 0;
     let description = "";
-    const isGroupRegistration = ticketType === "student-group";
 
-    // Calculate amount based on ticket type - updated pricing
+    // Calculate amount based on ticket type - using the updated pricing
     switch (ticketType) {
       case "student":
         amount = 3500; // $35.00
@@ -66,8 +97,10 @@ serve(async (req) => {
         description = "Professional Ticket - RAADE Conference 2025";
         break;
       case "student-group":
-        amount = 3000 * (groupSize || 5); // $30.00 per person
-        description = `Student Group (${groupSize || 5} members) - RAADE Conference 2025`;
+        // Ensure minimum group size of 5
+        const finalGroupSize = Math.max(groupSize || 5, 5);
+        amount = 3000 * finalGroupSize; // $30.00 per person
+        description = `Student Group (${finalGroupSize} members) - RAADE Conference 2025`;
         break;
       default:
         console.error("Invalid ticket type:", ticketType);
@@ -84,7 +117,7 @@ serve(async (req) => {
         );
     }
 
-    console.log(`Creating payment intent for ${amount} cents (${description})`);
+    console.log(`Creating payment intent for ${amount} cents (${description}) - ${email}`);
 
     // Create a Payment Intent
     const paymentIntent = await stripe.paymentIntents.create({
@@ -110,14 +143,16 @@ serve(async (req) => {
 
     console.log("Payment intent created successfully:", paymentIntent.id);
 
-    // Return the payment intent client secret
+    // Return the payment intent client secret with detailed information
     return new Response(
       JSON.stringify({ 
         clientSecret: paymentIntent.client_secret,
         amount: amount / 100, // Convert cents to dollars for display
         currency: "USD",
         isGroupRegistration,
-        groupSize: isGroupRegistration ? groupSize || 5 : undefined
+        groupSize: isGroupRegistration ? Math.max(groupSize || 5, 5) : undefined,
+        ticketType,
+        perPersonCost: isGroupRegistration ? 30 : (ticketType === "student" ? 35 : 60)
       }),
       { 
         status: 200, 

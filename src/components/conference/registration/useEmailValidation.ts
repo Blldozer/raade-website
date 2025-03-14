@@ -1,79 +1,94 @@
 
 import { useState, useEffect } from "react";
-import { useToast } from "@/hooks/use-toast";
 import { validateTicketEmailDomain } from "../RegistrationFormTypes";
+import { supabase } from "@/integrations/supabase/client";
 
 /**
- * Email Validation Hook
+ * Hook for validating email addresses for conference registration
  * 
- * Custom hook that validates email domains against ticket type requirements:
- * - Verifies that student tickets use .edu email domains
- * - Provides real-time feedback to users during registration
- * - Implements debouncing to prevent excessive validation calls
+ * Checks if the email meets the requirements for the selected ticket type:
+ * - Student tickets must have .edu domain
+ * - Group tickets must have .edu domain
+ * - Professional tickets have no domain restrictions
  * 
  * @param email - The email address to validate
- * @param ticketType - The selected ticket type (student, professional, student-group)
- * @param onEmailValidation - Optional callback when validation completes
+ * @param ticketType - The selected ticket type
+ * @param onValidation - Optional callback when validation completes
+ * @returns Validation state and messages
  */
 export const useEmailValidation = (
-  email: string | undefined,
-  ticketType: string | undefined,
-  onEmailValidation?: (result: { isValid: boolean; message?: string }) => void
+  email: string,
+  ticketType: string,
+  onValidation?: (result: { isValid: boolean; message?: string }) => void
 ) => {
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
   const [isValid, setIsValid] = useState<boolean | null>(null);
-  const { toast } = useToast();
 
+  // Reset validation when email or ticket type changes
   useEffect(() => {
-    // Reset validation state when email or ticket type changes
     setValidationMessage(null);
     setIsValid(null);
     
-    // When email changes and ticket type is set, validate the email domain
-    const validateEmail = () => {
-      if (email && ticketType) {
-        setIsCheckingEmail(true);
+    if (!email || !email.includes('@') || !ticketType) {
+      return;
+    }
+    
+    const validateEmail = async () => {
+      setIsCheckingEmail(true);
+      
+      try {
+        // First do basic validation (correct format and .edu for student tickets)
+        const baseValidation = validateTicketEmailDomain(email, ticketType);
         
-        try {
-          // Client-side validation only
-          const validationResult = validateTicketEmailDomain(email, ticketType);
-          
-          setIsValid(validationResult.isValid);
-          setValidationMessage(validationResult.isValid ? null : validationResult.message);
-          
-          if (onEmailValidation) {
-            onEmailValidation(validationResult);
-          }
-          
-          // Only show toast for severe errors, not domain mismatch
-          if (!validationResult.isValid && validationResult.message?.includes("Error")) {
-            toast({
-              title: "Email validation error",
-              description: validationResult.message,
-              variant: "destructive",
-            });
-          }
-        } catch (error) {
-          console.error("Error in email validation:", error);
+        if (!baseValidation.isValid) {
+          setValidationMessage(baseValidation.message || "Invalid email for this ticket type");
           setIsValid(false);
-          setValidationMessage("Error validating email");
-          
-          if (onEmailValidation) {
-            onEmailValidation({ isValid: false, message: "Error validating email" });
-          }
-        } finally {
-          setIsCheckingEmail(false);
+          if (onValidation) onValidation(baseValidation);
+          return;
         }
+        
+        // For student or group tickets, confirm the domain is valid
+        if (ticketType === "student" || ticketType === "student-group") {
+          // Check if the domain ends with .edu
+          const domain = email.split('@')[1]?.toLowerCase();
+          
+          if (!domain || !domain.endsWith('.edu')) {
+            const message = "Student tickets require an .edu email address";
+            setValidationMessage(message);
+            setIsValid(false);
+            if (onValidation) onValidation({ isValid: false, message });
+            return;
+          }
+        }
+        
+        // If all validations pass, email is valid
+        setIsValid(true);
+        setValidationMessage(null);
+        if (onValidation) onValidation({ isValid: true });
+        
+      } catch (error) {
+        console.error("Error validating email:", error);
+        setValidationMessage("Error validating email domain");
+        setIsValid(false);
+        if (onValidation) onValidation({ isValid: false, message: "Error validating email domain" });
+      } finally {
+        setIsCheckingEmail(false);
       }
     };
     
-    const debounceTimeout = setTimeout(() => {
+    // Debounce validation to avoid too many requests
+    const timer = setTimeout(() => {
       validateEmail();
-    }, 500); // Debounce the validation
+    }, 500);
     
-    return () => clearTimeout(debounceTimeout);
-  }, [email, ticketType, toast, onEmailValidation]);
+    return () => clearTimeout(timer);
+    
+  }, [email, ticketType, onValidation]);
 
-  return { isCheckingEmail, validationMessage, isValid };
+  return {
+    isCheckingEmail,
+    validationMessage,
+    isValid
+  };
 };

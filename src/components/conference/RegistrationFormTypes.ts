@@ -11,6 +11,12 @@ export const TICKET_TYPES = {
 // Email schema with domain validation helper
 export const emailSchema = z.string().email("Please enter a valid email address");
 
+// Group size validation schema
+export const groupSizeSchema = z.number()
+  .min(5, "Group registrations require at least 5 people")
+  .max(10, "Group registrations are limited to 10 people")
+  .int("Group size must be a whole number");
+
 // Registration schema
 export const registrationSchema = z.object({
   fullName: z.string().min(2, "Full name is required"),
@@ -26,6 +32,15 @@ export const registrationSchema = z.object({
       value: z.string().email("Please enter valid email addresses")
     })
   ).optional(),
+}).refine(data => {
+  // If ticket type is student-group, groupSize is required and must be at least 5
+  if (data.ticketType === TICKET_TYPES.STUDENT_GROUP) {
+    return data.groupSize && data.groupSize >= 5;
+  }
+  return true;
+}, {
+  message: "Group size must be at least 5 people for group registrations",
+  path: ["groupSize"]
 });
 
 export type RegistrationFormData = z.infer<typeof registrationSchema>;
@@ -52,6 +67,23 @@ export const getTicketPrice = (ticketType: string): number => {
     case TICKET_TYPES.STUDENT_GROUP: return 30;
     default: return 0;
   }
+};
+
+/**
+ * Calculates the total price for a ticket
+ * 
+ * @param ticketType - The type of ticket
+ * @param groupSize - Optional group size for student-group tickets
+ * @returns The total price in dollars
+ */
+export const calculateTotalPrice = (ticketType: string, groupSize?: number): number => {
+  const unitPrice = getTicketPrice(ticketType);
+  
+  if (ticketType === TICKET_TYPES.STUDENT_GROUP && groupSize) {
+    return unitPrice * groupSize;
+  }
+  
+  return unitPrice;
 };
 
 export interface EmailValidationResult {

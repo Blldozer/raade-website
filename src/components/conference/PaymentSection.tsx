@@ -17,6 +17,21 @@ interface PaymentSectionProps {
   onBackClick: () => void;
 }
 
+/**
+ * PaymentSection Component
+ * 
+ * Handles the payment process for conference registration:
+ * - Displays registration summary
+ * - Initializes Stripe payment flow
+ * - Sends confirmation email after successful payment
+ * - Provides feedback to the user throughout the process
+ * 
+ * @param registrationData - Form data from the registration form
+ * @param isSubmitting - Loading state for the form
+ * @param onPaymentSuccess - Callback when payment succeeds
+ * @param onPaymentError - Callback when payment fails
+ * @param onBackClick - Callback to go back to the registration form
+ */
 const PaymentSection = ({
   registrationData,
   isSubmitting,
@@ -34,13 +49,20 @@ const PaymentSection = ({
     // Send confirmation email
     try {
       setSendingEmail(true);
+      
+      // Build request with all required data
+      const requestData = {
+        fullName: registrationData.fullName,
+        email: registrationData.email,
+        ticketType: registrationData.ticketType,
+        // Only include groupSize for student-group tickets
+        ...(registrationData.ticketType === "student-group" && { 
+          groupSize: registrationData.groupSize 
+        })
+      };
+      
       const { data, error } = await supabase.functions.invoke('send-conference-confirmation', {
-        body: {
-          fullName: registrationData.fullName,
-          email: registrationData.email,
-          ticketType: registrationData.ticketType,
-          groupSize: registrationData.groupSize // Pass group size for student-group tickets
-        }
+        body: requestData
       });
       
       if (error) {
@@ -75,6 +97,7 @@ const PaymentSection = ({
     }, 5000); // Auto-redirect after 5 seconds
   };
   
+  // Generate payment confirmation display
   const paymentConfirmation = (
     <div className="text-white/80 font-lora text-left p-4 bg-[#1a1a1a] rounded-md mb-4">
       <h3 className="text-[#FBB03B] mb-2 font-simula">Payment Details:</h3>
@@ -82,7 +105,10 @@ const PaymentSection = ({
       <p><span className="text-[#FBB03B]/80">Email:</span> {registrationData.email}</p>
       <p><span className="text-[#FBB03B]/80">Ticket Type:</span> {registrationData.ticketType}</p>
       {registrationData.ticketType === "student-group" && registrationData.groupSize && (
-        <p><span className="text-[#FBB03B]/80">Group Size:</span> {registrationData.groupSize} people</p>
+        <>
+          <p><span className="text-[#FBB03B]/80">Group Size:</span> {registrationData.groupSize} people</p>
+          <p><span className="text-[#FBB03B]/80">Total Cost:</span> ${30 * registrationData.groupSize} (${30} per person)</p>
+        </>
       )}
       {sendingEmail && <p className="text-green-400 mt-2">Sending confirmation email...</p>}
     </div>

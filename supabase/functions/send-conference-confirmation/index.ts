@@ -19,6 +19,7 @@ function isRiceEmail(email: string): boolean {
  * 
  * Sends personalized email confirmations for conference registrations by:
  * - Customizing email content based on ticket type
+ * - Handling group registration information
  * - Using domain-specific sender addresses to improve deliverability
  * - Providing comprehensive receipt information to attendees
  * 
@@ -44,28 +45,54 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Sending confirmation email to ${email} for ${fullName} with ticket type ${ticketType}`);
+    console.log(`Sending confirmation email to ${email} for ${fullName} with ticket type ${ticketType}${groupSize ? ` (group size: ${groupSize})` : ''}`);
 
-    // Get ticket type display name and price using the same logic as create-payment-intent
+    // Get ticket type display name and price using consistent pricing logic
     let ticketTypeDisplay;
     let ticketPrice;
+    let totalPrice;
     
     switch (ticketType) {
       case "student":
         ticketTypeDisplay = "Student";
         ticketPrice = "$35";
+        totalPrice = "$35";
         break;
       case "professional":
         ticketTypeDisplay = "Professional";
         ticketPrice = "$60";
+        totalPrice = "$60";
         break;
       case "student-group":
         ticketTypeDisplay = "Student Group";
-        ticketPrice = groupSize ? `$${30 * groupSize} ($30/person × ${groupSize})` : "$30/person";
+        // Calculate with minimum group size of 5
+        const finalGroupSize = Math.max(groupSize || 5, 5);
+        ticketPrice = "$30/person";
+        totalPrice = `$${30 * finalGroupSize} ($30/person × ${finalGroupSize})`;
         break;
       default:
         ticketTypeDisplay = ticketType;
         ticketPrice = "TBD";
+        totalPrice = "TBD";
+    }
+
+    // Enhanced receipt section for group registrations
+    let receiptSection = `
+      <p><strong>Name:</strong> ${fullName}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Ticket Type:</strong> ${ticketTypeDisplay}</p>
+      <p><strong>Price:</strong> ${ticketPrice}</p>
+    `;
+    
+    if (ticketType === "student-group" && groupSize) {
+      receiptSection += `
+        <p><strong>Group Size:</strong> ${groupSize} people</p>
+        <p><strong>Total Amount Paid:</strong> ${totalPrice}</p>
+      `;
+    } else {
+      receiptSection += `
+        <p><strong>Total Amount Paid:</strong> ${totalPrice}</p>
+      `;
     }
 
     // HTML email content
@@ -77,8 +104,10 @@ serve(async (req) => {
             .container { max-width: 600px; margin: 0 auto; padding: 20px; }
             .header { background-color: #274675; color: white; padding: 20px; text-align: center; }
             .content { padding: 20px; border: 1px solid #ddd; border-top: none; }
+            .receipt { background-color: #f7f7f7; padding: 15px; margin: 15px 0; border-radius: 5px; }
             .footer { font-size: 12px; color: #666; margin-top: 20px; text-align: center; }
             .highlight { color: #FBB03B; font-weight: bold; }
+            .cta-button { background-color: #FBB03B; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 15px 0; }
           </style>
         </head>
         <body>
@@ -90,13 +119,21 @@ serve(async (req) => {
               <p>Dear ${fullName},</p>
               <p>Thank you for registering for the RAADE Annual Conference 2025!</p>
               <p>We're excited to have you join us on <strong>April 11-12, 2025</strong> for two days of inspiring discussions, networking, and innovation in African development.</p>
-              <h2>Registration Details</h2>
-              <p><strong>Name:</strong> ${fullName}</p>
-              <p><strong>Email:</strong> ${email}</p>
-              <p><strong>Ticket Type:</strong> ${ticketTypeDisplay} (${ticketPrice})</p>
-              ${ticketType === "student-group" && groupSize ? `<p><strong>Group Size:</strong> ${groupSize} people</p>` : ''}
+              
+              <h2>Receipt</h2>
+              <div class="receipt">
+                ${receiptSection}
+              </div>
+              
+              <h2>Event Details</h2>
+              <p><strong>Dates:</strong> April 11-12, 2025</p>
+              <p><strong>Location:</strong> Rice University, Houston, TX</p>
+              <p><strong>Check-in:</strong> Begins at 8:00 AM on April 11th</p>
+              
               <p>Additional information, including venue details and conference schedule, will be sent closer to the event date.</p>
-              <p>If you have any questions or need to make changes to your registration, please contact us at conference@raade.org</p>
+              
+              <p>If you have any questions or need to make changes to your registration, please contact us at <a href="mailto:conference@raade.org">conference@raade.org</a></p>
+              
               <p>We look forward to seeing you at the conference!</p>
               <p>Best regards,<br>The RAADE Conference Team</p>
             </div>
@@ -119,11 +156,16 @@ Thank you for registering for the RAADE Annual Conference 2025!
 
 We're excited to have you join us on April 11-12, 2025 for two days of inspiring discussions, networking, and innovation in African development.
 
-Registration Details:
+Receipt:
 Name: ${fullName}
 Email: ${email}
 Ticket Type: ${ticketTypeDisplay} (${ticketPrice})
-${ticketType === "student-group" && groupSize ? `Group Size: ${groupSize} people` : ''}
+${ticketType === "student-group" && groupSize ? `Group Size: ${groupSize} people\nTotal Amount Paid: ${totalPrice}` : `Total Amount Paid: ${totalPrice}`}
+
+Event Details:
+Dates: April 11-12, 2025
+Location: Rice University, Houston, TX
+Check-in: Begins at 8:00 AM on April 11th
 
 Additional information, including venue details and conference schedule, will be sent closer to the event date.
 
@@ -163,6 +205,9 @@ This is an automated message. Please do not reply to this email.
       }
 
       console.log("Confirmation email sent successfully:", data);
+      
+      // Store confirmation in database (if we wanted to track this)
+      // This would be added in a future iteration
     } catch (emailError) {
       console.error("Error sending confirmation email:", emailError);
       throw emailError;
@@ -173,13 +218,11 @@ This is an automated message. Please do not reply to this email.
         success: true, 
         message: "Confirmation email sent successfully",
         senderUsed: senderEmail,
-        debug: {
-          email: email,
-          domain: email.split('@')[1],
-          isRice: isRiceEmail(email),
-          ticketType: ticketType,
-          displayType: ticketTypeDisplay,
-          price: ticketPrice
+        ticketDetails: {
+          type: ticketTypeDisplay,
+          price: ticketPrice,
+          totalAmount: totalPrice,
+          groupSize: ticketType === "student-group" ? groupSize : null
         }
       }),
       { 
