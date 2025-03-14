@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { X, Search, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -101,12 +100,13 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
       {/* Full Screen Menu Overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-[#274675] z-[9999] flex flex-col overflow-hidden animate-in fade-in slide-in-from-right duration-300"
+          className="fixed inset-0 bg-[#274675] z-[9999] flex flex-col overflow-y-auto h-[100dvh] w-[100vw] animate-in fade-in slide-in-from-right duration-300"
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
           role="dialog"
           aria-modal="true"
         >
           {/* Header */}
-          <div className="flex justify-between items-center p-4 border-b border-white/20">
+          <div className="sticky top-0 flex justify-between items-center p-4 border-b border-white/20 bg-[#274675] z-50">
             <NavLogo 
               forceDarkMode={false} 
               useShortForm={true}
@@ -199,14 +199,14 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
             </nav>
           </div>
           
-          {/* Bottom section with join button */}
-          <div className="p-6 border-t border-white/20">
+          {/* Join Us Button - Fixed at bottom */}
+          <div className="sticky bottom-0 w-full border-t border-white/20 py-4 px-6 bg-[#274675]">
             <Link
-              to="/join"
-              className="block w-full py-3 text-center bg-[#FBB03B] text-[#274675] rounded-md font-bold text-lg hover:bg-[#FBB03B]/90 transition-colors"
+              to="/#build-with-us"
+              className="block w-full py-3 px-6 bg-[#FBB03B] hover:bg-[#FBB03B]/80 text-[#274675] text-center rounded-md font-medium text-lg transition-colors"
               onClick={() => setIsOpen(false)}
             >
-              Join RAADE
+              Join Us
             </Link>
           </div>
         </div>
