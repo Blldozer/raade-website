@@ -1,6 +1,21 @@
+
 import React, { memo } from 'react';
 import { motion } from 'framer-motion';
 
+/**
+ * BackgroundEffects Component
+ * 
+ * Creates an animated visual background for the conference section with:
+ * - Gradient overlay with subtle animation
+ * - Line pattern for texture
+ * - Animated shapes for visual interest
+ * - Grain texture for depth
+ * 
+ * Optimized for performance with:
+ * - Reduced animation complexity
+ * - Hardware acceleration (will-change)
+ * - React.memo to prevent unnecessary re-renders
+ */
 const BackgroundEffects = () => {
   // Simplified gradient background animation with reduced complexity
   const gradientVariants = {
@@ -16,13 +31,14 @@ const BackgroundEffects = () => {
 
   return (
     <>
-      {/* Base image layer - using will-change for hardware acceleration */}
+      {/* Base image layer - commented out as it's not visible in the rendered output
       <div className="absolute inset-0 overflow-hidden">
         <div 
           className="absolute inset-0 bg-[url('/raade-eboard-sally-port-cmp.jpg')] bg-cover bg-center opacity-35 mix-blend-color-burn"
           style={{ willChange: "transform" }}
         ></div>
       </div>
+      */}
       
       {/* Gradient overlay with animation - optimized with will-change */}
       <motion.div 
@@ -81,3 +97,4 @@ const BackgroundEffects = () => {
 
 // Use React.memo to prevent unnecessary re-renders
 export default memo(BackgroundEffects);
+
