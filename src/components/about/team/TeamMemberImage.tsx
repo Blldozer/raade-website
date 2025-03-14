@@ -17,6 +17,8 @@ interface TeamMemberImageProps {
 const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
   const [imageError, setImageError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
+  // Added missing state variable for image loaded state
+  const [localImageLoaded, setLocalImageLoaded] = useState(false);
 
   // Placeholder initials for fallback
   const getInitials = () => {
@@ -61,7 +63,7 @@ const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
               className={`w-full h-full object-cover transition-opacity duration-300 ${
                 imageLoaded ? 'opacity-100' : 'opacity-0'
               }`}
-              onLoad={() => setImageLoaded(true)}
+              onLoad={() => setLocalImageLoaded(true)}
               onError={() => {
                 if (retryCount >= 2) {
                   setImageError(true);

@@ -92,7 +92,8 @@ const ImageLoader = ({
         // Wait a bit longer between each retry
         const delay = 1000 * (retryCount + 1);
         setTimeout(() => {
-          setRetryCount(prev => prev + 1);
+          // Fixed: Use direct value instead of updater function
+          setRetryCount(retryCount + 1);
         }, delay);
       } else {
         setImageError(true);
