@@ -7,6 +7,7 @@ import ConferenceHero from "./conference/ConferenceHero";
 import ConferenceOverview from "./conference/ConferenceOverview";
 import ConferenceWhy from "./conference/ConferenceWhy";
 import ConferenceRegistration from "./conference/ConferenceRegistration";
+import ConferenceValue from "./conference/ConferenceValue"; // Updated import path
 import ConferenceFinalCta from "./conference/ConferenceFinalCta";
 
 const Conference = () => {
@@ -38,6 +39,9 @@ const Conference = () => {
       
       {/* Conference Overview */}
       <ConferenceOverview />
+      
+      {/* Conference Value Proposition */}
+      <ConferenceValue />
       
       {/* Why Attend Section */}
       <ConferenceWhy />

@@ -5,7 +5,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Lightbulb, Users, GraduationCap, Globe, Sparkles } from "lucide-react";
 
+/**
+ * ConferenceValue component - Displays the value proposition for different attendee groups
+ * 
+ * Features:
+ * - Categorized value propositions for different attendee types
+ * - Responsive grid layout with animated elements
+ * - Optimized for mobile and desktop viewing experiences
+ * - Interactive hover states for better engagement
+ */
 const ConferenceValue = () => {
+  // Data structure for value proposition groups
   const valueGroups = [
     {
       title: "For Established Changemakers",

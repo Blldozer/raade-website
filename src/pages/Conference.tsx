@@ -4,6 +4,14 @@ import Navigation from "@/components/Navigation";
 import Conference from "@/components/Conference";
 import { useLocation } from "react-router-dom";
 
+/**
+ * ConferencePage component - Main container for the conference section
+ * 
+ * Features:
+ * - Sets up navigation with proper background contrast for accessibility
+ * - Handles automatic scrolling to specific sections based on URL hash or state
+ * - Ensures proper page title for SEO and user experience
+ */
 const ConferencePage = () => {
   const location = useLocation();
   
