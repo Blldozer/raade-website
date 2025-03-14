@@ -134,7 +134,7 @@ const GroupRegistration = ({ watch, setValue, control, errors }: GroupRegistrati
         )}
         
         {fields.length > 0 && fields.length < groupSize && (
-          <Alert variant="warning" className="bg-amber-50 text-amber-800 border-amber-200">
+          <Alert className="bg-amber-50 text-amber-800 border-amber-200">
             <AlignJustify className="h-4 w-4" />
             <AlertDescription>
               Please add {groupSize - fields.length} more email{fields.length === groupSize - 1 ? '' : 's'} to match your group size of {groupSize}.
