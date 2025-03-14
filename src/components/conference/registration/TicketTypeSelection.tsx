@@ -14,6 +14,16 @@ import {
   TICKET_TYPES
 } from "../RegistrationFormTypes";
 
+/**
+ * TicketTypeSelection Component
+ * 
+ * Displays ticket type dropdown for conference registration.
+ * Shows appropriate price information based on ticket type.
+ * 
+ * @param watch - React Hook Form watch function to observe field changes
+ * @param setValue - React Hook Form setValue function to update form values
+ * @param errors - Form validation errors object
+ */
 interface TicketTypeSelectionProps {
   watch: UseFormWatch<RegistrationFormData>;
   setValue: UseFormSetValue<RegistrationFormData>;

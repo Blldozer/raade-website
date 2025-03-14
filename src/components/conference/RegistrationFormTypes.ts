@@ -30,7 +30,12 @@ export const registrationSchema = z.object({
 
 export type RegistrationFormData = z.infer<typeof registrationSchema>;
 
-// Helper functions for ticket pricing and validation
+/**
+ * Helper functions for ticket pricing and validation
+ * 
+ * These functions provide consistent pricing information
+ * across different components of the registration system.
+ */
 export const getTicketPriceText = (ticketType: string) => {
   switch (ticketType) {
     case TICKET_TYPES.STUDENT: return "($35)";

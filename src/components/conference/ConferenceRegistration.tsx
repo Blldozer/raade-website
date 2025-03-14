@@ -6,6 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Star, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * ConferenceRegistration Component
+ * 
+ * Displays ticket options for the RAADE conference with their respective pricing and benefits.
+ * Optimized for both desktop and mobile viewing with responsive grid layout.
+ */
 const ConferenceRegistration = () => {
   const navigate = useNavigate();
   return <section id="registration" className="py-16 px-4 md:px-8 bg-white">

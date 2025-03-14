@@ -7,6 +7,16 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+/**
+ * Create Payment Intent Edge Function
+ * 
+ * Processes payment requests for conference registrations by:
+ * - Creating a Stripe payment intent based on ticket type
+ * - Calculating correct pricing based on ticket selection and group size
+ * - Returning payment information to the client
+ * 
+ * Handles CORS and proper error reporting
+ */
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
