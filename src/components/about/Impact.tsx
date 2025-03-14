@@ -1,9 +1,14 @@
+
 import { motion } from "framer-motion";
 import CountUp from "react-countup";
 
+/**
+ * Impact Component - Fourth content section
+ * Has light background which requires a dark navbar (navy text)
+ */
 const Impact = () => {
   return (
-    <section id="impact" className="py-24 bg-white">
+    <section id="impact" className="about-content-section py-24 bg-white" data-background="light">
       <div className="max-w-[1600px] mx-auto px-6 md:px-12">
         {/* Title Section - 39/61 split */}
         <div className="flex flex-col lg:flex-row mb-12">

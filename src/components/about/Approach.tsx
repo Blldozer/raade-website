@@ -1,9 +1,14 @@
+
 import { motion } from "framer-motion";
 import { Users, Scale, Shapes } from "lucide-react";
 
+/**
+ * Approach Component - Third content section
+ * Has light background which requires a dark navbar (navy text)
+ */
 const Approach = () => {
   return (
-    <section id="approach" className="py-24 bg-white">
+    <section id="approach" className="about-content-section py-24 bg-white" data-background="light">
       <div className="max-w-[1600px] mx-auto px-6 md:px-12">
         {/* Title Section */}
         <div className="flex flex-col lg:flex-row mb-24">

@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
  * Team component - Displays the team section with proper state management
  * Features progressive loading and error handling for reliable rendering
  * Uses intersection observer to trigger animations only when visible
+ * Has light background which requires a dark navbar (navy text)
  */
 const Team = () => {
   const sectionRef = useRef(null);
@@ -37,7 +38,7 @@ const Team = () => {
   // Error boundary fallback for graceful degradation
   if (hasError) {
     return (
-      <section id="team" className="py-24 bg-white">
+      <section id="team" className="about-content-section py-24 bg-white" data-background="light">
         <div className="max-w-[1600px] mx-auto px-6 md:px-12">
           <h2 className="text-4xl font-simula mb-6">Meet the team</h2>
           <p className="text-xl font-lora text-gray-700">
@@ -50,7 +51,7 @@ const Team = () => {
   }
 
   return (
-    <section id="team" className="py-24 bg-white" ref={sectionRef}>
+    <section id="team" className="about-content-section py-24 bg-white" data-background="light" ref={sectionRef}>
       <div className="max-w-[1600px] mx-auto px-6 md:px-12">
         <div className="flex flex-col lg:flex-row mb-12">
           <motion.div 

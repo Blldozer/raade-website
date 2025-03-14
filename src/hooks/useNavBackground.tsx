@@ -36,6 +36,7 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
     const isIndexPage = window.location.pathname === '/' || window.location.pathname === '';
     const isApplicationPage = window.location.pathname.includes('/studios/apply') || 
                               window.location.pathname.includes('/studios/partner');
+    const isAboutPage = window.location.pathname === '/about';
     
     if (isIndexPage) {
       // Force light navbar for index page hero section
@@ -43,6 +44,9 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
     } else if (isApplicationPage) {
       // Force light navbar for application pages with dark backgrounds
       document.body.setAttribute('data-nav-background', 'light');
+    } else if (isAboutPage) {
+      // For About page, we start with dark background (light navbar)
+      document.body.setAttribute('data-nav-background', 'dark');
     } else {
       // For other pages, use the provided initial background
       document.body.setAttribute('data-nav-background', initialBackground);

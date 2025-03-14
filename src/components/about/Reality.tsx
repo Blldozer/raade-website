@@ -2,9 +2,13 @@
 import { motion } from "framer-motion";
 import CountUp from "react-countup";
 
+/**
+ * Reality Component - Second content section
+ * Has light background which requires a dark navbar (navy text)
+ */
 const Reality = () => {
   return (
-    <section className="py-24 bg-white">
+    <section className="about-content-section py-24 bg-white" data-background="light">
       <div className="max-w-[1600px] mx-auto px-6 md:px-12">
         {/* Title Section with 39/61 split - Title on left, spacer on right */}
         <div className="flex flex-col lg:flex-row mb-12">

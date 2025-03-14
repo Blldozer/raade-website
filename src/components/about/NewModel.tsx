@@ -1,9 +1,14 @@
+
 import { motion } from "framer-motion";
 import { ArrowLeftRight } from "lucide-react";
 
+/**
+ * NewModel Component - The first content section after the hero
+ * Has light background which requires a dark navbar (navy text)
+ */
 const NewModel = () => {
   return (
-    <section id="overview" className="py-32 bg-white">
+    <section id="overview" className="about-content-section py-32 bg-white" data-background="light">
       <div className="max-w-[1600px] mx-auto px-6 md:px-12">
         {/* Title Section with 39/61 split */}
         <div className="flex flex-col lg:flex-row">
