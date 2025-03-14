@@ -62,7 +62,7 @@ const GroupRegistration = ({ watch, setValue, control }: GroupRegistrationProps)
           <div key={field.id} className="flex gap-2">
             <Input
               placeholder={`Group member ${index + 1} email`}
-              {...control.register(`groupEmails.${index}.value` as any)}
+              {...control.register(`groupEmails.${index}.value` as const)}
             />
             <Button
               type="button"

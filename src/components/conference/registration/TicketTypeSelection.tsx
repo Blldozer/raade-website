@@ -1,5 +1,5 @@
 
-import { UseFormWatch, UseFormSetValue } from "react-hook-form";
+import { UseFormWatch, UseFormSetValue, FieldErrors } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -27,7 +27,7 @@ import {
 interface TicketTypeSelectionProps {
   watch: UseFormWatch<RegistrationFormData>;
   setValue: UseFormSetValue<RegistrationFormData>;
-  errors: any;
+  errors: FieldErrors<RegistrationFormData>;
 }
 
 const TicketTypeSelection = ({
