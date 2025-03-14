@@ -8,9 +8,10 @@ import {
   AddressElement
 } from "@stripe/react-stripe-js";
 
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import PaymentTotal from "./payment/PaymentTotal";
+import PaymentStatus from "./payment/PaymentStatus";
+import PaymentFormButtons from "./payment/PaymentFormButtons";
 
 interface PaymentFormProps {
   email: string;
@@ -128,36 +129,15 @@ const PaymentForm = ({
     setIsLoading(false);
   };
 
-  // Calculate the total amount for group registrations
-  const totalAmount = isGroupRegistration && groupSize ? amount * groupSize : amount;
-  
-  // Format amount properly for display
-  const displayAmount = isGroupRegistration && groupSize
-    ? `${amount.toFixed(2)} ${currency} per person (${groupSize} people)`
-    : `${amount.toFixed(2)} ${currency}`;
-
   return (
     <Card className="w-full mt-4">
       <CardContent className="pt-6">
-        <div className="text-center mb-4">
-          <h3 className="text-lg font-medium">Payment Details</h3>
-          <p className="text-gray-500 text-sm">
-            {isGroupRegistration && groupSize ? 
-              <>Price: {displayAmount}</> : 
-              <>Total: {displayAmount}</>
-            }
-          </p>
-          {isGroupRegistration && groupSize && (
-            <>
-              <p className="text-gray-500 text-sm mt-1">
-                Group registration for {groupSize} people
-              </p>
-              <p className="text-blue-700 font-medium text-sm mt-1">
-                Total: ${totalAmount.toFixed(2)} {currency}
-              </p>
-            </>
-          )}
-        </div>
+        <PaymentTotal 
+          amount={amount}
+          currency={currency}
+          isGroupRegistration={isGroupRegistration}
+          groupSize={groupSize}
+        />
         
         <form id="payment-form" onSubmit={handleSubmit}>
           <LinkAuthenticationElement 
@@ -195,22 +175,13 @@ const PaymentForm = ({
             className="mb-6"
           />
           
-          <Button
-            disabled={isLoading || !stripe || !elements || paymentCompleted}
-            className="w-full bg-raade-navy hover:bg-raade-navy/90 text-white"
-            type="submit"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              <>Complete Payment</>
-            )}
-          </Button>
+          <PaymentFormButtons 
+            isLoading={isLoading}
+            isDisabled={!stripe || !elements}
+            paymentCompleted={paymentCompleted}
+          />
           
-          {message && <div className="text-center mt-4 text-red-500">{message}</div>}
+          <PaymentStatus message={message} />
         </form>
       </CardContent>
     </Card>
