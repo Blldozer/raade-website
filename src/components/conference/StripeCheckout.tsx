@@ -20,6 +20,22 @@ interface StripeCheckoutProps {
   onError: (error: string) => void;
 }
 
+/**
+ * StripeCheckout Component
+ * 
+ * Handles payment processing through Stripe by:
+ * - Creating a payment intent via our Supabase Edge Function
+ * - Initializing the Stripe Elements UI with our branding
+ * - Managing loading states and error handling
+ * - Supporting retry functionality for failed payment intents
+ * 
+ * @param ticketType - Type of ticket being purchased (student, professional, student-group)
+ * @param email - Customer email for receipt
+ * @param fullName - Customer name for the payment record
+ * @param groupSize - Optional number of people in a group (for student-group tickets)
+ * @param onSuccess - Callback function when payment is successful
+ * @param onError - Callback function when payment fails
+ */
 const StripeCheckout = ({ 
   ticketType, 
   email,

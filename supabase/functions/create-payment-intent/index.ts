@@ -44,14 +44,13 @@ serve(async (req) => {
       apiVersion: "2023-10-16",
     });
 
-    // Log request for debugging
-    console.log("Received payment intent request");
-    
     // Parse the request body
-    const { ticketType, email, fullName, groupSize } = await req.json();
+    const requestData = await req.json();
+    const { ticketType, email, fullName, groupSize } = requestData;
     
-    console.log("Request data:", { ticketType, email, fullName, groupSize });
-
+    // Log request for debugging
+    console.log("Received payment intent request:", requestData);
+    
     let amount = 0;
     let description = "";
     const isGroupRegistration = ticketType === "student-group";
@@ -73,7 +72,11 @@ serve(async (req) => {
       default:
         console.error("Invalid ticket type:", ticketType);
         return new Response(
-          JSON.stringify({ error: "Invalid ticket type" }),
+          JSON.stringify({ 
+            error: `Invalid ticket type: ${ticketType}`,
+            validTypes: ["student", "professional", "student-group"],
+            receivedData: requestData
+          }),
           { 
             status: 400, 
             headers: { ...corsHeaders, "Content-Type": "application/json" } 

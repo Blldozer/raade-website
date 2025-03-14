@@ -3,6 +3,18 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { validateTicketEmailDomain } from "../RegistrationFormTypes";
 
+/**
+ * Email Validation Hook
+ * 
+ * Custom hook that validates email domains against ticket type requirements:
+ * - Verifies that student tickets use .edu email domains
+ * - Provides real-time feedback to users during registration
+ * - Implements debouncing to prevent excessive validation calls
+ * 
+ * @param email - The email address to validate
+ * @param ticketType - The selected ticket type (student, professional, student-group)
+ * @param onEmailValidation - Optional callback when validation completes
+ */
 export const useEmailValidation = (
   email: string | undefined,
   ticketType: string | undefined,
