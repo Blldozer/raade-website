@@ -24,16 +24,39 @@ serve(async (req) => {
   }
 
   try {
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
+    // Get the Stripe secret key from environment variable
+    const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
+    
+    if (!stripeSecretKey) {
+      console.error("STRIPE_SECRET_KEY is not set in environment variables");
+      return new Response(
+        JSON.stringify({ 
+          error: "Server configuration error: Missing Stripe secret key" 
+        }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
+    }
+
+    const stripe = new Stripe(stripeSecretKey, {
       apiVersion: "2023-10-16",
     });
 
+    // Log request for debugging
+    console.log("Received payment intent request");
+    
+    // Parse the request body
     const { ticketType, email, fullName, groupSize } = await req.json();
+    
+    console.log("Request data:", { ticketType, email, fullName, groupSize });
 
     let amount = 0;
     let description = "";
     const isGroupRegistration = ticketType === "student-group";
 
+    // Calculate amount based on ticket type - updated pricing
     switch (ticketType) {
       case "student":
         amount = 3500; // $35.00
@@ -48,6 +71,7 @@ serve(async (req) => {
         description = `Student Group (${groupSize || 5} members) - RAADE Conference 2025`;
         break;
       default:
+        console.error("Invalid ticket type:", ticketType);
         return new Response(
           JSON.stringify({ error: "Invalid ticket type" }),
           { 
@@ -56,6 +80,8 @@ serve(async (req) => {
           }
         );
     }
+
+    console.log(`Creating payment intent for ${amount} cents (${description})`);
 
     // Create a Payment Intent
     const paymentIntent = await stripe.paymentIntents.create({
@@ -79,6 +105,8 @@ serve(async (req) => {
       },
     });
 
+    console.log("Payment intent created successfully:", paymentIntent.id);
+
     // Return the payment intent client secret
     return new Response(
       JSON.stringify({ 
@@ -98,7 +126,10 @@ serve(async (req) => {
     console.error("Error creating payment intent:", error);
     
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        details: "There was an error processing your payment request. Please try again or contact support."
+      }),
       { 
         status: 500, 
         headers: { ...corsHeaders, "Content-Type": "application/json" } 

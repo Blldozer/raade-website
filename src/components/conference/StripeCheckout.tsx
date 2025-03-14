@@ -2,9 +2,11 @@
 import { useEffect, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import PaymentForm from "./PaymentForm";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 // Initialize Stripe with the live publishable key
 const stripePromise = loadStripe("pk_live_51QzaGsJCmIJg645X8x5sPqhMAiH4pXBh2e6mbgdxxwgqqsCfM8N7SiOvv98N2l5kVeoAlJj3ab08VG4c6PtgVg4d004QXy2W3m");
@@ -31,51 +33,81 @@ const StripeCheckout = ({
   const [amount, setAmount] = useState(0);
   const [currency, setCurrency] = useState("USD");
   const [isGroupRegistration, setIsGroupRegistration] = useState(false);
+  const [errorDetails, setErrorDetails] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
   
+  const createPaymentIntent = async () => {
+    setIsLoading(true);
+    setErrorDetails(null);
+    
+    try {
+      console.log("Creating payment intent with:", { ticketType, email, fullName, groupSize });
+      
+      const { data, error } = await supabase.functions.invoke('create-payment-intent', {
+        body: {
+          ticketType,
+          email,
+          fullName,
+          groupSize
+        },
+      });
+      
+      if (error) {
+        console.error("Payment intent error from Supabase:", error);
+        setErrorDetails(`Error from server: ${error.message || "Unknown error"}`);
+        onError(error.message || "Failed to initialize payment");
+        return;
+      }
+      
+      if (!data) {
+        console.error("No data returned from payment intent function");
+        setErrorDetails("No response from payment server");
+        onError("Failed to initialize payment. No response from server.");
+        return;
+      }
+      
+      console.log("Payment intent created:", data);
+      
+      // Handle free tickets (speakers)
+      if (data.freeTicket) {
+        onSuccess();
+        return;
+      }
+      
+      if (data.error) {
+        console.error("Payment intent error:", data.error);
+        setErrorDetails(data.details || data.error);
+        onError(data.error);
+        return;
+      }
+      
+      if (data.clientSecret) {
+        setClientSecret(data.clientSecret);
+        setAmount(data.amount);
+        setCurrency(data.currency);
+        setIsGroupRegistration(data.isGroupRegistration || false);
+      } else {
+        console.error("No client secret in response:", data);
+        setErrorDetails("Payment initialization failed. No client secret received.");
+        onError("Failed to initialize payment. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error creating payment intent:", error);
+      setErrorDetails(error.message || "An unexpected error occurred");
+      onError("Failed to initialize payment. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     // Create a payment intent when the component loads
-    const createPaymentIntent = async () => {
-      setIsLoading(true);
-      try {
-        console.log("Creating payment intent with:", { ticketType, email, fullName, groupSize });
-        const { data, error } = await supabase.functions.invoke('create-payment-intent', {
-          body: {
-            ticketType,
-            email,
-            fullName,
-            groupSize
-          },
-        });
-        
-        if (error) {
-          console.error("Payment intent error:", error);
-          throw error;
-        }
-        
-        console.log("Payment intent created:", data);
-        
-        // Handle free tickets (speakers)
-        if (data.freeTicket) {
-          onSuccess();
-          return;
-        }
-        
-        if (data.clientSecret) {
-          setClientSecret(data.clientSecret);
-          setAmount(data.amount);
-          setCurrency(data.currency);
-          setIsGroupRegistration(data.isGroupRegistration || false);
-        }
-      } catch (error) {
-        console.error("Error creating payment intent:", error);
-        onError("Failed to initialize payment. Please try again.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
     createPaymentIntent();
-  }, [ticketType, email, fullName, groupSize, onSuccess, onError]);
+  }, [ticketType, email, fullName, groupSize, retryCount]);
+
+  const handleRetry = () => {
+    setRetryCount(prev => prev + 1);
+  };
 
   if (isLoading) {
     return (
@@ -86,11 +118,44 @@ const StripeCheckout = ({
     );
   }
 
-  // If there's no client secret (and we're not loading), something went wrong
-  if (!clientSecret && !isLoading) {
+  // If there's an error, show error message with retry option
+  if (errorDetails) {
     return (
-      <div className="text-center py-4 text-red-500">
-        Failed to initialize payment. Please try again.
+      <div className="mt-4">
+        <Alert variant="destructive" className="mb-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Payment Error</AlertTitle>
+          <AlertDescription>
+            {errorDetails}
+          </AlertDescription>
+        </Alert>
+        <Button 
+          onClick={handleRetry} 
+          className="w-full bg-raade-navy hover:bg-raade-navy/90 text-white"
+        >
+          Try Again
+        </Button>
+      </div>
+    );
+  }
+
+  // If there's no client secret (and we're not loading or showing an error), something went wrong
+  if (!clientSecret) {
+    return (
+      <div className="mt-4">
+        <Alert variant="destructive" className="mb-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Payment Setup Failed</AlertTitle>
+          <AlertDescription>
+            We couldn't initialize the payment process. Please try again later.
+          </AlertDescription>
+        </Alert>
+        <Button 
+          onClick={handleRetry} 
+          className="w-full bg-raade-navy hover:bg-raade-navy/90 text-white"
+        >
+          Try Again
+        </Button>
       </div>
     );
   }
