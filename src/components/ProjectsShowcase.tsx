@@ -1,23 +1,20 @@
 
-import { useState, useRef, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
 import { motion, useAnimation } from "framer-motion";
-import { ArrowRight, ExternalLink } from "lucide-react";
-import { Link } from "react-router-dom";
 import { projects } from "@/data/ProjectData";
+import ProjectCard from "@/components/projects/showcase/ProjectCard";
+import ProjectFilter from "@/components/projects/showcase/ProjectFilter";
 
 const sectors = ["All", "Healthcare", "Technology", "Education", "Energy", "Business"] as const;
 
 /**
  * ProjectsShowcase Component
  * 
- * Displays filterable grid of project cards with:
- * - Filter buttons by sector
- * - Responsive image thumbnails with hover effects
- * - Dynamic badges for project sectors
- * - Challenge information appearing on hover
- * - Partner information on a single line with external link when available
+ * Main container component that:
+ * - Manages project filtering state
+ * - Displays section header with description
+ * - Renders filter buttons and project grid
+ * - Handles animations and transitions
  */
 const ProjectsShowcase = () => {
   const [selectedSector, setSelectedSector] = useState<typeof sectors[number]>("All");
@@ -37,6 +34,7 @@ const ProjectsShowcase = () => {
     }
   };
 
+  // Animation variants for container and project cards
   const containerVariants = {
     hidden: {
       opacity: 0
@@ -61,14 +59,6 @@ const ProjectsShowcase = () => {
         duration: 0.6
       }
     }
-  };
-
-  // Function to get all project sectors for display
-  const getProjectSectors = (project: typeof projects[0]) => {
-    if (project.sectors) {
-      return project.sectors;
-    }
-    return [project.sector];
   };
 
   return (
@@ -107,29 +97,13 @@ const ProjectsShowcase = () => {
         </div>
 
         {/* Filter Buttons */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }} 
-          viewport={{ once: true }} 
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex flex-wrap justify-center gap-3 mb-16"
-        >
-          {sectors.map(sector => (
-            <Button 
-              key={sector} 
-              variant={selectedSector === sector ? "default" : "outline"} 
-              onClick={() => handleSectorChange(sector)}
-              className={`${selectedSector === sector 
-                ? "bg-[#2b212e] text-white hover:bg-[#2b212e]/90 border-none" 
-                : "text-[#2b212e] border-[#2b212e]/20 hover:bg-[#2b212e]/10 hover:text-[#2b212e] hover:border-[#2b212e]"} 
-                font-lora transition-all duration-300`}
-            >
-              {sector}
-            </Button>
-          ))}
-        </motion.div>
+        <ProjectFilter 
+          sectors={sectors}
+          selectedSector={selectedSector}
+          onSectorChange={handleSectorChange}
+        />
 
-        {/* Projects Grid - New Design */}
+        {/* Projects Grid */}
         <motion.div 
           variants={containerVariants} 
           initial="hidden" 
@@ -139,83 +113,12 @@ const ProjectsShowcase = () => {
           key={selectedSector} // Add key to force re-render when sector changes
         >
           {filteredProjects.map(project => (
-            <motion.div 
-              key={project.name} 
-              variants={itemVariants} 
-              className="group" 
-              onMouseEnter={() => setHoveredProject(project.name)} 
-              onMouseLeave={() => setHoveredProject(null)}
-            >
-              <div className="relative h-full rounded-xl overflow-hidden shadow-lg bg-white border border-gray-100 hover:shadow-xl transition-all duration-500 flex flex-col">
-                {/* Image Container */}
-                <div className="relative h-[300px] overflow-hidden">
-                  <img 
-                    src={project.image} 
-                    alt={project.name} 
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-                  />
-                  
-                  {/* Multiple Category Badges */}
-                  <div className="absolute top-4 right-4 flex flex-wrap justify-end gap-2 z-10">
-                    {getProjectSectors(project).map((sector, index) => (
-                      <Badge 
-                        key={`${project.name}-${sector}-${index}`} 
-                        className="bg-[#2b212e] border-none text-white font-lora"
-                      >
-                        {sector}
-                      </Badge>
-                    ))}
-                  </div>
-                  
-                  {/* Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-80"></div>
-                  
-                  {/* Challenge Overlay - Appears on Hover */}
-                  <div className="absolute inset-0 flex items-end p-6 z-10">
-                    <div className="transition-all duration-300 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0">
-                      <h4 className="text-white/90 text-sm font-bold mb-2 uppercase tracking-wider">Challenge:</h4>
-                      <p className="text-white font-lora">{project.challenge}</p>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Content */}
-                <div className="p-6 flex flex-col flex-grow">
-                  <h3 className="text-xl font-bold font-simula text-[#2b212e] mb-2 group-hover:text-[#2b212e] transition-colors duration-300">
-                    {project.name}
-                  </h3>
-                  
-                  {/* Partner information with inline display */}
-                  <div className="flex items-center text-[#2b212e] font-lora text-sm mb-4">
-                    <span className="mr-1">Partner:</span>
-                    <span>{project.partner}</span>
-                    {project.partnerLink && (
-                      <a 
-                        href={project.partnerLink} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="ml-1 inline-flex items-center text-[#2b212e] hover:text-[#2b212e]/80" 
-                        onClick={e => e.stopPropagation()}
-                      >
-                        <ExternalLink className="h-3.5 w-3.5" />
-                      </a>
-                    )}
-                  </div>
-                  
-                  <div className="mt-auto">
-                    <Link 
-                      to={`/projects/${project.slug}`} 
-                      className="inline-flex items-center mt-2 text-[#2b212e] hover:text-[#2b212e]/80 transition-colors duration-300 font-lora group/link"
-                    >
-                      <span className="border-b border-transparent group-hover/link:border-[#2b212e] transition-all duration-300">
-                        Explore Project
-                      </span>
-                      <ArrowRight className="ml-2 h-4 w-4 transform group-hover/link:translate-x-1 transition-transform duration-300" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+            <ProjectCard
+              key={project.name}
+              project={project}
+              setHoveredProject={setHoveredProject}
+              itemVariants={itemVariants}
+            />
           ))}
         </motion.div>
       </div>
