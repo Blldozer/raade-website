@@ -1,15 +1,28 @@
+
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
 import ConferenceRegistrationForm from "@/components/conference/ConferenceRegistrationForm";
+
 const ConferenceRegistration = () => {
   const navigate = useNavigate();
+  
   useEffect(() => {
     // Scroll to top when component mounts
     window.scrollTo(0, 0);
+    
+    // Set navigation background to dark
+    document.body.setAttribute('data-nav-background', 'dark');
+    
+    // Cleanup function to reset attribute when component unmounts
+    return () => {
+      document.body.removeAttribute('data-nav-background');
+    };
   }, []);
-  return <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#274675]/10 to-white">
+  
+  return (
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#274675]/10 to-white">
       <Navigation forceDarkMode={false} />
       <div className="flex-grow pt-20 px-4 md:px-8">
         <div className="max-w-3xl mx-auto py-12">
@@ -36,6 +49,8 @@ const ConferenceRegistration = () => {
           </motion.div>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default ConferenceRegistration;
