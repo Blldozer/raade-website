@@ -1,15 +1,10 @@
 
 import { useEffect, useState } from "react";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
-import { Loader2, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import PaymentForm from "./PaymentForm";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-
-// Initialize Stripe with the live publishable key
-const stripePromise = loadStripe("pk_live_51QzaGsJCmIJg645X8x5sPqhMAiH4pXBh2e6mbgdxxwgqqsCfM8N7SiOvv98N2l5kVeoAlJj3ab08VG4c6PtgVg4d004QXy2W3m");
+import LoadingIndicator from "./payment/LoadingIndicator";
+import ErrorDisplay from "./payment/ErrorDisplay";
+import StripeElementsProvider from "./payment/StripeElementsProvider";
 
 interface StripeCheckoutProps {
   ticketType: string;
@@ -25,8 +20,7 @@ interface StripeCheckoutProps {
  * 
  * Handles payment processing through Stripe by:
  * - Creating a payment intent via our Supabase Edge Function
- * - Initializing the Stripe Elements UI with our branding
- * - Managing loading states and error handling
+ * - Managing payment state and error handling
  * - Supporting retry functionality for failed payment intents
  * 
  * @param ticketType - Type of ticket being purchased (student, professional, student-group)
@@ -125,85 +119,47 @@ const StripeCheckout = ({
     setRetryCount(prev => prev + 1);
   };
 
+  // Loading state
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-raade-navy" />
-        <p className="ml-2">Preparing payment...</p>
-      </div>
-    );
+    return <LoadingIndicator />;
   }
 
-  // If there's an error, show error message with retry option
+  // Error state
   if (errorDetails) {
     return (
-      <div className="mt-4">
-        <Alert variant="destructive" className="mb-4">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Payment Error</AlertTitle>
-          <AlertDescription>
-            {errorDetails}
-          </AlertDescription>
-        </Alert>
-        <Button 
-          onClick={handleRetry} 
-          className="w-full bg-raade-navy hover:bg-raade-navy/90 text-white"
-        >
-          Try Again
-        </Button>
-      </div>
+      <ErrorDisplay 
+        title="Payment Error" 
+        details={errorDetails} 
+        onRetry={handleRetry} 
+      />
     );
   }
 
-  // If there's no client secret (and we're not loading or showing an error), something went wrong
+  // Missing client secret state
   if (!clientSecret) {
     return (
-      <div className="mt-4">
-        <Alert variant="destructive" className="mb-4">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Payment Setup Failed</AlertTitle>
-          <AlertDescription>
-            We couldn't initialize the payment process. Please try again later.
-          </AlertDescription>
-        </Alert>
-        <Button 
-          onClick={handleRetry} 
-          className="w-full bg-raade-navy hover:bg-raade-navy/90 text-white"
-        >
-          Try Again
-        </Button>
-      </div>
+      <ErrorDisplay 
+        title="Payment Setup Failed" 
+        details="We couldn't initialize the payment process. Please try again later." 
+        onRetry={handleRetry} 
+      />
     );
   }
 
+  // Ready state - show payment form
   return (
     <div className="mt-4">
-      {clientSecret && (
-        <Elements stripe={stripePromise} options={{ 
-          clientSecret,
-          appearance: {
-            theme: 'stripe',
-            variables: {
-              colorPrimary: '#274675', // RAADE navy
-              colorBackground: '#ffffff',
-              colorText: '#30313d',
-              colorDanger: '#df1b41',
-              fontFamily: 'Merriweather, system-ui, sans-serif',
-              borderRadius: '4px',
-            }
-          }
-        }}>
-          <PaymentForm 
-            email={email}
-            onSuccess={onSuccess}
-            onError={onError}
-            amount={amount}
-            currency={currency}
-            isGroupRegistration={isGroupRegistration}
-            groupSize={isGroupRegistration ? groupSize : undefined}
-          />
-        </Elements>
-      )}
+      <StripeElementsProvider clientSecret={clientSecret}>
+        <PaymentForm 
+          email={email}
+          onSuccess={onSuccess}
+          onError={onError}
+          amount={amount}
+          currency={currency}
+          isGroupRegistration={isGroupRegistration}
+          groupSize={isGroupRegistration ? groupSize : undefined}
+        />
+      </StripeElementsProvider>
     </div>
   );
 };
