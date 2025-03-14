@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -19,7 +18,7 @@ const InnovationStudiosCard = () => {
       <Card className="h-full flex flex-col border-0 bg-white/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl overflow-hidden">
         <div className="relative h-60 overflow-hidden">
           <img 
-            src="/RAADE-Innovation-Studio-1.jpg" 
+            src="/RAADE-Innovation-Studio-1.webp" 
             alt="Innovation Studios" 
             className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
           />
