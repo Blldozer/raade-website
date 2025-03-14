@@ -146,6 +146,7 @@
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     font-size: 16px;
+    scroll-behavior: smooth !important; /* Use smooth scrolling but with optimized implementation */
   }
 
   /* Address potential scaling issues on Windows browsers */
@@ -175,9 +176,6 @@
   }
   
   /* Performance Optimizations */
-  html {
-    scroll-behavior: auto !important; /* Override smooth scrolling for better performance */
-  }
   
   /* When JavaScript detects low performance, these styles are activated */
   .low-performance-mode {
@@ -208,13 +206,15 @@
   }
   
   /* Add will-change hints for browser optimization */
-  video, .parallax-element, .content-element {
+  .parallax-element, .content-element {
     will-change: transform, opacity;
   }
   
-  /* Optimize video elements */
-  video {
+  /* Optimize video elements with proper acceleration hints */
+  .optimized-video {
     backface-visibility: hidden; /* Helps with hardware acceleration */
+    transform: translate3d(0, 0, 0);
+    will-change: transform, opacity;
   }
   
   /* Add composite layer hint for fixed elements to improve scrolling */
@@ -228,11 +228,28 @@
     touch-action: manipulation; /* Optimize for touch */
   }
   
-  /* Fix for Chrome-specific rendering issues with certain transforms */
-  .chrome-fix {
-    transform: translateZ(0);
+  /* CSS-based animations instead of GSAP for better performance */
+  .content-fade-in {
+    animation: contentFadeIn 0.6s ease-out forwards;
   }
-  
+
+  @keyframes contentFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* CSS-based parallax */
+  .parallax-element {
+    transform: translateZ(0);
+    transition: transform 0.1s linear;
+  }
+
   /* Reduce motion for users who prefer it */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
@@ -245,6 +262,74 @@
     .parallax-element {
       transform: none !important;
     }
+    
+    .content-fade-in {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+  
+  /* Performance optimizations for animations */
+}
+
+/* Performance optimizations for animations - moved outside of the layer block */
+@keyframes shake {
+  0% { transform: translateX(0); }
+  10% { transform: translateX(-2px); }
+  20% { transform: translateX(2px); }
+  30% { transform: translateX(-2px); }
+  40% { transform: translateX(2px); }
+  50% { transform: translateX(0); }
+  100% { transform: translateX(0); }
+}
+
+.shake-animation {
+  animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  animation-iteration-count: 1;
+  /* Use transform instead of position for better performance */
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Optimize content fade-in animation */
+.content-fade-in {
+  opacity: 0;
+  animation: fadeIn 0.8s ease-out forwards;
+  /* Use transform instead of position for better performance */
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: opacity, transform;
+}
+
+@keyframes fadeIn {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Respect user preferences for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .shake-animation {
+    animation: none !important;
+  }
+  
+  .content-fade-in {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  
+  * {
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
   }
 }
 
