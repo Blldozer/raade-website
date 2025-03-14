@@ -26,9 +26,10 @@ interface GroupRegistrationProps {
  * 
  * Handles the group registration form fields:
  * - Group size selection (minimum 5 people)
- * - Group member email collection
+ * - Group member email collection with proper autocomplete attributes
  * - Validation for group size and email domains
  * - Price calculation and display
+ * - Mobile-responsive layout with accessible form controls
  * 
  * @param watch - React Hook Form watch function
  * @param setValue - React Hook Form setValue function
@@ -65,7 +66,7 @@ const GroupRegistration = ({ watch, setValue, control, errors }: GroupRegistrati
           onValueChange={(value) => setValue("groupSize", parseInt(value))}
           value={groupSize.toString()}
         >
-          <SelectTrigger id="groupSize">
+          <SelectTrigger id="groupSize" name="groupSize">
             <SelectValue placeholder="Select group size" />
           </SelectTrigger>
           <SelectContent>
@@ -108,13 +109,19 @@ const GroupRegistration = ({ watch, setValue, control, errors }: GroupRegistrati
           <div key={field.id} className="flex gap-2">
             <Input
               placeholder={`Group member ${index + 1} email`}
+              name={`groupEmail${index + 1}`}
+              id={`groupEmail${index + 1}`}
+              type="email"
+              autoComplete={index === 0 ? "email" : `email-${index + 1}`}
               {...control.register(`groupEmails.${index}.value` as const)}
+              aria-label={`Email address for group member ${index + 1}`}
             />
             <Button
               type="button"
               variant="outline"
               size="icon"
               onClick={() => remove(index)}
+              aria-label={`Remove group member ${index + 1}`}
             >
               <Trash2 className="h-4 w-4" />
             </Button>

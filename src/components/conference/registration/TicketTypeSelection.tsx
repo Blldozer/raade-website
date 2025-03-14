@@ -19,6 +19,7 @@ import {
  * 
  * Displays ticket type dropdown for conference registration.
  * Shows appropriate price information based on ticket type.
+ * Includes proper name attributes for improved form accessibility and autofill.
  * 
  * @param watch - React Hook Form watch function to observe field changes
  * @param setValue - React Hook Form setValue function to update form values
@@ -44,7 +45,7 @@ const TicketTypeSelection = ({
         onValueChange={(value) => setValue("ticketType", value)}
         value={watchTicketType}
       >
-        <SelectTrigger id="ticketType">
+        <SelectTrigger id="ticketType" name="ticketType">
           <SelectValue placeholder="Select ticket type" />
         </SelectTrigger>
         <SelectContent>
