@@ -34,9 +34,14 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
   useLayoutEffect(() => {
     // For index page, we always want to start with light navbar (over dark hero)
     const isIndexPage = window.location.pathname === '/' || window.location.pathname === '';
+    const isApplicationPage = window.location.pathname.includes('/studios/apply') || 
+                              window.location.pathname.includes('/studios/partner');
     
     if (isIndexPage) {
       // Force light navbar for index page hero section
+      document.body.setAttribute('data-nav-background', 'light');
+    } else if (isApplicationPage) {
+      // Force light navbar for application pages with dark backgrounds
       document.body.setAttribute('data-nav-background', 'light');
     } else {
       // For other pages, use the provided initial background
@@ -103,6 +108,15 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
 
     // Setup background detection for navigation
     const updateNavBackground = () => {
+      // Skip background calculation for application pages - always use light navbar
+      const isApplicationPage = window.location.pathname.includes('/studios/apply') || 
+                                window.location.pathname.includes('/studios/partner');
+      
+      if (isApplicationPage) {
+        document.body.setAttribute('data-nav-background', 'light');
+        return;
+      }
+      
       const scrollPosition = window.scrollY + 40; // Check slightly below the top of viewport where navbar is
       let currentBackground = initialBackground as 'light' | 'dark'; // Use the initial background as default with type assertion
       

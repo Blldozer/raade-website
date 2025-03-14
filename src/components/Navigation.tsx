@@ -46,8 +46,10 @@ const Navigation = ({
   const isConferencePage = location.pathname === "/conference";
   const isStudiosPage = location.pathname === "/studios";
   const isIndexPage = location.pathname === "/" || location.pathname === "";
+  const isApplicationPage = location.pathname === "/studios/apply" || location.pathname === "/studios/partner";
   
-  const shouldForceDarkMode = forceDarkMode || (isConferencePage && !isHeroPage);
+  // Force dark mode (light navbar) for application pages with dark backgrounds
+  const shouldForceDarkMode = forceDarkMode || (isConferencePage && !isHeroPage) || isApplicationPage;
 
   // Immediately check background configuration on component mount
   // This ensures proper contrast without requiring any user interaction
@@ -55,6 +57,13 @@ const Navigation = ({
     const checkInitialBackground = () => {
       // For index page, we always want to start with light navbar (over dark hero)
       if (isIndexPage) {
+        setIsDarkBackground(true);
+        document.body.setAttribute('data-nav-background', 'light');
+        return;
+      }
+      
+      // For application pages (student/partner), always use light navbar
+      if (isApplicationPage) {
         setIsDarkBackground(true);
         document.body.setAttribute('data-nav-background', 'light');
         return;
@@ -76,7 +85,7 @@ const Navigation = ({
     };
     
     checkInitialBackground();
-  }, [isIndexPage, isConferencePage]);
+  }, [isIndexPage, isConferencePage, isApplicationPage]);
 
   useEffect(() => {
     const checkInitialBackground = () => {
@@ -87,6 +96,9 @@ const Navigation = ({
       } else {
         if (isConferencePage) {
           setIsDarkBackground(false);
+          document.body.setAttribute('data-nav-background', 'light');
+        } else if (isApplicationPage) {
+          setIsDarkBackground(true);
           document.body.setAttribute('data-nav-background', 'light');
         } else {
           setIsDarkBackground(true);
@@ -123,7 +135,7 @@ const Navigation = ({
     handleScroll();
     
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY, isConferencePage]);
+  }, [lastScrollY, isConferencePage, isApplicationPage]);
 
   const getPadding = () => {
     if (isMobile) return "px-4";

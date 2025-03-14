@@ -22,9 +22,10 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
   const location = useLocation();
   
   const isProjectPage = location.pathname.includes('/projects/');
+  const isApplicationPage = location.pathname === "/studios/apply" || location.pathname === "/studios/partner";
   
   const getTextColor = () => {
-    if (isProjectPage) {
+    if (isProjectPage || isApplicationPage) {
       return "text-white hover:text-[#FBB03B]";
     }
     
@@ -36,7 +37,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
   };
 
   const getButtonStyles = () => {
-    if (isProjectPage) {
+    if (isProjectPage || isApplicationPage) {
       return "border-white text-white hover:bg-[#FBB03B] hover:border-[#FBB03B] hover:text-white";
     }
     
