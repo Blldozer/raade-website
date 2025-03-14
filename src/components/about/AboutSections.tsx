@@ -17,6 +17,7 @@ interface AboutSectionsProps {
 /**
  * AboutSections component - Manages the lazy loading of About page sections
  * Progressively reveals sections based on the activeSection prop
+ * Each section includes data-background attributes for proper navbar styling
  */
 const AboutSections = ({ activeSection, pageInitialized }: AboutSectionsProps) => {
   // Create an array of sections to render progressively
@@ -25,6 +26,7 @@ const AboutSections = ({ activeSection, pageInitialized }: AboutSectionsProps) =
     null, // Hero is handled separately
     
     // Sections 1-5: Progressively loaded with more advanced fallbacks
+    // All content sections have light backgrounds (data-background="light")
     <Suspense key="newmodel" fallback={<SectionFallback sectionName="New Model" />}>
       <NewModel />
     </Suspense>,

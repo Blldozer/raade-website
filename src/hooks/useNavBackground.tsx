@@ -50,6 +50,11 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
       section.setAttribute('data-background', 'light');
     });
 
+    // About page content sections (with light backgrounds)
+    document.querySelectorAll('.about-content-section').forEach(section => {
+      section.setAttribute('data-background', 'light');
+    });
+
     // Cache section positions to avoid recalculating on every scroll
     let sectionPositions: {top: number; bottom: number; background: string}[] = [];
     
