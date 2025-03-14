@@ -1,8 +1,9 @@
+
 import { useState, useEffect } from "react";
 import { X, Search, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "react-router-dom";
-import { navItems } from "./navConfig";
+import { navItems, mobileFooterItems } from "./navConfig";
 import NavLogo from "./NavLogo";
 
 interface MobileNavProps {
@@ -15,10 +16,10 @@ interface MobileNavProps {
  * MobileNav Component
  * 
  * Provides a full-page mobile navigation experience:
- * - Slides in from the side covering the entire viewport
- * - Shows navigation links in a clear, accessible format
+ * - Slides in from the right covering the entire viewport with a solid background
+ * - Shows all navigation links at once in a clear, accessible format
  * - Maintains consistent behavior across all pages
- * - Handles dropdown menus for nested navigation items
+ * - Locks body scroll when menu is open to prevent background scrolling
  * 
  * @param isScrolled - Whether the page has been scrolled
  * @param isHeroPage - Whether this is displayed on a hero section
@@ -100,13 +101,12 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
       {/* Full Screen Menu Overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-gradient-to-b from-[#274675] to-[#1c3151] z-[9999] flex flex-col overflow-y-auto h-[100dvh] w-[100vw] animate-in fade-in slide-in-from-right duration-300"
-          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
+          className="fixed inset-0 bg-[#274675] z-[9999] flex flex-col h-[100dvh] w-screen animate-in fade-in slide-in-from-right duration-300"
           role="dialog"
           aria-modal="true"
         >
           {/* Header */}
-          <div className="sticky top-0 flex justify-between items-center p-4 border-b border-white/20 bg-[#274675] z-50">
+          <div className="sticky top-0 flex justify-between items-center p-4 border-b border-white/20 bg-[#274675] shadow-md">
             <NavLogo 
               forceDarkMode={false} 
               useShortForm={true}
@@ -114,14 +114,14 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
             />
             <div className="flex items-center gap-4">
               <button 
-                className="p-2 text-white hover:bg-white/10 rounded-md"
+                className="p-2 text-white hover:bg-white/10 rounded-md transition-colors"
                 aria-label="Search"
               >
                 <Search size={24} />
               </button>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-2 text-white hover:bg-white/10 rounded-md"
+                className="p-2 text-white hover:bg-white/10 rounded-md transition-colors"
                 aria-label="Close menu"
               >
                 <X size={24} />
@@ -130,77 +130,69 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
           </div>
 
           {/* Navigation Links */}
-          <div className="flex-grow overflow-y-auto pb-safe px-6 pt-8">
-            <nav>
-              <ul className="space-y-6">
-                {navItems.map((item) => (
-                  <li key={item.name} className="border-b border-white/10 pb-3">
-                    {item.dropdownItems ? (
-                      <div>
-                        <button
-                          onClick={() => toggleDropdown(item.name)}
-                          className="flex items-center justify-between w-full text-2xl text-white font-alegreyasans"
-                          aria-expanded={openDropdowns.includes(item.name)}
-                        >
-                          <span>{item.name}</span>
-                          {openDropdowns.includes(item.name) ? (
-                            <ChevronUp className="ml-2 text-white" />
-                          ) : (
-                            <ChevronDown className="ml-2 text-white" />
-                          )}
-                        </button>
-                        {openDropdowns.includes(item.name) && (
-                          <ul className="mt-4 ml-4 space-y-4 border-l-2 border-[#FBB03B] pl-4">
-                            {item.dropdownItems.map((subItem) => (
-                              <li key={subItem.name}>
-                                <Link
-                                  to={subItem.href}
-                                  className="block text-xl text-white hover:text-[#FBB03B] transition-colors"
-                                  onClick={() => setIsOpen(false)}
-                                >
-                                  {subItem.name}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </div>
-                    ) : (
-                      <Link
-                        to={item.href}
-                        className="block text-2xl text-white hover:text-[#FBB03B] transition-colors font-alegreyasans"
-                        onClick={() => setIsOpen(false)}
+          <nav className="flex-grow overflow-y-auto px-6 py-8">
+            <ul className="space-y-6">
+              {navItems.map((item) => (
+                <li key={item.name} className="border-b border-white/10 pb-4">
+                  {item.dropdownItems ? (
+                    <div>
+                      <button
+                        onClick={() => toggleDropdown(item.name)}
+                        className="flex items-center justify-between w-full text-2xl text-white font-alegreyasans"
+                        aria-expanded={openDropdowns.includes(item.name)}
                       >
-                        {item.name}
-                      </Link>
-                    )}
-                  </li>
-                ))}
-                {/* Additional footer links */}
-                <li>
+                        <span>{item.name}</span>
+                        {openDropdowns.includes(item.name) ? (
+                          <ChevronUp className="ml-2 text-white" size={20} />
+                        ) : (
+                          <ChevronDown className="ml-2 text-white" size={20} />
+                        )}
+                      </button>
+                      {openDropdowns.includes(item.name) && (
+                        <ul className="mt-4 ml-4 space-y-4 border-l-2 border-[#FBB03B] pl-4">
+                          {item.dropdownItems.map((subItem) => (
+                            <li key={subItem.name}>
+                              <Link
+                                to={subItem.href}
+                                className="block text-xl text-white hover:text-[#FBB03B] transition-colors"
+                                onClick={() => setIsOpen(false)}
+                              >
+                                {subItem.name}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  ) : (
+                    <Link
+                      to={item.href}
+                      className="block text-2xl text-white hover:text-[#FBB03B] transition-colors font-alegreyasans"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {item.name}
+                    </Link>
+                  )}
+                </li>
+              ))}
+              
+              {/* Add footer links from mobileFooterItems */}
+              {mobileFooterItems.map((item) => (
+                <li key={item.name} className="pb-3">
                   <Link
-                    to="/conference"
+                    to={item.href}
                     className="block text-2xl text-white hover:text-[#FBB03B] transition-colors font-alegreyasans"
                     onClick={() => setIsOpen(false)}
                   >
-                    Events
+                    {item.name}
                   </Link>
                 </li>
-                <li className="pt-3">
-                  <Link
-                    to="/contact"
-                    className="block text-2xl text-white hover:text-[#FBB03B] transition-colors font-alegreyasans"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Contact
-                  </Link>
-                </li>
-              </ul>
-            </nav>
-          </div>
+              ))}
+            </ul>
+          </nav>
           
           {/* Join Us Button - Fixed at bottom */}
-          <div className="sticky bottom-0 w-full border-t border-white/20 py-4 px-6 bg-[#1c3151]">
+          <div className="sticky bottom-0 w-full border-t border-white/20 py-4 px-6 bg-[#1c3151] shadow-lg">
             <Link
               to="/#build-with-us"
               className="block w-full py-3 px-6 bg-[#FBB03B] hover:bg-[#FBB03B]/80 text-[#274675] text-center rounded-md font-medium text-lg transition-colors"
