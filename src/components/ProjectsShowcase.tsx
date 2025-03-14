@@ -9,6 +9,16 @@ import { projects } from "@/data/ProjectData";
 
 const sectors = ["All", "Healthcare", "Technology", "Education", "Energy", "Business"] as const;
 
+/**
+ * ProjectsShowcase Component
+ * 
+ * Displays filterable grid of project cards with:
+ * - Filter buttons by sector
+ * - Responsive image thumbnails with hover effects
+ * - Dynamic badges for project sectors
+ * - Challenge information appearing on hover
+ * - Partner information on a single line with external link when available
+ */
 const ProjectsShowcase = () => {
   const [selectedSector, setSelectedSector] = useState<typeof sectors[number]>("All");
   const [hoveredProject, setHoveredProject] = useState<string | null>(null);
@@ -175,9 +185,10 @@ const ProjectsShowcase = () => {
                     {project.name}
                   </h3>
                   
+                  {/* Partner information with inline display */}
                   <div className="flex items-center text-[#2b212e] font-lora text-sm mb-4">
-                    <span>Partner:</span>
-                    <span className="ml-1">{project.partner}</span>
+                    <span className="mr-1">Partner:</span>
+                    <span>{project.partner}</span>
                     {project.partnerLink && (
                       <a 
                         href={project.partnerLink} 
