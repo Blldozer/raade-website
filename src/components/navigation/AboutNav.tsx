@@ -15,13 +15,13 @@ const AboutNav = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [isDarkBackground, setIsDarkBackground] = useState(false); // Default to light background (dark navbar)
+  const [isDarkBackground, setIsDarkBackground] = useState(true); // Default to dark background for hero
 
   // Use layout effect to set initial background before first paint
   useLayoutEffect(() => {
-    // Set light background for initial state immediately (white content has light background)
-    document.body.setAttribute('data-nav-background', 'light');
-    setIsDarkBackground(false);
+    // Set dark background for initial state immediately (hero section has dark background)
+    document.body.setAttribute('data-nav-background', 'dark');
+    setIsDarkBackground(true);
   }, []);
 
   useEffect(() => {
@@ -34,9 +34,9 @@ const AboutNav = () => {
       if (navBackground) {
         setIsDarkBackground(navBackground === 'dark');
       } else {
-        // Default to light background for content (dark navbar)
-        setIsDarkBackground(false);
-        document.body.setAttribute('data-nav-background', 'light');
+        // Default to dark background for hero
+        setIsDarkBackground(true);
+        document.body.setAttribute('data-nav-background', 'dark');
       }
     };
     
@@ -93,7 +93,7 @@ const AboutNav = () => {
         <div className="flex h-16 sm:h-18 md:h-20">
           {/* Left section (39%) - Adjusted height for mobile */}
           <div className="w-[39%] flex justify-center items-center">
-            <NavLogo isScrolled={isScrolled} isHeroPage={false} forceDarkMode={!isDarkBackground} />
+            <NavLogo isScrolled={isScrolled} isHeroPage={true} forceDarkMode={!isDarkBackground} />
           </div>
           
           {/* Right section (61%) */}
@@ -102,15 +102,15 @@ const AboutNav = () => {
             <div className="hidden md:block mr-6">
               <CountdownTimer 
                 variant="nav" 
-                colorScheme={!isDarkBackground ? "dark" : "light"} 
+                colorScheme={isDarkBackground ? "light" : "dark"} 
               />
             </div>
             
             <div className="hidden md:block">
-              <DesktopNav isScrolled={isScrolled} isHeroPage={false} className="justify-end" forceDarkMode={!isDarkBackground} />
+              <DesktopNav isScrolled={isScrolled} isHeroPage={true} className="justify-end" forceDarkMode={!isDarkBackground} />
             </div>
             <div className="md:hidden">
-              <MobileNav isScrolled={isScrolled} isHeroPage={false} forceDarkMode={!isDarkBackground} />
+              <MobileNav isScrolled={isScrolled} isHeroPage={true} forceDarkMode={!isDarkBackground} />
             </div>
           </div>
         </div>

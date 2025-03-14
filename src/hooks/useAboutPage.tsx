@@ -15,16 +15,16 @@ export const useAboutPage = () => {
   const { isMobile } = useResponsive();
   const navigate = useNavigate();
   
-  // Set the initial background to light immediately for the content sections
-  // This ensures dark navbar (navy text) against white background
+  // Set the initial background to dark immediately for the hero section
+  // This ensures light navbar (white text) against the dark hero background
   useLayoutEffect(() => {
-    document.body.setAttribute('data-nav-background', 'light');
+    document.body.setAttribute('data-nav-background', 'dark');
   }, []);
   
   // Initialize the page and set up error handling
   useEffect(() => {
-    // Set document attributes for navigation styling (light = dark navbar for content)
-    document.body.setAttribute('data-nav-background', 'light');
+    // Set document attributes for navigation styling (dark = light navbar for hero)
+    document.body.setAttribute('data-nav-background', 'dark');
     
     // Add debugging information
     console.log("About page mounted with isMobile:", isMobile);

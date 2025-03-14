@@ -23,8 +23,8 @@ const About = () => {
   } = useAboutPage();
 
   // Use the hook to ensure the navbar background is properly set
-  // For content sections below hero, we want dark navbar (navy text) against white background
-  useNavBackground('light');
+  // Initialize with 'dark' for the hero section's dark background
+  useNavBackground('dark');
 
   // Optional: provide a simpler view if errors are detected
   if (hasError && !isMobile) {
