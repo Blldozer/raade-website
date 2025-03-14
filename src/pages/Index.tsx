@@ -1,5 +1,4 @@
-
-import React, { useEffect, Suspense, useLayoutEffect } from 'react';
+import React, { useEffect, Suspense, useLayoutEffect, useState } from 'react';
 import { lazy } from 'react';
 import Hero from "@/components/hero/Hero";
 import { useSectionTransitions } from "@/hooks/useSectionTransitions";
@@ -24,8 +23,9 @@ const JoinSection = lazy(() => import("@/components/sections/JoinSection"));
 const Index = () => {
   // Use our optimized hook for section transitions
   useSectionTransitions();
-  const { isMobile } = useResponsive();
+  const { isMobile, width } = useResponsive();
   const location = useLocation();
+  const [pageReady, setPageReady] = useState(false);
   
   // Use the hook to manage navbar background colors based on section visibility
   // Initialize with 'light' since the hero section has a dark background
@@ -36,6 +36,22 @@ const Index = () => {
   useLayoutEffect(() => {
     // Force light navbar for index page hero section
     document.body.setAttribute('data-nav-background', 'light');
+    
+    return () => {
+      // Clean up when unmounting to prevent state persistence issues on mobile
+      document.body.removeAttribute('data-nav-background');
+    };
+  }, []);
+  
+  // Handle page initialization with a slight delay for mobile devices
+  useEffect(() => {
+    // Set a short timeout to allow browser to stabilize rendering
+    // This helps prevent layout shifts and rendering issues on mobile
+    const timer = setTimeout(() => {
+      setPageReady(true);
+    }, 50);
+    
+    return () => clearTimeout(timer);
   }, []);
   
   useEffect(() => {
@@ -44,20 +60,38 @@ const Index = () => {
       passive: true
     };
     
-    document.addEventListener('touchstart', () => {}, options);
-    document.addEventListener('touchmove', () => {}, options);
+    // Create actual handler functions so they can be properly removed
+    const handleTouchStart = () => {};
+    const handleTouchMove = () => {};
+    
+    document.addEventListener('touchstart', handleTouchStart, options);
+    document.addEventListener('touchmove', handleTouchMove, options);
     
     // Set performance hint for the browser
     if ('contentVisibilityAutoStateChange' in document.documentElement.style) {
       document.documentElement.style.contentVisibility = 'auto';
     }
     
+    if (isMobile) {
+      // Add specific fixes for mobile rendering
+      document.documentElement.style.overflowX = 'hidden';
+      document.body.style.overflowX = 'hidden';
+      document.body.style.width = '100%';
+    }
+    
     return () => {
-      document.removeEventListener('touchstart', () => {});
-      document.removeEventListener('touchmove', () => {});
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove);
       document.body.removeAttribute('data-nav-background');
+      
+      // Clean up mobile-specific styles
+      if (isMobile) {
+        document.documentElement.style.overflowX = '';
+        document.body.style.overflowX = '';
+        document.body.style.width = '';
+      }
     };
-  }, []);
+  }, [isMobile]);
   
   // Handle scrolling to the join section when navigating from another page
   useEffect(() => {
@@ -87,8 +121,11 @@ const Index = () => {
     }
   }, [location]);
   
+  // Add visibility classes based on the page's readiness state
+  const pageVisibility = pageReady ? "opacity-100" : "opacity-0";
+  
   return (
-    <div className="min-h-screen overflow-hidden">
+    <div className={`min-h-screen overflow-hidden transition-opacity duration-300 ${pageVisibility}`}>
       <section className="relative w-full min-h-screen" id="hero" data-background="dark">
         <Hero />
       </section>
