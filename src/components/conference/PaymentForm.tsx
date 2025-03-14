@@ -22,6 +22,22 @@ interface PaymentFormProps {
   groupSize?: number;
 }
 
+/**
+ * PaymentForm Component
+ * 
+ * Displays Stripe payment form with proper pricing information:
+ * - For group registrations, shows both per-person and total cost
+ * - For individual registrations, shows single ticket price
+ * - Handles payment submission and error reporting
+ * 
+ * @param email - User's email address
+ * @param onSuccess - Callback for successful payment
+ * @param onError - Callback for payment errors
+ * @param amount - Payment amount
+ * @param currency - Payment currency code
+ * @param isGroupRegistration - Whether this is a group registration
+ * @param groupSize - Number of people in the group
+ */
 const PaymentForm = ({ 
   email, 
   onSuccess, 
@@ -112,9 +128,12 @@ const PaymentForm = ({
     setIsLoading(false);
   };
 
+  // Calculate the total amount for group registrations
+  const totalAmount = isGroupRegistration && groupSize ? amount * groupSize : amount;
+  
   // Format amount properly for display
   const displayAmount = isGroupRegistration && groupSize
-    ? `${(amount / groupSize).toFixed(2)} ${currency} per person (${groupSize} people)`
+    ? `${amount.toFixed(2)} ${currency} per person (${groupSize} people)`
     : `${amount.toFixed(2)} ${currency}`;
 
   return (
@@ -123,12 +142,20 @@ const PaymentForm = ({
         <div className="text-center mb-4">
           <h3 className="text-lg font-medium">Payment Details</h3>
           <p className="text-gray-500 text-sm">
-            Total: {displayAmount}
+            {isGroupRegistration && groupSize ? 
+              <>Price: {displayAmount}</> : 
+              <>Total: {displayAmount}</>
+            }
           </p>
           {isGroupRegistration && groupSize && (
-            <p className="text-gray-500 text-sm mt-1">
-              Group registration for {groupSize} people
-            </p>
+            <>
+              <p className="text-gray-500 text-sm mt-1">
+                Group registration for {groupSize} people
+              </p>
+              <p className="text-blue-700 font-medium text-sm mt-1">
+                Total: ${totalAmount.toFixed(2)} {currency}
+              </p>
+            </>
           )}
         </div>
         
