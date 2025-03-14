@@ -1,11 +1,10 @@
 
-import { Menu, X, ChevronDown, ChevronUp, Search } from "lucide-react";
-import { cn } from "@/lib/utils";
-import NavLogo from "./NavLogo";
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { X, Search, ChevronDown, ChevronUp } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Link, useLocation } from "react-router-dom";
 import { navItems } from "./navConfig";
-import { Link } from "react-router-dom";
+import NavLogo from "./NavLogo";
 
 interface MobileNavProps {
   isScrolled?: boolean;
@@ -13,6 +12,19 @@ interface MobileNavProps {
   forceDarkMode?: boolean;
 }
 
+/**
+ * MobileNav Component
+ * 
+ * Provides a full-page mobile navigation experience:
+ * - Slides in from the side covering the entire viewport
+ * - Shows navigation links in a clear, accessible format
+ * - Maintains consistent behavior across all pages
+ * - Handles dropdown menus for nested navigation items
+ * 
+ * @param isScrolled - Whether the page has been scrolled
+ * @param isHeroPage - Whether this is displayed on a hero section
+ * @param forceDarkMode - Whether to force dark mode styling
+ */
 const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = false }: MobileNavProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdowns, setOpenDropdowns] = useState<string[]>([]);
@@ -31,20 +43,18 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
     if (isOpen) {
       // Store the current scroll position
       const scrollY = window.scrollY;
-      // Add a class to the body instead of directly manipulating style
-      document.body.classList.add('overflow-hidden');
-      // Preserve scroll position
-      document.body.style.top = `-${scrollY}px`;
+      // Lock body scroll
       document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
       document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
       
       return () => {
-        // Clean up when component unmounts or effect reruns
-        document.body.classList.remove('overflow-hidden');
+        // Restore scroll position when component unmounts or effect reruns
         document.body.style.position = '';
         document.body.style.top = '';
         document.body.style.width = '';
-        // Restore scroll position
+        document.body.style.overflow = '';
         window.scrollTo(0, scrollY);
       };
     }
@@ -60,7 +70,7 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
 
   return (
     <div className="md:hidden">
-      {/* Hamburger Menu Button - Adjusted for better visibility */}
+      {/* Hamburger Menu Button */}
       <button
         onClick={() => setIsOpen(true)}
         className={cn(
@@ -69,21 +79,44 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
         )}
         aria-label="Open menu"
       >
-        <Menu size={24} />
+        <span className="sr-only">Menu</span>
+        <svg 
+          width="24" 
+          height="24" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          xmlns="http://www.w3.org/2000/svg"
+          className="block"
+        >
+          <path 
+            d="M3 12H21M3 6H21M3 18H21" 
+            stroke="currentColor" 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+          />
+        </svg>
       </button>
 
-      {/* Full Screen Menu Overlay - Using fixed positioning with blue background */}
+      {/* Full Screen Menu Overlay */}
       {isOpen && (
-        <div className="fixed inset-0 bg-[#274675] z-[9999] flex flex-col animate-in fade-in slide-in-from-right duration-300">
-          {/* Header - Adjusted for better spacing */}
+        <div 
+          className="fixed inset-0 bg-[#274675] z-[9999] flex flex-col overflow-hidden animate-in fade-in slide-in-from-right duration-300"
+          role="dialog"
+          aria-modal="true"
+        >
+          {/* Header */}
           <div className="flex justify-between items-center p-4 border-b border-white/20">
             <NavLogo 
-              forceDarkMode={false}
+              forceDarkMode={false} 
               useShortForm={true}
               forceSize="h-8"
             />
             <div className="flex items-center gap-4">
-              <button className="p-2 text-white hover:bg-white/10 rounded-md">
+              <button 
+                className="p-2 text-white hover:bg-white/10 rounded-md"
+                aria-label="Search"
+              >
                 <Search size={24} />
               </button>
               <button
@@ -96,17 +129,18 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
             </div>
           </div>
 
-          {/* Navigation Links - Using flex-grow to fill available space */}
+          {/* Navigation Links */}
           <div className="flex-grow overflow-y-auto pb-safe px-6 pt-8">
             <nav>
               <ul className="space-y-6">
                 {navItems.map((item) => (
-                  <li key={item.name}>
+                  <li key={item.name} className="border-b border-white/10 pb-3">
                     {item.dropdownItems ? (
                       <div>
                         <button
                           onClick={() => toggleDropdown(item.name)}
                           className="flex items-center justify-between w-full text-2xl text-white font-alegreyasans"
+                          aria-expanded={openDropdowns.includes(item.name)}
                         >
                           <span>{item.name}</span>
                           {openDropdowns.includes(item.name) ? (
@@ -143,7 +177,7 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
                   </li>
                 ))}
                 {/* Additional footer links */}
-                <li className="pt-6 border-t border-white/20">
+                <li>
                   <Link
                     to="/conference"
                     className="block text-2xl text-white hover:text-[#FBB03B] transition-colors font-alegreyasans"
@@ -152,7 +186,7 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
                     Events
                   </Link>
                 </li>
-                <li>
+                <li className="pt-3">
                   <Link
                     to="/contact"
                     className="block text-2xl text-white hover:text-[#FBB03B] transition-colors font-alegreyasans"
@@ -163,6 +197,17 @@ const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = fal
                 </li>
               </ul>
             </nav>
+          </div>
+          
+          {/* Bottom section with join button */}
+          <div className="p-6 border-t border-white/20">
+            <Link
+              to="/join"
+              className="block w-full py-3 text-center bg-[#FBB03B] text-[#274675] rounded-md font-bold text-lg hover:bg-[#FBB03B]/90 transition-colors"
+              onClick={() => setIsOpen(false)}
+            >
+              Join RAADE
+            </Link>
           </div>
         </div>
       )}
