@@ -16,10 +16,14 @@ const ConferencePromo = () => {
   useEffect(() => {
     if (!sectionRef.current) return;
     
+    // Explicitly set data-background to light for this section
+    sectionRef.current.setAttribute('data-background', 'light');
+    
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
+            // When this section is visible, the navbar should be dark
             document.body.setAttribute('data-nav-background', 'dark');
           }
         });
@@ -82,6 +86,7 @@ const ConferencePromo = () => {
       ref={sectionRef}
       className="relative min-h-screen flex items-center overflow-hidden pt-[var(--navbar-height)]"
       style={{ opacity: 1 }}
+      data-background="light"
     >
       {/* Background gradient and animated shapes */}
       <BackgroundEffects />

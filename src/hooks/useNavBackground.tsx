@@ -1,7 +1,10 @@
 
 import { useEffect, useLayoutEffect } from 'react';
 
-// Throttle helper function to limit how often a function can run
+/**
+ * Throttle helper function to limit how often a function can run
+ * Improves performance by preventing excessive calculations during scroll
+ */
 const throttle = (func: Function, limit: number) => {
   let inThrottle: boolean;
   return function(this: any, ...args: any[]) {
@@ -17,6 +20,14 @@ const throttle = (func: Function, limit: number) => {
  * Hook to manage navigation background color based on current scroll position
  * Sets appropriate data-nav-background attribute on document.body
  * Designed to work with both dark and light background sections
+ * 
+ * Section background color mapping:
+ * - Dark sections (blue/dark backgrounds): Hero, Transition Stat, Transition Hook
+ * - Light sections (white/light backgrounds): Conference Promo, Future Showcase, Join
+ * 
+ * Navbar color mapping:
+ * - When over dark sections: Light navbar (white text)
+ * - When over light sections: Dark navbar (navy text)
  */
 export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') => {
   // Use layout effect to set initial background before first paint
@@ -27,7 +38,8 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
 
   useEffect(() => {
     // Mark sections with data attributes for light/dark backgrounds
-    document.querySelectorAll('#hero, #transition-hook').forEach(section => {
+    // DARK BACKGROUND SECTIONS (use light navbar)
+    document.querySelectorAll('#hero, #transition-hook, #transition-stat').forEach(section => {
       section.setAttribute('data-background', 'dark');
     });
     
@@ -41,17 +53,18 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
       section.setAttribute('data-background', 'dark');
     });
     
-    // For the Innovation Studios hero section, specifically set to light
-    document.querySelectorAll('.min-h-screen[data-background="light"]').forEach(section => {
-      section.setAttribute('data-background', 'light');
-    });
-    
-    document.querySelectorAll('#conference-promo, #transition-stat, #future-showcase, #join').forEach(section => {
+    // LIGHT BACKGROUND SECTIONS (use dark navbar)
+    document.querySelectorAll('#conference-promo, #future-showcase, #join').forEach(section => {
       section.setAttribute('data-background', 'light');
     });
 
     // About page content sections (with light backgrounds)
     document.querySelectorAll('.about-content-section').forEach(section => {
+      section.setAttribute('data-background', 'light');
+    });
+    
+    // For the Innovation Studios hero section, specifically set to light
+    document.querySelectorAll('.min-h-screen[data-background="light"]').forEach(section => {
       section.setAttribute('data-background', 'light');
     });
 

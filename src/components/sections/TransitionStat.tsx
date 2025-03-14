@@ -18,8 +18,24 @@ const TransitionStat = () => {
     }
   };
   
+  // Explicitly set data-background attribute to ensure correct navbar handling
+  useEffect(() => {
+    if (sectionRef.current) {
+      sectionRef.current.setAttribute('data-background', 'dark');
+    }
+    
+    return () => {
+      // Cleanup if needed
+    };
+  }, []);
+  
   return (
-    <section id="transition-stat" ref={sectionRef} className="min-h-screen flex flex-col justify-center items-center py-10 relative overflow-hidden bg-[#3C403A]">
+    <section 
+      id="transition-stat" 
+      ref={sectionRef} 
+      className="min-h-screen flex flex-col justify-center items-center py-10 relative overflow-hidden bg-[#3C403A]"
+      data-background="dark"
+    >
       {/* Decorative elements */}
       <div className="absolute -right-20 top-20 w-80 h-80 rounded-full bg-raade-gold-start/10 blur-3xl pointer-events-none section-background"></div>
       <div className="absolute -left-20 bottom-20 w-80 h-80 rounded-full bg-white/10 blur-3xl pointer-events-none section-background"></div>
