@@ -38,7 +38,8 @@ const PaymentSection = ({
         body: {
           fullName: registrationData.fullName,
           email: registrationData.email,
-          ticketType: registrationData.ticketType
+          ticketType: registrationData.ticketType,
+          groupSize: registrationData.groupSize // Pass group size for student-group tickets
         }
       });
       
@@ -59,6 +60,11 @@ const PaymentSection = ({
       }
     } catch (error) {
       console.error("Error invoking confirmation email function:", error);
+      toast({
+        title: "Confirmation email could not be sent",
+        description: "We'll still send you conference details via email later.",
+        variant: "destructive"
+      });
     } finally {
       setSendingEmail(false);
     }
@@ -75,6 +81,9 @@ const PaymentSection = ({
       <p><span className="text-[#FBB03B]/80">Name:</span> {registrationData.fullName}</p>
       <p><span className="text-[#FBB03B]/80">Email:</span> {registrationData.email}</p>
       <p><span className="text-[#FBB03B]/80">Ticket Type:</span> {registrationData.ticketType}</p>
+      {registrationData.ticketType === "student-group" && registrationData.groupSize && (
+        <p><span className="text-[#FBB03B]/80">Group Size:</span> {registrationData.groupSize} people</p>
+      )}
       {sendingEmail && <p className="text-green-400 mt-2">Sending confirmation email...</p>}
     </div>
   );

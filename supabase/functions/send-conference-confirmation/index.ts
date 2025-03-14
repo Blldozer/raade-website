@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { Resend } from "npm:resend@4.0.0";
 
@@ -13,6 +14,16 @@ function isRiceEmail(email: string): boolean {
   return email.toLowerCase().endsWith("@rice.edu");
 }
 
+/**
+ * Send Conference Confirmation Email Edge Function
+ * 
+ * Sends personalized email confirmations for conference registrations by:
+ * - Customizing email content based on ticket type
+ * - Using domain-specific sender addresses to improve deliverability
+ * - Providing comprehensive receipt information to attendees
+ * 
+ * Handles CORS and tracks email delivery status
+ */
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -21,7 +32,7 @@ serve(async (req) => {
 
   try {
     // Get request body
-    const { fullName, email, ticketType } = await req.json();
+    const { fullName, email, ticketType, groupSize } = await req.json();
 
     if (!fullName || !email || !ticketType) {
       return new Response(
@@ -33,32 +44,24 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Sending confirmation email to ${email} for ${fullName}`);
+    console.log(`Sending confirmation email to ${email} for ${fullName} with ticket type ${ticketType}`);
 
-    // Get ticket type display name
+    // Get ticket type display name and price using the same logic as create-payment-intent
     let ticketTypeDisplay;
     let ticketPrice;
     
     switch (ticketType) {
-      case "rice-student":
-        ticketTypeDisplay = "Rice Student";
-        ticketPrice = "$50";
-        break;
-      case "non-rice-student":
-        ticketTypeDisplay = "Non-Rice Student";
-        ticketPrice = "$65";
+      case "student":
+        ticketTypeDisplay = "Student";
+        ticketPrice = "$35";
         break;
       case "professional":
         ticketTypeDisplay = "Professional";
-        ticketPrice = "$85";
-        break;
-      case "speaker":
-        ticketTypeDisplay = "Speaker";
-        ticketPrice = "$0";
+        ticketPrice = "$60";
         break;
       case "student-group":
         ticketTypeDisplay = "Student Group";
-        ticketPrice = "$50/person";
+        ticketPrice = groupSize ? `$${30 * groupSize} ($30/person × ${groupSize})` : "$30/person";
         break;
       default:
         ticketTypeDisplay = ticketType;
@@ -75,6 +78,7 @@ serve(async (req) => {
             .header { background-color: #274675; color: white; padding: 20px; text-align: center; }
             .content { padding: 20px; border: 1px solid #ddd; border-top: none; }
             .footer { font-size: 12px; color: #666; margin-top: 20px; text-align: center; }
+            .highlight { color: #FBB03B; font-weight: bold; }
           </style>
         </head>
         <body>
@@ -90,6 +94,7 @@ serve(async (req) => {
               <p><strong>Name:</strong> ${fullName}</p>
               <p><strong>Email:</strong> ${email}</p>
               <p><strong>Ticket Type:</strong> ${ticketTypeDisplay} (${ticketPrice})</p>
+              ${ticketType === "student-group" && groupSize ? `<p><strong>Group Size:</strong> ${groupSize} people</p>` : ''}
               <p>Additional information, including venue details and conference schedule, will be sent closer to the event date.</p>
               <p>If you have any questions or need to make changes to your registration, please contact us at conference@raade.org</p>
               <p>We look forward to seeing you at the conference!</p>
@@ -118,6 +123,7 @@ Registration Details:
 Name: ${fullName}
 Email: ${email}
 Ticket Type: ${ticketTypeDisplay} (${ticketPrice})
+${ticketType === "student-group" && groupSize ? `Group Size: ${groupSize} people` : ''}
 
 Additional information, including venue details and conference schedule, will be sent closer to the event date.
 
@@ -170,7 +176,10 @@ This is an automated message. Please do not reply to this email.
         debug: {
           email: email,
           domain: email.split('@')[1],
-          isRice: isRiceEmail(email)
+          isRice: isRiceEmail(email),
+          ticketType: ticketType,
+          displayType: ticketTypeDisplay,
+          price: ticketPrice
         }
       }),
       { 
