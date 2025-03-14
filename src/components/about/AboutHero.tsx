@@ -1,52 +1,125 @@
 
 import { motion } from "framer-motion";
 
+import { useState, useEffect } from "react";
+import { useResponsive } from "../../hooks/useResponsive";
+
 /**
- * About Hero Section
- * This component has a dark background, which requires a light navbar (white text)
- * We mark it with data-background="dark" for the useNavBackground hook to detect
+ * AboutHero component - Displays the hero section for the About page
+ * Features a 39%/61% split between text content and image
+ * Includes responsive handling for different device sizes with edge-to-edge image on mobile
  */
 const AboutHero = () => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const { isMobile, isTablet, width } = useResponsive();
+
+  // Preload the image
+  useEffect(() => {
+    const img = new Image();
+    img.src = "/raade-innov-team-core-2.jpg"; // Make sure there's a leading slash for public directory
+    
+    img.onload = () => {
+      console.log("Hero image loaded successfully");
+      setImageLoaded(true);
+    };
+    
+    img.onerror = () => {
+      console.error("Failed to load hero image");
+      setImageError(true);
+    };
+    
+    return () => {
+      // Clean up to prevent memory leaks
+      img.onload = null;
+      img.onerror = null;
+    };
+  }, []);
+
   return (
-    <section className="about-hero-section min-h-[90vh] bg-[#274675] relative flex items-center overflow-hidden" data-background="dark">
-      <div className="absolute inset-0 bg-gradient-to-t from-[#274675]/90 to-[#274675]/80 z-0"></div>
-      
-      <div className="max-w-[1600px] mx-auto px-6 md:px-12 z-10 w-full">
-        <div className="flex flex-col lg:flex-row items-center gap-12">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className="w-full lg:w-[61%] text-white"
-          >
-            <h1 className="text-[clamp(3.5rem,8vw,6rem)] leading-[1] font-simula mb-8 mt-20 lg:mt-0">
-              Building African futures, together
-            </h1>
-            <p className="text-xl md:text-2xl font-lora text-white/90 max-w-[700px]">
-              RAADE is a student organization at Rice University pioneering a new approach to African development through innovation and collaboration.
-            </p>
-          </motion.div>
+    // Add about-hero-section class and dark background data attribute
+    <div className="min-h-screen flex flex-col lg:flex-row about-hero-section" data-background="dark">
+      {/* Left Side - Text */}
+      <motion.div 
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+        className="w-full lg:w-[39%] flex flex-col justify-center bg-[#3C403A] relative"
+      >
+        {/* Add pt-24 on mobile to create space below the navbar, maintain existing padding on larger screens */}
+        <div className="px-8 pt-24 pb-16 lg:py-24 lg:px-12 max-w-[600px] mx-auto">
+          <h1 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-white mb-8">
+            Who we are
+          </h1>
           
-          <div className="w-full lg:w-[39%] flex justify-center">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }} 
-              animate={{ opacity: 1, scale: 1 }} 
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="aspect-square w-full max-w-md rounded-full bg-[#FBB03B]/40 backdrop-blur-sm flex items-center justify-center relative overflow-hidden"
-            >
-              <div className="absolute inset-2 rounded-full bg-[#FBB03B]/60 flex items-center justify-center">
-                <div className="text-center p-8">
-                  <h2 className="text-white text-2xl md:text-3xl font-bold mb-4 font-simula">Founded 2023</h2>
-                  <p className="text-white/90 font-lora">
-                    From idea to impact in just one year
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          </div>
+          <p className="text-[clamp(1rem,1.2vw,1.25rem)] leading-relaxed text-white font-lora">
+            RAADE pioneers innovative approaches to African development by connecting
+            students with African organizations to create scalable solutions for
+            pressing challenges.
+          </p>
         </div>
-      </div>
-    </section>
+      </motion.div>
+
+      {/* Right Side - Image */}
+      <motion.div 
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+        className={`
+          w-full lg:w-[61%] relative
+          ${isMobile ? 'w-screen mx-[-1rem]' : ''} 
+        `}
+        style={{ 
+          marginRight: isMobile ? '-1rem' : '0', // Ensure no right margin on mobile
+          width: isMobile ? 'calc(100% + 2rem)' : '' // Stretch to full viewport width plus padding compensation
+        }}
+      >
+        {/* Modified container to adjust height based on screen size and remove padding on mobile */}
+        <div className={`
+          ${isMobile ? 'h-[50vh]' : 'h-screen'}
+          relative overflow-hidden
+          ${isMobile ? 'w-full' : 'w-full'}
+        `}>
+          {/* Show a placeholder while image is loading */}
+          {!imageLoaded && !imageError && (
+            <div className="absolute inset-0 bg-[#4C504A] flex items-center justify-center">
+              <div className="text-white text-xl">Loading RAADE's story...</div>
+            </div>
+          )}
+          
+          {/* Show image once loaded - Mobile-specific adjustments */}
+          {(imageLoaded || !isMobile) && !imageError && (
+            <img
+              src="/raade-innov-team-core-2.jpg" 
+              alt="RAADE Innovation Studio Team at Rice Business School"
+              className={`
+                absolute inset-0 w-full h-full
+                ${isMobile ? 'object-cover object-center' : 'object-cover'}
+              `}
+              style={{ display: imageLoaded ? 'block' : 'none' }}
+              // On mobile, don't wait for onLoad event which might never fire if there are issues
+              onLoad={() => !isMobile && setImageLoaded(true)} 
+            />
+          )}
+          
+          {/* Fallback if image fails to load */}
+          {imageError && (
+            <div className="absolute inset-0 bg-[#3C403A] flex items-center justify-center">
+              <div className="text-white text-center px-6">
+                <span className="text-4xl font-bold block mb-2">RAADE</span>
+                <span className="text-xl">Revolutionizing African Development</span>
+              </div>
+            </div>
+          )}
+          
+          {/* Overlay that's always visible - with mobile-specific adjustments */}
+          <div className={`
+            absolute inset-0 
+            ${isMobile ? 'bg-black/5' : 'bg-black/10'}
+          `} />
+        </div>
+      </motion.div>
+    </div>
   );
 };
 
