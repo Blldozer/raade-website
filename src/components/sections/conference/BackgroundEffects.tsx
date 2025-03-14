@@ -16,13 +16,14 @@ const BackgroundEffects = () => {
 
   return (
     <>
-      {/* Base image layer - using will-change for hardware acceleration */}
+      {/* Base image layer - using will-change for hardware acceleration 
       <div className="absolute inset-0 overflow-hidden">
         <div 
           className="absolute inset-0 bg-[url('/raade-eboard-sally-port-cmp.jpg')] bg-cover bg-center opacity-35 mix-blend-color-burn"
           style={{ willChange: "transform" }}
         ></div>
       </div>
+      */}
       
       {/* Gradient overlay with animation - optimized with will-change */}
       <motion.div 
