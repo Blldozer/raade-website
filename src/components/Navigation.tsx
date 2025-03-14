@@ -38,26 +38,36 @@ const Navigation = ({
   const location = useLocation();
   const { isMobile, isTablet, width } = useResponsive();
   
+  // Check if we're on application pages which should always have light navbar
+  const isApplicationPage = 
+    location.pathname === "/apply/student" || 
+    location.pathname === "/apply/partner" ||
+    location.pathname === "/studios/apply" || 
+    location.pathname === "/studios/partner";
+
+  // Determine hero page status
   const heroPage = isHeroPage !== undefined 
     ? isHeroPage 
     : (location.pathname === "/" || location.pathname === "/studios");
 
+  // Check other special pages
   const isConferencePage = location.pathname === "/conference";
   const isStudiosPage = location.pathname === "/studios";
   const isIndexPage = location.pathname === "/" || location.pathname === "";
-  const isApplicationPage = location.pathname === "/studios/apply" || location.pathname === "/studios/partner";
   
-  const shouldForceDarkMode = forceDarkMode || (isConferencePage && !isHeroPage) || isApplicationPage;
+  // For application pages, we always want to force light mode navbar regardless of other settings
+  const shouldForceDarkMode = isApplicationPage ? false : (forceDarkMode || (isConferencePage && !isHeroPage));
 
   useLayoutEffect(() => {
     const checkInitialBackground = () => {
-      if (isIndexPage) {
+      // For application pages, always set light navbar
+      if (isApplicationPage) {
         setIsDarkBackground(true);
         document.body.setAttribute('data-nav-background', 'light');
         return;
       }
       
-      if (isApplicationPage) {
+      if (isIndexPage) {
         setIsDarkBackground(true);
         document.body.setAttribute('data-nav-background', 'light');
         return;
@@ -83,6 +93,13 @@ const Navigation = ({
 
   useEffect(() => {
     const checkInitialBackground = () => {
+      // For application pages, always set light navbar
+      if (isApplicationPage) {
+        setIsDarkBackground(true);
+        document.body.setAttribute('data-nav-background', 'light');
+        return;
+      }
+      
       const navBackground = document.body.getAttribute('data-nav-background');
       
       if (navBackground) {
@@ -90,9 +107,6 @@ const Navigation = ({
       } else {
         if (isConferencePage) {
           setIsDarkBackground(false);
-          document.body.setAttribute('data-nav-background', 'light');
-        } else if (isApplicationPage) {
-          setIsDarkBackground(true);
           document.body.setAttribute('data-nav-background', 'light');
         } else {
           setIsDarkBackground(true);
@@ -119,8 +133,13 @@ const Navigation = ({
       setIsScrolled(currentScrollY > 20);
       setIsPastHero(currentScrollY > heroHeight);
       
-      const navBackground = document.body.getAttribute('data-nav-background');
-      setIsDarkBackground(navBackground === 'dark');
+      // For application pages, always keep light navbar
+      if (isApplicationPage) {
+        setIsDarkBackground(true);
+      } else {
+        const navBackground = document.body.getAttribute('data-nav-background');
+        setIsDarkBackground(navBackground === 'dark');
+      }
     };
 
     window.addEventListener("scroll", handleScroll);

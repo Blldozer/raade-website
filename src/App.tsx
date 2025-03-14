@@ -3,7 +3,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 // Uncomment original imports for full website development
 import Index from "./pages/Index";
@@ -21,6 +22,37 @@ import SpeakerProfile from "./pages/SpeakerProfile";
 // Initialize the QueryClient
 const queryClient = new QueryClient();
 
+// Handle scroll restoration and navigation
+const ScrollToTop = () => {
+  const { pathname, hash } = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // If no hash is present, scroll to top
+    if (!hash) {
+      window.scrollTo(0, 0);
+      return;
+    }
+
+    // Handle anchor links after the page has fully loaded
+    const scrollToElement = () => {
+      const element = document.getElementById(hash.substring(1));
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        // If element not found, scroll to top as fallback
+        window.scrollTo(0, 0);
+      }
+    };
+
+    // Small delay to ensure the DOM is fully loaded
+    setTimeout(scrollToElement, 100);
+
+  }, [pathname, hash, navigate]);
+
+  return null;
+};
+
 const NavigationWrapper = () => {
   const location = useLocation();
   
@@ -30,7 +62,12 @@ const NavigationWrapper = () => {
     return null;
   }
   
-  // Force dark mode on project detail pages
+  // Check if we're on application pages that need special handling
+  const isApplicationPage = 
+    location.pathname === "/apply/student" || 
+    location.pathname === "/apply/partner";
+  
+  // Force dark mode on project detail pages, but ensure proper styling for application pages
   const isProjectDetailPage = location.pathname.startsWith('/projects/');
   
   return <Navigation forceDarkMode={isProjectDetailPage} />;
@@ -42,6 +79,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ScrollToTop />
         <div className="min-h-screen flex flex-col">
           <NavigationWrapper />
           <div className="flex-grow">

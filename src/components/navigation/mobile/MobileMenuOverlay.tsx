@@ -67,7 +67,7 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
 
   return (
     <div 
-      className="fixed inset-0 bg-[#274675] z-[9999] flex flex-col h-[100dvh] w-screen animate-in fade-in slide-in-from-right duration-300"
+      className="fixed inset-0 bg-[#274675] z-[1000] flex flex-col h-[100dvh] w-screen animate-in fade-in slide-in-from-right duration-300"
       role="dialog"
       aria-modal="true"
     >

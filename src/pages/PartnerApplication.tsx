@@ -8,7 +8,6 @@ import PartnerOrganizationInfo from "@/components/forms/PartnerOrganizationInfo"
 import PartnerContactInfo from "@/components/forms/PartnerContactInfo";
 import PartnerProjectInfo from "@/components/forms/PartnerProjectInfo";
 import SubmitButton from "@/components/forms/SubmitButton";
-import Navigation from "@/components/Navigation";
 import SubmissionConfirmation from "@/components/forms/SubmissionConfirmation";
 
 const PartnerApplication = () => {
@@ -84,8 +83,8 @@ const PartnerApplication = () => {
   );
 
   return (
-    <div className="bg-black min-h-screen">
-      <Navigation forceDarkMode={true} />
+    <div className="bg-black min-h-screen" id="partner-form">
+      {/* We don't need a second Navigation component since it's already in App.tsx */}
       <div className="container mx-auto px-6 py-12 md:px-12 pt-24">
         <PartnerFormHeader />
 

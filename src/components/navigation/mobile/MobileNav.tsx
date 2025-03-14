@@ -1,7 +1,7 @@
 
-import { useState } from "react";
 import MobileNavButton from "./MobileNavButton";
 import MobileMenuOverlay from "./MobileMenuOverlay";
+import { useMobileNav } from "@/hooks/useMobileNav";
 
 interface MobileNavProps {
   isScrolled?: boolean;
@@ -23,25 +23,20 @@ interface MobileNavProps {
  * @param forceDarkMode - Whether to force dark mode styling
  */
 const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = false }: MobileNavProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleToggleMenu = () => {
-    console.log("Mobile menu toggle clicked, current state:", isOpen);
-    setIsOpen(prevState => !prevState);
-  };
+  const { isOpen, openMenu, closeMenu } = useMobileNav();
 
   return (
     <div className="md:hidden">
       {/* Hamburger Menu Button */}
       <MobileNavButton 
-        onClick={handleToggleMenu} 
+        onClick={openMenu} 
         forceDarkMode={forceDarkMode} 
       />
 
       {/* Full Screen Menu Overlay */}
       <MobileMenuOverlay 
         isOpen={isOpen} 
-        onClose={() => setIsOpen(false)} 
+        onClose={closeMenu} 
       />
     </div>
   );

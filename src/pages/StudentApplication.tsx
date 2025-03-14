@@ -85,8 +85,8 @@ const StudentApplication = () => {
   );
 
   return (
-    <div className="bg-black min-h-screen">
-      <Navigation forceDarkMode={true} />
+    <div className="bg-black min-h-screen" id="student-form">
+      {/* We don't need a second Navigation component since it's already in App.tsx */}
       <div className="container mx-auto px-6 py-12 md:px-12 pt-24">
         <StudentFormHeader />
 
