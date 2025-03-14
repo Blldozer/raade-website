@@ -38,9 +38,8 @@ const TicketTypeSelection = ({
           <SelectValue placeholder="Select ticket type" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value={TICKET_TYPES.RICE_STUDENT}>Rice Student {getTicketPriceText(TICKET_TYPES.RICE_STUDENT)}</SelectItem>
-          <SelectItem value={TICKET_TYPES.NON_RICE_STUDENT}>Non-Rice Student {getTicketPriceText(TICKET_TYPES.NON_RICE_STUDENT)}</SelectItem>
-          <SelectItem value={TICKET_TYPES.YOUNG_PROFESSIONAL}>Professional {getTicketPriceText(TICKET_TYPES.YOUNG_PROFESSIONAL)}</SelectItem>
+          <SelectItem value={TICKET_TYPES.STUDENT}>Student {getTicketPriceText(TICKET_TYPES.STUDENT)}</SelectItem>
+          <SelectItem value={TICKET_TYPES.PROFESSIONAL}>Professional {getTicketPriceText(TICKET_TYPES.PROFESSIONAL)}</SelectItem>
           <SelectItem value={TICKET_TYPES.STUDENT_GROUP}>Student Group {getTicketPriceText(TICKET_TYPES.STUDENT_GROUP)}</SelectItem>
         </SelectContent>
       </Select>
@@ -48,13 +47,7 @@ const TicketTypeSelection = ({
         <p className="text-red-500 text-sm mt-1">{errors.ticketType.message}</p>
       )}
       
-      {watchTicketType === TICKET_TYPES.RICE_STUDENT && (
-        <p className="text-gray-600 text-sm mt-1">
-          Rice Student tickets require a valid Rice University email address.
-        </p>
-      )}
-      
-      {watchTicketType === TICKET_TYPES.NON_RICE_STUDENT && (
+      {watchTicketType === TICKET_TYPES.STUDENT && (
         <p className="text-gray-600 text-sm mt-1">
           Student tickets require a valid .edu email address.
         </p>

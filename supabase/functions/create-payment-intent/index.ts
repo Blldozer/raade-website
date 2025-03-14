@@ -25,20 +25,16 @@ serve(async (req) => {
     const isGroupRegistration = ticketType === "student-group";
 
     switch (ticketType) {
-      case "rice-student":
-        amount = 5000; // $50.00
-        description = "Rice Student Ticket - RAADE Conference 2025";
-        break;
-      case "non-rice-student":
-        amount = 6500; // $65.00
-        description = "Non-Rice Student Ticket - RAADE Conference 2025";
+      case "student":
+        amount = 3500; // $35.00
+        description = "Student Ticket - RAADE Conference 2025";
         break;
       case "professional":
-        amount = 8500; // $85.00
+        amount = 6000; // $60.00
         description = "Professional Ticket - RAADE Conference 2025";
         break;
       case "student-group":
-        amount = 5000 * (groupSize || 5); // $50.00 per person
+        amount = 3000 * (groupSize || 5); // $30.00 per person
         description = `Student Group (${groupSize || 5} members) - RAADE Conference 2025`;
         break;
       default:

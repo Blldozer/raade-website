@@ -3,9 +3,8 @@ import { z } from "zod";
 
 // Ticket type constants
 export const TICKET_TYPES = {
-  RICE_STUDENT: "rice-student",
-  NON_RICE_STUDENT: "non-rice-student",
-  YOUNG_PROFESSIONAL: "professional",
+  STUDENT: "student",
+  PROFESSIONAL: "professional",
   STUDENT_GROUP: "student-group"
 };
 
@@ -34,20 +33,18 @@ export type RegistrationFormData = z.infer<typeof registrationSchema>;
 // Helper functions for ticket pricing and validation
 export const getTicketPriceText = (ticketType: string) => {
   switch (ticketType) {
-    case TICKET_TYPES.RICE_STUDENT: return "($50)";
-    case TICKET_TYPES.NON_RICE_STUDENT: return "($65)";
-    case TICKET_TYPES.YOUNG_PROFESSIONAL: return "($85)";
-    case TICKET_TYPES.STUDENT_GROUP: return "($50/person, min 5)";
+    case TICKET_TYPES.STUDENT: return "($35)";
+    case TICKET_TYPES.PROFESSIONAL: return "($60)";
+    case TICKET_TYPES.STUDENT_GROUP: return "($30/person, min 5)";
     default: return "";
   }
 };
 
 export const getTicketPrice = (ticketType: string): number => {
   switch (ticketType) {
-    case TICKET_TYPES.RICE_STUDENT: return 50;
-    case TICKET_TYPES.NON_RICE_STUDENT: return 65;
-    case TICKET_TYPES.YOUNG_PROFESSIONAL: return 85;
-    case TICKET_TYPES.STUDENT_GROUP: return 50;
+    case TICKET_TYPES.STUDENT: return 35;
+    case TICKET_TYPES.PROFESSIONAL: return 60;
+    case TICKET_TYPES.STUDENT_GROUP: return 30;
     default: return 0;
   }
 };
@@ -93,16 +90,8 @@ export const validateTicketEmailDomain = (email: string, ticketType: string): { 
     return { isValid: false, message: "Invalid email format" };
   }
 
-  // Rice Student tickets must use rice.edu email
-  if (ticketType === TICKET_TYPES.RICE_STUDENT && !validation.isRiceEmail) {
-    return { 
-      isValid: false, 
-      message: "Rice Student tickets require a rice.edu email address" 
-    };
-  }
-  
-  // Non-Rice Student and Student Group tickets require any .edu email
-  if ((ticketType === TICKET_TYPES.NON_RICE_STUDENT || ticketType === TICKET_TYPES.STUDENT_GROUP) && !validation.isEduEmail) {
+  // Student and Student Group tickets require any .edu email
+  if ((ticketType === TICKET_TYPES.STUDENT || ticketType === TICKET_TYPES.STUDENT_GROUP) && !validation.isEduEmail) {
     return { 
       isValid: false, 
       message: "Student tickets require an .edu email address" 
