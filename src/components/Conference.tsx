@@ -7,9 +7,17 @@ import ConferenceHero from "./conference/ConferenceHero";
 import ConferenceOverview from "./conference/ConferenceOverview";
 import ConferenceWhy from "./conference/ConferenceWhy";
 import ConferenceRegistration from "./conference/ConferenceRegistration";
-import ConferenceValue from "./conference/ConferenceValue"; // Updated import path
 import ConferenceFinalCta from "./conference/ConferenceFinalCta";
 
+/**
+ * Conference component - Main container for all conference-related sections
+ * 
+ * Features:
+ * - Organizes the display flow of conference information sections
+ * - Implements scroll animations for better user engagement
+ * - Maintains proper section ordering for information hierarchy
+ * - Optimized for both mobile and desktop viewing
+ */
 const Conference = () => {
   const navigate = useNavigate();
   
@@ -39,9 +47,6 @@ const Conference = () => {
       
       {/* Conference Overview */}
       <ConferenceOverview />
-      
-      {/* Conference Value Proposition */}
-      <ConferenceValue />
       
       {/* Why Attend Section */}
       <ConferenceWhy />
