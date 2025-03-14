@@ -19,7 +19,6 @@ const throttle = (func: Function, limit: number) => {
 /**
  * Hook to manage navigation background color based on current scroll position
  * Sets appropriate data-nav-background attribute on document.body
- * Designed to work with both dark and light background sections
  * 
  * Section background color mapping:
  * - Dark sections (blue/dark backgrounds): Hero, Transition Stat, Transition Hook
@@ -31,9 +30,18 @@ const throttle = (func: Function, limit: number) => {
  */
 export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') => {
   // Use layout effect to set initial background before first paint
+  // This ensures the navbar has proper contrast immediately on page load
   useLayoutEffect(() => {
-    // Set initial background immediately to prevent flash of incorrect navbar style
-    document.body.setAttribute('data-nav-background', initialBackground);
+    // For index page, we always want to start with light navbar (over dark hero)
+    const isIndexPage = window.location.pathname === '/' || window.location.pathname === '';
+    
+    if (isIndexPage) {
+      // Force light navbar for index page hero section
+      document.body.setAttribute('data-nav-background', 'light');
+    } else {
+      // For other pages, use the provided initial background
+      document.body.setAttribute('data-nav-background', initialBackground);
+    }
   }, [initialBackground]);
 
   useEffect(() => {
@@ -115,7 +123,8 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
       }
     };
     
-    // Initial update
+    // Initial update on component mount
+    // This ensures the correct navbar styling is applied immediately
     updateNavBackground();
     
     // Throttled scroll handler to reduce CPU usage

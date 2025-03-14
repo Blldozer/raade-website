@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+
+import { useState, useEffect, useLayoutEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useLocation } from "react-router-dom";
 import NavLogo from "./navigation/NavLogo";
@@ -13,6 +14,18 @@ interface NavigationProps {
   useShortFormLogo?: boolean;
 }
 
+/**
+ * Navigation Component - Main navigation bar for the website
+ * 
+ * This component adapts its styling based on:
+ * - Current page/section background
+ * - Scroll position
+ * - User's device
+ * 
+ * On initial load with no scrolling, it should display:
+ * - Light navbar (white text) when over dark backgrounds
+ * - Dark navbar (navy text) when over light backgrounds
+ */
 const Navigation = ({ 
   isHeroPage = false, 
   forceDarkMode = false,
@@ -32,8 +45,38 @@ const Navigation = ({
 
   const isConferencePage = location.pathname === "/conference";
   const isStudiosPage = location.pathname === "/studios";
+  const isIndexPage = location.pathname === "/" || location.pathname === "";
   
   const shouldForceDarkMode = forceDarkMode || (isConferencePage && !isHeroPage);
+
+  // Immediately check background configuration on component mount
+  // This ensures proper contrast without requiring any user interaction
+  useLayoutEffect(() => {
+    const checkInitialBackground = () => {
+      // For index page, we always want to start with light navbar (over dark hero)
+      if (isIndexPage) {
+        setIsDarkBackground(true);
+        document.body.setAttribute('data-nav-background', 'light');
+        return;
+      }
+      
+      const navBackground = document.body.getAttribute('data-nav-background');
+      
+      if (navBackground) {
+        setIsDarkBackground(navBackground === 'dark');
+      } else {
+        if (isConferencePage) {
+          setIsDarkBackground(false);
+          document.body.setAttribute('data-nav-background', 'light');
+        } else {
+          setIsDarkBackground(true);
+          document.body.setAttribute('data-nav-background', 'dark');
+        }
+      }
+    };
+    
+    checkInitialBackground();
+  }, [isIndexPage, isConferencePage]);
 
   useEffect(() => {
     const checkInitialBackground = () => {
@@ -76,6 +119,7 @@ const Navigation = ({
 
     window.addEventListener("scroll", handleScroll);
     
+    // Initial call to handle scroll ensures correct state without user scrolling
     handleScroll();
     
     return () => window.removeEventListener("scroll", handleScroll);

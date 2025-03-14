@@ -12,12 +12,20 @@ import ScrollToPlugin from 'gsap/ScrollToPlugin';
 
 gsap.registerPlugin(ScrollToPlugin);
 
+/**
+ * Hero Component - The landing section of the website
+ * 
+ * This component displays the main hero section with video background, 
+ * animated content, and navigation. It explicitly sets a dark background 
+ * which requires a light navbar for proper contrast.
+ */
 const Hero = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [videoLoaded, setVideoLoaded] = useState(false);
   
   // Set initial nav background to light because this hero has a dark background
+  // This ensures proper contrast for navbar elements without requiring user interaction
   useEffect(() => {
     // Ensure it's immediately set for correct navbar styling
     document.body.setAttribute('data-nav-background', 'light');

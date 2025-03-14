@@ -14,6 +14,13 @@ const FutureShowcase = lazy(() => import("@/components/sections/FutureShowcase")
 const TransitionHook = lazy(() => import("@/components/sections/TransitionHook"));
 const JoinSection = lazy(() => import("@/components/sections/JoinSection"));
 
+/**
+ * Index Component - Main landing page of the website
+ * 
+ * This component serves as the main entry point for users.
+ * It explicitly initializes the navbar with a light background setting
+ * to ensure proper contrast over the dark hero section.
+ */
 const Index = () => {
   // Use our optimized hook for section transitions
   useSectionTransitions();
@@ -22,7 +29,14 @@ const Index = () => {
   
   // Use the hook to manage navbar background colors based on section visibility
   // Initialize with 'light' since the hero section has a dark background
+  // This ensures the navbar is immediately visible with proper contrast
   useNavBackground('light');
+  
+  // Set initial background state before any scroll happens
+  useLayoutEffect(() => {
+    // Force light navbar for index page hero section
+    document.body.setAttribute('data-nav-background', 'light');
+  }, []);
   
   useEffect(() => {
     // Add passive:true to touch events for better scroll performance
