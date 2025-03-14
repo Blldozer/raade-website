@@ -1,5 +1,5 @@
 
-import { UseFormWatch, UseFormSetValue, Control, useFieldArray, FieldErrors } from "react-hook-form";
+import { UseFormWatch, UseFormSetValue, Control, useFieldArray } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,7 @@ interface GroupRegistrationProps {
   watch: UseFormWatch<RegistrationFormData>;
   setValue: UseFormSetValue<RegistrationFormData>;
   control: Control<RegistrationFormData>;
-  errors?: FieldErrors<RegistrationFormData>;
+  errors?: any;
 }
 
 /**
