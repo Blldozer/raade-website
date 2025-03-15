@@ -4,15 +4,28 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
 import ConferenceRegistrationForm from "@/components/conference/ConferenceRegistrationForm";
+import { useNavBackground } from "@/hooks/useNavBackground";
 
+/**
+ * Conference Registration Page
+ * 
+ * This page displays the registration form for conference attendees.
+ * The gradient background requires a dark navbar (light text) for proper contrast,
+ * so we explicitly set the data-nav-background attribute to "dark".
+ */
 const ConferenceRegistration = () => {
   const navigate = useNavigate();
+  
+  // Initialize navigation background control
+  // This ensures proper navbar styling immediately on page load
+  useNavBackground('dark');
   
   useEffect(() => {
     // Scroll to top when component mounts
     window.scrollTo(0, 0);
     
-    // Set navigation background to dark
+    // Set navigation background to dark explicitly for this page
+    // This ensures the navbar will have light text against our gradient background
     document.body.setAttribute('data-nav-background', 'dark');
     
     // Cleanup function to reset attribute when component unmounts
