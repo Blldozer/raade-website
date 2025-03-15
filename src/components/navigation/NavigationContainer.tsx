@@ -1,13 +1,10 @@
 
-import { useState, useEffect, useLayoutEffect } from "react";
 import { cn } from "@/lib/utils";
-import { useLocation } from "react-router-dom";
 import NavLogo from "./NavLogo";
 import DesktopNav from "./DesktopNav";
 import MobileNav from "./mobile/MobileNav";
 import CountdownTimer from "../CountdownTimer";
-import { useResponsive } from "@/hooks/useResponsive";
-import { useNavigationBackground } from "./hooks/useNavigationBackground";
+import { NavigationProvider, useNavigation } from "./context/NavigationContext";
 
 interface NavigationContainerProps {
   isHeroPage?: boolean;
@@ -18,50 +15,30 @@ interface NavigationContainerProps {
 /**
  * NavigationContainer Component - Main container for navigation components
  * 
- * Handles scroll detection, visibility states, and responsiveness
- * while delegating rendering to more specialized components
+ * Delegates rendering to specialized components while providing
+ * a shared context for navigation state management
  */
 const NavigationContainer = ({ 
   isHeroPage = false, 
   forceDarkMode = false,
   useShortFormLogo = false 
 }: NavigationContainerProps) => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isPastHero, setIsPastHero] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const { isMobile, isTablet } = useResponsive();
+  return (
+    <NavigationProvider initialProps={{ isHeroPage, forceDarkMode, useShortFormLogo }}>
+      <NavigationContent />
+    </NavigationProvider>
+  );
+};
+
+/**
+ * NavigationContent Component - Internal component that consumes the navigation context
+ * 
+ * Handles the actual rendering of navigation elements using shared state
+ */
+const NavigationContent = () => {
+  const { state } = useNavigation();
+  const { isScrolled, isVisible, isDarkBackground, isMobile, isTablet, isHeroPage, useShortFormLogo } = state;
   
-  // Use custom hook to determine background state
-  const { isDarkBackground } = useNavigationBackground({ forceDarkMode });
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      const heroHeight = window.innerHeight * 0.9;
-      
-      // Visibility control based on scroll direction
-      if (currentScrollY < 50) {
-        setIsVisible(true);
-      } else if (currentScrollY > lastScrollY + 10) {
-        setIsVisible(false);
-      } else if (currentScrollY < lastScrollY - 10) {
-        setIsVisible(true);
-      }
-      
-      setLastScrollY(currentScrollY);
-      setIsScrolled(currentScrollY > 20);
-      setIsPastHero(currentScrollY > heroHeight);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    
-    // Initial check
-    handleScroll();
-    
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
-
   // Get responsive padding values
   const getPadding = () => {
     if (isMobile) return "px-4";
@@ -86,7 +63,7 @@ const NavigationContainer = ({
           <NavLogo 
             isScrolled={isScrolled} 
             isHeroPage={isHeroPage} 
-            forceDarkMode={forceDarkMode || !isDarkBackground}
+            forceDarkMode={!isDarkBackground}
             useShortForm={useShortFormLogo}
           />
           
@@ -101,12 +78,12 @@ const NavigationContainer = ({
             <DesktopNav 
               isScrolled={isScrolled} 
               isHeroPage={isHeroPage} 
-              forceDarkMode={forceDarkMode || !isDarkBackground} 
+              forceDarkMode={!isDarkBackground} 
             />
             <MobileNav 
               isScrolled={isScrolled} 
               isHeroPage={isHeroPage} 
-              forceDarkMode={forceDarkMode || !isDarkBackground} 
+              forceDarkMode={!isDarkBackground} 
             />
           </div>
         </div>

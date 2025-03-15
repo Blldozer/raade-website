@@ -11,8 +11,8 @@ interface NavigationProps {
  * Navigation Component - Main navigation bar for the website
  * 
  * This component has been refactored for better maintainability.
- * It delegates all functionality to NavigationContainer while
- * preserving the original interface for backward compatibility.
+ * It delegates all functionality to NavigationContainer which provides
+ * a context for sharing navigation state across components.
  */
 const Navigation = ({ 
   isHeroPage = false, 

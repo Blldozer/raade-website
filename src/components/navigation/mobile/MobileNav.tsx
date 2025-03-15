@@ -1,4 +1,5 @@
 
+import { useNavigation } from "../context/NavigationContext";
 import MobileNavButton from "./MobileNavButton";
 import MobileMenuOverlay from "./MobileMenuOverlay";
 import { useMobileNav } from "@/hooks/useMobileNav";
@@ -18,19 +19,30 @@ interface MobileNavProps {
  * - Maintains consistent behavior across all pages
  * - Locks body scroll when menu is open to prevent background scrolling
  * 
- * @param isScrolled - Whether the page has been scrolled
- * @param isHeroPage - Whether this is displayed on a hero section
- * @param forceDarkMode - Whether to force dark mode styling
+ * @param isScrolled - Whether the page has been scrolled (legacy prop, use context instead)
+ * @param isHeroPage - Whether this is displayed on a hero section (legacy prop, use context instead)
+ * @param forceDarkMode - Whether to force dark mode styling (legacy prop, use context instead)
  */
-const MobileNav = ({ isScrolled = false, isHeroPage = false, forceDarkMode = false }: MobileNavProps) => {
+const MobileNav = ({ 
+  isScrolled = false, 
+  isHeroPage = false, 
+  forceDarkMode = false 
+}: MobileNavProps) => {
+  // Use mobile nav state from custom hook
   const { isOpen, openMenu, closeMenu } = useMobileNav();
+  
+  // Use the navigation context for styling
+  const { state } = useNavigation();
+  
+  // Prioritize context values but fall back to props for backward compatibility
+  const actualForceDarkMode = forceDarkMode || !state.isDarkBackground;
 
   return (
     <div className="md:hidden">
       {/* Hamburger Menu Button */}
       <MobileNavButton 
         onClick={openMenu} 
-        forceDarkMode={forceDarkMode} 
+        forceDarkMode={actualForceDarkMode} 
       />
 
       {/* Full Screen Menu Overlay */}

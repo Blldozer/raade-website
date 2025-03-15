@@ -1,6 +1,7 @@
 
 import { useState, useLayoutEffect, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { useNavigation } from "../context/NavigationContext";
 
 interface UseNavigationBackgroundProps {
   forceDarkMode?: boolean;
@@ -11,10 +12,14 @@ interface UseNavigationBackgroundProps {
  * 
  * Centralizes the complex logic for determining whether the navbar
  * should use dark or light styling based on page context and props
+ * Updates the navigation context with the background state
  */
 export const useNavigationBackground = ({ forceDarkMode = false }: UseNavigationBackgroundProps = {}) => {
   const [isDarkBackground, setIsDarkBackground] = useState(true);
   const location = useLocation();
+  
+  // Get navigation context if available
+  const navigationContext = useNavigation();
   
   // Check if we're on application pages which should always have light navbar
   const isApplicationPage = 
@@ -100,7 +105,13 @@ export const useNavigationBackground = ({ forceDarkMode = false }: UseNavigation
           mutation.attributeName === "data-nav-background"
         ) {
           const navBackground = document.body.getAttribute('data-nav-background');
-          setIsDarkBackground(navBackground === 'dark');
+          const newIsDarkBackground = navBackground === 'dark';
+          setIsDarkBackground(newIsDarkBackground);
+          
+          // Update the context if available
+          if (navigationContext) {
+            navigationContext.setIsDarkBackground(newIsDarkBackground);
+          }
         }
       });
     });
@@ -111,7 +122,7 @@ export const useNavigationBackground = ({ forceDarkMode = false }: UseNavigation
     return () => {
       observer.disconnect();
     };
-  }, [isConferencePage, isApplicationPage]);
+  }, [isConferencePage, isApplicationPage, navigationContext]);
 
   return { 
     isDarkBackground,
