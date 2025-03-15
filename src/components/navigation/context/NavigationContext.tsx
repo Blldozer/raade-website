@@ -65,8 +65,12 @@ export const NavigationProvider = ({
   const [isPastHero, setIsPastHero] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  
+  // Fix for the nullish coalescing operator error
+  // initialProps.forceDarkMode can be undefined, but not null
+  // so we use logical NOT to convert undefined to a boolean
   const [isDarkBackground, setIsDarkBackground] = useState(
-    !initialProps.forceDarkMode ?? true
+    !(initialProps.forceDarkMode === true)
   );
   
   // Determine page context
