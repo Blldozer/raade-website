@@ -23,8 +23,8 @@ const ConferenceRegistration = () => {
   
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#274675]/10 to-white">
-      {/* Changed forceDarkMode to true to make navbar dark */}
-      <Navigation forceDarkMode={true} />
+      {/* Don't force dark mode, but rely on data-nav-background attribute */}
+      <Navigation />
       <div className="flex-grow pt-20 px-4 md:px-8">
         <div className="max-w-3xl mx-auto py-12">
           <button onClick={() => navigate("/conference")} className="flex items-center text-black hover:text-black/70 mb-6 transition-colors duration-300 font-lora">
