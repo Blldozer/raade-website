@@ -1,4 +1,3 @@
-
 import React, { useEffect, Suspense, useLayoutEffect } from 'react';
 import { lazy } from 'react';
 import Hero from "@/components/hero/Hero";
@@ -24,7 +23,7 @@ const JoinSection = lazy(() => import("@/components/sections/JoinSection"));
 const Index = () => {
   // Use our optimized hook for section transitions
   useSectionTransitions();
-  const { isMobile } = useResponsive();
+  const { isMobile, width, height, deviceType, touchCapability, orientation, performanceLevel } = useResponsive();
   const location = useLocation();
   
   // Use the hook to manage navbar background colors based on section visibility
@@ -32,10 +31,77 @@ const Index = () => {
   // This ensures the navbar is immediately visible with proper contrast
   useNavBackground('light');
   
+  // Add logging to diagnose mobile rendering issues
+  useEffect(() => {
+    console.log('=== INDEX PAGE DIAGNOSTIC INFO ===');
+    console.log('Device detection:', { 
+      isMobile, 
+      width, 
+      height, 
+      deviceType, 
+      touchCapability,
+      orientation,
+      performanceLevel,
+      userAgent: navigator.userAgent,
+      viewport: {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        pixelRatio: window.devicePixelRatio,
+        visualViewport: window.visualViewport ? {
+          width: window.visualViewport.width,
+          height: window.visualViewport.height,
+          scale: window.visualViewport.scale
+        } : 'not supported'
+      }
+    });
+    
+    // Check if critical components are visible
+    const heroElement = document.getElementById('hero');
+    console.log('Hero element present:', !!heroElement);
+    if (heroElement) {
+      console.log('Hero element dimensions:', {
+        width: heroElement.offsetWidth,
+        height: heroElement.offsetHeight,
+        visible: heroElement.offsetWidth > 0 && heroElement.offsetHeight > 0,
+        style: {
+          display: window.getComputedStyle(heroElement).display,
+          position: window.getComputedStyle(heroElement).position,
+          overflow: window.getComputedStyle(heroElement).overflow,
+          zIndex: window.getComputedStyle(heroElement).zIndex
+        }
+      });
+    }
+    
+    // Monitor any layout shifts or scrolling issues
+    let lastHeight = window.innerHeight;
+    const handleResize = () => {
+      const newHeight = window.innerHeight;
+      if (Math.abs(lastHeight - newHeight) > 50) {
+        console.log('Significant viewport height change detected:', {
+          from: lastHeight,
+          to: newHeight,
+          difference: newHeight - lastHeight
+        });
+        lastHeight = newHeight;
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isMobile, width, height, deviceType, touchCapability, orientation, performanceLevel]);
+  
   // Set initial background state before any scroll happens
   useLayoutEffect(() => {
     // Force light navbar for index page hero section
     document.body.setAttribute('data-nav-background', 'light');
+    
+    // Log initial rendering state
+    console.log('Initial render state:', {
+      documentHeight: document.documentElement.offsetHeight,
+      bodyHeight: document.body.offsetHeight,
+      windowHeight: window.innerHeight,
+      overflow: window.getComputedStyle(document.body).overflow
+    });
   }, []);
   
   useEffect(() => {
