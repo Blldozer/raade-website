@@ -16,6 +16,7 @@ interface NavLogoProps {
  * NavLogo component - Displays the RAADE logo with proper state handling
  * Features responsive sizing and color switching based on page context
  * Includes improved navigation handling to prevent routing issues
+ * Now with improved duplicate prevention mechanism
  */
 const NavLogo = ({ 
   isScrolled = false, 

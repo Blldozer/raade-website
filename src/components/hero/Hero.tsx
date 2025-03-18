@@ -1,6 +1,5 @@
 
 import React, { useRef, memo, useState, useEffect } from 'react';
-import Navigation from '../Navigation';
 import { useContentAnimation } from './hooks/useContentAnimation';
 import { useHeroAnimation } from './hooks/useHeroAnimation';
 import VideoBackground from './components/VideoBackground';
@@ -15,7 +14,7 @@ gsap.registerPlugin(ScrollToPlugin);
 /**
  * Hero Component - The landing section of the website
  * 
- * This component displays the main hero section with video background, 
+ * This component displays the main hero section with video background,
  * animated content, and navigation. It explicitly sets a dark background 
  * which requires a light navbar for proper contrast.
  */
@@ -61,11 +60,6 @@ const Hero = () => {
       
       {/* Gradient Overlay - low z-index but above video */}
       <GradientOverlay />
-      
-      {/* Navigation - highest z-index */}
-      <div className="absolute top-0 left-0 right-0 z-[9999]">
-        <Navigation isHeroPage={true} />
-      </div>
       
       {/* Main Content - high z-index but below navigation */}
       <HeroContent />

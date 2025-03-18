@@ -185,6 +185,7 @@ const InnovationStudios = () => {
 
   return (
     <div>
+      {/* Single Navigation component at the top level */}
       <Navigation isHeroPage={true} forceDarkMode={false} />
       <div>
         <Hero />

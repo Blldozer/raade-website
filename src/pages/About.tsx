@@ -1,5 +1,5 @@
+
 import React, { useEffect, useLayoutEffect } from "react";
-import Navigation from "../components/Navigation"; // Use main Navigation component
 import AboutHero from "../components/about/AboutHero";
 import { useAboutPage } from "../hooks/useAboutPage";
 import ErrorBoundaryFallback from "../components/about/ErrorBoundaryFallback";
@@ -7,6 +7,7 @@ import LoadingIndicator from "../components/about/LoadingIndicator";
 import AboutSections from "../components/about/AboutSections";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { useLocation } from "react-router-dom";
+import Navigation from "../components/Navigation"; // Import at the top level
 
 /**
  * About page component - Manages the entire About page lifecycle
@@ -67,7 +68,7 @@ const About = () => {
   return (
     <ErrorBoundary fallback={<ErrorBoundaryFallback />}>
       <div className="bg-white min-h-screen">
-        {/* Use the main Navigation component instead of AboutNav */}
+        {/* Place Navigation component at the top level of the page */}
         <Navigation isHeroPage={true} forceDarkMode={false} />
         
         {/* Always show hero section */}
