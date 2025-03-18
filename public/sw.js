@@ -1,6 +1,6 @@
 
 // Service Worker for RAADE Website
-const CACHE_NAME = 'raade-cache-v2';
+const CACHE_NAME = 'raade-cache-v3'; // Incrementing cache version
 const urlsToCache = [
   '/',
   '/index.html',
@@ -16,7 +16,21 @@ const urlsToCache = [
 ];
 
 // Image-specific cache for better management
-const IMAGE_CACHE_NAME = 'raade-images-cache-v1';
+const IMAGE_CACHE_NAME = 'raade-images-cache-v2';
+
+// Stripe-specific cache for better security handling
+const STRIPE_CACHE_NAME = 'raade-stripe-cache-v1';
+
+// Force HTTPS for all resources
+const enforceHTTPS = (url) => {
+  // Check if we're in production (not localhost)
+  if (self.location.hostname !== 'localhost' && 
+      self.location.hostname !== '127.0.0.1' &&
+      url.startsWith('http:')) {
+    return url.replace('http:', 'https:');
+  }
+  return url;
+};
 
 // Install event - cache assets
 self.addEventListener('install', event => {
@@ -29,7 +43,9 @@ self.addEventListener('install', event => {
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('Service Worker: Opened cache');
-        return cache.addAll(urlsToCache);
+        // Ensure all URLs use HTTPS in production
+        const secureUrls = urlsToCache.map(url => enforceHTTPS(url));
+        return cache.addAll(secureUrls);
       })
       .catch(error => {
         console.error('Service Worker: Cache install failed:', error);
@@ -43,7 +59,7 @@ self.addEventListener('message', event => {
   
   if (event.data && event.data.type === 'CACHE_IMAGE') {
     // Handle request to cache a specific image
-    const imageUrl = event.data.url;
+    const imageUrl = enforceHTTPS(event.data.url);
     
     if (imageUrl) {
       event.waitUntil(
@@ -63,12 +79,54 @@ self.addEventListener('message', event => {
           })
       );
     }
+  } else if (event.data && event.data.type === 'CLEAR_WS_ERROR') {
+    // Clear console logging for WebSocket errors (helps in diagnostic situations)
+    console.clear();
+    console.log('Service Worker: Cleared WebSocket error messages');
   }
 });
 
 // Fetch event - serve from cache when offline
 self.addEventListener('fetch', event => {
   const requestUrl = new URL(event.request.url);
+  
+  // Block any WebSocket connection attempts to localhost from production
+  if (requestUrl.protocol === 'ws:' || requestUrl.protocol === 'wss:') {
+    if (requestUrl.hostname === 'localhost' || requestUrl.hostname === '127.0.0.1') {
+      // In production, block these requests entirely
+      if (self.location.hostname !== 'localhost' && self.location.hostname !== '127.0.0.1') {
+        console.debug('Service Worker: Blocked development WebSocket connection attempt');
+        return;
+      }
+    }
+  }
+  
+  // Special handling for Stripe resources
+  if (requestUrl.hostname === 'js.stripe.com' || requestUrl.hostname === 'api.stripe.com') {
+    // Always use network-first strategy for Stripe, but cache for offline use
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          // Clone the response for caching
+          const responseToCache = response.clone();
+          
+          // Only cache successful responses
+          if (response.ok) {
+            caches.open(STRIPE_CACHE_NAME)
+              .then(cache => {
+                cache.put(event.request, responseToCache);
+              });
+          }
+          
+          return response;
+        })
+        .catch(() => {
+          // Try to get from cache if offline
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
   
   // Special handling for image requests
   const isImageRequest = 
@@ -140,7 +198,20 @@ self.addEventListener('fetch', event => {
           if (response) {
             return response;
           }
-          return fetch(event.request).then(
+          
+          // Make a fresh network request - ensure HTTPS in production
+          const secureRequest = new Request(
+            enforceHTTPS(event.request.url),
+            {
+              method: event.request.method,
+              headers: event.request.headers,
+              mode: event.request.mode,
+              credentials: event.request.credentials,
+              redirect: event.request.redirect
+            }
+          );
+          
+          return fetch(secureRequest).then(
             response => {
               // Check if we received a valid response
               if(!response || response.status !== 200 || response.type !== 'basic') {
@@ -167,7 +238,7 @@ self.addEventListener('fetch', event => {
 self.addEventListener('activate', event => {
   console.log('Service Worker: Activating...');
   
-  const cacheWhitelist = [CACHE_NAME, IMAGE_CACHE_NAME];
+  const cacheWhitelist = [CACHE_NAME, IMAGE_CACHE_NAME, STRIPE_CACHE_NAME];
   
   event.waitUntil(
     caches.keys().then(cacheNames => {
@@ -182,6 +253,22 @@ self.addEventListener('activate', event => {
     })
     .then(() => {
       console.log('Service Worker: Activated');
+      
+      // Update the client to use HTTPS if needed
+      self.clients.matchAll().then(clients => {
+        clients.forEach(client => {
+          if (client.url && client.url.startsWith('http:') && 
+              self.location.hostname !== 'localhost' && 
+              self.location.hostname !== '127.0.0.1') {
+            // Inform the client to redirect to HTTPS
+            client.postMessage({ 
+              type: 'USE_HTTPS', 
+              url: client.url.replace('http:', 'https:') 
+            });
+          }
+        });
+      });
+      
       return self.clients.claim();
     })
   );

@@ -12,6 +12,7 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
+    // Only use componentTagger in development mode
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
@@ -20,4 +21,24 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Production optimization settings
+  build: {
+    // Ensure sourcemaps aren't included in production
+    sourcemap: false,
+    // Minify output for production
+    minify: 'terser',
+    // Ensure no WebSocket HMR connections are attempted in production
+    manifest: true,
+    // Disable HMR explicitly in production build
+    hmr: false,
+    // Improve chunk loading strategy
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom'],
+          gsap: ['gsap', 'gsap/ScrollTrigger', 'gsap/ScrollToPlugin'],
+        }
+      }
+    }
+  }
 }));
