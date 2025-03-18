@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 import Navigation from "@/components/Navigation";
 import Conference from "@/components/Conference";
 import { useLocation } from "react-router-dom";
@@ -15,21 +15,22 @@ import { useLocation } from "react-router-dom";
 const ConferencePage = () => {
   const location = useLocation();
   
+  // Set background attribute before first paint to avoid flicker
+  useLayoutEffect(() => {
+    // Set initial nav background attribute for proper contrast
+    document.body.setAttribute('data-nav-background', 'light');
+    
+    return () => {
+      document.body.removeAttribute('data-nav-background');
+    };
+  }, []);
+  
   useEffect(() => {
     // Scroll to top when page loads
     window.scrollTo(0, 0);
     
     // Update page title to reflect Day Forum instead of Conference
     document.title = "RAADE | Day Forum";
-    
-    // Set initial nav background attribute for proper contrast
-    // Set this immediately to ensure navbar has correct styling on initial render
-    document.body.setAttribute('data-nav-background', 'light');
-    
-    // Clean up function to reset the attribute when component unmounts
-    return () => {
-      document.body.removeAttribute('data-nav-background');
-    };
   }, []);
   
   // Handle scrolling to a specific section when navigated with state

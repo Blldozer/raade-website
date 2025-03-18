@@ -1,12 +1,11 @@
 
-import React, { useEffect } from "react";
-import AboutNav from "../components/navigation/AboutNav";
+import React, { useEffect, useLayoutEffect } from "react";
+import Navigation from "../components/Navigation"; // Use main Navigation component
 import AboutHero from "../components/about/AboutHero";
 import { useAboutPage } from "../hooks/useAboutPage";
 import ErrorBoundaryFallback from "../components/about/ErrorBoundaryFallback";
 import LoadingIndicator from "../components/about/LoadingIndicator";
 import AboutSections from "../components/about/AboutSections";
-import { useNavBackground } from "@/hooks/useNavBackground";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
 /**
@@ -23,24 +22,31 @@ const About = () => {
     pageInitialized,
     isMobile,
   } = useAboutPage();
-
-  // Use the hook to ensure the navbar background is properly set
-  // Initialize with 'dark' for the hero section's dark background
-  useNavBackground('dark');
   
-  // Add console logging to help debug About page issues
-  useEffect(() => {
-    console.log('About page mounted');
+  // Set initial background to dark immediately for the hero section
+  // This ensures light navbar (white text) against the dark hero background
+  useLayoutEffect(() => {
+    console.log("About page: Setting initial dark background");
+    try {
+      document.body.setAttribute('data-nav-background', 'dark');
+      
+      // Add a class to body to indicate we're on the about page
+      document.body.classList.add('about-page');
+    } catch (error) {
+      console.error("Could not set nav background:", error);
+    }
     
-    // Set document title
-    document.title = "About RAADE | Rice Association for African Development";
-    
+    // Return cleanup function
     return () => {
-      console.log('About page unmounted');
-      document.title = "RAADE | Rice Association for African Development";
+      try {
+        document.body.classList.remove('about-page');
+        document.body.removeAttribute('data-nav-background');
+      } catch (error) {
+        console.error("Error cleaning up about page class:", error);
+      }
     };
   }, []);
-
+  
   // If fatal error, show a simple fallback (outside of all contexts)
   if (hasError) {
     console.error("About page encountered an error");
@@ -50,8 +56,8 @@ const About = () => {
   return (
     <ErrorBoundary fallback={<ErrorBoundaryFallback />}>
       <div className="bg-white min-h-screen">
-        {/* Always render the navigation - now with its own provider */}
-        <AboutNav />
+        {/* Use the main Navigation component instead of AboutNav */}
+        <Navigation isHeroPage={true} forceDarkMode={false} />
         
         {/* Always show hero section */}
         <AboutHero />

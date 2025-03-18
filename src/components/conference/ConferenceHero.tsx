@@ -4,6 +4,14 @@ import HeroBackground from "./hero/HeroBackground";
 import HeroLeftContent from "./hero/HeroLeftContent";
 import ScrollIndicator from "./hero/ScrollIndicator";
 
+/**
+ * ConferenceHero Component
+ * 
+ * Main hero section for the conference page with:
+ * - Gradient background with decorative elements
+ * - Centered content with heading and CTA
+ * - Scroll indicator to guide users
+ */
 const ConferenceHero = () => {
   return (
     <div className="relative min-h-screen overflow-hidden">
