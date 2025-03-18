@@ -1,7 +1,6 @@
-
-import { useState, useEffect, useLayoutEffect } from 'react';
+import { useState, useEffect, useLayoutEffect, useCallback } from 'react';
 import { useResponsive } from './useResponsive';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 /**
  * Custom hook to manage the About page state and logic
@@ -16,6 +15,7 @@ export const useAboutPage = () => {
   const [pageInitialized, setPageInitialized] = useState(false);
   const { isMobile } = useResponsive();
   const navigate = useNavigate();
+  const location = useLocation();
   
   // Set the initial background to dark immediately for the hero section
   // This ensures light navbar (white text) against the dark hero background
@@ -39,6 +39,36 @@ export const useAboutPage = () => {
         console.error("Error cleaning up about page class:", error);
       }
     };
+  }, []);
+  
+  // Function to scroll to a specific section
+  const scrollToSection = useCallback((sectionId: string) => {
+    console.log(`Attempting to scroll to section: ${sectionId}`);
+    
+    // Map section IDs to their indices in the sections array
+    const sectionMap: {[key: string]: number} = {
+      'approach': 3,  // Our Approach is the 3rd section (0-indexed)
+      'impact': 4,    // Our Impact is the 4th section
+      'team': 5       // Team is the 5th section
+    };
+    
+    // Set the active section to ensure it's loaded
+    if (sectionMap[sectionId]) {
+      setActiveSection(sectionMap[sectionId]);
+      
+      // Wait for the section to be rendered
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          console.log(`Scrolling to element: #${sectionId}`);
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          console.warn(`Element #${sectionId} not found after setting active section`);
+        }
+      }, 500); // Give it time to render
+    } else {
+      console.warn(`Unknown section ID: ${sectionId}`);
+    }
   }, []);
   
   // Initialize the page and set up error handling
@@ -78,6 +108,23 @@ export const useAboutPage = () => {
     };
     
     window.addEventListener('error', handleGlobalError);
+    
+    // Start with hero section (section 0)
+    setActiveSection(0);
+    
+    // Handle section loading based on URL hash
+    if (location.hash) {
+      const sectionId = location.hash.substring(1); // Remove #
+      console.log(`URL contains hash: ${sectionId}`);
+      scrollToSection(sectionId);
+    }
+    
+    // Handle loading through state
+    if (location.state && location.state.scrollToSection) {
+      const sectionId = location.state.scrollToSection;
+      console.log(`Location state contains scrollToSection: ${sectionId}`);
+      scrollToSection(sectionId);
+    }
     
     // Initialize with a clearer approach - use a delay to ensure DOM is ready
     const timer = setTimeout(() => {
@@ -134,7 +181,7 @@ export const useAboutPage = () => {
         console.error("Error cleaning up navigation attributes:", error);
       }
     };
-  }, [isMobile, isLoading]);
+  }, [isMobile, isLoading, location.hash, location.state, scrollToSection]);
 
   // Handle navigation via the logo to prevent blank screen issues
   const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -149,6 +196,7 @@ export const useAboutPage = () => {
     hasError,
     pageInitialized,
     isMobile,
-    handleLogoClick
+    handleLogoClick,
+    scrollToSection
   };
 };

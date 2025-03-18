@@ -6,6 +6,12 @@ interface NavDropdownItemProps {
   onClick?: () => void;
 }
 
+/**
+ * NavDropdownItem Component
+ * 
+ * Handles dropdown items in navigation with proper section linking capabilities
+ * Special handling for hash links to ensure smooth scrolling
+ */
 const NavDropdownItem = ({ name, href, onClick }: NavDropdownItemProps) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -19,7 +25,7 @@ const NavDropdownItem = ({ name, href, onClick }: NavDropdownItemProps) => {
   const handleSectionNavigation = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     
-    // Call the onClick handler if provided
+    // Call the onClick handler if provided (usually to close mobile menu)
     if (onClick) onClick();
     
     if (isSamePage) {
@@ -27,9 +33,12 @@ const NavDropdownItem = ({ name, href, onClick }: NavDropdownItemProps) => {
       const element = document.getElementById(hash);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        console.warn(`Element #${hash} not found`);
       }
     } else {
       // If we're navigating to a different page, navigate with state
+      console.log(`Navigating to ${path} with scrollToSection=${hash}`);
       navigate(path, { 
         state: { scrollToSection: hash }
       });

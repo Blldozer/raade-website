@@ -21,6 +21,7 @@ const About = () => {
     hasError,
     pageInitialized,
     isMobile,
+    scrollToSection
   } = useAboutPage();
   
   const location = useLocation();
@@ -49,22 +50,13 @@ const About = () => {
     };
   }, []);
   
-  // Handle scrolling to section when navigated from another page
+  // Handle scrolling to section when navigated from another page via state
   useEffect(() => {
     if (location.state && location.state.scrollToSection) {
       const sectionId = location.state.scrollToSection;
-      
-      // Small delay to ensure the section is rendered
-      const timer = setTimeout(() => {
-        const section = document.getElementById(sectionId);
-        if (section) {
-          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 500);
-      
-      return () => clearTimeout(timer);
+      scrollToSection(sectionId);
     }
-  }, [location.state]);
+  }, [location.state, scrollToSection]);
   
   // If fatal error, show a simple fallback (outside of all contexts)
   if (hasError) {

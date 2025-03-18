@@ -91,11 +91,9 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
     onClose();
   };
   
-  // Handler for section links that need to navigate to a specific section
-  const handleSectionNavigation = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
-    
-    // Close the menu first
+  // Handle navigation with proper handling of section navigation
+  const handleNavigation = (href: string) => {
+    // Close the menu
     onClose();
     
     // Parse the URL and hash
@@ -105,19 +103,24 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
     
     if (isSamePage && hash) {
       // If we're on the same page, just scroll to the element
+      console.log(`Scrolling to section #${hash} on current page`);
       const timer = setTimeout(() => {
         const element = document.getElementById(hash);
         if (element) {
           element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          console.warn(`Element #${hash} not found on current page`);
         }
       }, 100);
     } else if (hasHash) {
       // If we're navigating to a different page with a hash, use state
+      console.log(`Navigating to ${path} with scrollToSection=${hash}`);
       navigate(path, { 
         state: { scrollToSection: hash }
       });
     } else {
       // Regular navigation
+      console.log(`Regular navigation to ${href}`);
       navigate(href);
     }
   };
@@ -170,7 +173,7 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
         <a
           href="/#build-with-us"
           className="block w-full py-3 px-6 bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-[#274675] text-center rounded-md font-alegreyasans font-bold transition-colors"
-          onClick={(e) => handleSectionNavigation(e, "/#build-with-us")}
+          onClick={(e) => handleNavigation("/#build-with-us")}
         >
           Join Us
         </a>
@@ -206,7 +209,7 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
                             <a
                               href={subItem.href}
                               className="block text-base text-[#4A5568] hover:text-[#FBB03B] transition-colors font-alegreyasans"
-                              onClick={(e) => handleSectionNavigation(e, subItem.href)}
+                              onClick={(e) => handleNavigation(subItem.href)}
                             >
                               {subItem.name}
                             </a>
@@ -219,7 +222,7 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
                   <a
                     href={item.href}
                     className="block text-lg text-[#274675] hover:text-[#FBB03B] transition-colors font-alegreyasans font-bold"
-                    onClick={(e) => handleSectionNavigation(e, item.href)}
+                    onClick={(e) => handleNavigation(item.href)}
                   >
                     {item.name}
                   </a>
@@ -236,7 +239,7 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
                 <a
                   href={item.href}
                   className="block text-lg text-[#274675] hover:text-[#FBB03B] transition-colors font-alegreyasans font-bold"
-                  onClick={(e) => handleSectionNavigation(e, item.href)}
+                  onClick={(e) => handleNavigation(item.href)}
                 >
                   {item.name}
                 </a>
