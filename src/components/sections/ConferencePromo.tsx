@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
@@ -14,10 +13,12 @@ const ConferencePromo = () => {
   
   // Set data attribute for navigation background color
   useEffect(() => {
-    if (!sectionRef.current) return;
+    const section = sectionRef.current;
+    
+    if (!section) return;
     
     // Explicitly set data-background to light for this section
-    sectionRef.current.setAttribute('data-background', 'light');
+    section.setAttribute('data-background', 'light');
     
     const observer = new IntersectionObserver(
       (entries) => {
@@ -31,16 +32,16 @@ const ConferencePromo = () => {
       { threshold: 0.1 }
     );
     
-    observer.observe(sectionRef.current);
+    observer.observe(section);
     
     // Set up animations specifically for this section
     ScrollTrigger.create({
-      trigger: sectionRef.current,
+      trigger: section,
       start: "top 80%",
       end: "top 20%",
       onEnter: () => {
-        const infoElement = sectionRef.current?.querySelector('.conference-info');
-        const countdownElement = sectionRef.current?.querySelector('.conference-countdown');
+        const infoElement = section.querySelector('.conference-info');
+        const countdownElement = section.querySelector('.conference-countdown');
         
         if (infoElement) {
           gsap.fromTo(infoElement,
@@ -70,11 +71,11 @@ const ConferencePromo = () => {
     });
     
     return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
+      if (section) {
+        observer.unobserve(section);
       }
       ScrollTrigger.getAll().forEach(t => {
-        if (t.vars.trigger === sectionRef.current) {
+        if (t.vars.trigger === section) {
           t.kill();
         }
       });
