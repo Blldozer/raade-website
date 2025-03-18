@@ -41,6 +41,7 @@ serve(async (req) => {
       );
     }
 
+    console.log("Creating Stripe instance with secret key");
     const stripe = new Stripe(stripeSecretKey, {
       apiVersion: "2023-10-16",
     });
@@ -119,46 +120,60 @@ serve(async (req) => {
 
     console.log(`Creating payment intent for ${amount} cents (${description}) - ${email}`);
 
-    // Create a Payment Intent
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount,
-      currency: "usd",
-      description,
-      receipt_email: email,
-      metadata: {
-        ticketType,
-        customerName: fullName,
-        email,
-        groupSize: isGroupRegistration ? String(groupSize || 5) : undefined
-      },
-      automatic_payment_methods: {
-        enabled: true,
-      },
-      payment_method_options: {
-        card: {
-          request_three_d_secure: 'automatic',
+    try {
+      // Create a Payment Intent
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount,
+        currency: "usd",
+        description,
+        receipt_email: email,
+        metadata: {
+          ticketType,
+          customerName: fullName,
+          email,
+          groupSize: isGroupRegistration ? String(groupSize || 5) : undefined
         },
-      },
-    });
+        automatic_payment_methods: {
+          enabled: true,
+        },
+        payment_method_options: {
+          card: {
+            request_three_d_secure: 'automatic',
+          },
+        },
+      });
 
-    console.log("Payment intent created successfully:", paymentIntent.id);
+      console.log("Payment intent created successfully:", paymentIntent.id);
 
-    // Return the payment intent client secret with detailed information
-    return new Response(
-      JSON.stringify({ 
-        clientSecret: paymentIntent.client_secret,
-        amount: amount / 100, // Convert cents to dollars for display
-        currency: "USD",
-        isGroupRegistration,
-        groupSize: isGroupRegistration ? Math.max(groupSize || 5, 5) : undefined,
-        ticketType,
-        perPersonCost: isGroupRegistration ? 30 : (ticketType === "student" ? 35 : 60)
-      }),
-      { 
-        status: 200, 
-        headers: { ...corsHeaders, "Content-Type": "application/json" } 
-      }
-    );
+      // Return the payment intent client secret with detailed information
+      return new Response(
+        JSON.stringify({ 
+          clientSecret: paymentIntent.client_secret,
+          amount: amount / 100, // Convert cents to dollars for display
+          currency: "USD",
+          isGroupRegistration,
+          groupSize: isGroupRegistration ? Math.max(groupSize || 5, 5) : undefined,
+          ticketType,
+          perPersonCost: isGroupRegistration ? 30 : (ticketType === "student" ? 35 : 60)
+        }),
+        { 
+          status: 200, 
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
+    } catch (stripeError) {
+      console.error("Stripe API error:", stripeError);
+      return new Response(
+        JSON.stringify({ 
+          error: stripeError.message,
+          details: "There was an error processing your payment request with Stripe. Please try again later."
+        }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
+    }
 
   } catch (error) {
     console.error("Error creating payment intent:", error);
