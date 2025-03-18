@@ -7,6 +7,17 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+/**
+ * Create Payment Intent Edge Function
+ * 
+ * Processes payment requests for conference registrations by:
+ * - Creating a Stripe payment intent based on ticket type
+ * - Calculating correct pricing based on ticket selection and group size
+ * - Validating group size for group registrations
+ * - Returning payment information to the client
+ * 
+ * Handles CORS and proper error reporting
+ */
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -14,22 +25,25 @@ serve(async (req) => {
   }
 
   try {
-    console.log("Payment intent function called");
     // Get the Stripe secret key from environment variable
     const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
     
     if (!stripeSecretKey) {
       console.error("STRIPE_SECRET_KEY is not set in environment variables");
-      throw new Error("Server configuration error: Missing Stripe secret key");
+      return new Response(
+        JSON.stringify({ 
+          error: "Server configuration error: Missing Stripe secret key" 
+        }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
     }
 
-    console.log("Creating Stripe instance with secret key format:", 
-      stripeSecretKey.substring(0, 8) + "..." + stripeSecretKey.substring(stripeSecretKey.length - 4));
-    
-    // Create new Stripe instance
+    console.log("Creating Stripe instance with secret key");
     const stripe = new Stripe(stripeSecretKey, {
       apiVersion: "2023-10-16",
-      httpClient: Stripe.createFetchHttpClient(),
     });
 
     // Parse the request body
@@ -37,25 +51,36 @@ serve(async (req) => {
     const { ticketType, email, fullName, groupSize } = requestData;
     
     // Log request for debugging
-    console.log("Received payment intent request:", JSON.stringify({
-      ticketType,
-      email,
-      fullName,
-      groupSize: groupSize || "none"
-    }));
+    console.log("Received payment intent request:", requestData);
     
     // Validate input data
     if (!ticketType || !email || !fullName) {
-      console.error("Missing required fields:", { ticketType, email, fullName });
-      throw new Error("Missing required fields: Ticket type, email, and full name are required");
+      return new Response(
+        JSON.stringify({ 
+          error: "Missing required fields",
+          details: "Ticket type, email, and full name are required"
+        }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
     }
     
     // Validate group size for student-group tickets
     const isGroupRegistration = ticketType === "student-group";
     if (isGroupRegistration) {
       if (!groupSize || groupSize < 5) {
-        console.error("Invalid group size:", groupSize);
-        throw new Error("Invalid group size: Group registrations require a minimum of 5 people");
+        return new Response(
+          JSON.stringify({ 
+            error: "Invalid group size",
+            details: "Group registrations require a minimum of 5 people"
+          }),
+          { 
+            status: 400, 
+            headers: { ...corsHeaders, "Content-Type": "application/json" } 
+          }
+        );
       }
     }
     
@@ -80,14 +105,23 @@ serve(async (req) => {
         break;
       default:
         console.error("Invalid ticket type:", ticketType);
-        throw new Error(`Invalid ticket type: ${ticketType}. Valid types are: student, professional, student-group`);
+        return new Response(
+          JSON.stringify({ 
+            error: `Invalid ticket type: ${ticketType}`,
+            validTypes: ["student", "professional", "student-group"],
+            receivedData: requestData
+          }),
+          { 
+            status: 400, 
+            headers: { ...corsHeaders, "Content-Type": "application/json" } 
+          }
+        );
     }
 
     console.log(`Creating payment intent for ${amount} cents (${description}) - ${email}`);
 
     try {
-      // Create a Payment Intent with support for Link and digital wallets
-      console.log("Calling stripe.paymentIntents.create");
+      // Create a Payment Intent
       const paymentIntent = await stripe.paymentIntents.create({
         amount,
         currency: "usd",
@@ -101,15 +135,12 @@ serve(async (req) => {
         },
         automatic_payment_methods: {
           enabled: true,
-          allow_redirects: 'always'
         },
         payment_method_options: {
           card: {
             request_three_d_secure: 'automatic',
           },
         },
-        // Enable Link payments
-        payment_method_types: ['card', 'link'],
       });
 
       console.log("Payment intent created successfully:", paymentIntent.id);
@@ -132,25 +163,24 @@ serve(async (req) => {
       );
     } catch (stripeError) {
       console.error("Stripe API error:", stripeError);
-      // Log more details about the error
-      console.error("Stripe error details:", {
-        type: stripeError.type,
-        code: stripeError.code,
-        param: stripeError.param,
-        message: stripeError.message
-      });
-      
-      throw stripeError;
+      return new Response(
+        JSON.stringify({ 
+          error: stripeError.message,
+          details: "There was an error processing your payment request with Stripe. Please try again later."
+        }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
     }
 
   } catch (error) {
     console.error("Error creating payment intent:", error);
-    console.error("Error stack:", error.stack);
     
     return new Response(
       JSON.stringify({ 
         error: error.message,
-        stack: error.stack,
         details: "There was an error processing your payment request. Please try again or contact support."
       }),
       { 

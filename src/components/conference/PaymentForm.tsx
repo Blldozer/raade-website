@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import {
   PaymentElement,
@@ -28,7 +29,6 @@ interface PaymentFormProps {
  * Displays Stripe payment form with proper pricing information:
  * - For group registrations, shows both per-person and total cost
  * - For individual registrations, shows single ticket price
- * - Supports Link for returning customers
  * - Handles payment submission and error reporting
  * 
  * @param email - User's email address
@@ -54,7 +54,6 @@ const PaymentForm = ({
   const [message, setMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [paymentCompleted, setPaymentCompleted] = useState(false);
-  const [isLinkReturningUser, setIsLinkReturningUser] = useState(false);
 
   useEffect(() => {
     if (!stripe) {
@@ -91,14 +90,11 @@ const PaymentForm = ({
     });
   }, [stripe, onSuccess, paymentCompleted]);
 
-  const handleLinkAuthenticationChange = (event: any) => {
-    setIsLinkReturningUser(event.value.verified);
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!stripe || !elements) {
+      // Stripe.js hasn't yet loaded.
       return;
     }
 
@@ -109,16 +105,13 @@ const PaymentForm = ({
       confirmParams: {
         return_url: window.location.href,
         receipt_email: email,
-        payment_method_data: {
-          billing_details: {
-            email: email
-          }
-        }
       },
       redirect: "if_required"
     });
 
     if (error) {
+      // This point will only be reached if there's an immediate error when confirming the payment.
+      // For example, a declined card or incorrect CVC.
       if (error.type === "card_error" || error.type === "validation_error") {
         setMessage(error.message || "An unexpected error occurred");
         onError(error.message || "An unexpected error occurred");
@@ -127,6 +120,7 @@ const PaymentForm = ({
         onError("An unexpected error occurred");
       }
     } else if (paymentIntent && paymentIntent.status === "succeeded") {
+      // The payment has been processed!
       setMessage("Payment succeeded!");
       setPaymentCompleted(true);
       onSuccess();
@@ -149,10 +143,8 @@ const PaymentForm = ({
           <LinkAuthenticationElement 
             id="link-authentication-element"
             options={{
-              defaultValues: { email },
+              defaultValues: { email }
             }}
-            onChange={handleLinkAuthenticationChange}
-            className="mb-4"
           />
           
           <PaymentElement 
@@ -163,10 +155,6 @@ const PaymentForm = ({
                 billingDetails: {
                   email: email
                 }
-              },
-              wallets: {
-                applePay: 'auto',
-                googlePay: 'auto'
               }
             }}
             className="mb-6 mt-4"
@@ -194,12 +182,6 @@ const PaymentForm = ({
           />
           
           <PaymentStatus message={message} />
-          
-          {isLinkReturningUser && (
-            <div className="mt-4 text-center text-sm text-green-600">
-              Welcome back! Using Link for faster checkout.
-            </div>
-          )}
         </form>
       </CardContent>
     </Card>
