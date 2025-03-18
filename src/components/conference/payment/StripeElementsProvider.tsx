@@ -69,10 +69,10 @@ const StripeElementsProvider: React.FC<StripeElementsProviderProps> = ({
       }
     },
     
-    // Configure business information for Apple Pay and Google Pay
-    business: {
-      name: 'RAADE Conference 2025'
-    },
+    // Remove the invalid 'business' property and move the payment information to a valid location
+    // Set the label that will appear in wallets like Apple Pay/Google Pay in the payment request
+    locale: 'en', 
+    
     // Ensure Stripe forms are always loaded over HTTPS
     loader: 'always'
   };
