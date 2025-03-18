@@ -14,6 +14,7 @@ import PaymentTotal from "./payment/PaymentTotal";
 import PaymentStatus from "./payment/PaymentStatus";
 import PaymentFormButtons from "./payment/PaymentFormButtons";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "@/hooks/use-toast";
 
 interface PaymentFormProps {
   email: string;
@@ -59,6 +60,16 @@ const PaymentForm = ({
   const [paymentCompleted, setPaymentCompleted] = useState(false);
   const [paymentRequest, setPaymentRequest] = useState(null);
   const [isWalletLoading, setIsWalletLoading] = useState(true);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+
+  // Get clientSecret from URL if available when component mounts
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const secret = urlParams.get("payment_intent_client_secret");
+    if (secret) {
+      setClientSecret(secret);
+    }
+  }, []);
 
   // Initialize payment request for Apple Pay and Google Pay
   useEffect(() => {
@@ -93,58 +104,78 @@ const PaymentForm = ({
       } else {
         console.log("No digital wallet payment methods available");
       }
+    })
+    .catch(err => {
+      console.error("Error checking for wallet payment methods:", err);
+      setIsWalletLoading(false);
     });
 
-    // Handle successful payments
-    pr.on('paymentmethod', async (e) => {
-      setIsLoading(true);
-      
-      const {error: confirmError, paymentIntent} = await stripe.confirmCardPayment(
-        clientSecret,
-        {payment_method: e.paymentMethod.id},
-        {handleActions: false}
-      );
+    // Store client secret for wallet payment confirmations
+    if (elements._commonOptions.clientSecret) {
+      setClientSecret(elements._commonOptions.clientSecret as string);
+    }
 
-      if (confirmError) {
-        // Report to the browser that the payment failed
-        e.complete('fail');
-        setMessage(confirmError.message || "Payment failed. Please try again.");
-        onError(confirmError.message || "Payment failed. Please try again.");
-        setIsLoading(false);
-        return;
-      }
-      
-      // Report to the browser that the confirmation was successful
-      e.complete('success');
-      
-      if (paymentIntent.status === 'requires_action') {
-        // Use Stripe.js to handle required card action
-        const {error} = await stripe.confirmCardPayment(clientSecret);
-        if (error) {
-          setMessage(error.message || "Payment failed. Please try again.");
-          onError(error.message || "Payment failed. Please try again.");
-        } else {
-          // Payment succeeded
-          setMessage("Payment succeeded!");
-          setPaymentCompleted(true);
-          onSuccess();
+    // Handle successful payments through wallets
+    if (pr) {
+      pr.on('paymentmethod', async (e) => {
+        if (!clientSecret) {
+          console.error("No client secret available for payment confirmation");
+          e.complete('fail');
+          setMessage("Payment failed: No client secret available");
+          onError("Payment failed: No client secret available");
+          return;
         }
-      } else {
-        // Payment succeeded
-        setMessage("Payment succeeded!");
-        setPaymentCompleted(true);
-        onSuccess();
-      }
-      
-      setIsLoading(false);
-    });
-    
-    // Get clientSecret from URL if available
-    const clientSecret = new URLSearchParams(window.location.search).get(
-      "payment_intent_client_secret"
-    );
-  }, [stripe, elements, amount, currency, isGroupRegistration, groupSize, onSuccess, onError]);
+        
+        setIsLoading(true);
+        
+        try {
+          // Confirm the PaymentIntent with the payment method ID from the wallet
+          const {error: confirmError, paymentIntent} = await stripe.confirmCardPayment(
+            clientSecret,
+            {payment_method: e.paymentMethod.id},
+            {handleActions: false}
+          );
 
+          if (confirmError) {
+            // Report to the browser that the payment failed
+            e.complete('fail');
+            setMessage(confirmError.message || "Payment failed. Please try again.");
+            onError(confirmError.message || "Payment failed. Please try again.");
+            setIsLoading(false);
+            return;
+          }
+          
+          // Report to the browser that the confirmation was successful
+          e.complete('success');
+          
+          // Check if further actions are needed (like 3D Secure)
+          if (paymentIntent.status === 'requires_action') {
+            // Use Stripe.js to handle required card action
+            const {error} = await stripe.confirmCardPayment(clientSecret);
+            if (error) {
+              setMessage(error.message || "Payment failed. Please try again.");
+              onError(error.message || "Payment failed. Please try again.");
+            } else {
+              // Payment succeeded
+              handlePaymentSuccess();
+            }
+          } else {
+            // Payment succeeded
+            handlePaymentSuccess();
+          }
+        } catch (err) {
+          console.error("Error processing wallet payment:", err);
+          e.complete('fail');
+          setMessage("Payment failed. Please try again.");
+          onError("Payment failed. Please try again.");
+        } finally {
+          setIsLoading(false);
+        }
+      });
+    }
+  }, [stripe, elements, amount, currency, isGroupRegistration, groupSize, onSuccess, onError, clientSecret]);
+
+  // Check for existing payment in URL
   useEffect(() => {
     if (!stripe) {
       return;
@@ -161,11 +192,7 @@ const PaymentForm = ({
     stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
       switch (paymentIntent?.status) {
         case "succeeded":
-          setMessage("Payment succeeded!");
-          if (!paymentCompleted) {
-            setPaymentCompleted(true);
-            onSuccess();
-          }
+          handlePaymentSuccess();
           break;
         case "processing":
           setMessage("Your payment is processing.");
@@ -178,7 +205,19 @@ const PaymentForm = ({
           break;
       }
     });
-  }, [stripe, onSuccess, paymentCompleted]);
+  }, [stripe, onSuccess]);
+
+  // Helper function to handle successful payments
+  const handlePaymentSuccess = () => {
+    setMessage("Payment succeeded!");
+    setPaymentCompleted(true);
+    onSuccess();
+    toast({
+      title: "Payment successful",
+      description: "Your registration payment has been processed.",
+      variant: "default",
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -189,34 +228,52 @@ const PaymentForm = ({
     }
 
     setIsLoading(true);
+    setMessage(null);
 
-    const { error, paymentIntent } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: window.location.href,
-        receipt_email: email,
-      },
-      redirect: "if_required"
-    });
+    try {
+      const { error, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: window.location.href,
+          receipt_email: email,
+        },
+        redirect: "if_required"
+      });
 
-    if (error) {
-      // This point will only be reached if there's an immediate error when confirming the payment.
-      // For example, a declined card or incorrect CVC.
-      if (error.type === "card_error" || error.type === "validation_error") {
-        setMessage(error.message || "An unexpected error occurred");
-        onError(error.message || "An unexpected error occurred");
-      } else {
-        setMessage("An unexpected error occurred");
-        onError("An unexpected error occurred");
+      if (error) {
+        console.error("Payment error:", error);
+        // This point will only be reached if there's an immediate error when confirming the payment
+        if (error.type === "card_error" || error.type === "validation_error") {
+          setMessage(error.message || "An unexpected error occurred");
+          onError(error.message || "An unexpected error occurred");
+        } else {
+          setMessage("An unexpected error occurred");
+          onError("An unexpected error occurred");
+        }
+        
+        // Show error toast
+        toast({
+          title: "Payment failed",
+          description: error.message || "Your payment couldn't be processed. Please try again.",
+          variant: "destructive",
+        });
+      } else if (paymentIntent && paymentIntent.status === "succeeded") {
+        // The payment has been processed!
+        handlePaymentSuccess();
       }
-    } else if (paymentIntent && paymentIntent.status === "succeeded") {
-      // The payment has been processed!
-      setMessage("Payment succeeded!");
-      setPaymentCompleted(true);
-      onSuccess();
+    } catch (err) {
+      console.error("Error during payment submission:", err);
+      setMessage("An error occurred during payment processing");
+      onError("An error occurred during payment processing");
+      
+      toast({
+        title: "Payment error",
+        description: "Something went wrong processing your payment. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   return (

@@ -122,13 +122,12 @@ serve(async (req) => {
     console.log(`Creating payment intent for ${amount} cents (${description}) - ${email}`);
 
     try {
-      // Create a Payment Intent with support for digital wallets
+      // Create a Payment Intent properly configured for Stripe Elements
       const paymentIntent = await stripe.paymentIntents.create({
         amount,
         currency: "usd",
         description,
         receipt_email: email,
-        payment_method_types: ['card', 'us_bank_account', 'cashapp', 'link', 'klarna', 'affirm'],
         metadata: {
           ticketType,
           customerName: fullName,
@@ -137,15 +136,11 @@ serve(async (req) => {
           source: "website",
           paymentFlow: "checkout"
         },
+        // Use automatic_payment_methods instead of payment_method_types
         automatic_payment_methods: {
           enabled: true,
           allow_redirects: 'always'
-        },
-        payment_method_options: {
-          card: {
-            request_three_d_secure: 'automatic',
-          },
-        },
+        }
       });
 
       console.log("Payment intent created successfully:", paymentIntent.id);
@@ -173,6 +168,9 @@ serve(async (req) => {
       if (stripeError.type === 'StripeCardError') {
         console.error("Card error details:", stripeError.raw);
       }
+      
+      // Log detailed error information for debugging
+      console.error("Full error object:", JSON.stringify(stripeError, null, 2));
       
       return new Response(
         JSON.stringify({ 

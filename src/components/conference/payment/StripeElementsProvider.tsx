@@ -64,7 +64,12 @@ const StripeElementsProvider: React.FC<StripeElementsProviderProps> = ({
     paymentMethodCreation: 'manual', // This enables more control over payment methods
     paymentMethodOptions: {
       card: {
-        requestThreeDSecure: 'automatic'
+        setup: {
+          // Using the correct property name for 3D Secure
+          additionalData: {
+            requestExtended3DS: 'automatic'
+          }
+        }
       }
     },
     // Configure business information for Apple Pay and Google Pay
