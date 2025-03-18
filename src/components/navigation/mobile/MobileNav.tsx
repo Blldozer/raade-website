@@ -89,7 +89,7 @@ const MobileNav = ({
       {/* Full Screen Menu Overlay - Implement style */}
       {isOpen && (
         <div 
-          className="fixed top-0 left-0 w-[100vw] h-[100vh] min-h-screen min-w-full m-0 p-0 bg-[#F9F5EB] z-[9999] flex flex-col"
+          className="fixed top-0 left-0 w-[100vw] h-[100vh] min-h-screen min-w-full m-0 p-0 bg-gradient-to-b from-[#F5F5F0] to-[#EAEAE5] z-[9999] flex flex-col"
           style={{
             position: 'fixed',
             top: 0,
@@ -138,7 +138,7 @@ const MobileNav = ({
                       <div>
                         <button
                           onClick={() => toggleDropdown(item.name)}
-                          className="flex items-center justify-between w-full text-lg text-[#274675] font-medium"
+                          className="flex items-center justify-between w-full text-lg text-[#274675] font-alegreyasans font-bold"
                           aria-expanded={openDropdowns.includes(item.name)}
                         >
                           <span>{item.name}</span>
@@ -154,7 +154,7 @@ const MobileNav = ({
                               <li key={subItem.name}>
                                 <Link
                                   to={subItem.href}
-                                  className="block text-base text-[#4A5568] hover:text-[#FBB03B] transition-colors"
+                                  className="block text-base text-[#4A5568] hover:text-[#FBB03B] transition-colors font-alegreyasans"
                                   onClick={closeMenu}
                                 >
                                   {subItem.name}
@@ -167,7 +167,7 @@ const MobileNav = ({
                     ) : (
                       <Link
                         to={item.href}
-                        className="block text-lg text-[#274675] font-medium hover:text-[#FBB03B] transition-colors"
+                        className="block text-lg text-[#274675] hover:text-[#FBB03B] transition-colors font-alegreyasans font-bold"
                         onClick={closeMenu}
                       >
                         {item.name}
@@ -184,7 +184,7 @@ const MobileNav = ({
                   <li key={item.name} className="py-1">
                     <Link
                       to={item.href}
-                      className="block text-lg text-[#274675] font-medium hover:text-[#FBB03B] transition-colors"
+                      className="block text-lg text-[#274675] hover:text-[#FBB03B] transition-colors font-alegreyasans font-bold"
                       onClick={closeMenu}
                     >
                       {item.name}
@@ -199,7 +199,7 @@ const MobileNav = ({
           <div className="border-t border-gray-200 p-5">
             <Link
               to="/#build-with-us"
-              className="block w-full py-3 px-6 bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-[#274675] text-center rounded-md font-medium transition-colors"
+              className="block w-full py-3 px-6 bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-[#274675] text-center rounded-md font-alegreyasans font-bold transition-colors"
               onClick={closeMenu}
             >
               Join Us
