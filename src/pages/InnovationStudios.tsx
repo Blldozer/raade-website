@@ -10,6 +10,15 @@ import { useLocation } from "react-router-dom";
 import ScrollDownButton from "@/components/hero/components/ScrollDownButton";
 import { useNavBackground } from "@/hooks/useNavBackground";
 
+/**
+ * InnovationStudios Component - Main page for the Innovation Studios program
+ * 
+ * Features:
+ * - Animated hero with gradient background
+ * - Section-based navigation
+ * - Proper navbar background contrast based on scroll position
+ * - Smooth section transitions
+ */
 const InnovationStudios = () => {
   const location = useLocation();
   const overviewRef = useRef<HTMLDivElement>(null);
@@ -17,9 +26,18 @@ const InnovationStudios = () => {
   const applyRef = useRef<HTMLDivElement>(null);
   const [currentSection, setCurrentSection] = useState<string>("hero");
 
-  // Use the hook to set and manage navigation background
-  // Initialize with 'dark' to ensure white logo on purple background
-  useNavBackground('dark');
+  // Initialize with 'light' for proper contrast over the dark purple hero background
+  // This ensures the light version of the navbar is shown initially
+  useLayoutEffect(() => {
+    document.body.setAttribute('data-nav-background', 'light');
+    
+    return () => {
+      document.body.removeAttribute('data-nav-background');
+    };
+  }, []);
+  
+  // Use the hook to manage scroll-based background changes
+  useNavBackground('light');
 
   // Track scroll position to determine current section
   useEffect(() => {
@@ -111,7 +129,7 @@ const InnovationStudios = () => {
             y: 0
           }} transition={{
             duration: 0.6
-          }} className="space-y-14 md:space-y-20"> {/* Reduced spacing here from space-y-20 md:space-y-28 */}
+          }} className="space-y-14 md:space-y-20">
               {["Design.", "Build.", "Scale."].map((word, index) => <motion.div key={word} initial={{
               opacity: 0,
               x: -20

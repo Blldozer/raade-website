@@ -5,6 +5,7 @@ import DesktopNav from "./DesktopNav";
 import MobileNav from "./mobile/MobileNav";
 import CountdownTimer from "../CountdownTimer";
 import { NavigationProvider, useNavigation } from "./context/NavigationContext";
+import { useEffect } from "react";
 
 interface NavigationContainerProps {
   isHeroPage?: boolean;
@@ -45,6 +46,24 @@ const NavigationContent = () => {
     if (isTablet) return "px-6";
     return "px-8";
   };
+
+  // Ensure the nav background is available for scroll detection
+  useEffect(() => {
+    // Check if we're on a page with a hero section
+    if (isHeroPage) {
+      // Set initial background to light (for dark hero backgrounds)
+      if (!document.body.hasAttribute('data-nav-background')) {
+        document.body.setAttribute('data-nav-background', 'light');
+      }
+    }
+    
+    return () => {
+      // Clean up only if we set it in this component
+      if (isHeroPage) {
+        document.body.removeAttribute('data-nav-background');
+      }
+    };
+  }, [isHeroPage]);
 
   return (
     <nav
