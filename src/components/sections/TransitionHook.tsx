@@ -1,8 +1,7 @@
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import ScrollToPlugin from 'gsap/ScrollToPlugin';
-import { useTransitionHookAnimation } from '@/hooks/useTransitionHookAnimation';
 
 // Register the ScrollToPlugin
 gsap.registerPlugin(ScrollToPlugin);
@@ -10,20 +9,44 @@ gsap.registerPlugin(ScrollToPlugin);
 /**
  * TransitionHook Component - Displays a compelling message between sections
  * Uses GSAP for smooth scrolling to the next section
+ * 
+ * This component is lazy-loaded, so we need to ensure animations are initialized
+ * after the component is fully mounted to prevent React hook initialization issues
  */
 const TransitionHook = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
   
-  // Use the animation hook for smoother transitions
+  // Initialize component first, then load animation hook
   useEffect(() => {
-    try {
-      // Use hook for animations only after component is mounted
-      useTransitionHookAnimation();
-    } catch (error) {
-      console.error("Error in TransitionHook animation:", error);
-    }
+    console.log("TransitionHook component mounted");
+    
+    // Mark component as loaded after initial render
+    setIsLoaded(true);
+    
+    return () => {
+      console.log("TransitionHook component unmounting");
+    };
   }, []);
+  
+  // Once component is loaded, initialize animations
+  useEffect(() => {
+    if (isLoaded) {
+      // Dynamically import the hook to avoid early initialization issues
+      import('@/hooks/useTransitionHookAnimation').then(module => {
+        try {
+          // Execute the hook once it's imported
+          module.useTransitionHookAnimation();
+          console.log("TransitionHook animation initialized");
+        } catch (error) {
+          console.error("Error initializing TransitionHook animation:", error);
+        }
+      }).catch(error => {
+        console.error("Error importing TransitionHookAnimation hook:", error);
+      });
+    }
+  }, [isLoaded]);
   
   const scrollToNextSection = () => {
     try {

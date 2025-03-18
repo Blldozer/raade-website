@@ -1,22 +1,48 @@
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import CountUp from 'react-countup';
 import { ArrowDown } from 'lucide-react';
-import { useTransitionStatAnimation } from '@/hooks/useTransitionStatAnimation';
 
+/**
+ * TransitionStat Component
+ * 
+ * A section displaying a compelling statistic about Africa's population growth
+ * Uses CountUp for animated number display and implements lazy-loading friendly initialization
+ */
 const TransitionStat = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
   
-  // Use the animation hook
-  useTransitionStatAnimation();
+  // Initialize component first, then load animation hook
+  useEffect(() => {
+    console.log("TransitionStat component mounted");
+    
+    // Mark component as loaded after initial render
+    setIsLoaded(true);
+    
+    return () => {
+      console.log("TransitionStat component unmounting");
+    };
+  }, []);
   
-  const scrollToNextSection = () => {
-    const nextSection = document.getElementById('future-showcase');
-    if (nextSection) {
-      nextSection.scrollIntoView({ behavior: 'smooth' });
+  // Once component is loaded, initialize animations
+  useEffect(() => {
+    if (isLoaded) {
+      // Dynamically import the hook to avoid early initialization issues
+      import('@/hooks/useTransitionStatAnimation').then(module => {
+        try {
+          // Execute the hook once it's imported
+          module.useTransitionStatAnimation();
+          console.log("TransitionStat animation initialized");
+        } catch (error) {
+          console.error("Error initializing TransitionStat animation:", error);
+        }
+      }).catch(error => {
+        console.error("Error importing TransitionStatAnimation hook:", error);
+      });
     }
-  };
+  }, [isLoaded]);
   
   // Explicitly set data-background attribute to ensure correct navbar handling
   useEffect(() => {
@@ -26,8 +52,16 @@ const TransitionStat = () => {
     
     return () => {
       // Cleanup if needed
+      console.log("TransitionStat attribute cleanup");
     };
   }, []);
+  
+  const scrollToNextSection = () => {
+    const nextSection = document.getElementById('future-showcase');
+    if (nextSection) {
+      nextSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
   
   return (
     <section 

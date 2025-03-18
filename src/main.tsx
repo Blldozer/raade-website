@@ -31,8 +31,22 @@ try {
   } else {
     console.log("Application startup: Root element found, creating React root");
     
+    // Add global error handler
+    window.onerror = (message, source, lineno, colno, error) => {
+      console.error("Global error caught:", message, error);
+      return false; // Let the default handler run as well
+    };
+    
+    // Add unhandled promise rejection handler
+    window.addEventListener('unhandledrejection', event => {
+      console.error("Unhandled promise rejection:", event.reason);
+    });
+    
     // Create root and render app with error handling
     try {
+      // Mark React as initialized globally to help with lazy loading components
+      window.__REACT_INITIALIZED = true;
+      
       const root = createRoot(rootElement);
       root.render(
         <StrictMode>
