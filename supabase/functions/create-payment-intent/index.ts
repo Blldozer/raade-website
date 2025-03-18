@@ -26,6 +26,7 @@ serve(async (req) => {
   }
 
   try {
+    console.log("Payment intent function called");
     // Get the Stripe secret key from environment variable
     const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
     
@@ -42,9 +43,13 @@ serve(async (req) => {
       );
     }
 
-    console.log("Creating Stripe instance with secret key");
+    console.log("Creating Stripe instance with secret key format:", 
+      stripeSecretKey.substring(0, 8) + "..." + stripeSecretKey.substring(stripeSecretKey.length - 4));
+    
+    // Create new Stripe instance
     const stripe = new Stripe(stripeSecretKey, {
       apiVersion: "2023-10-16",
+      httpClient: Stripe.createFetchHttpClient(),
     });
 
     // Parse the request body
@@ -52,10 +57,16 @@ serve(async (req) => {
     const { ticketType, email, fullName, groupSize } = requestData;
     
     // Log request for debugging
-    console.log("Received payment intent request:", requestData);
+    console.log("Received payment intent request:", JSON.stringify({
+      ticketType,
+      email,
+      fullName,
+      groupSize: groupSize || "none"
+    }));
     
     // Validate input data
     if (!ticketType || !email || !fullName) {
+      console.error("Missing required fields:", { ticketType, email, fullName });
       return new Response(
         JSON.stringify({ 
           error: "Missing required fields",
@@ -72,6 +83,7 @@ serve(async (req) => {
     const isGroupRegistration = ticketType === "student-group";
     if (isGroupRegistration) {
       if (!groupSize || groupSize < 5) {
+        console.error("Invalid group size:", groupSize);
         return new Response(
           JSON.stringify({ 
             error: "Invalid group size",
@@ -123,6 +135,7 @@ serve(async (req) => {
 
     try {
       // Create a Payment Intent with support for Link and digital wallets
+      console.log("Calling stripe.paymentIntents.create");
       const paymentIntent = await stripe.paymentIntents.create({
         amount,
         currency: "usd",
@@ -167,9 +180,19 @@ serve(async (req) => {
       );
     } catch (stripeError) {
       console.error("Stripe API error:", stripeError);
+      // Log more details about the error
+      console.error("Stripe error details:", {
+        type: stripeError.type,
+        code: stripeError.code,
+        param: stripeError.param,
+        message: stripeError.message
+      });
+      
       return new Response(
         JSON.stringify({ 
           error: stripeError.message,
+          errorType: stripeError.type,
+          errorCode: stripeError.code,
           details: "There was an error processing your payment request with Stripe. Please try again later."
         }),
         { 
@@ -181,10 +204,12 @@ serve(async (req) => {
 
   } catch (error) {
     console.error("Error creating payment intent:", error);
+    console.error("Error stack:", error.stack);
     
     return new Response(
       JSON.stringify({ 
         error: error.message,
+        stack: error.stack,
         details: "There was an error processing your payment request. Please try again or contact support."
       }),
       { 

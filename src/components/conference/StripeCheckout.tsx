@@ -5,6 +5,7 @@ import PaymentForm from "./PaymentForm";
 import LoadingIndicator from "./payment/LoadingIndicator";
 import ErrorDisplay from "./payment/ErrorDisplay";
 import StripeElementsProvider from "./payment/StripeElementsProvider";
+import { toast } from "@/hooks/use-toast";
 
 interface StripeCheckoutProps {
   ticketType: string;
@@ -22,6 +23,7 @@ interface StripeCheckoutProps {
  * - Creating a payment intent via our Supabase Edge Function
  * - Managing payment state and error handling
  * - Supporting retry functionality for failed payment intents
+ * - Implementing automatic retries for transient errors
  * 
  * @param ticketType - Type of ticket being purchased (student, professional, student-group)
  * @param email - Customer email for receipt
@@ -45,6 +47,8 @@ const StripeCheckout = ({
   const [isGroupRegistration, setIsGroupRegistration] = useState(false);
   const [errorDetails, setErrorDetails] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [autoRetry, setAutoRetry] = useState(false);
+  const maxAutoRetries = 2;
   
   const createPaymentIntent = async () => {
     setIsLoading(true);
@@ -64,6 +68,24 @@ const StripeCheckout = ({
       
       if (error) {
         console.error("Payment intent error from Supabase:", error);
+        
+        // Check if error might be transient and we should auto-retry
+        if (retryCount < maxAutoRetries && !autoRetry) {
+          setAutoRetry(true);
+          toast({
+            title: "Payment network error",
+            description: "Automatically retrying payment setup...",
+            variant: "default"
+          });
+          
+          // Wait 2 seconds before retrying
+          setTimeout(() => {
+            setRetryCount((prev) => prev + 1);
+            setAutoRetry(false);
+          }, 2000);
+          return;
+        }
+        
         setErrorDetails(`Error from server: ${error.message || "Unknown error"}`);
         onError(error.message || "Failed to initialize payment");
         return;
@@ -86,6 +108,19 @@ const StripeCheckout = ({
       
       if (data.error) {
         console.error("Payment intent error:", data.error);
+        if (data.errorType === 'invalid_request_error' && retryCount < maxAutoRetries) {
+          toast({
+            title: "Payment setup error",
+            description: "Automatically retrying...",
+            variant: "default"
+          });
+          
+          setTimeout(() => {
+            setRetryCount((prev) => prev + 1);
+          }, 2000);
+          return;
+        }
+        
         setErrorDetails(data.details || data.error);
         onError(data.error);
         return;
@@ -111,11 +146,16 @@ const StripeCheckout = ({
   };
 
   useEffect(() => {
-    // Create a payment intent when the component loads
+    // Create a payment intent when the component loads or when retrying
     createPaymentIntent();
   }, [ticketType, email, fullName, groupSize, retryCount]);
 
   const handleRetry = () => {
+    toast({
+      title: "Retrying payment setup",
+      description: "Reconnecting to payment service...",
+      variant: "default"
+    });
     setRetryCount(prev => prev + 1);
   };
 

@@ -44,7 +44,11 @@ const StripeElementsProvider: React.FC<StripeElementsProviderProps> = ({
       // Redirect to HTTPS version of the current URL
       window.location.href = window.location.href.replace('http:', 'https:');
     }
-  }, []);
+    
+    // Debug info about Stripe configuration
+    console.log("Stripe Elements initialized with client secret format:", 
+      clientSecret ? clientSecret.substring(0, 5) + "..." : "Missing client secret");
+  }, [clientSecret]);
 
   // Configure Stripe Elements options with RAADE branding
   const options: StripeElementsOptions = {
