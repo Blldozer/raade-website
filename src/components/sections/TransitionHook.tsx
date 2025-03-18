@@ -6,6 +6,7 @@ import ScrollToPlugin from 'gsap/ScrollToPlugin';
 /**
  * TransitionHook Component - Displays a compelling message between sections
  * Uses GSAP for smooth scrolling to the next section
+ * Enhanced for production reliability by making text visible by default
  */
 const TransitionHook = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -18,9 +19,13 @@ const TransitionHook = () => {
     
     // Register GSAP plugins safely within the effect
     try {
-      if (!gsap.utils.checkPrefix("ScrollToPlugin")) {
-        gsap.registerPlugin(ScrollToPlugin);
+      if (!gsap.registerPlugin) {
+        console.warn("GSAP registerPlugin not available");
+        return;
       }
+      
+      gsap.registerPlugin(ScrollToPlugin);
+      console.log("ScrollToPlugin registered successfully");
     } catch (error) {
       console.error("Error registering ScrollToPlugin:", error);
     }
@@ -32,33 +37,31 @@ const TransitionHook = () => {
         const paragraphElement = contentRef.current.querySelector('p');
         const buttonElement = contentRef.current.querySelector('button');
         
+        // Make sure elements are found before continuing
+        if (!headingElement || !paragraphElement || !buttonElement) {
+          console.warn("TransitionHook: Could not find required elements");
+          return;
+        }
+        
+        // Make elements visible by default but still animate them
+        gsap.set([headingElement, paragraphElement, buttonElement], { 
+          autoAlpha: 1, // Start visible
+          y: 20 
+        });
+        
         const tl = gsap.timeline({
-          paused: true,
+          paused: false, // Auto-play for reliability
           defaults: { 
             ease: "power2.out",
           }
         });
         
-        // Reset initial state
-        gsap.set([headingElement, paragraphElement, buttonElement], { 
-          autoAlpha: 0, 
-          y: 20 
-        });
-        
         // Add animations to timeline
-        if (headingElement) {
-          tl.to(headingElement, { autoAlpha: 1, y: 0, duration: 0.8 }, 0);
-        }
+        tl.to(headingElement, { autoAlpha: 1, y: 0, duration: 0.8 }, 0);
+        tl.to(paragraphElement, { autoAlpha: 1, y: 0, duration: 0.6 }, 0.2);
+        tl.to(buttonElement, { autoAlpha: 1, y: 0, duration: 0.6 }, 0.4);
         
-        if (paragraphElement) {
-          tl.to(paragraphElement, { autoAlpha: 1, y: 0, duration: 0.6 }, 0.2);
-        }
-        
-        if (buttonElement) {
-          tl.to(buttonElement, { autoAlpha: 1, y: 0, duration: 0.6 }, 0.4);
-        }
-        
-        // Create a simple scroll trigger
+        // Simplified scroll trigger
         const trigger = gsap.context(() => {
           gsap.utils.toArray('#transition-hook').forEach((section) => {
             const triggerElement = section as Element;
@@ -105,7 +108,7 @@ const TransitionHook = () => {
     try {
       const nextSection = document.getElementById('join');
       if (nextSection) {
-        if (gsap.utils.checkPrefix("ScrollToPlugin")) {
+        if (gsap.utils.checkPrefix && gsap.utils.checkPrefix("ScrollToPlugin")) {
           gsap.to(window, {
             duration: 1,
             scrollTo: {
@@ -136,7 +139,7 @@ const TransitionHook = () => {
     >
       <div ref={contentRef} className="flex-grow flex items-center">
         <div className="fluid-container text-center">
-          <h2 className="fluid-h2 font-bold text-white font-alegreyasans max-w-4xl mx-auto">
+          <h2 className="fluid-h2 font-bold text-white font-alegreyasans max-w-4xl mx-auto opacity-100">
             Every day we wait
             <br className="hidden sm:block" />
             is another <span className="text-raade-gold-start">opportunity lost</span>.
@@ -145,12 +148,12 @@ const TransitionHook = () => {
       </div>
       
       <div className="text-center pb-[clamp(2rem,4vw,3rem)]">
-        <p className="fluid-body text-white/80 font-merriweather mb-[clamp(1rem,2vw,1.5rem)] max-w-lg mx-auto">
+        <p className="fluid-body text-white/80 font-merriweather mb-[clamp(1rem,2vw,1.5rem)] max-w-lg mx-auto opacity-100">
           Here's how you can get involved
         </p>
         <button
           onClick={scrollToNextSection}
-          className="cursor-pointer p-4 group"
+          className="cursor-pointer p-4 group opacity-100"
           aria-label="Scroll to next section"
         >
           <div className="w-[clamp(1.25rem,2vw,1.5rem)] h-[clamp(1.25rem,2vw,1.5rem)] mx-auto border-b-2 border-r-2 border-white/30 rotate-45 transition-all duration-300 group-hover:border-white group-hover:scale-110" />
