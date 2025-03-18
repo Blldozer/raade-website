@@ -83,6 +83,8 @@ const FutureShowcase = () => {
   const sectionRef = useRef<HTMLElement>(null);
   
   useEffect(() => {
+    const section = sectionRef.current;
+    
     // When leaving this section (scrolling down), trigger transition to the hook section
     const onSectionExit = () => {
       document.dispatchEvent(new CustomEvent('transitionToHook'));
@@ -98,13 +100,13 @@ const FutureShowcase = () => {
       threshold: 0.1
     });
     
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
+    if (section) {
+      observer.observe(section);
     }
     
     return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
+      if (section) {
+        observer.unobserve(section);
       }
     };
   }, []);
