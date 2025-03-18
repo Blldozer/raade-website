@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import PaymentForm from "./PaymentForm";
 import LoadingIndicator from "./payment/LoadingIndicator";
@@ -46,7 +46,8 @@ const StripeCheckout = ({
   const [errorDetails, setErrorDetails] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   
-  const createPaymentIntent = async () => {
+  // Wrap createPaymentIntent in useCallback to memoize it and avoid recreating on every render
+  const createPaymentIntent = useCallback(async () => {
     setIsLoading(true);
     setErrorDetails(null);
     
@@ -108,12 +109,12 @@ const StripeCheckout = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [ticketType, email, fullName, groupSize, onSuccess, onError]);
 
   useEffect(() => {
     // Create a payment intent when the component loads
     createPaymentIntent();
-  }, [ticketType, email, fullName, groupSize, retryCount]);
+  }, [createPaymentIntent, retryCount]);
 
   const handleRetry = () => {
     setRetryCount(prev => prev + 1);
