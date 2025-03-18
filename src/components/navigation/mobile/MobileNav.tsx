@@ -89,7 +89,18 @@ const MobileNav = ({
       {/* Full Screen Menu Overlay - Implement style */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-[#F9F5EB] z-[1000] flex flex-col h-full w-screen"
+          className="fixed top-0 left-0 w-[100vw] h-[100vh] min-h-screen min-w-full m-0 p-0 bg-[#F9F5EB] z-[9999] flex flex-col"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100vw',
+            height: '100vh',
+            margin: 0,
+            padding: 0
+          }}
           role="dialog"
           aria-modal="true"
         >
