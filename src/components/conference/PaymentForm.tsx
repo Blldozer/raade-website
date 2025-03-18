@@ -63,7 +63,8 @@ const PaymentForm = ({
     message,
     paymentCompleted,
     handleSubmit,
-    handlePaymentSuccess
+    handlePaymentSuccess,
+    setMessage
   } = usePaymentSubmission({
     stripe,
     elements,
@@ -86,7 +87,7 @@ const PaymentForm = ({
         <PaymentIntentHandler 
           onSuccess={handlePaymentSuccess}
           onError={onError}
-          setMessage={message => setMessage(message)}
+          setMessage={setMessage}
         />
         
         {/* Digital Wallet Payment Options - Apple Pay / Google Pay */}

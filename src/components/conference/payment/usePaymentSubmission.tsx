@@ -105,6 +105,7 @@ export const usePaymentSubmission = ({
     message,
     paymentCompleted,
     handleSubmit,
-    handlePaymentSuccess
+    handlePaymentSuccess,
+    setMessage // Explicitly export the setMessage function
   };
 };

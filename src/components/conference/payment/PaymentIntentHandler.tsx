@@ -11,16 +11,16 @@ interface PaymentIntentHandlerProps {
 /**
  * PaymentIntentHandler Component
  * 
- * Checks for existing payment in URL:
- * - Retrieves payment intent from URL parameters
- * - Handles different payment statuses
- * - Updates payment status accordingly
+ * Handles PaymentIntents that might be returned in the URL:
+ * - Checks URL for payment_intent and payment_intent_client_secret params
+ * - Retrieves existing payments that may be returning from redirect flows
+ * - Manages success/error states for completed payments
  */
-const PaymentIntentHandler: React.FC<PaymentIntentHandlerProps> = ({ 
-  onSuccess,
+const PaymentIntentHandler = ({ 
+  onSuccess, 
   onError,
-  setMessage
-}) => {
+  setMessage 
+}: PaymentIntentHandlerProps) => {
   const stripe = useStripe();
 
   useEffect(() => {
@@ -28,35 +28,45 @@ const PaymentIntentHandler: React.FC<PaymentIntentHandlerProps> = ({
       return;
     }
 
+    // Extract the client secret from URL query parameters
     const clientSecret = new URLSearchParams(window.location.search).get(
       "payment_intent_client_secret"
     );
 
+    // If no client secret was found, exit
     if (!clientSecret) {
       return;
     }
 
-    stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
-      switch (paymentIntent?.status) {
-        case "succeeded":
-          setMessage("Payment succeeded!");
-          onSuccess();
-          break;
-        case "processing":
-          setMessage("Your payment is processing.");
-          break;
-        case "requires_payment_method":
-          setMessage("Your payment was not successful, please try again.");
-          break;
-        default:
-          setMessage("Something went wrong.");
-          onError("Payment status unknown");
-          break;
-      }
-    });
-  }, [stripe, onSuccess, setMessage, onError]);
+    // Retrieve the PaymentIntent to check its status
+    stripe
+      .retrievePaymentIntent(clientSecret)
+      .then(({ paymentIntent }) => {
+        if (!paymentIntent) {
+          return;
+        }
 
-  // This component doesn't render anything
+        // Handle different PaymentIntent statuses
+        switch (paymentIntent.status) {
+          case "succeeded":
+            setMessage("Payment succeeded!");
+            onSuccess();
+            break;
+          case "processing":
+            setMessage("Your payment is processing.");
+            break;
+          case "requires_payment_method":
+            setMessage("Your payment was not successful, please try again.");
+            onError("Your payment was not successful, please try again.");
+            break;
+          default:
+            setMessage("Something went wrong with your payment.");
+            onError("Something went wrong with your payment.");
+            break;
+        }
+      });
+  }, [stripe, onSuccess, onError, setMessage]);
+
   return null;
 };
 
