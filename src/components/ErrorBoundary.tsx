@@ -9,6 +9,7 @@ interface Props {
 interface State {
   hasError: boolean;
   error: Error | null;
+  errorInfo: ErrorInfo | null;
 }
 
 /**
@@ -23,11 +24,18 @@ interface State {
 class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { 
+      hasError: false, 
+      error: null,
+      errorInfo: null
+    };
+    
+    console.log("ErrorBoundary initialized");
   }
 
-  static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(error: Error): Partial<State> {
     // Update state so the next render will show the fallback UI
+    console.error("ErrorBoundary caught error:", error.message);
     return { hasError: true, error };
   }
 
@@ -35,6 +43,21 @@ class ErrorBoundary extends Component<Props, State> {
     // Log error information for debugging
     console.error("ErrorBoundary caught an error:", error);
     console.error("Component stack:", errorInfo.componentStack);
+    
+    // Update state with error info
+    this.setState({
+      errorInfo
+    });
+    
+    // You could also send error reports to a service here
+  }
+  
+  componentDidMount(): void {
+    console.log("ErrorBoundary mounted");
+  }
+  
+  componentWillUnmount(): void {
+    console.log("ErrorBoundary unmounting");
   }
 
   render(): ReactNode {
@@ -44,7 +67,10 @@ class ErrorBoundary extends Component<Props, State> {
         <div className="p-8 text-center bg-white border border-red-200 rounded-md shadow-sm">
           <h2 className="text-2xl font-bold mb-4 text-red-600">Something went wrong</h2>
           <p className="text-gray-700 mb-4">The application encountered an error. Please try refreshing the page.</p>
-          <p className="text-sm text-gray-500">{this.state.error?.message}</p>
+          <p className="text-sm text-gray-500 mb-2">{this.state.error?.message}</p>
+          <pre className="text-xs text-left bg-gray-50 p-2 rounded overflow-auto max-h-32">
+            {this.state.errorInfo?.componentStack}
+          </pre>
         </div>
       );
     }

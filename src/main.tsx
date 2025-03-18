@@ -4,25 +4,85 @@ import { StrictMode } from 'react'
 import App from './App.tsx'
 import './index.css'
 
-// Get the root element
-const rootElement = document.getElementById("root");
+// Execute in try-catch to handle any startup errors
+try {
+  console.log("Application startup: Beginning initialization");
+  
+  // Get the root element with improved error handling
+  const rootElement = document.getElementById("root");
 
-// Add error handling for root element
-if (!rootElement) {
-  console.error("Failed to find the root element");
-  document.body.innerHTML = '<div style="color: red; padding: 20px;">Failed to load application: Root element not found</div>';
-} else {
-  try {
-    // Create root and render app
-    const root = createRoot(rootElement);
-    root.render(
-      <StrictMode>
-        <App />
-      </StrictMode>
-    );
-    console.log("Application rendered successfully");
-  } catch (error) {
-    console.error("Failed to render the application", error);
-    rootElement.innerHTML = '<div style="color: red; padding: 20px;">Failed to load application. Please try refreshing the page.</div>';
+  if (!rootElement) {
+    console.error("Fatal error: Failed to find the root element");
+    document.body.innerHTML = `
+      <div style="
+        color: #721c24;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        padding: 20px;
+        margin: 20px;
+        border-radius: 5px;
+        font-family: system-ui, sans-serif;
+      ">
+        <h2 style="margin-top: 0;">Application Error</h2>
+        <p>Failed to load application: Root element not found.</p>
+        <p>Please try refreshing the page or contact support if the issue persists.</p>
+      </div>
+    `;
+  } else {
+    console.log("Application startup: Root element found, creating React root");
+    
+    // Create root and render app with error handling
+    try {
+      const root = createRoot(rootElement);
+      root.render(
+        <StrictMode>
+          <App />
+        </StrictMode>
+      );
+      console.log("Application startup: React rendering completed");
+    } catch (error) {
+      console.error("Fatal error: Failed to render the application", error);
+      rootElement.innerHTML = `
+        <div style="
+          color: #721c24;
+          background-color: #f8d7da;
+          border: 1px solid #f5c6cb;
+          padding: 20px;
+          margin: 20px;
+          border-radius: 5px;
+          font-family: system-ui, sans-serif;
+        ">
+          <h2 style="margin-top: 0;">Application Error</h2>
+          <p>Failed to load application. Please try refreshing the page.</p>
+          <p style="font-size: 0.8em; color: #666;">Error details: ${error instanceof Error ? error.message : String(error)}</p>
+        </div>
+      `;
+    }
   }
+} catch (error) {
+  console.error("Fatal error during application initialization:", error);
+  document.body.innerHTML = `
+    <div style="
+      color: #721c24;
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      padding: 20px;
+      margin: 20px;
+      border-radius: 5px;
+      font-family: system-ui, sans-serif;
+    ">
+      <h2 style="margin-top: 0;">Critical Application Error</h2>
+      <p>The application failed to initialize.</p>
+      <p style="font-size: 0.8em; color: #666;">Error details: ${error instanceof Error ? error.message : String(error)}</p>
+      <button onclick="window.location.reload()" style="
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 10px;
+      ">Reload Page</button>
+    </div>
+  `;
 }

@@ -1,13 +1,29 @@
 
-/* Reset unnecessary restrictions on root element that could cause white screen */
+/* Root element styling */
 #root {
   max-width: 100%;
+  width: 100%;
   margin: 0;
   padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   text-align: inherit;
 }
 
-/* Keep only minimal global styles */
+/* Low performance fallback animations */
+.low-performance-mode .fade-in {
+  opacity: 0;
+  animation: simpleFadeIn 0.5s forwards;
+}
+
+@keyframes simpleFadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Basic transition animations */
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -38,6 +54,7 @@
   }
 }
 
+/* Simple utility classes */
 .card {
   padding: 2em;
 }
