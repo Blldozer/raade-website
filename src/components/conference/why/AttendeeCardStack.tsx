@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -33,7 +32,8 @@ const AttendeeCardStack = ({ attendees, activeId, onTabChange }: AttendeeCardSta
   const secondAttendee = attendees[(activeIndex + 1) % attendees.length];
   const thirdAttendee = attendees[(activeIndex + 2) % attendees.length];
 
-  const handleTabTransition = (nextTabId: string, transitionDirection: number) => {
+  // Memoize handleTabTransition to prevent unnecessary re-renders
+  const handleTabTransition = useCallback((nextTabId: string, transitionDirection: number) => {
     setDirection(transitionDirection);
     setIsTabTransitioning(true);
     setTimeout(() => {
@@ -44,10 +44,10 @@ const AttendeeCardStack = ({ attendees, activeId, onTabChange }: AttendeeCardSta
         setIsTabTransitioning(false);
       }, 100); // Small delay to ensure animations complete smoothly
     }, 400); // Match this with the exit animation duration
-  };
+  }, [onTabChange]);
 
   useEffect(() => {
-    if (!activeAttendee || isPaused) return;
+    if (isPaused || !activeAttendee) return;
     
     const interval = setInterval(() => {
       setCurrentIndex((prev) => {
@@ -64,7 +64,7 @@ const AttendeeCardStack = ({ attendees, activeId, onTabChange }: AttendeeCardSta
     }, 8000);
     
     return () => clearInterval(interval);
-  }, [activeAttendee, isPaused, activeIndex, attendees, onTabChange]);
+  }, [activeAttendee, isPaused, activeIndex, attendees, onTabChange, handleTabTransition]);
   
   useEffect(() => {
     setCurrentIndex(0);
