@@ -6,6 +6,7 @@ import { useSectionTransitions } from "@/hooks/useSectionTransitions";
 import { useResponsive } from "@/hooks/useResponsive";
 import { useLocation } from 'react-router-dom';
 import { useNavBackground } from "@/hooks/useNavBackground";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 // Lazy load components for better initial performance
 const ConferencePromo = lazy(() => import("@/components/sections/ConferencePromo"));
@@ -13,6 +14,37 @@ const TransitionStat = lazy(() => import("@/components/sections/TransitionStat")
 const FutureShowcase = lazy(() => import("@/components/sections/FutureShowcase"));
 const TransitionHook = lazy(() => import("@/components/sections/TransitionHook"));
 const JoinSection = lazy(() => import("@/components/sections/JoinSection"));
+
+/**
+ * SectionWrapper Component - Wraps each section with ErrorBoundary and proper structure
+ * Provides consistent error handling and fallback UI for all sections
+ */
+const SectionWrapper = ({ 
+  id, 
+  background, 
+  children 
+}: { 
+  id: string; 
+  background: "light" | "dark"; 
+  children: React.ReactNode 
+}) => {
+  return (
+    <section className="relative w-full min-h-screen" id={id} data-background={background}>
+      <ErrorBoundary
+        fallback={
+          <div className="h-screen flex items-center justify-center bg-gray-100 p-6">
+            <div className="max-w-md text-center">
+              <h3 className="text-xl font-bold mb-2">Section unavailable</h3>
+              <p>We're experiencing issues with this section. Please try again later.</p>
+            </div>
+          </div>
+        }
+      >
+        {children}
+      </ErrorBoundary>
+    </section>
+  );
+};
 
 /**
  * Index Component - Main landing page of the website
@@ -36,6 +68,9 @@ const Index = () => {
   useLayoutEffect(() => {
     // Force light navbar for index page hero section
     document.body.setAttribute('data-nav-background', 'light');
+    
+    // Log initialization for debugging purposes
+    console.log("Index page initialized, nav background set to light");
   }, []);
   
   useEffect(() => {
@@ -52,10 +87,14 @@ const Index = () => {
       document.documentElement.style.contentVisibility = 'auto';
     }
     
+    // Log for debugging
+    console.log("Index page event listeners attached");
+    
     return () => {
       document.removeEventListener('touchstart', () => {});
       document.removeEventListener('touchmove', () => {});
       document.body.removeAttribute('data-nav-background');
+      console.log("Index page cleanup completed");
     };
   }, []);
   
@@ -87,32 +126,42 @@ const Index = () => {
     }
   }, [location]);
   
+  // Main loading fallback for all Suspense components
+  const loadingFallback = (
+    <div className="h-screen bg-gray-100 flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-12 h-12 border-4 border-[#274675] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <div className="text-lg text-[#274675]">Loading section...</div>
+      </div>
+    </div>
+  );
+  
   return (
     <div className="min-h-screen overflow-hidden">
-      <section className="relative w-full min-h-screen" id="hero" data-background="dark">
+      <SectionWrapper id="hero" background="dark">
         <Hero />
-      </section>
+      </SectionWrapper>
       
-      <Suspense fallback={<div className="h-screen bg-gray-100 flex items-center justify-center">Loading...</div>}>
-        <section className="relative w-full min-h-screen" id="conference-promo" data-background="light">
+      <Suspense fallback={loadingFallback}>
+        <SectionWrapper id="conference-promo" background="light">
           <ConferencePromo />
-        </section>
+        </SectionWrapper>
         
-        <section className="relative w-full min-h-screen" id="transition-stat" data-background="dark">
+        <SectionWrapper id="transition-stat" background="dark">
           <TransitionStat />
-        </section>
+        </SectionWrapper>
         
-        <section className="relative w-full min-h-screen bg-white" id="future-showcase" data-background="light">
+        <SectionWrapper id="future-showcase" background="light">
           <FutureShowcase />
-        </section>
+        </SectionWrapper>
         
-        <section className="relative w-full min-h-screen bg-[#3C403A]" id="transition-hook" data-background="dark">
+        <SectionWrapper id="transition-hook" background="dark">
           <TransitionHook />
-        </section>
+        </SectionWrapper>
         
-        <section className="relative w-full min-h-screen" id="join" data-background="light">
+        <SectionWrapper id="join" background="light">
           <JoinSection />
-        </section>
+        </SectionWrapper>
       </Suspense>
     </div>
   );
