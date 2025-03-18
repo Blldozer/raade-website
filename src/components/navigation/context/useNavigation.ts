@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { NavigationContext } from "./NavigationContext";
+import { NavigationContext } from "./NavigationContextDefinition";
 
 /**
  * Custom hook to use the navigation context
