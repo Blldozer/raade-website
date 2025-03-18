@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react';
 import { useScroll, useTransform } from 'framer-motion';
 
@@ -49,7 +48,7 @@ export const useAnimatedText = () => {
   const lineWidth = useTransform(scrollY, [0, 200], ["0%", "100%"]);
   const lineOpacity = useTransform(scrollY, [0, 200], [0, 1]);
   
-  // Use our custom lightweight typing effect - Fix the typo by adding the apostrophe
+  // Use our custom lightweight typing effect
   const { displayText, isComplete } = useTypingEffect("We're building it today.", 80);
   
   useEffect(() => {
