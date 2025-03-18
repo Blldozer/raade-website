@@ -1,6 +1,21 @@
-
 import React, { useEffect, useState } from 'react';
 import { useResponsive } from "@/hooks/useResponsive";
+
+// Define the extended Performance interface with memory property
+interface PerformanceMemory {
+  usedJSHeapSize: number;
+  jsHeapSizeLimit: number;
+  totalJSHeapSize: number;
+}
+
+// Extend the Window interface to include the non-standard performance.memory property
+interface ExtendedPerformance extends Performance {
+  memory?: PerformanceMemory;
+}
+
+interface ExtendedWindow extends Window {
+  performance: ExtendedPerformance;
+}
 
 /**
  * TouchDebugger Component
@@ -74,8 +89,8 @@ const TouchDebugger: React.FC = () => {
         setPerformance(prev => ({
           ...prev,
           fps: Math.round((frameCount * 1000) / elapsed),
-          memory: (window as any).performance?.memory?.usedJSHeapSize 
-            ? `${Math.round((window as any).performance.memory.usedJSHeapSize / (1024 * 1024))}MB` 
+          memory: (window as ExtendedWindow).performance.memory?.usedJSHeapSize 
+            ? `${Math.round((window as ExtendedWindow).performance.memory.usedJSHeapSize / (1024 * 1024))}MB` 
             : 'Unknown',
           lastTimestamp: now // Update the timestamp in the state
         }));
