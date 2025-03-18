@@ -23,7 +23,7 @@ interface StripeElementsProviderProps {
  * Configures and initializes Stripe Elements:
  * - Sets up the Stripe context with client secret
  * - Configures branding and appearance settings
- * - Enables wallet payment methods (Apple Pay, Google Pay)
+ * - Enables payment methods including Apple Pay, Google Pay via paymentMethodsOptions
  * - Wraps payment form components with Stripe context
  * - Ensures HTTPS is used in production environment
  * 
@@ -60,21 +60,16 @@ const StripeElementsProvider: React.FC<StripeElementsProviderProps> = ({
         borderRadius: '4px',
       }
     },
-    // Enable Google Pay and Apple Pay wallet options
-    wallet: {
-      // Apple Pay
-      applePay: {
-        merchantCountry: 'US',
-        buttonType: 'buy',
-        buttonStyle: 'black',
-      },
-      // Google Pay
-      googlePay: {
-        merchantCountry: 'US',
-        buttonType: 'buy',
-        buttonTheme: 'black',
-        buttonSizeMode: 'fill'
+    // Configure payment method options correctly for Stripe Elements
+    paymentMethodCreation: 'manual', // This enables more control over payment methods
+    paymentMethodOptions: {
+      card: {
+        requestThreeDSecure: 'automatic'
       }
+    },
+    // Configure business information for Apple Pay and Google Pay
+    business: {
+      name: 'RAADE Conference 2025'
     },
     // Ensure Stripe forms are always loaded over HTTPS
     loader: 'always'
