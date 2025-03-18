@@ -23,9 +23,11 @@ interface StripeElementsProviderProps {
  * Configures and initializes Stripe Elements:
  * - Sets up the Stripe context with client secret
  * - Configures branding and appearance settings
- * - Enables payment methods including Apple Pay, Google Pay via paymentMethodsOptions
  * - Wraps payment form components with Stripe context
  * - Ensures HTTPS is used in production environment
+ * 
+ * @param clientSecret - The client secret from payment intent
+ * @param children - Child components that need access to Stripe Elements
  */
 const StripeElementsProvider: React.FC<StripeElementsProviderProps> = ({ 
   clientSecret,
@@ -57,22 +59,6 @@ const StripeElementsProvider: React.FC<StripeElementsProviderProps> = ({
         borderRadius: '4px',
       }
     },
-    // Configure payment method options correctly for Stripe Elements
-    paymentMethodCreation: 'manual', // This enables more control over payment methods
-    
-    // Fix: Use the correct card options structure according to Stripe API v2023-10-16
-    // The requestThreeDSecure property is not valid in this context
-    paymentMethodOptions: {
-      card: {
-        // Only use properties that are actually defined in the type
-        require_cvc_recollection: false
-      }
-    },
-    
-    // Remove the invalid 'business' property and move the payment information to a valid location
-    // Set the label that will appear in wallets like Apple Pay/Google Pay in the payment request
-    locale: 'en', 
-    
     // Ensure Stripe forms are always loaded over HTTPS
     loader: 'always'
   };
