@@ -1,4 +1,3 @@
-
 import { useNavigation } from "../context/NavigationContext";
 import MobileNavButton from "./MobileNavButton";
 import MobileMenuOverlay from "./MobileMenuOverlay";
@@ -38,7 +37,7 @@ const MobileNav = ({
   const actualForceDarkMode = forceDarkMode || !state.isDarkBackground;
 
   return (
-    <div className="md:hidden">
+    <div className="block md:hidden">
       {/* Hamburger Menu Button */}
       <MobileNavButton 
         onClick={openMenu} 

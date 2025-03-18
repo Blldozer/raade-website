@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -31,6 +30,14 @@ const MobileNavLinks = ({ items, footerItems, onLinkClick }: MobileNavLinksProps
     );
   };
 
+  const handleLinkClick = (href: string) => {
+    // Use setTimeout to allow the page to navigate before closing the menu
+    // This ensures smooth transitions and prevents layout shifts
+    setTimeout(() => {
+      onLinkClick();
+    }, 150);
+  };
+
   return (
     <nav className="flex-grow overflow-y-auto px-6 py-8">
       <ul className="space-y-6">
@@ -57,7 +64,7 @@ const MobileNavLinks = ({ items, footerItems, onLinkClick }: MobileNavLinksProps
                         <Link
                           to={subItem.href}
                           className="block text-xl text-white hover:text-[#FBB03B] transition-colors"
-                          onClick={onLinkClick}
+                          onClick={() => handleLinkClick(subItem.href)}
                         >
                           {subItem.name}
                         </Link>
@@ -70,7 +77,7 @@ const MobileNavLinks = ({ items, footerItems, onLinkClick }: MobileNavLinksProps
               <Link
                 to={item.href}
                 className="block text-2xl text-white hover:text-[#FBB03B] transition-colors font-alegreyasans"
-                onClick={onLinkClick}
+                onClick={() => handleLinkClick(item.href)}
               >
                 {item.name}
               </Link>
@@ -84,7 +91,7 @@ const MobileNavLinks = ({ items, footerItems, onLinkClick }: MobileNavLinksProps
             <Link
               to={item.href}
               className="block text-2xl text-white hover:text-[#FBB03B] transition-colors font-alegreyasans"
-              onClick={onLinkClick}
+              onClick={() => handleLinkClick(item.href)}
             >
               {item.name}
             </Link>
