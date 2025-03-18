@@ -64,11 +64,9 @@ const StripeElementsProvider: React.FC<StripeElementsProviderProps> = ({
     paymentMethodCreation: 'manual', // This enables more control over payment methods
     paymentMethodOptions: {
       card: {
-        setup: {
-          // Using the correct property name for 3D Secure
-          additionalData: {
-            requestExtended3DS: 'automatic'
-          }
+        // Use additionalData instead of setup for 3DS configuration
+        additionalData: {
+          requestExtended3DS: 'automatic'
         }
       }
     },

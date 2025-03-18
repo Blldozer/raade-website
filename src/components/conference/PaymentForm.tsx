@@ -110,9 +110,20 @@ const PaymentForm = ({
       setIsWalletLoading(false);
     });
 
-    // Store client secret for wallet payment confirmations
-    if (elements._commonOptions.clientSecret) {
-      setClientSecret(elements._commonOptions.clientSecret as string);
+    // Safely get client secret from parent component through props or URL
+    // Instead of accessing private _commonOptions
+    if (!clientSecret) {
+      try {
+        // Try to get client secret from the URL if not already set
+        const urlParams = new URLSearchParams(window.location.search);
+        const secretFromUrl = urlParams.get("payment_intent_client_secret");
+        if (secretFromUrl) {
+          setClientSecret(secretFromUrl);
+          console.log("Retrieved client secret from URL");
+        }
+      } catch (err) {
+        console.error("Error retrieving client secret:", err);
+      }
     }
 
     // Handle successful payments through wallets
