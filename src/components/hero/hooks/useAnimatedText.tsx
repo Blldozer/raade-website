@@ -49,7 +49,7 @@ export const useAnimatedText = () => {
   const lineWidth = useTransform(scrollY, [0, 200], ["0%", "100%"]);
   const lineOpacity = useTransform(scrollY, [0, 200], [0, 1]);
   
-  // Use our custom lightweight typing effect - Fix the typo by adding the apostrophe
+  // Use our custom lightweight typing effect - Fixed the typo by writing the full "We're"
   const { displayText, isComplete } = useTypingEffect("We're building it today.", 80);
   
   useEffect(() => {
