@@ -1,7 +1,6 @@
-
 import React, { useEffect } from "react";
 import { X, ChevronDown, ChevronUp, Search } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import NavLogo from "../NavLogo";
 import { navItems, mobileFooterItems } from "../navConfig";
 import { useState } from "react";
@@ -24,6 +23,9 @@ interface MobileMenuOverlayProps {
  * @param onClose - Callback to close the menu
  */
 const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  
   // Track which dropdowns are open
   const [openDropdowns, setOpenDropdowns] = useState<string[]>([]);
 
@@ -51,17 +53,15 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
       document.body.style.width = '100%';
       document.body.style.overflow = 'hidden';
       
-      // Add additional padding to prevent layout shift in some browsers
+      // Restore proper padding to prevent layout shift
       const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
       document.body.style.paddingRight = `${scrollbarWidth}px`;
-    }
-    
-    return () => {
-      // Only perform unlock if we were previously locked
+    } else {
+      // Only unlock if we were previously locked
       if (document.body.style.position === 'fixed') {
-        console.log("Mobile menu closed - restoring body scroll");
+        console.log("Mobile menu closed - restoring scroll");
         
-        // Restore scroll position when component unmounts or effect reruns
+        // Remove styles
         document.body.style.position = '';
         document.body.style.top = '';
         document.body.style.width = '';
@@ -71,20 +71,73 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
         // Restore scroll position
         window.scrollTo(0, scrollY);
       }
+    }
+    
+    return () => {
+      // Cleanup in case component unmounts while menu is open
+      if (document.body.style.position === 'fixed') {
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+      }
     };
   }, [isOpen]);
-
+  
   // Helper function to handle clicks that need to stop propagation and close the menu
   const handleCloseWithStopPropagation = (e: React.MouseEvent) => {
     e.stopPropagation();
     onClose();
   };
   
-  if (!isOpen) return null;
+  // Handler for section links that need to navigate to a specific section
+  const handleSectionNavigation = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    
+    // Close the menu first
+    onClose();
+    
+    // Parse the URL and hash
+    const hasHash = href.includes('#');
+    const [path, hash] = hasHash ? href.split('#') : [href, ''];
+    const isSamePage = path === "" || path === "/" || location.pathname === path;
+    
+    if (isSamePage && hash) {
+      // If we're on the same page, just scroll to the element
+      const timer = setTimeout(() => {
+        const element = document.getElementById(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    } else if (hasHash) {
+      // If we're navigating to a different page with a hash, use state
+      navigate(path, { 
+        state: { scrollToSection: hash }
+      });
+    } else {
+      // Regular navigation
+      navigate(href);
+    }
+  };
 
+  if (!isOpen) return null;
+  
   return (
     <div 
       className="fixed top-0 left-0 w-[100vw] h-[100vh] min-h-screen min-w-full m-0 p-0 bg-gradient-to-b from-[#F5F5F0] to-[#EAEAE5] z-[9999] flex flex-col"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100vw',
+        height: '100vh',
+        margin: 0,
+        padding: 0
+      }}
       role="dialog"
       aria-modal="true"
     >
@@ -114,13 +167,13 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
       
       {/* Join Us Button - Moved to top for visibility */}
       <div className="p-4">
-        <Link
-          to="/#build-with-us"
+        <a
+          href="/#build-with-us"
           className="block w-full py-3 px-6 bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-[#274675] text-center rounded-md font-alegreyasans font-bold transition-colors"
-          onClick={handleCloseWithStopPropagation}
+          onClick={(e) => handleSectionNavigation(e, "/#build-with-us")}
         >
           Join Us
-        </Link>
+        </a>
       </div>
       
       {/* Navigation Links */}
@@ -150,26 +203,26 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
                       <ul className="mt-4 ml-4 space-y-4">
                         {item.dropdownItems.map((subItem) => (
                           <li key={subItem.name}>
-                            <Link
-                              to={subItem.href}
+                            <a
+                              href={subItem.href}
                               className="block text-base text-[#4A5568] hover:text-[#FBB03B] transition-colors font-alegreyasans"
-                              onClick={handleCloseWithStopPropagation}
+                              onClick={(e) => handleSectionNavigation(e, subItem.href)}
                             >
                               {subItem.name}
-                            </Link>
+                            </a>
                           </li>
                         ))}
                       </ul>
                     )}
                   </div>
                 ) : (
-                  <Link
-                    to={item.href}
+                  <a
+                    href={item.href}
                     className="block text-lg text-[#274675] hover:text-[#FBB03B] transition-colors font-alegreyasans font-bold"
-                    onClick={handleCloseWithStopPropagation}
+                    onClick={(e) => handleSectionNavigation(e, item.href)}
                   >
                     {item.name}
-                  </Link>
+                  </a>
                 )}
               </li>
             ))}
@@ -180,13 +233,13 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
             {/* Additional links */}
             {mobileFooterItems.map((item) => (
               <li key={item.name} className="py-1">
-                <Link
-                  to={item.href}
+                <a
+                  href={item.href}
                   className="block text-lg text-[#274675] hover:text-[#FBB03B] transition-colors font-alegreyasans font-bold"
-                  onClick={handleCloseWithStopPropagation}
+                  onClick={(e) => handleSectionNavigation(e, item.href)}
                 >
                   {item.name}
-                </Link>
+                </a>
               </li>
             ))}
           </ul>

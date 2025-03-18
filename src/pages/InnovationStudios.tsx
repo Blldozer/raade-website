@@ -91,7 +91,27 @@ const InnovationStudios = () => {
             behavior: 'smooth'
           });
         }
-      }, 100);
+      }, 300);
+    }
+    
+    // Also handle navigation via state (when coming from another page)
+    else if (location.state && location.state.scrollToSection) {
+      setTimeout(() => {
+        const sectionId = location.state.scrollToSection;
+        if (sectionId === 'overview' && overviewRef.current) {
+          overviewRef.current.scrollIntoView({
+            behavior: 'smooth'
+          });
+        } else if (sectionId === 'projects' && projectsRef.current) {
+          projectsRef.current.scrollIntoView({
+            behavior: 'smooth'
+          });
+        } else if (sectionId === 'apply' && applyRef.current) {
+          applyRef.current.scrollIntoView({
+            behavior: 'smooth'
+          });
+        }
+      }, 300);
     }
     
     // Cleanup

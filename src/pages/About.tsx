@@ -1,4 +1,3 @@
-
 import React, { useEffect, useLayoutEffect } from "react";
 import Navigation from "../components/Navigation"; // Use main Navigation component
 import AboutHero from "../components/about/AboutHero";
@@ -7,6 +6,7 @@ import ErrorBoundaryFallback from "../components/about/ErrorBoundaryFallback";
 import LoadingIndicator from "../components/about/LoadingIndicator";
 import AboutSections from "../components/about/AboutSections";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { useLocation } from "react-router-dom";
 
 /**
  * About page component - Manages the entire About page lifecycle
@@ -22,6 +22,8 @@ const About = () => {
     pageInitialized,
     isMobile,
   } = useAboutPage();
+  
+  const location = useLocation();
   
   // Set initial background to dark immediately for the hero section
   // This ensures light navbar (white text) against the dark hero background
@@ -46,6 +48,23 @@ const About = () => {
       }
     };
   }, []);
+  
+  // Handle scrolling to section when navigated from another page
+  useEffect(() => {
+    if (location.state && location.state.scrollToSection) {
+      const sectionId = location.state.scrollToSection;
+      
+      // Small delay to ensure the section is rendered
+      const timer = setTimeout(() => {
+        const section = document.getElementById(sectionId);
+        if (section) {
+          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [location.state]);
   
   // If fatal error, show a simple fallback (outside of all contexts)
   if (hasError) {
