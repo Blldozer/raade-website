@@ -4,9 +4,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
+import ErrorBoundary from "./components/ErrorBoundary";
 
-// Uncomment original imports for full website development
+// Import main pages
 import Index from "./pages/Index";
 import InnovationStudios from "./pages/InnovationStudios";
 import Conference from "./pages/Conference";
@@ -19,8 +20,18 @@ import PartnerApplication from "./pages/PartnerApplication";
 import ConferenceRegistration from "./pages/ConferenceRegistration";
 import SpeakerProfile from "./pages/SpeakerProfile";
 
-// Initialize the QueryClient
-const queryClient = new QueryClient();
+// Add TouchDebugger for development
+import TouchDebugger from "./components/TouchDebugger";
+
+// Initialize the QueryClient with better error handling
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 // Handle scroll restoration and navigation
 const ScrollToTop = () => {
@@ -28,6 +39,8 @@ const ScrollToTop = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("ScrollToTop: Pathname changed to", pathname);
+    
     // If no hash is present, scroll to top
     if (!hash) {
       window.scrollTo(0, 0);
@@ -38,9 +51,11 @@ const ScrollToTop = () => {
     const scrollToElement = () => {
       const element = document.getElementById(hash.substring(1));
       if (element) {
+        console.log("ScrollToTop: Scrolling to element", hash);
         element.scrollIntoView({ behavior: 'smooth', block: 'start' });
       } else {
         // If element not found, scroll to top as fallback
+        console.log("ScrollToTop: Element not found, scrolling to top");
         window.scrollTo(0, 0);
       }
     };
@@ -55,6 +70,7 @@ const ScrollToTop = () => {
 
 const NavigationWrapper = () => {
   const location = useLocation();
+  console.log("NavigationWrapper: Current location", location.pathname);
   
   // Don't show the main navigation on the About page
   if (location.pathname === '/about') {
@@ -73,33 +89,90 @@ const NavigationWrapper = () => {
   return <Navigation forceDarkMode={isProjectDetailPage} />;
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <ScrollToTop />
-        <div className="min-h-screen flex flex-col">
-          <NavigationWrapper />
-          <div className="flex-grow">
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/studios" element={<InnovationStudios />} />
-              <Route path="/conference" element={<Conference />} />
-              <Route path="/conference/register" element={<ConferenceRegistration />} />
-              <Route path="/conference/speakers/:speakerId" element={<SpeakerProfile />} />
-              <Route path="/projects/:projectSlug" element={<ProjectDetail />} />
-              <Route path="/apply/student" element={<StudentApplication />} />
-              <Route path="/apply/partner" element={<PartnerApplication />} />
-            </Routes>
-          </div>
-          <Footer />
-        </div>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+// Fallback component for when pages are loading
+const PageLoading = () => (
+  <div className="min-h-screen flex items-center justify-center bg-white">
+    <div className="text-center">
+      <div className="w-16 h-16 border-4 border-raade-navy border-t-transparent rounded-full animate-spin mx-auto"></div>
+      <p className="mt-4 text-raade-navy">Loading page...</p>
+    </div>
+  </div>
 );
+
+// Global error fallback component
+const GlobalErrorFallback = ({ error }: { error: Error }) => (
+  <div className="min-h-screen flex items-center justify-center bg-white p-6">
+    <div className="max-w-md text-center">
+      <h1 className="text-2xl font-bold text-red-600 mb-4">Something went wrong</h1>
+      <p className="mb-4">We're sorry, but we couldn't load the page.</p>
+      <p className="text-sm text-gray-600 mb-4">{error.message}</p>
+      <button 
+        onClick={() => window.location.reload()}
+        className="bg-raade-navy text-white px-4 py-2 rounded"
+      >
+        Refresh Page
+      </button>
+    </div>
+  </div>
+);
+
+const App = () => {
+  // Add console logging to help debug startup issues
+  console.log("App: Rendering");
+  
+  useEffect(() => {
+    console.log("App: Component mounted");
+    
+    // Log environment information
+    console.log("App: Window dimensions", {
+      width: window.innerWidth,
+      height: window.innerHeight,
+      pixelRatio: window.devicePixelRatio
+    });
+    
+    return () => {
+      console.log("App: Component unmounting");
+    };
+  }, []);
+  
+  // Check if we're in development mode - only show debugger in dev
+  const isDev = process.env.NODE_ENV === 'development';
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <ErrorBoundary fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}>
+          <BrowserRouter>
+            <ScrollToTop />
+            <div className="min-h-screen flex flex-col">
+              <NavigationWrapper />
+              <ErrorBoundary fallback={<GlobalErrorFallback error={new Error("Content failed to render")} />}>
+                <div className="flex-grow">
+                  <Suspense fallback={<PageLoading />}>
+                    <Routes>
+                      <Route path="/" element={<Index />} />
+                      <Route path="/about" element={<About />} />
+                      <Route path="/studios" element={<InnovationStudios />} />
+                      <Route path="/conference" element={<Conference />} />
+                      <Route path="/conference/register" element={<ConferenceRegistration />} />
+                      <Route path="/conference/speakers/:speakerId" element={<SpeakerProfile />} />
+                      <Route path="/projects/:projectSlug" element={<ProjectDetail />} />
+                      <Route path="/apply/student" element={<StudentApplication />} />
+                      <Route path="/apply/partner" element={<PartnerApplication />} />
+                    </Routes>
+                  </Suspense>
+                </div>
+              </ErrorBoundary>
+              <Footer />
+            </div>
+          </BrowserRouter>
+        </ErrorBoundary>
+        {isDev && <TouchDebugger />}
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
