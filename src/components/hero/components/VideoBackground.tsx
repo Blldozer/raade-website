@@ -10,24 +10,11 @@ const VideoBackground = ({ videoLoaded, setVideoLoaded }: VideoBackgroundProps) 
   const [isMobile, setIsMobile] = useState(false);
   const [videoError, setVideoError] = useState(false);
   const [connectionSpeed, setConnectionSpeed] = useState<string>('unknown');
-  const [debugLog, setDebugLog] = useState<string[]>([]);
-  
-  // Helper function to add to debug log
-  const logDebug = (message: string, data?: any) => {
-    const logMessage = data ? `${message}: ${JSON.stringify(data)}` : message;
-    console.log(`[VideoBackground] ${logMessage}`, data);
-    setDebugLog(prev => [...prev, `${new Date().toISOString().substr(11, 8)} - ${logMessage}`]);
-  };
   
   // Check if device is mobile and detect connection speed
   useEffect(() => {
     const checkMobile = () => {
-      const isMobileDevice = window.innerWidth < 768;
-      setIsMobile(isMobileDevice);
-      logDebug(`Device detected as ${isMobileDevice ? 'mobile' : 'desktop'}`, {
-        width: window.innerWidth,
-        height: window.innerHeight
-      });
+      setIsMobile(window.innerWidth < 768);
     };
     
     // Detect connection speed
@@ -36,15 +23,7 @@ const VideoBackground = ({ videoLoaded, setVideoLoaded }: VideoBackgroundProps) 
         const conn = navigator.connection as any;
         if (conn.effectiveType) {
           setConnectionSpeed(conn.effectiveType);
-          logDebug(`Connection speed detected`, {
-            effectiveType: conn.effectiveType,
-            downlink: conn.downlink,
-            rtt: conn.rtt,
-            saveData: conn.saveData
-          });
         }
-      } else {
-        logDebug('Connection API not available');
       }
     };
     
@@ -60,10 +39,7 @@ const VideoBackground = ({ videoLoaded, setVideoLoaded }: VideoBackgroundProps) 
   useEffect(() => {
     const video = videoRef.current;
     
-    if (!video) {
-      logDebug('Video reference not available');
-      return;
-    }
+    if (!video) return;
 
     // Basic video settings that work across devices
     video.preload = isMobile || connectionSpeed === '2g' || connectionSpeed === 'slow-2g' 
@@ -73,149 +49,52 @@ const VideoBackground = ({ videoLoaded, setVideoLoaded }: VideoBackgroundProps) 
     video.muted = true;
     video.setAttribute('fetchpriority', 'high'); // Signal browser this is high priority
     
-    logDebug('Video settings applied', {
-      preload: video.preload,
-      playsInline: video.playsInline,
-      muted: video.muted,
-      fetchPriority: video.getAttribute('fetchpriority')
-    });
-    
     // Add hardware acceleration hints
     video.style.transform = 'translate3d(0, 0, 0)';
     video.classList.add('optimized-video');
     
     // Handle video loading
     const handleCanPlay = () => {
-      logDebug('Video can play event triggered');
       setVideoLoaded(true);
       // Attempt to play with error handling
       video.play().catch(e => {
-        logDebug("Video autoplay prevented", { error: e.message });
+        console.error("Video autoplay prevented:", e);
         // If we can't play video, still mark as loaded and show fallback
         setVideoLoaded(true);
         setVideoError(true);
       });
     };
     
-    const handleLoadStart = () => {
-      logDebug('Video load started');
-    };
-    
-    const handleLoadedMetadata = () => {
-      logDebug('Video metadata loaded', {
-        duration: video.duration,
-        videoWidth: video.videoWidth,
-        videoHeight: video.videoHeight
-      });
-    };
-    
-    const handleLoadedData = () => {
-      logDebug('Video data loaded');
-    };
-    
-    const handleWaiting = () => {
-      logDebug('Video waiting for more data');
-    };
-    
-    const handleStalled = () => {
-      logDebug('Video download stalled');
-    };
-    
-    const handleSuspend = () => {
-      logDebug('Video loading suspended by browser');
-    };
-    
     const handleError = () => {
-      const videoErrorCode = video.error ? video.error.code : 'unknown';
-      const videoErrorMessage = video.error ? video.error.message : 'unknown';
-      
-      logDebug("Video loading error", { 
-        code: videoErrorCode, 
-        message: videoErrorMessage 
-      });
-      
+      console.error("Video loading error");
       setVideoError(true);
       setVideoLoaded(true); // Still mark as loaded to show fallback
     };
     
     // Don't even attempt to load video on slow connections
     if (isMobile && (connectionSpeed === '2g' || connectionSpeed === 'slow-2g')) {
-      logDebug('Skipping video load due to slow connection on mobile');
       setVideoError(true);
       setVideoLoaded(true);
       return;
     }
     
-    // Add event listeners for detailed debugging
-    video.addEventListener('loadstart', handleLoadStart);
-    video.addEventListener('loadedmetadata', handleLoadedMetadata);
-    video.addEventListener('loadeddata', handleLoadedData);
     video.addEventListener('canplaythrough', handleCanPlay);
-    video.addEventListener('waiting', handleWaiting);
-    video.addEventListener('stalled', handleStalled);
-    video.addEventListener('suspend', handleSuspend);
     video.addEventListener('error', handleError);
-    
-    logDebug('Video event listeners attached');
     
     // Set a timeout to mark video as loaded even if it stalls - reduced from 3s to 2s
     const timeoutId = setTimeout(() => {
       if (!videoLoaded) {
-        logDebug("Video load timeout - forcing loaded state");
+        console.warn("Video load timeout - forcing loaded state");
         setVideoLoaded(true);
       }
     }, 2000);
     
     return () => {
-      video.removeEventListener('loadstart', handleLoadStart);
-      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      video.removeEventListener('loadeddata', handleLoadedData);
       video.removeEventListener('canplaythrough', handleCanPlay);
-      video.removeEventListener('waiting', handleWaiting);
-      video.removeEventListener('stalled', handleStalled);
-      video.removeEventListener('suspend', handleSuspend);
       video.removeEventListener('error', handleError);
       clearTimeout(timeoutId);
-      logDebug('Video component cleanup');
     };
   }, [videoLoaded, setVideoLoaded, isMobile, connectionSpeed]);
-  
-  // Debug display for development - can be removed in production
-  const renderDebugInfo = () => {
-    if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
-      return (
-        <div 
-          style={{
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            background: 'rgba(0,0,0,0.8)',
-            color: 'white',
-            padding: '5px',
-            fontSize: '10px',
-            maxHeight: '100px',
-            overflow: 'auto',
-            zIndex: 9999,
-            fontFamily: 'monospace'
-          }}
-        >
-          <div>
-            <strong>Mobile:</strong> {isMobile ? 'Yes' : 'No'} |
-            <strong> Speed:</strong> {connectionSpeed} |
-            <strong> Error:</strong> {videoError ? 'Yes' : 'No'} |
-            <strong> Loaded:</strong> {videoLoaded ? 'Yes' : 'No'}
-          </div>
-          <div style={{ fontSize: '8px' }}>
-            {debugLog.map((log, i) => (
-              <div key={i}>{log}</div>
-            ))}
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
   
   return (
     <div className="absolute inset-0 z-0">
@@ -250,9 +129,6 @@ const VideoBackground = ({ videoLoaded, setVideoLoaded }: VideoBackgroundProps) 
           Your browser does not support the video tag.
         </video>
       )}
-      
-      {/* Render debug info in development */}
-      {renderDebugInfo()}
     </div>
   );
 };
