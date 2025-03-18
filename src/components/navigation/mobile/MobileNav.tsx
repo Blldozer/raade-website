@@ -128,19 +128,8 @@ const MobileNav = ({
             </div>
           </div>
           
-          {/* Join Us Button - Moved to top for visibility */}
-          <div className="p-4">
-            <Link
-              to="/#build-with-us"
-              className="block w-full py-3 px-6 bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-[#274675] text-center rounded-md font-alegreyasans font-bold transition-colors"
-              onClick={closeMenu}
-            >
-              Join Us
-            </Link>
-          </div>
-          
           {/* Navigation Links */}
-          <div className="flex-grow overflow-y-auto px-5 py-2">
+          <div className="flex-grow overflow-y-auto px-5 py-6">
             <nav>
               <ul className="space-y-6">
                 {navItems.map((item) => (
@@ -206,9 +195,15 @@ const MobileNav = ({
             </nav>
           </div>
           
-          {/* Footer - Copyright or other info */}
-          <div className="border-t border-gray-200 p-3 text-center text-xs text-gray-500">
-            &copy; {new Date().getFullYear()} RAADE. All rights reserved.
+          {/* Footer */}
+          <div className="border-t border-gray-200 p-5">
+            <Link
+              to="/#build-with-us"
+              className="block w-full py-3 px-6 bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-[#274675] text-center rounded-md font-alegreyasans font-bold transition-colors"
+              onClick={closeMenu}
+            >
+              Join Us
+            </Link>
           </div>
         </div>
       )}
