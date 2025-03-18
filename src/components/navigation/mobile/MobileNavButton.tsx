@@ -1,4 +1,6 @@
-import { cn } from "@/lib/utils";
+import React from 'react';
+import { Menu } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface MobileNavButtonProps {
   onClick: () => void;
@@ -8,44 +10,27 @@ interface MobileNavButtonProps {
 /**
  * MobileNavButton Component
  * 
- * Renders the hamburger menu button that toggles the mobile navigation
- * Adapts styling based on page context (dark/light mode)
+ * Renders a clean hamburger menu button for mobile navigation
  * 
- * @param onClick - Function to call when button is clicked
- * @param forceDarkMode - Whether to force dark styling regardless of context
+ * @param onClick - Function to call when the button is clicked
+ * @param forceDarkMode - Whether to force dark mode styling
  */
-const MobileNavButton = ({ onClick, forceDarkMode = false }: MobileNavButtonProps) => {
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent event bubbling
-    console.log("Mobile nav button clicked");
-    onClick();
-  };
-
+const MobileNavButton = ({ 
+  onClick, 
+  forceDarkMode = false 
+}: MobileNavButtonProps) => {
   return (
     <button
-      onClick={handleClick}
+      onClick={onClick}
       className={cn(
-        "p-2 hover:bg-white/10 rounded-md transition-all duration-200 flex flex-col justify-center items-center gap-1.5",
-        forceDarkMode ? "text-[#274675]" : "text-white"
+        "p-2 rounded-full transition-colors",
+        forceDarkMode 
+          ? "text-[#274675] hover:bg-gray-100/10" 
+          : "text-[#F9F5EB] hover:bg-[#274675]/10"
       )}
       aria-label="Open menu"
-      type="button"
     >
-      <span className="sr-only">Menu</span>
-      <div className="flex flex-col justify-center items-center gap-1.5">
-        <span className={cn(
-          "block w-6 h-0.5 transition-all duration-200",
-          forceDarkMode ? "bg-[#274675]" : "bg-white"
-        )}></span>
-        <span className={cn(
-          "block w-6 h-0.5 transition-all duration-200",
-          forceDarkMode ? "bg-[#274675]" : "bg-white"
-        )}></span>
-        <span className={cn(
-          "block w-6 h-0.5 transition-all duration-200",
-          forceDarkMode ? "bg-[#274675]" : "bg-white"
-        )}></span>
-      </div>
+      <Menu size={24} />
     </button>
   );
 };
