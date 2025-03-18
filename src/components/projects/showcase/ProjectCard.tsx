@@ -1,6 +1,5 @@
-
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, ExternalLink } from "lucide-react";
 import { Project } from "@/data/ProjectData";
@@ -8,7 +7,7 @@ import { Project } from "@/data/ProjectData";
 interface ProjectCardProps {
   project: Project;
   setHoveredProject: (name: string | null) => void;
-  itemVariants: any;
+  itemVariants: Variants;
 }
 
 /**
