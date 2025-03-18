@@ -70,11 +70,12 @@ const ScrollToTop = () => {
 
 const NavigationWrapper = () => {
   const location = useLocation();
+  console.log("NavigationWrapper: Current location", location.pathname);
   
-  // Don't show the main navigation on the About page
+  // Modified: Show navigation on the About page but with special styling
   if (location.pathname === '/about') {
-    // Return null so no main navigation is rendered but route still works
-    return null;
+    // Return navigation with special styling for About page
+    return <Navigation forceDarkMode={true} />;
   }
   
   // Check if we're on application pages that need special handling

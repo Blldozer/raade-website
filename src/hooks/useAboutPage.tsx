@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 /**
  * Custom hook to manage the About page state and logic
  * Handles section loading, errors, and mobile-specific behavior
+ * Improved error handling and navigation stability
  */
 export const useAboutPage = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -18,6 +19,7 @@ export const useAboutPage = () => {
   // Set the initial background to dark immediately for the hero section
   // This ensures light navbar (white text) against the dark hero background
   useLayoutEffect(() => {
+    console.log("useAboutPage: Setting initial dark background");
     document.body.setAttribute('data-nav-background', 'dark');
   }, []);
   
