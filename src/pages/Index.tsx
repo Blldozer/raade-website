@@ -1,3 +1,4 @@
+
 import React, { useEffect, Suspense, useLayoutEffect } from 'react';
 import { lazy } from 'react';
 import Hero from "@/components/hero/Hero";
@@ -5,13 +6,58 @@ import { useSectionTransitions } from "@/hooks/useSectionTransitions";
 import { useResponsive } from "@/hooks/useResponsive";
 import { useLocation } from 'react-router-dom';
 import { useNavBackground } from "@/hooks/useNavBackground";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
-// Lazy load components for better initial performance
-const ConferencePromo = lazy(() => import("@/components/sections/ConferencePromo"));
-const TransitionStat = lazy(() => import("@/components/sections/TransitionStat"));
-const FutureShowcase = lazy(() => import("@/components/sections/FutureShowcase"));
-const TransitionHook = lazy(() => import("@/components/sections/TransitionHook"));
-const JoinSection = lazy(() => import("@/components/sections/JoinSection"));
+// Lazy load components for better initial performance - with named chunks for easier debugging
+const ConferencePromo = lazy(() => import(/* webpackChunkName: "conference-promo" */ "@/components/sections/ConferencePromo"));
+const TransitionStat = lazy(() => import(/* webpackChunkName: "transition-stat" */ "@/components/sections/TransitionStat"));
+const FutureShowcase = lazy(() => import(/* webpackChunkName: "future-showcase" */ "@/components/sections/FutureShowcase"));
+const TransitionHook = lazy(() => import(/* webpackChunkName: "transition-hook" */ "@/components/sections/TransitionHook"));
+const JoinSection = lazy(() => import(/* webpackChunkName: "join-section" */ "@/components/sections/JoinSection"));
+
+/**
+ * Section loading fallback component - displays while section is loading
+ * Provides visual feedback during lazy loading
+ */
+const SectionLoadingFallback = () => (
+  <div className="h-screen bg-gray-100 flex items-center justify-center">
+    <div className="text-center">
+      <div className="w-12 h-12 border-4 border-[#274675] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+      <div className="text-lg text-[#274675]">Loading section...</div>
+    </div>
+  </div>
+);
+
+/**
+ * SectionWrapper Component - Wraps each section with ErrorBoundary and proper structure
+ * Provides consistent error handling and fallback UI for all sections
+ */
+const SectionWrapper = ({ 
+  id, 
+  background, 
+  children 
+}: { 
+  id: string; 
+  background: "light" | "dark"; 
+  children: React.ReactNode 
+}) => {
+  return (
+    <section className="relative w-full min-h-screen" id={id} data-background={background}>
+      <ErrorBoundary
+        fallback={
+          <div className="h-screen flex items-center justify-center bg-gray-100 p-6">
+            <div className="max-w-md text-center">
+              <h3 className="text-xl font-bold mb-2">Section unavailable</h3>
+              <p>We're experiencing issues with this section. Please try again later.</p>
+            </div>
+          </div>
+        }
+      >
+        {children}
+      </ErrorBoundary>
+    </section>
+  );
+};
 
 /**
  * Index Component - Main landing page of the website
@@ -23,163 +69,133 @@ const JoinSection = lazy(() => import("@/components/sections/JoinSection"));
 const Index = () => {
   // Use our optimized hook for section transitions
   useSectionTransitions();
-  const { isMobile, width, height, deviceType, touchCapability, orientation, performanceLevel } = useResponsive();
+  const { isMobile } = useResponsive();
   const location = useLocation();
+  
+  console.log("Index component rendering");
   
   // Use the hook to manage navbar background colors based on section visibility
   // Initialize with 'light' since the hero section has a dark background
   // This ensures the navbar is immediately visible with proper contrast
   useNavBackground('light');
   
-  // Add logging to diagnose mobile rendering issues
-  useEffect(() => {
-    console.log('=== INDEX PAGE DIAGNOSTIC INFO ===');
-    console.log('Device detection:', { 
-      isMobile, 
-      width, 
-      height, 
-      deviceType, 
-      touchCapability,
-      orientation,
-      performanceLevel,
-      userAgent: navigator.userAgent,
-      viewport: {
-        width: window.innerWidth,
-        height: window.innerHeight,
-        pixelRatio: window.devicePixelRatio,
-        visualViewport: window.visualViewport ? {
-          width: window.visualViewport.width,
-          height: window.visualViewport.height,
-          scale: window.visualViewport.scale
-        } : 'not supported'
-      }
-    });
-    
-    // Check if critical components are visible
-    const heroElement = document.getElementById('hero');
-    console.log('Hero element present:', !!heroElement);
-    if (heroElement) {
-      console.log('Hero element dimensions:', {
-        width: heroElement.offsetWidth,
-        height: heroElement.offsetHeight,
-        visible: heroElement.offsetWidth > 0 && heroElement.offsetHeight > 0,
-        style: {
-          display: window.getComputedStyle(heroElement).display,
-          position: window.getComputedStyle(heroElement).position,
-          overflow: window.getComputedStyle(heroElement).overflow,
-          zIndex: window.getComputedStyle(heroElement).zIndex
-        }
-      });
-    }
-    
-    // Monitor any layout shifts or scrolling issues
-    let lastHeight = window.innerHeight;
-    const handleResize = () => {
-      const newHeight = window.innerHeight;
-      if (Math.abs(lastHeight - newHeight) > 50) {
-        console.log('Significant viewport height change detected:', {
-          from: lastHeight,
-          to: newHeight,
-          difference: newHeight - lastHeight
-        });
-        lastHeight = newHeight;
-      }
-    };
-    
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [isMobile, width, height, deviceType, touchCapability, orientation, performanceLevel]);
-  
   // Set initial background state before any scroll happens
   useLayoutEffect(() => {
-    // Force light navbar for index page hero section
-    document.body.setAttribute('data-nav-background', 'light');
-    
-    // Log initial rendering state
-    console.log('Initial render state:', {
-      documentHeight: document.documentElement.offsetHeight,
-      bodyHeight: document.body.offsetHeight,
-      windowHeight: window.innerHeight,
-      overflow: window.getComputedStyle(document.body).overflow
-    });
+    try {
+      // Force light navbar for index page hero section
+      document.body.setAttribute('data-nav-background', 'light');
+      
+      // Log initialization for debugging purposes
+      console.log("Index page initialized, nav background set to light");
+    } catch (error) {
+      console.error("Error in Index layout effect:", error);
+    }
   }, []);
   
   useEffect(() => {
-    // Add passive:true to touch events for better scroll performance
-    const options = {
-      passive: true
-    };
-    
-    document.addEventListener('touchstart', () => {}, options);
-    document.addEventListener('touchmove', () => {}, options);
-    
-    // Set performance hint for the browser
-    if ('contentVisibilityAutoStateChange' in document.documentElement.style) {
-      document.documentElement.style.contentVisibility = 'auto';
+    try {
+      console.log("Index page mount effect running");
+      
+      // Add passive:true to touch events for better scroll performance
+      const options = {
+        passive: true
+      };
+      
+      const noopHandler = () => {};
+      
+      document.addEventListener('touchstart', noopHandler, options);
+      document.addEventListener('touchmove', noopHandler, options);
+      
+      // Set performance hint for the browser
+      if ('contentVisibilityAutoStateChange' in document.documentElement.style) {
+        document.documentElement.style.contentVisibility = 'auto';
+      }
+      
+      // Log for debugging
+      console.log("Index page event listeners attached");
+      
+      return () => {
+        document.removeEventListener('touchstart', noopHandler);
+        document.removeEventListener('touchmove', noopHandler);
+        document.body.removeAttribute('data-nav-background');
+        console.log("Index page cleanup completed");
+      };
+    } catch (error) {
+      console.error("Error in Index effect:", error);
     }
-    
-    return () => {
-      document.removeEventListener('touchstart', () => {});
-      document.removeEventListener('touchmove', () => {});
-      document.body.removeAttribute('data-nav-background');
-    };
   }, []);
   
   // Handle scrolling to the join section when navigating from another page
   useEffect(() => {
-    if (location.state && location.state.scrollToJoin) {
-      // Small delay to ensure the section is rendered
-      const timer = setTimeout(() => {
-        const joinSection = document.getElementById('join');
-        if (joinSection) {
-          joinSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 500);
+    try {
+      console.log("Index scroll effect running with location:", location);
       
-      return () => clearTimeout(timer);
-    }
-    
-    // Check if URL has #join hash
-    if (window.location.hash === '#join') {
-      // Small delay to ensure the section is rendered
-      const timer = setTimeout(() => {
-        const joinSection = document.getElementById('join');
-        if (joinSection) {
-          joinSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 500);
+      if (location.state && location.state.scrollToJoin) {
+        // Small delay to ensure the section is rendered
+        const timer = setTimeout(() => {
+          const joinSection = document.getElementById('join');
+          if (joinSection) {
+            joinSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 500);
+        
+        return () => clearTimeout(timer);
+      }
       
-      return () => clearTimeout(timer);
+      // Check if URL has #join hash
+      if (window.location.hash === '#join') {
+        // Small delay to ensure the section is rendered
+        const timer = setTimeout(() => {
+          const joinSection = document.getElementById('join');
+          if (joinSection) {
+            joinSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 500);
+        
+        return () => clearTimeout(timer);
+      }
+    } catch (error) {
+      console.error("Error in scroll effect:", error);
     }
   }, [location]);
   
   return (
     <div className="min-h-screen overflow-hidden">
-      <section className="relative w-full min-h-screen" id="hero" data-background="dark">
+      {/* Hero section is not lazy loaded for immediate display */}
+      <SectionWrapper id="hero" background="dark">
         <Hero />
-      </section>
+      </SectionWrapper>
       
-      <Suspense fallback={<div className="h-screen bg-gray-100 flex items-center justify-center">Loading...</div>}>
-        <section className="relative w-full min-h-screen" id="conference-promo" data-background="light">
+      {/* Each section gets its own error boundary and suspense boundary */}
+      <SectionWrapper id="conference-promo" background="light">
+        <Suspense fallback={<SectionLoadingFallback />}>
           <ConferencePromo />
-        </section>
-        
-        <section className="relative w-full min-h-screen" id="transition-stat" data-background="dark">
+        </Suspense>
+      </SectionWrapper>
+      
+      <SectionWrapper id="transition-stat" background="dark">
+        <Suspense fallback={<SectionLoadingFallback />}>
           <TransitionStat />
-        </section>
-        
-        <section className="relative w-full min-h-screen bg-white" id="future-showcase" data-background="light">
+        </Suspense>
+      </SectionWrapper>
+      
+      <SectionWrapper id="future-showcase" background="light">
+        <Suspense fallback={<SectionLoadingFallback />}>
           <FutureShowcase />
-        </section>
-        
-        <section className="relative w-full min-h-screen bg-[#3C403A]" id="transition-hook" data-background="dark">
+        </Suspense>
+      </SectionWrapper>
+      
+      <SectionWrapper id="transition-hook" background="dark">
+        <Suspense fallback={<SectionLoadingFallback />}>
           <TransitionHook />
-        </section>
-        
-        <section className="relative w-full min-h-screen" id="join" data-background="light">
+        </Suspense>
+      </SectionWrapper>
+      
+      <SectionWrapper id="join" background="light">
+        <Suspense fallback={<SectionLoadingFallback />}>
           <JoinSection />
-        </section>
-      </Suspense>
+        </Suspense>
+      </SectionWrapper>
     </div>
   );
 };

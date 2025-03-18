@@ -1,108 +1,113 @@
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import { useResponsive } from './useResponsive';
 
 gsap.registerPlugin(ScrollTrigger);
 
+/**
+ * Custom hook for transition hook animations
+ * Handles animations with proper error handling and cleanup
+ */
 export const useTransitionHookAnimation = () => {
   const { isMobile } = useResponsive();
+  const timeline = useRef<gsap.core.Timeline | null>(null);
+  const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
   
   useEffect(() => {
-    const section = document.querySelector('#transition-hook');
+    console.log("TransitionHookAnimation: Initializing");
     
-    if (!section) return;
-    
-    // Create a single animation timeline for better performance
-    const tl = gsap.timeline({
-      paused: true,
-      defaults: { 
-        ease: "power2.out",
-        clearProps: "scale,opacity" // Clear properties for better performance
+    try {
+      const section = document.querySelector('#transition-hook');
+      
+      if (!section) {
+        console.warn("TransitionHookAnimation: Section not found");
+        return;
       }
-    });
-    
-    // Get all elements we need to animate
-    const heading = section.querySelector("h2");
-    const paragraphText = section.querySelector("p");
-    const scrollButton = section.querySelector("button");
-    
-    // Add all animations to the timeline
-    if (heading) {
-      tl.fromTo(heading, 
-        { y: 30, autoAlpha: 0 },
-        { y: 0, autoAlpha: 1, duration: 0.8 }
-      );
-    }
-    
-    if (paragraphText) {
-      tl.fromTo(paragraphText,
-        { y: 15, autoAlpha: 0 },
-        { y: 0, autoAlpha: 1, duration: 0.6 },
-        "-=0.2" // Slight overlap
-      );
-    }
-    
-    if (scrollButton) {
-      tl.fromTo(scrollButton,
-        { y: 15, autoAlpha: 0 },
-        { 
-          y: 0, 
-          autoAlpha: 1, 
-          duration: 0.6,
-          onComplete: () => {
-            // Separate timeline for continual bounce animation
-            // Only run this animation when visible for better performance
-            const buttonTl = gsap.timeline({
-              repeat: -1, 
-              yoyo: true,
-              defaults: { ease: "sine.inOut" }
-            });
-            
-            buttonTl.to(scrollButton, {
-              y: "8px", // Reduced movement
-              duration: 1
-            });
-            
-            // Add to ScrollTrigger for visibility control
-            ScrollTrigger.create({
-              trigger: scrollButton,
-              start: "top bottom",
-              end: "bottom top",
-              onEnter: () => buttonTl.play(),
-              onLeave: () => buttonTl.pause(),
-              onEnterBack: () => buttonTl.play(),
-              onLeaveBack: () => buttonTl.pause()
-            });
-          }
-        },
-        "-=0.2" // Slight overlap
-      );
-    }
-    
-    // Create a single ScrollTrigger with performance optimizations
-    ScrollTrigger.create({
-      trigger: section,
-      start: isMobile ? "top 85%" : "top 75%",
-      once: true, // Only trigger once for better performance
-      fastScrollEnd: true,
-      onEnter: () => {
-        // Use RAF for smoother animation start
-        requestAnimationFrame(() => {
-          tl.play();
-        });
-      }
-    });
-    
-    return () => {
-      // Proper cleanup
-      tl.kill();
-      ScrollTrigger.getAll().forEach(trigger => {
-        if (trigger.vars.trigger === section) {
-          trigger.kill();
+      
+      // Create a timeline for this section
+      timeline.current = gsap.timeline({ 
+        paused: true,
+        defaults: { 
+          ease: "power2.out",
+          clearProps: "scale,opacity" // Clear properties after animation
         }
       });
+      
+      // Get all elements we need to animate
+      const heading = section.querySelector("h2");
+      const paragraphText = section.querySelector("p");
+      const scrollButton = section.querySelector("button");
+      
+      // Add animations to timeline if elements exist
+      if (heading) {
+        timeline.current.fromTo(heading, 
+          { y: 30, autoAlpha: 0 },
+          { y: 0, autoAlpha: 1, duration: 0.8 }
+        );
+      }
+      
+      if (paragraphText) {
+        timeline.current.fromTo(paragraphText,
+          { y: 15, autoAlpha: 0 },
+          { y: 0, autoAlpha: 1, duration: 0.6 },
+          "-=0.2" // Slight overlap
+        );
+      }
+      
+      if (scrollButton) {
+        timeline.current.fromTo(scrollButton,
+          { y: 15, autoAlpha: 0 },
+          { y: 0, autoAlpha: 1, duration: 0.6 },
+          "-=0.2" // Slight overlap
+        );
+      }
+      
+      // Create a ScrollTrigger with error handling
+      try {
+        scrollTriggerRef.current = ScrollTrigger.create({
+          trigger: section,
+          start: isMobile ? "top 85%" : "top 75%",
+          once: true, // Only trigger once for better performance
+          onEnter: () => {
+            try {
+              if (timeline.current) {
+                timeline.current.play();
+              }
+            } catch (err) {
+              console.error("Error playing animation:", err);
+            }
+          }
+        });
+      } catch (err) {
+        console.error("Error creating ScrollTrigger:", err);
+      }
+      
+      console.log("TransitionHookAnimation: Initialized successfully");
+    } catch (error) {
+      console.error("Error in TransitionHookAnimation:", error);
+    }
+    
+    // Cleanup function with error handling
+    return () => {
+      console.log("TransitionHookAnimation: Cleaning up");
+      
+      try {
+        // Kill the timeline
+        if (timeline.current) {
+          timeline.current.kill();
+          timeline.current = null;
+        }
+        
+        // Kill the ScrollTrigger
+        if (scrollTriggerRef.current) {
+          scrollTriggerRef.current.kill();
+          scrollTriggerRef.current = null;
+        }
+      } catch (error) {
+        console.error("Error cleaning up TransitionHookAnimation:", error);
+      }
     };
   }, [isMobile]);
 };

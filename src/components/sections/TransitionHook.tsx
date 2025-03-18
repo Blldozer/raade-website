@@ -1,26 +1,50 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import gsap from 'gsap';
 import ScrollToPlugin from 'gsap/ScrollToPlugin';
+import { useTransitionHookAnimation } from '@/hooks/useTransitionHookAnimation';
 
 // Register the ScrollToPlugin
 gsap.registerPlugin(ScrollToPlugin);
 
+/**
+ * TransitionHook Component - Displays a compelling message between sections
+ * Uses GSAP for smooth scrolling to the next section
+ */
 const TransitionHook = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   
+  // Use the animation hook for smoother transitions
+  useEffect(() => {
+    try {
+      // Use hook for animations only after component is mounted
+      useTransitionHookAnimation();
+    } catch (error) {
+      console.error("Error in TransitionHook animation:", error);
+    }
+  }, []);
+  
   const scrollToNextSection = () => {
-    const nextSection = document.getElementById('join');
-    if (nextSection) {
-      gsap.to(window, {
-        duration: 1,
-        scrollTo: {
-          y: nextSection,
-          offsetY: 0
-        },
-        ease: "power2.inOut"
-      });
+    try {
+      const nextSection = document.getElementById('join');
+      if (nextSection) {
+        gsap.to(window, {
+          duration: 1,
+          scrollTo: {
+            y: nextSection,
+            offsetY: 0
+          },
+          ease: "power2.inOut"
+        });
+      }
+    } catch (error) {
+      console.error("Error scrolling to next section:", error);
+      // Fallback to standard scrolling
+      const nextSection = document.getElementById('join');
+      if (nextSection) {
+        nextSection.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   };
 
