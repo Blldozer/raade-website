@@ -1,10 +1,10 @@
-
 import { cn } from "@/lib/utils";
 import NavLogo from "./NavLogo";
 import DesktopNav from "./DesktopNav";
 import MobileNav from "./mobile/MobileNav";
 import CountdownTimer from "../CountdownTimer";
-import { NavigationProvider, useNavigation } from "./context/NavigationContext";
+import { NavigationProvider } from "./context/NavigationContext";
+import { useNavigation } from "./context/useNavigation";
 import { useEffect } from "react";
 
 interface NavigationContainerProps {

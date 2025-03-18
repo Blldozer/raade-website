@@ -1,5 +1,4 @@
-
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useState, useEffect, ReactNode } from "react";
 import { useLocation } from "react-router-dom";
 import { useResponsive } from "@/hooks/useResponsive";
 
@@ -29,13 +28,13 @@ export interface NavigationState {
  * Navigation context interface
  * Combines state with any actions the context might provide
  */
-interface NavigationContextType {
+export interface NavigationContextType {
   state: NavigationState;
   setIsDarkBackground: (isDark: boolean) => void;
 }
 
 // Create the context with a default undefined value
-const NavigationContext = createContext<NavigationContextType | undefined>(undefined);
+export const NavigationContext = createContext<NavigationContextType | undefined>(undefined);
 
 /**
  * NavigationProvider Component
@@ -125,16 +124,4 @@ export const NavigationProvider = ({
       {children}
     </NavigationContext.Provider>
   );
-};
-
-/**
- * Custom hook to use the navigation context
- * Provides type-safe access to navigation state and actions
- */
-export const useNavigation = () => {
-  const context = useContext(NavigationContext);
-  if (context === undefined) {
-    throw new Error("useNavigation must be used within a NavigationProvider");
-  }
-  return context;
 };

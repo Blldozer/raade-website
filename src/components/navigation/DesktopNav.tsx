@@ -1,6 +1,6 @@
-
+import React from "react";
 import NavLinks from "./NavLinks";
-import { useNavigation } from "./context/NavigationContext";
+import { useNavigation } from "./context/useNavigation";
 
 interface DesktopNavProps {
   isScrolled?: boolean;

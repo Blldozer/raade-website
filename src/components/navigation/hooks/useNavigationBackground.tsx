@@ -1,7 +1,6 @@
-
 import { useState, useLayoutEffect, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { useNavigation } from "../context/NavigationContext";
+import { useNavigation } from "../context/useNavigation";
 
 interface UseNavigationBackgroundProps {
   forceDarkMode?: boolean;

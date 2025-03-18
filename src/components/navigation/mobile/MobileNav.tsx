@@ -1,9 +1,8 @@
-
 import React from "react";
 import MobileNavButton from "./MobileNavButton";
 import MobileMenuOverlay from "./MobileMenuOverlay";
 import { useMobileNav } from "@/hooks/useMobileNav";
-import { useNavigation } from "@/components/navigation/context/NavigationContext";
+import { useNavigation } from "@/components/navigation/context/useNavigation";
 
 interface MobileNavProps {
   isScrolled?: boolean;
