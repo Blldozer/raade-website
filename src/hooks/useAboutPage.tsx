@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
  * Custom hook to manage the About page state and logic
  * Handles section loading, errors, and mobile-specific behavior
  * Improved error handling and navigation stability
+ * Fixed context initialization and cleanup
  */
 export const useAboutPage = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -20,13 +21,24 @@ export const useAboutPage = () => {
   // This ensures light navbar (white text) against the dark hero background
   useLayoutEffect(() => {
     console.log("useAboutPage: Setting initial dark background");
-    document.body.setAttribute('data-nav-background', 'dark');
+    try {
+      document.body.setAttribute('data-nav-background', 'dark');
+    } catch (error) {
+      console.error("Could not set nav background:", error);
+    }
   }, []);
   
   // Initialize the page and set up error handling
   useEffect(() => {
+    // Guard against errors in case the component unmounts during initialization
+    let isMounted = true;
+    
     // Set document attributes for navigation styling (dark = light navbar for hero)
-    document.body.setAttribute('data-nav-background', 'dark');
+    try {
+      document.body.setAttribute('data-nav-background', 'dark');
+    } catch (error) {
+      console.error("Error setting navbar background:", error);
+    }
     
     // Add debugging information
     console.log("About page mounted with isMobile:", isMobile);
@@ -37,11 +49,14 @@ export const useAboutPage = () => {
     // Add error handling for unhandled errors
     const handleGlobalError = (event: ErrorEvent) => {
       console.error("Captured global error:", event.error);
-      setHasError(true);
       
-      // Allow the page to still render content
-      if (isLoading) {
-        setIsLoading(false);
+      if (isMounted) {
+        setHasError(true);
+        
+        // Allow the page to still render content
+        if (isLoading) {
+          setIsLoading(false);
+        }
       }
       
       // Prevent the error from causing a white screen
@@ -51,8 +66,10 @@ export const useAboutPage = () => {
     
     window.addEventListener('error', handleGlobalError);
     
-    // Initialize with a clearer approach
+    // Initialize with a clearer approach - use a delay to ensure DOM is ready
     const timer = setTimeout(() => {
+      if (!isMounted) return;
+      
       console.log("Initial loading complete");
       setIsLoading(false);
       setPageInitialized(true);
@@ -62,6 +79,11 @@ export const useAboutPage = () => {
         console.log("Mobile detected, using progressive section loading");
         // Start revealing sections one by one
         const sectionTimer = setInterval(() => {
+          if (!isMounted) {
+            clearInterval(sectionTimer);
+            return;
+          }
+          
           setActiveSection(prev => {
             const nextSection = prev + 1;
             console.log(`Activating section ${nextSection}`);
@@ -74,7 +96,9 @@ export const useAboutPage = () => {
           });
         }, 800); // Increased delay between sections for better performance on mobile
         
-        return () => clearInterval(sectionTimer);
+        return () => {
+          clearInterval(sectionTimer);
+        };
       } else {
         // On desktop, show all sections immediately
         console.log("Desktop detected, showing all sections");
@@ -84,13 +108,18 @@ export const useAboutPage = () => {
     
     // Clean up all resources and listeners when unmounting
     return () => {
-      console.log("About page unmounted");
+      isMounted = false;
+      console.log("About page unmounting");
       document.title = "RAADE";
       clearTimeout(timer);
       window.removeEventListener('error', handleGlobalError);
       
       // Reset any navigation-related attributes
-      document.body.removeAttribute('data-nav-background');
+      try {
+        document.body.removeAttribute('data-nav-background');
+      } catch (error) {
+        console.error("Error cleaning up navigation attributes:", error);
+      }
     };
   }, [isMobile, isLoading]);
 
