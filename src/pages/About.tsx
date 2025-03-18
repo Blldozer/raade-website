@@ -1,4 +1,3 @@
-
 import React, { useEffect, useLayoutEffect } from "react";
 import AboutHero from "../components/about/AboutHero";
 import { useAboutPage } from "../hooks/useAboutPage";
@@ -26,30 +25,6 @@ const About = () => {
   } = useAboutPage();
   
   const location = useLocation();
-  
-  // Set initial background to dark immediately for the hero section
-  // This ensures light navbar (white text) against the dark hero background
-  useLayoutEffect(() => {
-    console.log("About page: Setting initial dark background");
-    try {
-      document.body.setAttribute('data-nav-background', 'dark');
-      
-      // Add a class to body to indicate we're on the about page
-      document.body.classList.add('about-page');
-    } catch (error) {
-      console.error("Could not set nav background:", error);
-    }
-    
-    // Return cleanup function
-    return () => {
-      try {
-        document.body.classList.remove('about-page');
-        document.body.removeAttribute('data-nav-background');
-      } catch (error) {
-        console.error("Error cleaning up about page class:", error);
-      }
-    };
-  }, []);
   
   // Handle scrolling to section when navigated from another page via state
   useEffect(() => {

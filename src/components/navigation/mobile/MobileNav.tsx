@@ -1,8 +1,9 @@
 
-import { useState } from "react";
+import React from "react";
 import MobileNavButton from "./MobileNavButton";
 import MobileMenuOverlay from "./MobileMenuOverlay";
-import { useNavigation } from "../context/NavigationContext";
+import { useMobileNav } from "@/hooks/useMobileNav";
+import { useNavigation } from "@/components/navigation/context/NavigationContext";
 
 interface MobileNavProps {
   isScrolled?: boolean;
@@ -13,12 +14,11 @@ interface MobileNavProps {
 /**
  * MobileNav Component
  * 
- * Provides a full-page mobile navigation experience:
- * - Clean, minimal design with a light background
- * - Organized navigation links with clear hierarchy
- * - Simple open/close interactions
- * - Smooth transitions
- * - Reliable scroll locking with proper cleanup
+ * Provides a simplified mobile navigation experience:
+ * - Uses the useMobileNav hook to manage toggle state
+ * - Delegates rendering to specialized components
+ * - Ensures consistent behavior across all pages
+ * - Properly handles navigation context
  * 
  * @param isScrolled - Whether the page has been scrolled
  * @param isHeroPage - Whether this is displayed on a hero section
@@ -29,27 +29,27 @@ const MobileNav = ({
   isHeroPage = false, 
   forceDarkMode = false 
 }: MobileNavProps) => {
-  // Local state for menu visibility
-  const [isOpen, setIsOpen] = useState(false);
+  // Use the mobile navigation hook to manage state
+  const { isOpen, toggleMenu, closeMenu } = useMobileNav();
   
-  // Use the navigation context for styling
+  // Use the navigation context to get styling info
   const { state } = useNavigation();
   
-  // Prioritize context values but fall back to props for backward compatibility
-  const actualForceDarkMode = forceDarkMode || !state.isDarkBackground;
+  // Determine the actual style to use (context values take precedence)
+  const actualForceDarkMode = state?.isDarkBackground === false || forceDarkMode;
 
   return (
     <div className="block md:hidden">
       {/* Hamburger Menu Button */}
       <MobileNavButton 
-        onClick={() => setIsOpen(true)} 
+        onClick={toggleMenu} 
         forceDarkMode={actualForceDarkMode} 
       />
 
       {/* Full Screen Menu Overlay */}
       <MobileMenuOverlay 
         isOpen={isOpen} 
-        onClose={() => setIsOpen(false)} 
+        onClose={closeMenu} 
       />
     </div>
   );
