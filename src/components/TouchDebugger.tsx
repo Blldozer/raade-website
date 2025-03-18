@@ -18,9 +18,11 @@ const TouchDebugger: React.FC = () => {
   const [touchPoints, setTouchPoints] = useState<{ id: number; x: number; y: number }[]>([]);
   const [lastEvent, setLastEvent] = useState<string>('None');
   const { isMobile, isTablet, isDesktop, width, height } = useResponsive();
+  // Fixed TypeScript error by adding lastTimestamp for performance tracking
   const [performance, setPerformance] = useState({
     fps: 0,
-    memory: 'Unknown'
+    memory: 'Unknown',
+    lastTimestamp: window.performance.now() // Add this property to fix the TS error
   });
   
   // Handle touch events
@@ -62,10 +64,10 @@ const TouchDebugger: React.FC = () => {
     
     // Track performance
     let frameCount = 0;
-    let lastTime = performance.now();
+    let lastTime = window.performance.now(); // Use window.performance instead of accessing state directly
     
     const measureFPS = () => {
-      const now = performance.now();
+      const now = window.performance.now(); // Use window.performance.now() instead of performance.now
       const elapsed = now - lastTime;
       
       if (elapsed >= 1000) {
@@ -74,7 +76,8 @@ const TouchDebugger: React.FC = () => {
           fps: Math.round((frameCount * 1000) / elapsed),
           memory: (window as any).performance?.memory?.usedJSHeapSize 
             ? `${Math.round((window as any).performance.memory.usedJSHeapSize / (1024 * 1024))}MB` 
-            : 'Unknown'
+            : 'Unknown',
+          lastTimestamp: now // Update the timestamp in the state
         }));
         frameCount = 0;
         lastTime = now;
