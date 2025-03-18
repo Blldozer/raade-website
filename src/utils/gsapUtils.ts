@@ -12,11 +12,26 @@ let pluginsRegistered = false;
 export const registerGsapPlugins = () => {
   if (!pluginsRegistered) {
     try {
-      gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+      // Check if GSAP is actually loaded
+      if (!gsap) {
+        console.error("GSAP not found");
+        return false;
+      }
+      
+      // Register plugins if they're not already registered
+      if (!gsap.utils.checkPrefix("ScrollTrigger")) {
+        gsap.registerPlugin(ScrollTrigger);
+      }
+      
+      if (!gsap.utils.checkPrefix("ScrollToPlugin")) {
+        gsap.registerPlugin(ScrollToPlugin);
+      }
+      
       pluginsRegistered = true;
       console.log("GSAP plugins registered successfully");
     } catch (error) {
       console.error("Error registering GSAP plugins:", error);
+      return false;
     }
   }
   return pluginsRegistered;
@@ -75,4 +90,34 @@ export const debounce = (fn: Function, delay: number) => {
       timer = null;
     }, delay);
   };
+};
+
+/**
+ * Creates a GSAP context and ensures proper cleanup
+ * @param fn Function containing GSAP animations
+ * @param scope DOM element to scope animations to
+ * @returns Cleanup function
+ */
+export const createSafeGsapContext = (fn: Function, scope?: Element | null) => {
+  try {
+    // Create context only if GSAP is properly loaded
+    if (gsap && gsap.context) {
+      const context = gsap.context(fn, scope);
+      
+      return () => {
+        try {
+          context.revert();
+        } catch (error) {
+          console.error("Error reverting GSAP context:", error);
+        }
+      };
+    }
+    
+    // If GSAP context not available, just run the function
+    fn();
+    return () => {};
+  } catch (error) {
+    console.error("Error creating GSAP context:", error);
+    return () => {};
+  }
 };

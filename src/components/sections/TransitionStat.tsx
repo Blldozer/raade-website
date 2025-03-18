@@ -1,80 +1,102 @@
 
-import React, { useRef, useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef, useEffect } from 'react';
 import CountUp from 'react-countup';
 import { ArrowDown } from 'lucide-react';
-import { registerGsapPlugins } from '@/utils/gsapUtils';
-
-// Register GSAP plugins centrally
-registerGsapPlugins();
+import gsap from 'gsap';
+import ScrollTrigger from 'gsap/ScrollTrigger';
 
 /**
  * TransitionStat Component
  * 
  * A section displaying a compelling statistic about Africa's population growth
- * Uses CountUp for animated number display and implements lazy-loading friendly initialization
+ * Uses CountUp for animated number display with self-contained animations
  */
 const TransitionStat = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
   
-  // Initialize component first, mark as mounted
+  // Handle animations and cleanup
   useEffect(() => {
     console.log("TransitionStat component mounted");
-    setIsMounted(true);
     
-    // Mark component as loaded after initial render
-    const loadTimer = setTimeout(() => {
-      if (sectionRef.current) {
-        setIsLoaded(true);
+    // Register GSAP plugins safely within the effect
+    try {
+      if (!gsap.utils.checkPrefix("ScrollTrigger")) {
+        gsap.registerPlugin(ScrollTrigger);
       }
-    }, 100);
+    } catch (error) {
+      console.error("Error registering ScrollTrigger:", error);
+    }
     
-    return () => {
-      console.log("TransitionStat component unmounting");
-      clearTimeout(loadTimer);
-      setIsMounted(false);
-    };
-  }, []);
-  
-  // Once component is loaded, initialize animations with improved error handling
-  useEffect(() => {
-    // Only proceed if the component is both loaded and still mounted
-    if (isLoaded && isMounted && sectionRef.current) {
-      const controller = new AbortController();
+    // Wait for DOM to be ready
+    if (!sectionRef.current) return;
+    
+    try {
+      const section = sectionRef.current;
+      const statCounter = section.querySelector(".stat-counter");
+      const contentElements = section.querySelectorAll(".content-element");
       
-      // Dynamically import the hook to avoid early initialization issues
-      import('@/hooks/useTransitionStatAnimation').then(module => {
-        // Check if component is still mounted before initializing animations
-        if (isMounted && sectionRef.current) {
-          try {
-            // Pass the abort controller signal to the hook
-            module.useTransitionStatAnimation(controller.signal);
-            console.log("TransitionStat animation initialized");
-          } catch (error) {
-            console.error("Error initializing TransitionStat animation:", error);
-          }
-        }
-      }).catch(error => {
-        if (isMounted) {  // Only log if still mounted
-          console.error("Error importing TransitionStatAnimation hook:", error);
+      // Set correct background for navbar
+      section.setAttribute('data-background', 'dark');
+      
+      // Create animation timeline
+      const tl = gsap.timeline({
+        paused: true,
+        defaults: { 
+          ease: "power2.out",
         }
       });
       
-      // Clean up with abort controller
+      // Reset initial state
+      if (statCounter) {
+        gsap.set(statCounter, { autoAlpha: 0, scale: 0.95 });
+      }
+      
+      if (contentElements.length) {
+        gsap.set(contentElements, { autoAlpha: 0, y: 15 });
+      }
+      
+      // Build animation sequence
+      if (statCounter) {
+        tl.to(statCounter, { 
+          scale: 1, 
+          autoAlpha: 1, 
+          duration: 1, 
+          ease: "back.out(1.1)" 
+        });
+      }
+      
+      if (contentElements.length) {
+        tl.to(contentElements, { 
+          y: 0, 
+          autoAlpha: 1, 
+          duration: 0.6, 
+          stagger: 0.25 
+        }, "-=0.3");
+      }
+      
+      // Create scroll trigger context for easier cleanup
+      const ctx = gsap.context(() => {
+        ScrollTrigger.create({
+          trigger: section,
+          start: "top 80%",
+          once: true,
+          onEnter: () => {
+            tl.play();
+          }
+        });
+      }, section);
+      
+      // Cleanup function
       return () => {
-        controller.abort("Component unmounting");
+        console.log("TransitionStat component unmounting");
+        ctx.revert(); // Clean up all ScrollTriggers
+        tl.kill();
       };
+    } catch (error) {
+      console.error("Error in TransitionStat animations:", error);
     }
-  }, [isLoaded, isMounted]);
-  
-  // Explicitly set data-background attribute to ensure correct navbar handling
-  useEffect(() => {
-    if (sectionRef.current) {
-      sectionRef.current.setAttribute('data-background', 'dark');
-    }
-  }, []);
+  }, []); // Empty dependency array - run once on mount
   
   const scrollToNextSection = () => {
     const nextSection = document.getElementById('future-showcase');
@@ -95,13 +117,13 @@ const TransitionStat = () => {
       <div className="absolute -left-20 bottom-20 w-80 h-80 rounded-full bg-white/10 blur-3xl pointer-events-none section-background"></div>
       
       {/* Main content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
+      <div ref={contentRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
         <div className="space-y-8">
-          <div className="text-4xl md:text-7xl lg:text-8xl font-bold text-white mb-8 font-Montserrat rounded-3xl stat-counter transition-opacity duration-500">
+          <div className="text-4xl md:text-7xl lg:text-8xl font-bold text-white mb-8 font-Montserrat rounded-3xl stat-counter">
             By 2050, <span className="text-raade-gold-start"><CountUp end={25} duration={2.5} />%</span> of people
             <br />will be African.
           </div>
-          <p className="text-xl md:text-3xl text-white/80 max-w-3xl mx-auto font-merriweather content-element opacity-100 transition-opacity duration-500">
+          <p className="text-xl md:text-3xl text-white/80 max-w-3xl mx-auto font-merriweather content-element">
             The systems we build today will shape their tomorrow.
           </p>
         </div>
@@ -109,12 +131,12 @@ const TransitionStat = () => {
       
       {/* Bottom navigation */}
       <div className="text-center absolute bottom-10 z-10">
-        <p className="text-lg text-white/60 font-merriweather mb-6 content-element opacity-100 transition-opacity duration-500">
+        <p className="text-lg text-white/60 font-merriweather mb-6 content-element">
           Here's what we are building...
         </p>
         <button 
           onClick={scrollToNextSection} 
-          className="cursor-pointer p-4 group transition-transform hover:translate-y-1" 
+          className="cursor-pointer p-4 group transition-transform hover:translate-y-1 content-element" 
           aria-label="Scroll to next section"
         >
           <ArrowDown className="w-6 h-6 text-white/70 group-hover:text-white transition-colors" />
