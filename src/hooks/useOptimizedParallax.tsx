@@ -2,134 +2,172 @@ import { useEffect, useRef } from 'react';
 import { useResponsive } from './useResponsive';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
+import { registerGsapPlugins } from '@/utils/gsapUtils';
 
-gsap.registerPlugin(ScrollTrigger);
+registerGsapPlugins();
 
-// Optimized parallax hook with batched animations and performance improvements
 export const useOptimizedParallax = () => {
   const { isMobile, isTablet } = useResponsive();
   const ticking = useRef(false);
   const rafId = useRef<number | null>(null);
+  const mountedRef = useRef(true);
   
   useEffect(() => {
-    // Skip intensive parallax on mobile
+    mountedRef.current = true;
+    
     if (isMobile) {
-      // Apply simplified parallax for mobile - just basic animations
       applySimplifiedParallax();
-      return;
+      return () => {
+        mountedRef.current = false;
+        if (rafId.current) {
+          cancelAnimationFrame(rafId.current);
+        }
+      };
     }
     
-    // The sections that need parallax
     const sections = [
-      { id: 'conference-promo', depth: 0.15 },  // Reduced depth from 0.2
-      { id: 'transition-stat', depth: 0.1 },    // Reduced depth from 0.15
-      { id: 'future-showcase', depth: 0.15 }    // Reduced depth from 0.25
+      { id: 'conference-promo', depth: 0.15 },
+      { id: 'transition-stat', depth: 0.1 },
+      { id: 'future-showcase', depth: 0.15 }
     ];
     
-    // Batch all parallax animations into a single timeline per section
+    const createdTriggers: ScrollTrigger[] = [];
+    
     sections.forEach(({ id, depth }) => {
-      const section = document.getElementById(id);
-      if (!section) return;
-      
-      const parallaxElements = section.querySelectorAll('.parallax-element');
-      if (parallaxElements.length === 0) return;
-      
-      // Reduce parallax effect based on device
-      const adjustedDepth = isTablet ? depth * 0.5 : depth;
-      
-      // Create a single timeline for all elements in this section
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: section,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: true,
-          fastScrollEnd: true,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            // Only update when not already ticking to throttle updates
-            if (!ticking.current) {
-              ticking.current = true;
+      try {
+        const section = document.getElementById(id);
+        if (!section) return;
+        
+        const parallaxElements = section.querySelectorAll('.parallax-element');
+        if (parallaxElements.length === 0) return;
+        
+        const adjustedDepth = isTablet ? depth * 0.5 : depth;
+        
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true,
+            fastScrollEnd: true,
+            invalidateOnRefresh: true,
+            onUpdate: (self) => {
+              if (!mountedRef.current) return;
               
-              // Use RAF for smoother updates
-              if (rafId.current) {
-                cancelAnimationFrame(rafId.current);
-              }
-              
-              rafId.current = requestAnimationFrame(() => {
-                // Set will-change for better performance during scrolling
-                parallaxElements.forEach(el => {
-                  if (el instanceof HTMLElement) {
-                    el.style.willChange = 'transform';
-                  }
-                });
+              if (!ticking.current) {
+                ticking.current = true;
                 
-                ticking.current = false;
+                if (rafId.current) {
+                  cancelAnimationFrame(rafId.current);
+                }
+                
+                rafId.current = requestAnimationFrame(() => {
+                  if (!mountedRef.current) return;
+                  
+                  parallaxElements.forEach(el => {
+                    if (el instanceof HTMLElement) {
+                      el.style.willChange = 'transform';
+                    }
+                  });
+                  
+                  ticking.current = false;
+                });
+              }
+            },
+            onLeave: () => {
+              if (!mountedRef.current) return;
+              
+              parallaxElements.forEach(el => {
+                if (el instanceof HTMLElement) {
+                  el.style.willChange = 'auto';
+                }
               });
             }
-          },
-          onLeave: () => {
-            // Reset will-change when section is out of view
-            parallaxElements.forEach(el => {
-              if (el instanceof HTMLElement) {
-                el.style.willChange = 'auto';
-              }
-            });
           }
-        }
-      });
-      
-      // Add all elements to the timeline at once
-      parallaxElements.forEach((element, index) => {
-        // Calculate layered depth but keep it minimal
-        const elementDepth = adjustedDepth * (1 + (index * 0.05));
+        });
         
-        // Add to timeline (all at position 0 so they run in parallel)
-        tl.to(element, {
-          y: `${elementDepth * 100}%`,
-          ease: "none",
-        }, 0);
-      });
+        if (tl.scrollTrigger) {
+          createdTriggers.push(tl.scrollTrigger);
+        }
+        
+        parallaxElements.forEach((element, index) => {
+          const elementDepth = adjustedDepth * (1 + (index * 0.05));
+          tl.to(element, {
+            y: `${elementDepth * 100}%`,
+            ease: "none",
+          }, 0);
+        });
+      } catch (error) {
+        console.error(`Error setting up parallax for section ${id}:`, error);
+      }
     });
     
     return () => {
+      mountedRef.current = false;
+      
       if (rafId.current) {
         cancelAnimationFrame(rafId.current);
+        rafId.current = null;
       }
       
-      // Clean up all ScrollTriggers to prevent memory leaks
-      ScrollTrigger.getAll().forEach(trigger => {
-        trigger.kill();
+      createdTriggers.forEach(trigger => {
+        try {
+          if (trigger && typeof trigger.kill === 'function') {
+            trigger.kill();
+          }
+        } catch (error) {
+          console.error("Error killing ScrollTrigger during cleanup:", error);
+        }
       });
     };
   }, [isMobile, isTablet]);
   
-  // Simplified parallax for mobile devices - just basic fade animations
   const applySimplifiedParallax = () => {
+    const createdTriggers: ScrollTrigger[] = [];
+    
     const sections = ['conference-promo', 'transition-stat', 'future-showcase'];
     
     sections.forEach(id => {
-      const section = document.getElementById(id);
-      if (!section) return;
-      
-      const parallaxElements = section.querySelectorAll('.parallax-element');
-      if (parallaxElements.length === 0) return;
-      
-      // Create a simple ScrollTrigger for fade-in effect instead of parallax
-      ScrollTrigger.create({
-        trigger: section,
-        start: "top 90%",
-        once: true, // Only trigger once for better performance
-        onEnter: () => {
-          gsap.to(parallaxElements, {
-            opacity: 1,
-            y: 0,
-            stagger: 0.1,
-            duration: 0.5,
-            ease: "power1.out"
-          });
+      try {
+        const section = document.getElementById(id);
+        if (!section) return;
+        
+        const parallaxElements = section.querySelectorAll('.parallax-element');
+        if (parallaxElements.length === 0) return;
+        
+        const trigger = ScrollTrigger.create({
+          trigger: section,
+          start: "top 90%",
+          once: true,
+          onEnter: () => {
+            if (!mountedRef.current) return;
+            
+            gsap.to(parallaxElements, {
+              opacity: 1,
+              y: 0,
+              stagger: 0.1,
+              duration: 0.5,
+              ease: "power1.out"
+            });
+          }
+        });
+        
+        if (trigger) createdTriggers.push(trigger);
+      } catch (error) {
+        console.error(`Error setting up simplified parallax for section ${id}:`, error);
+      }
+    });
+    
+    return () => {
+      createdTriggers.forEach(trigger => {
+        try {
+          if (trigger && typeof trigger.kill === 'function') {
+            trigger.kill();
+          }
+        } catch (error) {
+          console.error("Error killing ScrollTrigger during cleanup:", error);
         }
       });
-    });
+    };
   };
 };

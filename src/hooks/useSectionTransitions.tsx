@@ -160,7 +160,9 @@ export const useSectionTransitions = () => {
     
     // For higher performance devices, use optimized parallax
     try {
-      useOptimizedParallax(signal);
+      // The error occurs here - useOptimizedParallax() doesn't expect arguments
+      // Removing the argument to fix the TypeScript error
+      useOptimizedParallax();
     } catch (error) {
       console.error("Error in Optimized Parallax:", error);
     }
