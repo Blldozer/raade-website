@@ -2,9 +2,10 @@
 import React, { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import ScrollToPlugin from 'gsap/ScrollToPlugin';
+import { registerGsapPlugins } from '@/utils/gsapUtils';
 
-// Register the ScrollToPlugin
-gsap.registerPlugin(ScrollToPlugin);
+// Register GSAP plugins via our centralized utility
+registerGsapPlugins();
 
 /**
  * TransitionHook Component - Displays a compelling message between sections
@@ -17,49 +18,76 @@ const TransitionHook = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   
-  // Initialize component first, then load animation hook
+  // Initialize component first, then mark as mounted
   useEffect(() => {
     console.log("TransitionHook component mounted");
+    setIsMounted(true);
     
     // Mark component as loaded after initial render
-    setIsLoaded(true);
+    const loadTimer = setTimeout(() => {
+      if (sectionRef.current) {
+        setIsLoaded(true);
+      }
+    }, 100);
     
     return () => {
       console.log("TransitionHook component unmounting");
+      clearTimeout(loadTimer);
+      setIsMounted(false);
     };
   }, []);
   
-  // Once component is loaded, initialize animations
+  // Once component is loaded, initialize animations with improved error handling
   useEffect(() => {
-    if (isLoaded) {
+    // Only proceed if the component is both loaded and still mounted
+    if (isLoaded && isMounted && sectionRef.current) {
+      const controller = new AbortController();
+      
       // Dynamically import the hook to avoid early initialization issues
       import('@/hooks/useTransitionHookAnimation').then(module => {
-        try {
-          // Execute the hook once it's imported
-          module.useTransitionHookAnimation();
-          console.log("TransitionHook animation initialized");
-        } catch (error) {
-          console.error("Error initializing TransitionHook animation:", error);
+        // Check if component is still mounted before initializing animations
+        if (isMounted && sectionRef.current) {
+          try {
+            // Pass the abort controller signal to the hook
+            module.useTransitionHookAnimation(controller.signal);
+            console.log("TransitionHook animation initialized");
+          } catch (error) {
+            console.error("Error initializing TransitionHook animation:", error);
+          }
         }
       }).catch(error => {
-        console.error("Error importing TransitionHookAnimation hook:", error);
+        if (isMounted) {  // Only log if still mounted
+          console.error("Error importing TransitionHookAnimation hook:", error);
+        }
       });
+      
+      // Clean up with abort controller
+      return () => {
+        controller.abort("Component unmounting");
+      };
     }
-  }, [isLoaded]);
+  }, [isLoaded, isMounted]);
   
   const scrollToNextSection = () => {
     try {
       const nextSection = document.getElementById('join');
       if (nextSection) {
-        gsap.to(window, {
-          duration: 1,
-          scrollTo: {
-            y: nextSection,
-            offsetY: 0
-          },
-          ease: "power2.inOut"
-        });
+        // First check if GSAP is available and properly initialized
+        if (gsap.to && typeof gsap.to === 'function') {
+          gsap.to(window, {
+            duration: 1,
+            scrollTo: {
+              y: nextSection,
+              offsetY: 0
+            },
+            ease: "power2.inOut"
+          });
+        } else {
+          // Fallback to standard scrolling if GSAP fails
+          nextSection.scrollIntoView({ behavior: 'smooth' });
+        }
       }
     } catch (error) {
       console.error("Error scrolling to next section:", error);

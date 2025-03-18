@@ -3,6 +3,10 @@ import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import CountUp from 'react-countup';
 import { ArrowDown } from 'lucide-react';
+import { registerGsapPlugins } from '@/utils/gsapUtils';
+
+// Register GSAP plugins centrally
+registerGsapPlugins();
 
 /**
  * TransitionStat Component
@@ -13,47 +17,63 @@ import { ArrowDown } from 'lucide-react';
 const TransitionStat = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   
-  // Initialize component first, then load animation hook
+  // Initialize component first, mark as mounted
   useEffect(() => {
     console.log("TransitionStat component mounted");
+    setIsMounted(true);
     
     // Mark component as loaded after initial render
-    setIsLoaded(true);
+    const loadTimer = setTimeout(() => {
+      if (sectionRef.current) {
+        setIsLoaded(true);
+      }
+    }, 100);
     
     return () => {
       console.log("TransitionStat component unmounting");
+      clearTimeout(loadTimer);
+      setIsMounted(false);
     };
   }, []);
   
-  // Once component is loaded, initialize animations
+  // Once component is loaded, initialize animations with improved error handling
   useEffect(() => {
-    if (isLoaded) {
+    // Only proceed if the component is both loaded and still mounted
+    if (isLoaded && isMounted && sectionRef.current) {
+      const controller = new AbortController();
+      
       // Dynamically import the hook to avoid early initialization issues
       import('@/hooks/useTransitionStatAnimation').then(module => {
-        try {
-          // Execute the hook once it's imported
-          module.useTransitionStatAnimation();
-          console.log("TransitionStat animation initialized");
-        } catch (error) {
-          console.error("Error initializing TransitionStat animation:", error);
+        // Check if component is still mounted before initializing animations
+        if (isMounted && sectionRef.current) {
+          try {
+            // Pass the abort controller signal to the hook
+            module.useTransitionStatAnimation(controller.signal);
+            console.log("TransitionStat animation initialized");
+          } catch (error) {
+            console.error("Error initializing TransitionStat animation:", error);
+          }
         }
       }).catch(error => {
-        console.error("Error importing TransitionStatAnimation hook:", error);
+        if (isMounted) {  // Only log if still mounted
+          console.error("Error importing TransitionStatAnimation hook:", error);
+        }
       });
+      
+      // Clean up with abort controller
+      return () => {
+        controller.abort("Component unmounting");
+      };
     }
-  }, [isLoaded]);
+  }, [isLoaded, isMounted]);
   
   // Explicitly set data-background attribute to ensure correct navbar handling
   useEffect(() => {
     if (sectionRef.current) {
       sectionRef.current.setAttribute('data-background', 'dark');
     }
-    
-    return () => {
-      // Cleanup if needed
-      console.log("TransitionStat attribute cleanup");
-    };
   }, []);
   
   const scrollToNextSection = () => {

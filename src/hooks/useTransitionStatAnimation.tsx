@@ -2,32 +2,48 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
+import { registerGsapPlugins, safeKillTimeline, safeKillScrollTrigger, isElementInDOM } from '@/utils/gsapUtils';
 
-gsap.registerPlugin(ScrollTrigger);
+// Register plugins once with our centralized utility
+registerGsapPlugins();
 
 /**
  * Animation hook for the TransitionStat component
  * Creates animated entrance effects for the statistics section
  * 
- * Modified to avoid circular dependency issues by not importing useResponsive
+ * @param abortSignal - Optional AbortController signal for cleanup
+ * @returns void
  */
-export const useTransitionStatAnimation = () => {
+export const useTransitionStatAnimation = (abortSignal?: AbortSignal) => {
   // Create refs outside useEffect to avoid issues with React initialization
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const triggerRef = useRef<ScrollTrigger | null>(null);
+  const isInitialized = useRef<boolean>(false);
   
   useEffect(() => {
+    // Skip initialization if the component is already being unmounted
+    if (abortSignal && abortSignal.aborted) {
+      console.log("TransitionStatAnimation: Abort signal received, skipping initialization");
+      return;
+    }
+    
     // Use a small timeout to ensure React is fully initialized
     const initTimeout = setTimeout(() => {
       try {
         console.log("TransitionStatAnimation: Initializing");
+        
+        // Check if already initialized to prevent duplicate initialization
+        if (isInitialized.current) {
+          console.log("TransitionStatAnimation: Already initialized, skipping");
+          return;
+        }
         
         // Get responsive state directly within the effect
         const isMobile = window.innerWidth < 768;
         
         const section = document.querySelector('#transition-stat');
         
-        if (!section) {
+        if (!isElementInDOM(section)) {
           console.warn("TransitionStatAnimation: Section not found");
           return;
         }
@@ -38,6 +54,15 @@ export const useTransitionStatAnimation = () => {
           defaults: { 
             ease: "power2.out",
             clearProps: "scale" // Important for performance
+          },
+          onComplete: () => {
+            // Optional: Clean up will-change property after animation completes
+            const elements = section.querySelectorAll('.stat-counter, .content-element');
+            elements.forEach(el => {
+              if (el instanceof HTMLElement) {
+                el.style.willChange = 'auto';
+              }
+            });
           }
         });
         
@@ -47,6 +72,17 @@ export const useTransitionStatAnimation = () => {
         const statCounter = section.querySelector(".stat-counter");
         // Target all content elements regardless of their opacity class
         const contentElements = section.querySelectorAll(".content-element");
+        
+        // Set will-change for elements that will be animated
+        if (statCounter && statCounter instanceof HTMLElement) {
+          statCounter.style.willChange = 'opacity, transform';
+        }
+        
+        contentElements.forEach(el => {
+          if (el instanceof HTMLElement) {
+            el.style.willChange = 'opacity, transform';
+          }
+        });
         
         if (statCounter) {
           tl.fromTo(statCounter, 
@@ -65,46 +101,53 @@ export const useTransitionStatAnimation = () => {
         }
         
         // Create a single ScrollTrigger with optimization settings
-        const trigger = ScrollTrigger.create({
-          trigger: section,
-          start: isMobile ? "top 85%" : "top 75%", // Trigger earlier
-          once: true, // Only trigger once for better performance
-          fastScrollEnd: true,
-          onEnter: () => {
-            // Use RAF for smoother animation start
-            requestAnimationFrame(() => {
-              tl.play();
-            });
-          }
-        });
-        
-        triggerRef.current = trigger;
-        
-        console.log("TransitionStatAnimation: Initialized successfully");
+        try {
+          triggerRef.current = ScrollTrigger.create({
+            trigger: section,
+            start: isMobile ? "top 85%" : "top 75%", // Trigger earlier
+            once: true, // Only trigger once for better performance
+            fastScrollEnd: true,
+            onEnter: () => {
+              if (!abortSignal?.aborted && timelineRef.current) {
+                // Use RAF for smoother animation start
+                requestAnimationFrame(() => {
+                  if (timelineRef.current && !abortSignal?.aborted) {
+                    timelineRef.current.play();
+                  }
+                });
+              }
+            }
+          });
+          
+          isInitialized.current = true;
+          console.log("TransitionStatAnimation: Initialized successfully");
+        } catch (err) {
+          console.error("Error creating ScrollTrigger:", err);
+        }
       } catch (error) {
         console.error("Error in TransitionStatAnimation:", error);
       }
     }, 100); // Small delay to ensure React is ready
     
+    // Cleanup function with error handling
     return () => {
       clearTimeout(initTimeout);
       
       try {
         console.log("TransitionStatAnimation: Cleaning up");
         
-        // Proper cleanup
-        if (timelineRef.current) {
-          timelineRef.current.kill();
-          timelineRef.current = null;
-        }
+        // Safely kill the timeline
+        safeKillTimeline(timelineRef.current);
+        timelineRef.current = null;
         
-        if (triggerRef.current) {
-          triggerRef.current.kill();
-          triggerRef.current = null;
-        }
+        // Safely kill the ScrollTrigger
+        safeKillScrollTrigger(triggerRef.current);
+        triggerRef.current = null;
+        
+        isInitialized.current = false;
       } catch (error) {
         console.error("Error cleaning up TransitionStatAnimation:", error);
       }
     };
-  }, []);
+  }, [abortSignal]); // Only re-run if abort signal changes
 };

@@ -1,15 +1,13 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavBackground } from './useNavBackground';
 import { useOptimizedParallax } from './useOptimizedParallax';
-import { useTransitionStatAnimation } from './useTransitionStatAnimation';
-import { useTransitionHookAnimation } from './useTransitionHookAnimation';
-import { useFutureShowcaseAnimation } from './useFutureShowcaseAnimation';
-import { useGeneralSectionAnimations } from './useGeneralSectionAnimations';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
+import { registerGsapPlugins } from '@/utils/gsapUtils';
 
-gsap.registerPlugin(ScrollTrigger);
+// Register plugins centrally
+registerGsapPlugins();
 
 // Add type declaration for Device Memory API
 declare global {
@@ -38,10 +36,20 @@ const detectLowPerformanceDevice = () => {
 export const useSectionTransitions = () => {
   const [isLowPerformanceDevice, setIsLowPerformanceDevice] = useState(false);
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
+  const mountedRef = useRef(true);
+  const initializeRef = useRef(false);
+  const abortController = useRef(new AbortController());
   
   // Initialization with error handling
   useEffect(() => {
     console.log("Initializing section transitions");
+    
+    // Create a new abort controller for this mount cycle
+    abortController.current = new AbortController();
+    
+    // Mark component as mounted
+    mountedRef.current = true;
+    
     try {
       // Detect device performance
       const isLowPerf = detectLowPerformanceDevice();
@@ -54,23 +62,56 @@ export const useSectionTransitions = () => {
         autoRefreshEvents: "visibilitychange,DOMContentLoaded,load,resize", // Reduce refresh events
       });
       
-      // Add an error handling mechanism
-      const originalScrollTriggerRefresh = ScrollTrigger.refresh;
-      ScrollTrigger.refresh = function() {
-        try {
-          originalScrollTriggerRefresh.apply(this, arguments);
-        } catch (error) {
-          console.error("Error in ScrollTrigger.refresh:", error);
-        }
-      };
-      
+      // Only initialize animations when document is fully loaded
+      if (document.readyState === 'complete') {
+        initializeAnimations();
+      } else {
+        // Wait for document to be fully loaded before initializing animations
+        const handleLoad = () => {
+          if (mountedRef.current) {
+            initializeAnimations();
+          }
+        };
+        
+        window.addEventListener('load', handleLoad);
+        return () => {
+          window.removeEventListener('load', handleLoad);
+        };
+      }
     } catch (error) {
       console.error("Error in section transitions initialization:", error);
       // Disable animations if there's an error
       setAnimationsEnabled(false);
     }
     
+    // Setup initialization
+    function initializeAnimations() {
+      try {
+        // Add an error handling mechanism
+        const originalScrollTriggerRefresh = ScrollTrigger.refresh;
+        ScrollTrigger.refresh = function() {
+          try {
+            // @ts-ignore - applying arguments in a safe way
+            originalScrollTriggerRefresh.apply(this, arguments);
+          } catch (error) {
+            console.error("Error in ScrollTrigger.refresh:", error);
+          }
+        };
+        
+        // Mark as initialized
+        initializeRef.current = true;
+      } catch (error) {
+        console.error("Error in animation initialization:", error);
+      }
+    }
+    
     return () => {
+      // Signal component unmount
+      mountedRef.current = false;
+      
+      // Abort any pending operations
+      abortController.current.abort("Component unmounting");
+      
       try {
         // Clean up ScrollTrigger instances
         ScrollTrigger.getAll().forEach(trigger => {
@@ -87,86 +128,48 @@ export const useSectionTransitions = () => {
     };
   }, []);
   
-  // If animations are disabled, skip all animations
-  if (!animationsEnabled) {
-    console.log("Animations disabled due to previous errors");
-    return;
-  }
-  
-  // Always use navigation background updates (optimized version)
-  try {
-    useNavBackground();
-  } catch (error) {
-    console.error("Error in NavBackground:", error);
-  }
-  
-  // If device is low performance, apply minimal animations
-  if (isLowPerformanceDevice) {
-    console.log("Using minimal animations for low-performance device");
+  // Load core animations
+  useEffect(() => {
+    // If animations are disabled, skip all animations
+    if (!animationsEnabled || !initializeRef.current || !mountedRef.current) {
+      return;
+    }
     
-    // Apply only critical animations for user experience
-    useEffect(() => {
-      try {
-        // Apply minimal CSS-based animations using classes instead of heavy GSAP animations
-        document.body.classList.add('low-performance-mode');
-        
-        return () => {
+    const signal = abortController.current.signal;
+    
+    // Always use navigation background updates (optimized version)
+    try {
+      useNavBackground();
+    } catch (error) {
+      console.error("Error in NavBackground:", error);
+    }
+    
+    // If device is low performance, apply minimal animations
+    if (isLowPerformanceDevice) {
+      console.log("Using minimal animations for low-performance device");
+      
+      // Apply only critical animations for user experience
+      document.body.classList.add('low-performance-mode');
+      
+      return () => {
+        if (mountedRef.current) {
           document.body.classList.remove('low-performance-mode');
-        };
-      } catch (error) {
-        console.error("Error applying low-performance mode:", error);
-      }
-    }, []);
-    
-    // Still use Future Showcase animations even on low performance devices
-    try {
-      useFutureShowcaseAnimation();
-    } catch (error) {
-      console.error("Error in Future Showcase animations:", error);
+        }
+      };
     }
     
-    // Still use general section animations but they'll respect the low-performance CSS
+    // For higher performance devices, use optimized parallax
     try {
-      useGeneralSectionAnimations();
+      useOptimizedParallax(signal);
     } catch (error) {
-      console.error("Error in General Section animations:", error);
+      console.error("Error in Optimized Parallax:", error);
     }
     
-    return;
-  }
+    // Load Future Showcase and General animations
+    // Now handled directly in the components themselves
+    
+    // Nothing to clean up in this effect
+  }, [animationsEnabled, isLowPerformanceDevice]);
   
-  // For higher performance devices, use optimized animations
-  // Use the new optimized parallax implementation instead of individual hooks
-  // Wrap each animation hook in try-catch to prevent failures from breaking rendering
-  try {
-    useOptimizedParallax();
-  } catch (error) {
-    console.error("Error in Optimized Parallax:", error);
-  }
-  
-  try {
-    useTransitionStatAnimation();
-  } catch (error) {
-    console.error("Error in Transition Stat animations:", error);
-  }
-  
-  try {
-    useTransitionHookAnimation();
-  } catch (error) {
-    console.error("Error in Transition Hook animations:", error);
-  }
-  
-  // Future Showcase animations - load this before general animations
-  try {
-    useFutureShowcaseAnimation();
-  } catch (error) {
-    console.error("Error in Future Showcase animations:", error);
-  }
-  
-  // General section animations (for non-specific sections)
-  try {
-    useGeneralSectionAnimations();
-  } catch (error) {
-    console.error("Error in General Section animations:", error);
-  }
+  // Return nothing as this is just setting up global animations
 };
