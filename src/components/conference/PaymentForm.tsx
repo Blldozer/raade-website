@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import {
   PaymentElement,
@@ -92,7 +91,6 @@ const PaymentForm = ({
     });
   }, [stripe, onSuccess, paymentCompleted]);
 
-  // Handle Link authentication status changes
   const handleLinkAuthenticationChange = (event: any) => {
     setIsLinkReturningUser(event.value.verified);
   };
@@ -101,7 +99,6 @@ const PaymentForm = ({
     e.preventDefault();
 
     if (!stripe || !elements) {
-      // Stripe.js hasn't yet loaded.
       return;
     }
 
@@ -122,8 +119,6 @@ const PaymentForm = ({
     });
 
     if (error) {
-      // This point will only be reached if there's an immediate error when confirming the payment.
-      // For example, a declined card or incorrect CVC.
       if (error.type === "card_error" || error.type === "validation_error") {
         setMessage(error.message || "An unexpected error occurred");
         onError(error.message || "An unexpected error occurred");
@@ -132,7 +127,6 @@ const PaymentForm = ({
         onError("An unexpected error occurred");
       }
     } else if (paymentIntent && paymentIntent.status === "succeeded") {
-      // The payment has been processed!
       setMessage("Payment succeeded!");
       setPaymentCompleted(true);
       onSuccess();

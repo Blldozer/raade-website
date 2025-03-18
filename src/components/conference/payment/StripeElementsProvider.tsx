@@ -48,6 +48,7 @@ const StripeElementsProvider: React.FC<StripeElementsProviderProps> = ({
 
   // Configure Stripe Elements options with RAADE branding
   const options: StripeElementsOptions = {
+    // For Stripe Elements v2, clientSecret needs to be passed directly
     clientSecret,
     appearance: {
       theme: 'stripe',
@@ -64,10 +65,6 @@ const StripeElementsProvider: React.FC<StripeElementsProviderProps> = ({
     // This allows returning customers to use their saved payment information
     // across Link-enabled merchants
     loader: 'always',
-    // Enable wallet payment methods for mobile devices
-    mode: 'payment',
-    currency: 'usd',
-    payment_method_types: ['card', 'link'],
   };
 
   return (
