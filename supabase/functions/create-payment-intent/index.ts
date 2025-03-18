@@ -7,18 +7,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-/**
- * Create Payment Intent Edge Function
- * 
- * Processes payment requests for conference registrations by:
- * - Creating a Stripe payment intent based on ticket type
- * - Calculating correct pricing based on ticket selection and group size
- * - Supporting Link, Apple Pay, and Google Pay payment methods
- * - Validating group size for group registrations
- * - Returning payment information to the client
- * 
- * Handles CORS and proper error reporting
- */
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -32,15 +20,7 @@ serve(async (req) => {
     
     if (!stripeSecretKey) {
       console.error("STRIPE_SECRET_KEY is not set in environment variables");
-      return new Response(
-        JSON.stringify({ 
-          error: "Server configuration error: Missing Stripe secret key" 
-        }),
-        { 
-          status: 500, 
-          headers: { ...corsHeaders, "Content-Type": "application/json" } 
-        }
-      );
+      throw new Error("Server configuration error: Missing Stripe secret key");
     }
 
     console.log("Creating Stripe instance with secret key format:", 
@@ -67,16 +47,7 @@ serve(async (req) => {
     // Validate input data
     if (!ticketType || !email || !fullName) {
       console.error("Missing required fields:", { ticketType, email, fullName });
-      return new Response(
-        JSON.stringify({ 
-          error: "Missing required fields",
-          details: "Ticket type, email, and full name are required"
-        }),
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, "Content-Type": "application/json" } 
-        }
-      );
+      throw new Error("Missing required fields: Ticket type, email, and full name are required");
     }
     
     // Validate group size for student-group tickets
@@ -84,16 +55,7 @@ serve(async (req) => {
     if (isGroupRegistration) {
       if (!groupSize || groupSize < 5) {
         console.error("Invalid group size:", groupSize);
-        return new Response(
-          JSON.stringify({ 
-            error: "Invalid group size",
-            details: "Group registrations require a minimum of 5 people"
-          }),
-          { 
-            status: 400, 
-            headers: { ...corsHeaders, "Content-Type": "application/json" } 
-          }
-        );
+        throw new Error("Invalid group size: Group registrations require a minimum of 5 people");
       }
     }
     
@@ -118,17 +80,7 @@ serve(async (req) => {
         break;
       default:
         console.error("Invalid ticket type:", ticketType);
-        return new Response(
-          JSON.stringify({ 
-            error: `Invalid ticket type: ${ticketType}`,
-            validTypes: ["student", "professional", "student-group"],
-            receivedData: requestData
-          }),
-          { 
-            status: 400, 
-            headers: { ...corsHeaders, "Content-Type": "application/json" } 
-          }
-        );
+        throw new Error(`Invalid ticket type: ${ticketType}. Valid types are: student, professional, student-group`);
     }
 
     console.log(`Creating payment intent for ${amount} cents (${description}) - ${email}`);
@@ -188,18 +140,7 @@ serve(async (req) => {
         message: stripeError.message
       });
       
-      return new Response(
-        JSON.stringify({ 
-          error: stripeError.message,
-          errorType: stripeError.type,
-          errorCode: stripeError.code,
-          details: "There was an error processing your payment request with Stripe. Please try again later."
-        }),
-        { 
-          status: 500, 
-          headers: { ...corsHeaders, "Content-Type": "application/json" } 
-        }
-      );
+      throw stripeError;
     }
 
   } catch (error) {
