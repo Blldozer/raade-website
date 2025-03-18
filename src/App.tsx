@@ -70,7 +70,6 @@ const ScrollToTop = () => {
 
 const NavigationWrapper = () => {
   const location = useLocation();
-  console.log("NavigationWrapper: Current location", location.pathname);
   
   // Don't show the main navigation on the About page
   if (location.pathname === '/about') {
@@ -116,6 +115,9 @@ const GlobalErrorFallback = ({ error }: { error: Error }) => (
   </div>
 );
 
+// Check if we're running in development mode
+const isDevelopment = process.env.NODE_ENV === 'development';
+
 const App = () => {
   // Add console logging to help debug startup issues
   console.log("App: Rendering");
@@ -130,6 +132,19 @@ const App = () => {
       pixelRatio: window.devicePixelRatio
     });
     
+    // Disable React's console errors in production
+    if (process.env.NODE_ENV === 'production') {
+      const originalConsoleError = console.error;
+      console.error = (...args) => {
+        // Filter out React-specific development errors in production
+        const errorMessage = args[0]?.toString() || '';
+        if (errorMessage.includes('React will try to recreate this component tree')) {
+          return;
+        }
+        originalConsoleError(...args);
+      };
+    }
+    
     return () => {
       console.log("App: Component unmounting");
     };
@@ -143,12 +158,18 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <ErrorBoundary fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}>
+        <ErrorBoundary 
+          fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
+          suppressDevErrors={isDevelopment} // Suppress dev errors in development mode
+        >
           <BrowserRouter>
             <ScrollToTop />
             <div className="min-h-screen flex flex-col">
               <NavigationWrapper />
-              <ErrorBoundary fallback={<GlobalErrorFallback error={new Error("Content failed to render")} />}>
+              <ErrorBoundary 
+                fallback={<GlobalErrorFallback error={new Error("Content failed to render")} />}
+                suppressDevErrors={isDevelopment} // Suppress dev errors in development mode
+              >
                 <div className="flex-grow">
                   <Suspense fallback={<PageLoading />}>
                     <Routes>
