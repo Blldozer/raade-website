@@ -32,8 +32,12 @@ const About = () => {
   useEffect(() => {
     console.log('About page mounted');
     
+    // Set document title
+    document.title = "About RAADE | Rice Association for African Development";
+    
     return () => {
       console.log('About page unmounted');
+      document.title = "RAADE | Rice Association for African Development";
     };
   }, []);
 

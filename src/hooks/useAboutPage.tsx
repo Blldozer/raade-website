@@ -23,9 +23,22 @@ export const useAboutPage = () => {
     console.log("useAboutPage: Setting initial dark background");
     try {
       document.body.setAttribute('data-nav-background', 'dark');
+      
+      // Add a class to body to indicate we're on the about page
+      // This helps with styling and context detection
+      document.body.classList.add('about-page');
     } catch (error) {
       console.error("Could not set nav background:", error);
     }
+    
+    // Return cleanup function
+    return () => {
+      try {
+        document.body.classList.remove('about-page');
+      } catch (error) {
+        console.error("Error cleaning up about page class:", error);
+      }
+    };
   }, []);
   
   // Initialize the page and set up error handling

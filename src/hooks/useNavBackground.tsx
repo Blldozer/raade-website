@@ -1,5 +1,6 @@
 
 import { useEffect, useLayoutEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 /**
  * Throttle helper function to limit how often a function can run
@@ -31,40 +32,48 @@ const throttle = (func: Function, limit: number) => {
  * Enhanced with better error handling and initialization checks
  */
 export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') => {
+  // Get the current location from react-router
+  const location = useLocation();
+  const pathname = location.pathname;
+  
   // Use layout effect to set initial background before first paint
   // This ensures the navbar has proper contrast immediately on page load
   useLayoutEffect(() => {
     try {
       // For index page, we always want to start with light navbar (over dark hero)
-      const pathname = window.location.pathname;
       const isIndexPage = pathname === '/' || pathname === '';
       const isApplicationPage = pathname.includes('/studios/apply') || 
                                 pathname.includes('/studios/partner');
       const isAboutPage = pathname === '/about';
       
+      console.log("useNavBackground: Path detected", pathname);
+      
       if (isIndexPage) {
         // Force light navbar for index page hero section
         document.body.setAttribute('data-nav-background', 'light');
+        console.log("useNavBackground: Set to light for index page");
       } else if (isApplicationPage) {
         // Force light navbar for application pages with dark backgrounds
         document.body.setAttribute('data-nav-background', 'light');
+        console.log("useNavBackground: Set to light for application page");
       } else if (isAboutPage) {
         // For About page, we start with dark background (light navbar)
         document.body.setAttribute('data-nav-background', 'dark');
+        console.log("useNavBackground: Set to dark for about page");
       } else {
         // For other pages, use the provided initial background
         document.body.setAttribute('data-nav-background', initialBackground);
+        console.log("useNavBackground: Set to", initialBackground, "for other page");
       }
-      
-      console.log("useNavBackground: Initial background set to", 
-        isAboutPage ? 'dark' : (isIndexPage || isApplicationPage ? 'light' : initialBackground));
     } catch (error) {
       console.error("Error in useNavBackground layout effect:", error);
     }
-  }, [initialBackground]);
+  }, [initialBackground, pathname]);
 
   useEffect(() => {
     try {
+      console.log("useNavBackground: Setting up sections for", pathname);
+      
       // Mark sections with data attributes for light/dark backgrounds
       // DARK BACKGROUND SECTIONS (use light navbar)
       document.querySelectorAll('#hero, #transition-hook, #transition-stat').forEach(section => {
@@ -126,7 +135,7 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
       }, 200);
 
       // Special handling for About page - make sure the dark background is set
-      const isAboutPage = window.location.pathname === '/about';
+      const isAboutPage = pathname === '/about';
       if (isAboutPage) {
         document.body.setAttribute('data-nav-background', 'dark');
       }
@@ -134,9 +143,6 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
       // Setup background detection for navigation
       const updateNavBackground = () => {
         try {
-          // Get current pathname
-          const pathname = window.location.pathname;
-          
           // Skip background calculation for application pages - always use light navbar
           const isApplicationPage = pathname.includes('/studios/apply') || 
                                    pathname.includes('/studios/partner');
@@ -187,13 +193,13 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
       window.addEventListener('resize', handleResize);
       
       return () => {
-        console.log("useNavBackground cleanup");
+        console.log("useNavBackground cleanup for", pathname);
         window.removeEventListener('scroll', throttledScrollHandler);
         window.removeEventListener('resize', handleResize);
         
         // In some cases, we want to persist the background attribute for page transitions
         // Only remove it if we're not on the about page
-        const isAboutPage = window.location.pathname === '/about';
+        const isAboutPage = pathname === '/about';
         if (!isAboutPage) {
           try {
             document.body.removeAttribute('data-nav-background');
@@ -206,5 +212,5 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
       console.error("Critical error in useNavBackground:", error);
       return () => {}; // Return empty cleanup function
     }
-  }, [initialBackground]);
+  }, [initialBackground, pathname]);
 };
