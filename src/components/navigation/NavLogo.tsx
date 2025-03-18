@@ -1,7 +1,7 @@
 
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useResponsive } from "@/hooks/useResponsive";
 
 interface NavLogoProps {
@@ -26,8 +26,33 @@ const NavLogo = ({
 }: NavLogoProps) => {
   const location = useLocation();
   const [showSecondary, setShowSecondary] = useState(false);
-  const { isMobile, isTablet, width } = useResponsive();
   const [logoLoaded, setLogoLoaded] = useState(false);
+  
+  // Use manual responsive detection to avoid hook initialization issues
+  const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
+  const isMobile = width < 768;
+  const isTablet = width >= 768 && width < 1024;
+  
+  // Ref to track component mount status
+  const isMounted = useRef(true);
+  
+  // Set up resize listener
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const handleResize = () => {
+      if (isMounted.current) {
+        setWidth(window.innerWidth);
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      isMounted.current = false;
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
   
   // Cache logo paths to ensure consistent rendering
   const blackShortFormLogo = "/logos/RAADE-logo-final-black.png";
@@ -41,6 +66,8 @@ const NavLogo = ({
   
   // Preload logo images to prevent flash of content
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const preloadImages = () => {
       const imagesToPreload = [
         blackShortFormLogo,
@@ -61,16 +88,24 @@ const NavLogo = ({
       )
       .then(() => {
         console.log("All logo images preloaded successfully");
-        setLogoLoaded(true);
+        if (isMounted.current) {
+          setLogoLoaded(true);
+        }
       })
       .catch(error => {
         console.error("Error preloading logo images:", error);
         // Set loaded anyway to prevent blocking UI
-        setLogoLoaded(true);
+        if (isMounted.current) {
+          setLogoLoaded(true);
+        }
       });
     };
     
     preloadImages();
+    
+    return () => {
+      isMounted.current = false;
+    };
   }, []);
   
   // Use short form logo on smaller screens
@@ -102,7 +137,9 @@ const NavLogo = ({
 
   // Reset logo state when props change
   useEffect(() => {
-    setShowSecondary(false);
+    if (isMounted.current) {
+      setShowSecondary(false);
+    }
   }, [forceDarkMode, useShortForm, isProjectPage]);
 
   const logoSize = getLogoSize();
