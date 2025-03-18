@@ -1,5 +1,18 @@
-
 import { useState, useEffect, useRef } from "react";
+
+interface NetworkInformation {
+  readonly downlink?: number;
+  readonly effectiveType?: '2g' | '3g' | '4g' | 'slow-2g';
+  readonly rtt?: number;
+  readonly saveData?: boolean;
+  readonly type?: 'bluetooth' | 'cellular' | 'ethernet' | 'mixed' | 'none' | 'other' | 'unknown' | 'wifi' | 'wimax';
+  addEventListener(type: string, listener: EventListener): void;
+  removeEventListener(type: string, listener: EventListener): void;
+}
+
+interface NavigatorWithConnection extends Navigator {
+  connection?: NetworkInformation;
+}
 
 interface ImageLoaderProps {
   name: string;
@@ -36,14 +49,16 @@ const ImageLoader = ({
   useEffect(() => {
     // Check connection type if available
     if ('connection' in navigator && navigator.connection) {
-      const connection = navigator.connection as any;
-      if (connection.effectiveType === '2g' || connection.effectiveType === 'slow-2g') {
+      const connection = (navigator as NavigatorWithConnection).connection;
+      if (connection && connection.effectiveType === '2g' || connection.effectiveType === 'slow-2g') {
         setIsLowBandwidth(true);
       }
       
       // Listen for changes to connection quality
       const updateConnectionStatus = () => {
-        setIsLowBandwidth(connection.effectiveType === '2g' || connection.effectiveType === 'slow-2g');
+        if (connection) {
+          setIsLowBandwidth(connection.effectiveType === '2g' || connection.effectiveType === 'slow-2g');
+        }
       };
       
       connection.addEventListener('change', updateConnectionStatus);
