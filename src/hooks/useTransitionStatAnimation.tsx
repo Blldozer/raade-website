@@ -9,8 +9,7 @@ gsap.registerPlugin(ScrollTrigger);
  * Animation hook for the TransitionStat component
  * Creates animated entrance effects for the statistics section
  * 
- * Modified to avoid circular dependency issues and ensure proper initialization
- * with better error handling
+ * Modified to avoid circular dependency issues by not importing useResponsive
  */
 export const useTransitionStatAnimation = () => {
   // Create refs outside useEffect to avoid issues with React initialization
@@ -22,12 +21,6 @@ export const useTransitionStatAnimation = () => {
     const initTimeout = setTimeout(() => {
       try {
         console.log("TransitionStatAnimation: Initializing");
-        
-        // Check if window exists to prevent SSR issues
-        if (typeof window === 'undefined') {
-          console.warn("TransitionStatAnimation: Window not available");
-          return;
-        }
         
         // Get responsive state directly within the effect
         const isMobile = window.innerWidth < 768;
@@ -80,9 +73,7 @@ export const useTransitionStatAnimation = () => {
           onEnter: () => {
             // Use RAF for smoother animation start
             requestAnimationFrame(() => {
-              if (timelineRef.current) {
-                timelineRef.current.play();
-              }
+              tl.play();
             });
           }
         });
@@ -93,7 +84,7 @@ export const useTransitionStatAnimation = () => {
       } catch (error) {
         console.error("Error in TransitionStatAnimation:", error);
       }
-    }, 300); // Small delay to ensure React is ready
+    }, 100); // Small delay to ensure React is ready
     
     return () => {
       clearTimeout(initTimeout);
@@ -117,5 +108,3 @@ export const useTransitionStatAnimation = () => {
     };
   }, []);
 };
-
-export default useTransitionStatAnimation;

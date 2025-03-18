@@ -3,7 +3,6 @@ import { createRoot } from 'react-dom/client'
 import { StrictMode } from 'react'
 import App from './App.tsx'
 import './index.css'
-import ErrorBoundary from './components/ErrorBoundary.tsx'
 
 // Execute in try-catch to handle any startup errors
 try {
@@ -45,32 +44,15 @@ try {
     
     // Create root and render app with error handling
     try {
-      // Create React root and render
+      // Mark React as initialized globally to help with lazy loading components
+      window.__REACT_INITIALIZED = true;
+      
       const root = createRoot(rootElement);
-      
-      // Set a local flag for components
-      const isInitialized = true;
-      console.log("Application startup: React initialization flag set:", isInitialized);
-      
-      // Use production mode React by removing StrictMode in production
-      if (import.meta.env.PROD) {
-        root.render(
-          <ErrorBoundary>
-            <App />
-          </ErrorBoundary>
-        );
-        console.log("Application startup: React rendering in PRODUCTION mode");
-      } else {
-        root.render(
-          <StrictMode>
-            <ErrorBoundary>
-              <App />
-            </ErrorBoundary>
-          </StrictMode>
-        );
-        console.log("Application startup: React rendering in DEVELOPMENT mode with StrictMode");
-      }
-      
+      root.render(
+        <StrictMode>
+          <App />
+        </StrictMode>
+      );
       console.log("Application startup: React rendering completed");
     } catch (error) {
       console.error("Fatal error: Failed to render the application", error);

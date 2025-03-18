@@ -68,11 +68,6 @@ self.addEventListener('message', event => {
 
 // Fetch event - serve from cache when offline
 self.addEventListener('fetch', event => {
-  // Don't intercept WebSocket connections
-  if (event.request.url.startsWith('ws:') || event.request.url.startsWith('wss:')) {
-    return;
-  }
-  
   const requestUrl = new URL(event.request.url);
   
   // Special handling for image requests
@@ -137,15 +132,6 @@ self.addEventListener('fetch', event => {
         })
     );
   } else {
-    // Don't intercept API or WebSocket requests
-    if (
-      requestUrl.pathname.includes('/api/') || 
-      requestUrl.pathname.includes('/.netlify/') ||
-      requestUrl.pathname.includes('/socket.io/')
-    ) {
-      return;
-    }
-    
     // Standard strategy for non-image resources
     event.respondWith(
       caches.match(event.request)

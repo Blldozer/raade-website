@@ -1,72 +1,53 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
-import ScrollTrigger from 'gsap/ScrollTrigger';
+import ScrollToPlugin from 'gsap/ScrollToPlugin';
 
 // Register the ScrollToPlugin
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollToPlugin);
 
 /**
  * TransitionHook Component - Displays a compelling message between sections
  * Uses GSAP for smooth scrolling to the next section
  * 
- * This component implements animations directly without relying on dynamic imports
- * to prevent initialization issues that could cause blank screens
+ * This component is lazy-loaded, so we need to ensure animations are initialized
+ * after the component is fully mounted to prevent React hook initialization issues
  */
 const TransitionHook = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
   
-  // Initialize animations directly
+  // Initialize component first, then load animation hook
   useEffect(() => {
     console.log("TransitionHook component mounted");
     
-    // Small timeout to ensure DOM is ready
-    const initTimeout = setTimeout(() => {
-      try {
-        console.log("TransitionHook: Initializing animations");
-        
-        if (!sectionRef.current || !contentRef.current) {
-          console.warn("TransitionHook: Refs not available yet");
-          return;
-        }
-        
-        // Check if window has loaded correctly
-        if (typeof window === 'undefined') {
-          console.warn("TransitionHook: Window not available");
-          return;
-        }
-        
-        // Create animation timeline
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top 60%",
-            once: true, // Only trigger once for better performance
-            onEnter: () => console.log("TransitionHook: ScrollTrigger entered")
-          }
-        });
-        
-        // Apply animations
-        tl.fromTo(
-          contentRef.current,
-          { opacity: 0, y: 30 },
-          { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
-        );
-        
-        console.log("TransitionHook: Animation initialized successfully");
-      } catch (error) {
-        console.error("Error initializing TransitionHook animations:", error);
-      }
-    }, 300); // Slightly longer delay to ensure React is ready
+    // Mark component as loaded after initial render
+    setIsLoaded(true);
     
     return () => {
-      clearTimeout(initTimeout);
       console.log("TransitionHook component unmounting");
     };
   }, []);
   
-  // Handle scrolling to next section
+  // Once component is loaded, initialize animations
+  useEffect(() => {
+    if (isLoaded) {
+      // Dynamically import the hook to avoid early initialization issues
+      import('@/hooks/useTransitionHookAnimation').then(module => {
+        try {
+          // Execute the hook once it's imported
+          module.useTransitionHookAnimation();
+          console.log("TransitionHook animation initialized");
+        } catch (error) {
+          console.error("Error initializing TransitionHook animation:", error);
+        }
+      }).catch(error => {
+        console.error("Error importing TransitionHookAnimation hook:", error);
+      });
+    }
+  }, [isLoaded]);
+  
   const scrollToNextSection = () => {
     try {
       const nextSection = document.getElementById('join');
