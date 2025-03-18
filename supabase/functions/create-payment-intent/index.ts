@@ -12,6 +12,7 @@ const corsHeaders = {
  * 
  * Processes payment requests for conference registrations by:
  * - Creating a Stripe payment intent based on ticket type
+ * - Supporting digital wallet payments (Apple Pay, Google Pay)
  * - Calculating correct pricing based on ticket selection and group size
  * - Validating group size for group registrations
  * - Returning payment information to the client
@@ -121,20 +122,24 @@ serve(async (req) => {
     console.log(`Creating payment intent for ${amount} cents (${description}) - ${email}`);
 
     try {
-      // Create a Payment Intent
+      // Create a Payment Intent with support for digital wallets
       const paymentIntent = await stripe.paymentIntents.create({
         amount,
         currency: "usd",
         description,
         receipt_email: email,
+        payment_method_types: ['card', 'us_bank_account', 'cashapp', 'link', 'klarna', 'affirm'],
         metadata: {
           ticketType,
           customerName: fullName,
           email,
-          groupSize: isGroupRegistration ? String(groupSize || 5) : undefined
+          groupSize: isGroupRegistration ? String(groupSize || 5) : undefined,
+          source: "website",
+          paymentFlow: "checkout"
         },
         automatic_payment_methods: {
           enabled: true,
+          allow_redirects: 'always'
         },
         payment_method_options: {
           card: {
@@ -163,9 +168,16 @@ serve(async (req) => {
       );
     } catch (stripeError) {
       console.error("Stripe API error:", stripeError);
+      
+      // Enhanced error logging for wallet-specific errors
+      if (stripeError.type === 'StripeCardError') {
+        console.error("Card error details:", stripeError.raw);
+      }
+      
       return new Response(
         JSON.stringify({ 
           error: stripeError.message,
+          errorType: stripeError.type,
           details: "There was an error processing your payment request with Stripe. Please try again later."
         }),
         { 

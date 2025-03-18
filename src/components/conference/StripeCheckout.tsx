@@ -20,6 +20,7 @@ interface StripeCheckoutProps {
  * 
  * Handles payment processing through Stripe by:
  * - Creating a payment intent via our Supabase Edge Function
+ * - Supporting Apple Pay and Google Pay payment methods
  * - Managing payment state and error handling
  * - Supporting retry functionality for failed payment intents
  * 
@@ -45,6 +46,8 @@ const StripeCheckout = ({
   const [isGroupRegistration, setIsGroupRegistration] = useState(false);
   const [errorDetails, setErrorDetails] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [retryAttempts, setRetryAttempts] = useState(0);
+  const MAX_RETRY_ATTEMPTS = 3;
   
   const createPaymentIntent = async () => {
     setIsLoading(true);
@@ -64,6 +67,16 @@ const StripeCheckout = ({
       
       if (error) {
         console.error("Payment intent error from Supabase:", error);
+        // Check if it's a server error that might be transient (retryable)
+        if (error.status >= 500 && retryAttempts < MAX_RETRY_ATTEMPTS) {
+          console.log(`Transient server error, retrying (${retryAttempts + 1}/${MAX_RETRY_ATTEMPTS})...`);
+          setRetryAttempts(prev => prev + 1);
+          setTimeout(() => {
+            setRetryCount(prev => prev + 1);
+          }, 1500); // Retry after 1.5 seconds
+          return;
+        }
+        
         setErrorDetails(`Error from server: ${error.message || "Unknown error"}`);
         onError(error.message || "Failed to initialize payment");
         return;
@@ -77,6 +90,9 @@ const StripeCheckout = ({
       }
       
       console.log("Payment intent created:", data);
+      
+      // Reset retry counter on success
+      setRetryAttempts(0);
       
       // Handle free tickets (speakers)
       if (data.freeTicket) {
@@ -111,12 +127,14 @@ const StripeCheckout = ({
   };
 
   useEffect(() => {
-    // Create a payment intent when the component loads
+    // Create a payment intent when the component loads or when retrying
     createPaymentIntent();
   }, [ticketType, email, fullName, groupSize, retryCount]);
 
   const handleRetry = () => {
     setRetryCount(prev => prev + 1);
+    // Reset the retryAttempts counter when manually retrying
+    setRetryAttempts(0);
   };
 
   // Loading state

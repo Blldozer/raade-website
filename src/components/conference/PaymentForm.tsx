@@ -5,13 +5,15 @@ import {
   LinkAuthenticationElement,
   useStripe,
   useElements,
-  AddressElement
+  AddressElement,
+  PaymentRequestButtonElement
 } from "@stripe/react-stripe-js";
 
 import { Card, CardContent } from "@/components/ui/card";
 import PaymentTotal from "./payment/PaymentTotal";
 import PaymentStatus from "./payment/PaymentStatus";
 import PaymentFormButtons from "./payment/PaymentFormButtons";
+import { Separator } from "@/components/ui/separator";
 
 interface PaymentFormProps {
   email: string;
@@ -27,6 +29,7 @@ interface PaymentFormProps {
  * PaymentForm Component
  * 
  * Displays Stripe payment form with proper pricing information:
+ * - Supports digital wallet payments (Apple Pay, Google Pay)
  * - For group registrations, shows both per-person and total cost
  * - For individual registrations, shows single ticket price
  * - Handles payment submission and error reporting
@@ -54,6 +57,93 @@ const PaymentForm = ({
   const [message, setMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [paymentCompleted, setPaymentCompleted] = useState(false);
+  const [paymentRequest, setPaymentRequest] = useState(null);
+  const [isWalletLoading, setIsWalletLoading] = useState(true);
+
+  // Initialize payment request for Apple Pay and Google Pay
+  useEffect(() => {
+    if (!stripe || !elements) {
+      return;
+    }
+
+    // Convert dollars to cents for Stripe
+    const amountInCents = Math.round(amount * 100);
+    
+    const pr = stripe.paymentRequest({
+      country: 'US',
+      currency: currency.toLowerCase(),
+      total: {
+        label: isGroupRegistration 
+          ? `RAADE Conference 2025 - Group (${groupSize} members)`
+          : 'RAADE Conference 2025 - Registration',
+        amount: amountInCents,
+      },
+      requestPayerName: true,
+      requestPayerEmail: true,
+      requestPayerPhone: true,
+      requestShipping: false,
+    });
+
+    // Check if the Payment Request is supported
+    pr.canMakePayment().then(result => {
+      setIsWalletLoading(false);
+      if (result) {
+        setPaymentRequest(pr);
+        console.log("Digital wallet payment methods available:", result);
+      } else {
+        console.log("No digital wallet payment methods available");
+      }
+    });
+
+    // Handle successful payments
+    pr.on('paymentmethod', async (e) => {
+      setIsLoading(true);
+      
+      const {error: confirmError, paymentIntent} = await stripe.confirmCardPayment(
+        clientSecret,
+        {payment_method: e.paymentMethod.id},
+        {handleActions: false}
+      );
+
+      if (confirmError) {
+        // Report to the browser that the payment failed
+        e.complete('fail');
+        setMessage(confirmError.message || "Payment failed. Please try again.");
+        onError(confirmError.message || "Payment failed. Please try again.");
+        setIsLoading(false);
+        return;
+      }
+      
+      // Report to the browser that the confirmation was successful
+      e.complete('success');
+      
+      if (paymentIntent.status === 'requires_action') {
+        // Use Stripe.js to handle required card action
+        const {error} = await stripe.confirmCardPayment(clientSecret);
+        if (error) {
+          setMessage(error.message || "Payment failed. Please try again.");
+          onError(error.message || "Payment failed. Please try again.");
+        } else {
+          // Payment succeeded
+          setMessage("Payment succeeded!");
+          setPaymentCompleted(true);
+          onSuccess();
+        }
+      } else {
+        // Payment succeeded
+        setMessage("Payment succeeded!");
+        setPaymentCompleted(true);
+        onSuccess();
+      }
+      
+      setIsLoading(false);
+    });
+    
+    // Get clientSecret from URL if available
+    const clientSecret = new URLSearchParams(window.location.search).get(
+      "payment_intent_client_secret"
+    );
+  }, [stripe, elements, amount, currency, isGroupRegistration, groupSize, onSuccess, onError]);
 
   useEffect(() => {
     if (!stripe) {
@@ -138,6 +228,36 @@ const PaymentForm = ({
           isGroupRegistration={isGroupRegistration}
           groupSize={groupSize}
         />
+        
+        {/* Digital Wallet Payment Options - Apple Pay / Google Pay */}
+        {isWalletLoading ? (
+          <div className="py-4 text-center text-sm text-gray-500">
+            Checking for digital wallet payment options...
+          </div>
+        ) : paymentRequest ? (
+          <div className="mb-6">
+            <p className="mb-2 text-sm text-center font-medium">Pay quickly with:</p>
+            <PaymentRequestButtonElement 
+              options={{
+                paymentRequest,
+                style: {
+                  paymentRequestButton: {
+                    theme: 'dark',
+                    height: '44px',
+                  },
+                },
+              }} 
+            />
+          </div>
+        ) : null}
+        
+        {paymentRequest && (
+          <div className="flex items-center my-4">
+            <Separator className="flex-grow" />
+            <span className="px-4 text-sm text-gray-500">Or pay with card</span>
+            <Separator className="flex-grow" />
+          </div>
+        )}
         
         <form id="payment-form" onSubmit={handleSubmit}>
           <LinkAuthenticationElement 
