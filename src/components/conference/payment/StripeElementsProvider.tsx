@@ -64,9 +64,10 @@ const StripeElementsProvider: React.FC<StripeElementsProviderProps> = ({
     paymentMethodCreation: 'manual', // This enables more control over payment methods
     paymentMethodOptions: {
       card: {
-        // Use additionalData instead of setup for 3DS configuration
-        additionalData: {
-          requestExtended3DS: 'automatic'
+        // Using the updated 3DS configuration format
+        // The structure follows Stripe's latest API requirements
+        mandate: {
+          requestThreeDSecure: 'auto'
         }
       }
     },
