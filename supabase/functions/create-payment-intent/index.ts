@@ -13,6 +13,7 @@ const corsHeaders = {
  * Processes payment requests for conference registrations by:
  * - Creating a Stripe payment intent based on ticket type
  * - Calculating correct pricing based on ticket selection and group size
+ * - Supporting Link, Apple Pay, and Google Pay payment methods
  * - Validating group size for group registrations
  * - Returning payment information to the client
  * 
@@ -121,7 +122,7 @@ serve(async (req) => {
     console.log(`Creating payment intent for ${amount} cents (${description}) - ${email}`);
 
     try {
-      // Create a Payment Intent
+      // Create a Payment Intent with support for Link and digital wallets
       const paymentIntent = await stripe.paymentIntents.create({
         amount,
         currency: "usd",
@@ -135,12 +136,15 @@ serve(async (req) => {
         },
         automatic_payment_methods: {
           enabled: true,
+          allow_redirects: 'always'
         },
         payment_method_options: {
           card: {
             request_three_d_secure: 'automatic',
           },
         },
+        // Enable Link payments
+        payment_method_types: ['card', 'link'],
       });
 
       console.log("Payment intent created successfully:", paymentIntent.id);

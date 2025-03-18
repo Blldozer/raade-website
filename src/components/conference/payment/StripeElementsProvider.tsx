@@ -23,6 +23,7 @@ interface StripeElementsProviderProps {
  * Configures and initializes Stripe Elements:
  * - Sets up the Stripe context with client secret
  * - Configures branding and appearance settings
+ * - Enables Link for faster checkout experience
  * - Wraps payment form components with Stripe context
  * - Ensures HTTPS is used in production environment
  * 
@@ -59,8 +60,14 @@ const StripeElementsProvider: React.FC<StripeElementsProviderProps> = ({
         borderRadius: '4px',
       }
     },
-    // Ensure Stripe forms are always loaded over HTTPS
-    loader: 'always'
+    // Enable Link for faster checkout
+    // This allows returning customers to use their saved payment information
+    // across Link-enabled merchants
+    loader: 'always',
+    // Enable wallet payment methods for mobile devices
+    mode: 'payment',
+    currency: 'usd',
+    payment_method_types: ['card', 'link'],
   };
 
   return (
