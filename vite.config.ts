@@ -11,14 +11,14 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   plugins: [
+    // Use the correct options for the React plugin
     react({
-      // Use pure React production mode by default with development mode only in dev environment
-      jsxRuntime: mode === 'development' ? 'automatic' : 'classic',
-      // Use production mode react by default
-      devTarget: mode === 'development' ? 'es2020' : undefined,
+      // Only enable development features in dev mode
+      tsDecorators: mode === 'development',
       // Disable React Refresh in production
-      fastRefresh: mode === 'development'
+      refresh: mode === 'development'
     }),
+    // Only use component tagger in development
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
@@ -55,5 +55,9 @@ export default defineConfig(({ mode }) => ({
         }
       }
     }
+  },
+  // Ensure React is in production mode
+  define: {
+    'process.env.NODE_ENV': JSON.stringify(mode)
   }
 }));

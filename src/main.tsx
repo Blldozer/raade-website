@@ -48,8 +48,9 @@ try {
       // Create React root and render
       const root = createRoot(rootElement);
       
-      // Set initialization flag for components to check
-      window.__REACT_INITIALIZED = true;
+      // Set a local flag for components
+      const isInitialized = true;
+      console.log("Application startup: React initialization flag set:", isInitialized);
       
       // Use production mode React by removing StrictMode in production
       if (import.meta.env.PROD) {
