@@ -20,8 +20,14 @@ export const useSectionTransitions = () => {
   // Helper to detect device performance capabilities
   const detectLowPerformanceDevice = () => {
     try {
+      // Check if mobile based on user agent
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      const hasLimitedMemory = navigator.deviceMemory && navigator.deviceMemory < 4;
+      
+      // Safely check for deviceMemory using optional chaining and type assertion
+      // Note: deviceMemory is experimental and not available in all browsers
+      const hasLimitedMemory = ('deviceMemory' in navigator) && 
+        ((navigator as any).deviceMemory < 4);
+      
       return isMobile || hasLimitedMemory;
     } catch (error) {
       console.error("Error detecting device performance:", error);

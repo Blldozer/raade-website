@@ -92,13 +92,16 @@ export const debounce = (fn: Function, delay: number) => {
   };
 };
 
+// Type definition for GSAP context function
+type GsapContextFunc = (self: gsap.Context) => void;
+
 /**
  * Creates a GSAP context and ensures proper cleanup
  * @param fn Function containing GSAP animations
  * @param scope DOM element to scope animations to
  * @returns Cleanup function
  */
-export const createSafeGsapContext = (fn: Function, scope?: Element | null) => {
+export const createSafeGsapContext = (fn: GsapContextFunc, scope?: Element | null) => {
   try {
     // Create context only if GSAP is properly loaded
     if (gsap && gsap.context) {
@@ -114,7 +117,7 @@ export const createSafeGsapContext = (fn: Function, scope?: Element | null) => {
     }
     
     // If GSAP context not available, just run the function
-    fn();
+    fn({} as gsap.Context);
     return () => {};
   } catch (error) {
     console.error("Error creating GSAP context:", error);
