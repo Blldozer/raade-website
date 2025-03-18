@@ -12,6 +12,7 @@ const ConferenceInfo = () => {
   
   useEffect(() => {
     const title = titleRef.current;
+    const tagline = taglineRef.current;
     
     if (!title) return;
     
@@ -49,18 +50,18 @@ const ConferenceInfo = () => {
       });
       
     // Add subtle pulse to tagline - optimized
-    if (taglineRef.current) {
-      gsap.set(taglineRef.current, { willChange: "opacity" });
+    if (tagline) {
+      gsap.set(tagline, { willChange: "opacity" });
       
-      gsap.to(taglineRef.current, {
+      gsap.to(tagline, {
         opacity: 0.9,
         duration: 2, // Slowed down
         repeat: -1,
         yoyo: true,
         ease: "power1.inOut",
         onComplete: () => {
-          if (taglineRef.current) {
-            gsap.set(taglineRef.current, { willChange: "auto" });
+          if (tagline) {
+            gsap.set(tagline, { willChange: "auto" });
           }
         }
       });
@@ -68,7 +69,9 @@ const ConferenceInfo = () => {
     
     return () => {
       titleAnimation.kill();
-      gsap.killTweensOf(taglineRef.current);
+      if (tagline) {
+        gsap.killTweensOf(tagline);
+      }
     };
   }, []);
 
