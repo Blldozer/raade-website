@@ -60,11 +60,12 @@ const StripeElementsProvider: React.FC<StripeElementsProviderProps> = ({
     // Configure payment method options correctly for Stripe Elements
     paymentMethodCreation: 'manual', // This enables more control over payment methods
     
-    // Update card options with correct structure for 3DS
+    // Fix: Use the correct card options structure according to Stripe API v2023-10-16
+    // The requestThreeDSecure property is not valid in this context
     paymentMethodOptions: {
       card: {
-        // Use the correct structure according to Stripe API v2023-10-16
-        requestThreeDSecure: 'automatic'
+        // Only use properties that are actually defined in the type
+        require_cvc_recollection: false
       }
     },
     
