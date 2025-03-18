@@ -1,5 +1,20 @@
 import React, { useRef, useState, useEffect } from 'react';
 
+// Define NetworkInformation interface based on the W3C specification
+interface NetworkInformation {
+  readonly downlink?: number;
+  readonly effectiveType?: '2g' | '3g' | '4g' | 'slow-2g';
+  readonly rtt?: number;
+  readonly saveData?: boolean;
+  readonly type?: 'bluetooth' | 'cellular' | 'ethernet' | 'mixed' | 'none' | 'other' | 'unknown' | 'wifi' | 'wimax';
+  onchange?: EventListener;
+}
+
+// Augment Navigator interface to include connection property
+interface NavigatorWithConnection extends Navigator {
+  connection?: NetworkInformation;
+}
+
 interface VideoBackgroundProps {
   videoLoaded: boolean;
   setVideoLoaded: (loaded: boolean) => void;
@@ -19,10 +34,10 @@ const VideoBackground = ({ videoLoaded, setVideoLoaded }: VideoBackgroundProps) 
     
     // Detect connection speed
     const checkConnectionSpeed = () => {
-      if ('connection' in navigator && navigator.connection) {
-        const conn = navigator.connection as any;
-        if (conn.effectiveType) {
-          setConnectionSpeed(conn.effectiveType);
+      if ('connection' in navigator) {
+        const nav = navigator as NavigatorWithConnection;
+        if (nav.connection && nav.connection.effectiveType) {
+          setConnectionSpeed(nav.connection.effectiveType);
         }
       }
     };
