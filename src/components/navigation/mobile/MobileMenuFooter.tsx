@@ -1,4 +1,3 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { useNavigation } from "@/hooks/navigation/useNavigation";
@@ -55,12 +54,12 @@ const MobileNavFooter = ({ onLinkClick }: MobileNavFooterProps) => {
       
       {/* Copyright or other info */}
       <motion.div 
-        className="border-t border-gray-200 p-4 text-center"
+        className="border-t border-gray-200 p-4 text-center bg-gradient-to-b from-[#F5F5F0] to-[#EAEAE5]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.6 }}
       >
-        <p className="text-sm text-gray-500 font-alegreyasans">
+        <p className="text-sm text-gray-600 font-alegreyasans">
           &copy; {new Date().getFullYear()} RAADE. All rights reserved.
         </p>
         <p className="text-xs text-gray-400 mt-1 font-alegreyasans">
