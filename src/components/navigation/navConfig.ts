@@ -46,7 +46,7 @@ const mainNavItems: NavItem[] = [
     dropdownItems: [
       { name: "Overview", href: "/conference#overview" },
       { name: "Why Attend", href: "/conference#why-attend" },
-      { name: "Get Tickets!", href: "/conference#registration", highlight: true } // Changed to highlight
+      { name: "Get Tickets!", href: "/conference/register", highlight: true } // Direct link to registration page
     ]
   }
 ];
