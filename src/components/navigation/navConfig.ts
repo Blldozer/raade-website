@@ -7,6 +7,7 @@ export interface DropdownItem {
   href: string;
   description?: string;
   external?: boolean;
+  highlight?: boolean; // Added highlight property to the interface
 }
 
 export interface NavItem {
