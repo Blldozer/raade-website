@@ -6,6 +6,7 @@ import { useNavigation } from "@/hooks/navigation/useNavigation";
 import MobileMenuHeader from "./MobileMenuHeader";
 import MobileMenuContent from "./MobileMenuContent";
 import MobileMenuFooter from "./MobileMenuFooter";
+import MobileMenuBackground from "./MobileMenuBackground";
 import { motion } from "framer-motion";
 
 interface MobileMenuOverlayProps {
@@ -18,8 +19,7 @@ interface MobileMenuOverlayProps {
  * 
  * Provides a full-screen mobile menu overlay with:
  * - Smooth entrance and exit animations
- * - Subtle background patterns and gradient
- * - Clean white backdrop for better readability
+ * - Proper layout organization with specialized child components
  * - Proper event handling and navigation
  * 
  * @param isOpen - Whether the menu is currently open
@@ -30,12 +30,6 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
   
   // Lock body scroll when menu is open
   useMobileMenuScroll(isOpen);
-  
-  // Helper function to handle clicks that need to stop propagation and close the menu
-  const handleCloseWithStopPropagation = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onClose();
-  };
   
   // Handle navigation and close the menu
   const handleMenuNavigation = (href: string) => {
@@ -67,16 +61,11 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
       aria-modal="true"
     >
       {/* Background with subtle pattern */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#F5F5F0] to-[#EAEAE5] z-0">
-        <div className="absolute inset-0 opacity-10" style={{ 
-          backgroundImage: `radial-gradient(#274675 0.5px, transparent 0.5px)`,
-          backgroundSize: '15px 15px' 
-        }}></div>
-      </div>
+      <MobileMenuBackground />
       
       <div className="relative z-10 flex flex-col h-full">
         {/* Header with logo and close button */}
-        <MobileMenuHeader onClose={handleCloseWithStopPropagation} />
+        <MobileMenuHeader onClose={onClose} />
         
         {/* Main navigation content with dropdowns */}
         <MobileMenuContent 
