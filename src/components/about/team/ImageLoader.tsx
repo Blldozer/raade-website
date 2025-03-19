@@ -1,17 +1,15 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, RefObject } from "react";
+import { useResponsive } from "../../../hooks/useResponsive"; 
 
-interface NetworkInformation {
-  readonly downlink?: number;
-  readonly effectiveType?: '2g' | '3g' | '4g' | 'slow-2g';
-  readonly rtt?: number;
-  readonly saveData?: boolean;
-  readonly type?: 'bluetooth' | 'cellular' | 'ethernet' | 'mixed' | 'none' | 'other' | 'unknown' | 'wifi' | 'wimax';
-  addEventListener(type: string, listener: EventListener): void;
-  removeEventListener(type: string, listener: EventListener): void;
-}
-
+/**
+ * Extended Navigator interface with connection information
+ */
 interface NavigatorWithConnection extends Navigator {
-  connection?: NetworkInformation;
+  connection?: {
+    effectiveType: string;
+    addEventListener: (event: string, listener: EventListener) => void;
+    removeEventListener: (event: string, listener: EventListener) => void;
+  };
 }
 
 interface ImageLoaderProps {
@@ -29,6 +27,7 @@ interface ImageLoaderProps {
  * - Progressive image loading with fallbacks
  * - Bandwidth-aware optimizations for slower connections
  * - Cache registration with service worker if available
+ * - Improved mobile handling
  */
 const ImageLoader = ({ 
   name, 
@@ -43,6 +42,9 @@ const ImageLoader = ({
   const imageRef = useRef<HTMLImageElement>(null);
   const MAX_RETRIES = 2;
   
+  // Get device info for better mobile handling
+  const { isMobile, deviceType } = useResponsive();
+  
   // Check if we're in a low bandwidth situation
   const [isLowBandwidth, setIsLowBandwidth] = useState(false);
   
@@ -52,6 +54,7 @@ const ImageLoader = ({
       const connection = (navigator as NavigatorWithConnection).connection;
       if (connection && connection.effectiveType === '2g' || connection.effectiveType === 'slow-2g') {
         setIsLowBandwidth(true);
+        console.log("Low bandwidth detected, optimizing image loading");
       }
       
       // Listen for changes to connection quality
@@ -76,47 +79,67 @@ const ImageLoader = ({
 
     // Create proper image path with safeguards
     const formattedName = name.split(" ").join("-");
-    // Primary and fallback image paths
-    const primaryPath = `/raade-individual-e-board-photos-webp/${formattedName}-raade-website-image.webp`;
-    const fallbackPath = `/raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
     
-    // Use WebP for modern browsers, fallback to JPG for better compatibility
-    const imgPath = retryCount === 0 ? primaryPath : fallbackPath;
+    // Determine which format to use based on retry count and device
+    let imgPath;
     
-    // Set the image source
+    // On first try, use WebP for modern browsers, but use JPG for certain mobile browsers that might have issues
+    if (retryCount === 0) {
+      // For older mobile browsers that might have issues with WebP, use JPG directly
+      if (isMobile && isLowBandwidth) {
+        imgPath = `/raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
+        console.log(`Using JPG for ${name} due to mobile low bandwidth`);
+      } else {
+        imgPath = `/raade-individual-e-board-photos-webp/${formattedName}-raade-website-image.webp`;
+      }
+    } else {
+      // On retry, use JPG which has better compatibility
+      imgPath = `/raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
+    }
+    
+    console.log(`Loading image for ${name} from path: ${imgPath}, retry: ${retryCount}`);
+    
+    // Set the image source - this will be used by the img element
     setImageSrc(imgPath);
     
     // Create an image object to pre-load
     const img = new Image();
     
-    // Add timestamp to URL to prevent caching issues
-    img.src = `${imgPath}?t=${new Date().getTime()}`;
+    // Important: Don't add timestamp to prevent caching - allow browser cache to work
+    img.src = imgPath;
     
     // Set up proper event handlers
     img.onload = () => {
-      console.log(`Pre-loaded team member image: ${name}`);
+      console.log(`Pre-loaded team member image: ${name} successfully`);
       setImageLoaded(true);
       setImageError(false);
       onImageLoad?.();
     };
     
-    img.onerror = () => {
-      console.error(`Failed to load team member image: ${name}, retry: ${retryCount + 1}/${MAX_RETRIES}`);
+    img.onerror = (e) => {
+      console.error(`Failed to load team member image: ${name}, retry: ${retryCount + 1}/${MAX_RETRIES}`, e);
       
       if (retryCount < MAX_RETRIES) {
         // Wait a bit longer between each retry
         const delay = 1000 * (retryCount + 1);
+        console.log(`Will retry loading ${name} in ${delay}ms`);
+        
         setTimeout(() => {
-          // Fixed: Use direct value instead of updater function
           setRetryCount(retryCount + 1);
         }, delay);
       } else {
+        console.log(`Max retries reached for ${name}, showing fallback`);
         setImageError(true);
       }
     };
     
-    // Check if the browser supports the 'loading' attribute for native lazy loading
-    if (imageRef.current && 'loading' in HTMLImageElement.prototype) {
+    // If on mobile, prioritize loading
+    if (isMobile && imageRef.current) {
+      imageRef.current.loading = 'eager';
+      console.log(`Setting eager loading for ${name} on mobile`);
+    }
+    // For desktop, use native lazy loading if supported
+    else if (imageRef.current && 'loading' in HTMLImageElement.prototype) {
       imageRef.current.loading = 'lazy';
     }
     
@@ -125,7 +148,7 @@ const ImageLoader = ({
       img.onload = null;
       img.onerror = null;
     };
-  }, [name, onImageLoad, retryCount, imageError, setImageError, setRetryCount]);
+  }, [name, onImageLoad, retryCount, imageError, setImageError, setRetryCount, isMobile, isLowBandwidth]);
 
   // Register image with service worker cache if available
   useEffect(() => {

@@ -1,5 +1,4 @@
-
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import ImageLoader from "./ImageLoader";
 
 interface TeamMemberImageProps {
@@ -13,11 +12,12 @@ interface TeamMemberImageProps {
  * - Skeleton loading state
  * - Fallback to initials when image fails to load
  * - Optimized for performance and accessibility
+ * - Fixed for reliable display on all devices including mobile
  */
 const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
   const [imageError, setImageError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
-  // Added missing state variable for image loaded state
+  // Track image loading state locally
   const [localImageLoaded, setLocalImageLoaded] = useState(false);
 
   // Placeholder initials for fallback
@@ -35,6 +35,22 @@ const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
     imageError
   });
 
+  // Effect to coordinate imageLoaded state from ImageLoader with local state
+  useEffect(() => {
+    if (imageLoaded) {
+      console.log(`Image for ${name} marked as loaded from ImageLoader`);
+      setLocalImageLoaded(true);
+    }
+  }, [imageLoaded, name]);
+
+  // Debug logging on mount
+  useEffect(() => {
+    console.log(`TeamMemberImage mounted for ${name}`);
+    return () => {
+      console.log(`TeamMemberImage unmounted for ${name}`);
+    };
+  }, [name]);
+
   return (
     <div className="rounded-t-lg overflow-hidden">
       {/* Render fallback if image failed to load */}
@@ -48,7 +64,7 @@ const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
         /* Render image with proper loading states */
         <div className="w-full aspect-[3/4] bg-[#4C504A] relative">
           {/* Show skeleton loading state */}
-          {!imageLoaded && (
+          {!localImageLoaded && !imageLoaded && (
             <div className="absolute inset-0 flex items-center justify-center">
               <span className="text-white text-xl">Loading...</span>
             </div>
@@ -60,17 +76,28 @@ const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
               ref={imageRef}
               src={imageSrc}
               alt={name}
-              className={`w-full h-full object-cover transition-opacity duration-300 ${
-                imageLoaded ? 'opacity-100' : 'opacity-0'
-              }`}
-              onLoad={() => setLocalImageLoaded(true)}
-              onError={() => {
+              width="100%"
+              height="auto"
+              className="w-full h-full object-cover transition-opacity duration-300"
+              style={{ 
+                opacity: (localImageLoaded || imageLoaded) ? 1 : 0,
+                display: 'block', // Force display block to ensure visibility
+                minHeight: '10rem' // Ensure minimum height even before load
+              }}
+              onLoad={(e) => {
+                console.log(`Image for ${name} loaded in DOM`);
+                setLocalImageLoaded(true);
+                onImageLoad?.();
+              }}
+              onError={(e) => {
+                console.error(`Error loading image for ${name}:`, e);
                 if (retryCount >= 2) {
+                  console.log(`Setting image error to true for ${name} after max retries`);
                   setImageError(true);
                 }
               }}
-              // Use lower quality source for low bandwidth situations
-              loading="lazy"
+              // Use eager loading for first visible items, lazy for others
+              loading={retryCount > 0 ? "eager" : "lazy"}
             />
           )}
         </div>
