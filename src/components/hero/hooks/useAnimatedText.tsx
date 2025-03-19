@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react';
 import { useScroll, useTransform } from 'framer-motion';
 
@@ -49,13 +48,18 @@ export const useAnimatedText = () => {
   const lineWidth = useTransform(scrollY, [0, 200], ["0%", "100%"]);
   const lineOpacity = useTransform(scrollY, [0, 200], [0, 1]);
   
-  // Use our custom lightweight typing effect - Fixed the typo by writing the full "We're"
-  const { displayText, isComplete } = useTypingEffect("We're building it today.", 80);
+  // Ensure we're using the full "We're" text
+  const animatedText = "We're building it today.";
+  console.log("AnimatedText content:", animatedText); // For debugging
+  
+  // Use our custom lightweight typing effect
+  const { displayText, isComplete } = useTypingEffect(animatedText, 80);
   
   useEffect(() => {
     // Apply text content when typing is complete
     if (text2Ref.current) {
       text2Ref.current.textContent = displayText;
+      console.log("Updated text content:", displayText); // For debugging
     }
     
     // Simple shake animation when typing completes
