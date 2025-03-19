@@ -21,7 +21,7 @@ interface MobileMenuOverlayProps {
  * MobileMenuOverlay Component
  * 
  * Full-screen mobile menu overlay with:
- * - Enhanced glassmorphism styling with subtle noise texture
+ * - Navy blue background matching the footer
  * - Smooth entrance/exit animations
  * - Lock body scroll when open
  * - Organized header, navigation links, and footer sections
@@ -78,14 +78,14 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
             onClick={onClose}
           />
           
-          {/* Menu content with enhanced glassmorphism styling */}
+          {/* Menu content with navy blue background */}
           <motion.div
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "tween", ease: "easeOut", duration: 0.3 }}
             className="absolute right-0 top-0 h-full w-full sm:max-w-[400px] 
-                      bg-white/90 backdrop-blur-md shadow-xl flex flex-col relative"
+                      bg-[#274675] shadow-xl flex flex-col relative"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Enhanced background with noise texture */}

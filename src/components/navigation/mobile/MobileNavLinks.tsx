@@ -3,11 +3,11 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { NavItem } from "../navConfig";
-import navConfig from "../navConfig"; // Add import for navConfig
+import navConfig from "../navConfig";
 
 export interface MobileNavLinksProps {
-  items?: NavItem[]; // Make optional with default
-  footerItems?: NavItem[]; // Make optional with default
+  items?: NavItem[]; 
+  footerItems?: NavItem[];
   onLinkClick: () => void;
 }
 
@@ -22,8 +22,8 @@ export interface MobileNavLinksProps {
  * @param onLinkClick - Function to call when a link is clicked
  */
 const MobileNavLinks = ({ 
-  items = navConfig.mainNavItems, // Default to main items from config
-  footerItems = navConfig.footerNavItems, // Corrected property name from footerItems to footerNavItems
+  items = navConfig.mainNavItems,
+  footerItems = navConfig.footerNavItems,
   onLinkClick 
 }: MobileNavLinksProps) => {
   const [openDropdowns, setOpenDropdowns] = useState<string[]>([]);
