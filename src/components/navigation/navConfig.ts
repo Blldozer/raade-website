@@ -25,9 +25,10 @@ export interface NavItem {
 const mainNavItems: NavItem[] = [
   { name: "About", href: "/about",
     dropdownItems: [
-      { name: "Our Team", href: "/about#team" },
+      { name: "Overview", href: "/about#model" }, // Changed to link to the New Model section
       { name: "Our Approach", href: "/about#approach" },
-      { name: "Our Impact", href: "/about#impact" }
+      { name: "Our Impact", href: "/about#impact" },
+      { name: "Our Team", href: "/about#team" }
     ]
   },
   { 
