@@ -10,6 +10,7 @@ import PartnerProjectInfo from "@/components/forms/PartnerProjectInfo";
 import SubmitButton from "@/components/forms/SubmitButton";
 import SubmissionConfirmation from "@/components/forms/SubmissionConfirmation";
 
+// PartnerApplication component for handling partner organization applications to RAADE
 const PartnerApplication = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -25,13 +26,16 @@ const PartnerApplication = () => {
     project_idea: "",
     expected_outcome: "",
     timeline: "",
+    status: "pending" // Add status field with default value
   });
 
+  // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -45,12 +49,26 @@ const PartnerApplication = () => {
         }
       }
 
-      // Submit to Supabase
-      const { error } = await supabase
+      // Submit to Supabase with explicit status field
+      const { error, data } = await supabase
         .from("partner_applications")
-        .insert([formData]);
+        .insert([{
+          organization_name: formData.organization_name,
+          contact_name: formData.contact_name,
+          email: formData.email,
+          phone: formData.phone,
+          organization_type: formData.organization_type,
+          country: formData.country,
+          project_idea: formData.project_idea,
+          expected_outcome: formData.expected_outcome,
+          timeline: formData.timeline,
+          status: "pending" // Explicitly set status
+        }]);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase error:", error);
+        throw error;
+      }
 
       // Success
       toast({
@@ -63,9 +81,11 @@ const PartnerApplication = () => {
       setIsSubmitted(true);
       
     } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "There was an error submitting your application. Please try again.";
+      console.error("Form submission error:", error);
       toast({
         title: "Submission Failed",
-        description: error instanceof Error ? error.message : "There was an error submitting your application. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -84,7 +104,6 @@ const PartnerApplication = () => {
 
   return (
     <div className="bg-black min-h-screen" id="partner-form">
-      {/* We don't need a second Navigation component since it's already in App.tsx */}
       <div className="container mx-auto px-6 py-12 md:px-12 pt-24">
         <PartnerFormHeader />
 

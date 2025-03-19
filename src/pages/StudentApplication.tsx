@@ -8,9 +8,9 @@ import StudentPersonalInfo from "@/components/forms/StudentPersonalInfo";
 import StudentAcademicInfo from "@/components/forms/StudentAcademicInfo";
 import StudentAdditionalInfo from "@/components/forms/StudentAdditionalInfo";
 import SubmitButton from "@/components/forms/SubmitButton";
-import Navigation from "@/components/Navigation";
 import SubmissionConfirmation from "@/components/forms/SubmissionConfirmation";
 
+// StudentApplication component for handling student applications to RAADE Innovation Studios
 const StudentApplication = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -26,13 +26,16 @@ const StudentApplication = () => {
     why_join_raade: "",
     skills: "",
     portfolio_link: "",
+    status: "pending" // Add status field with default value
   });
 
+  // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -46,12 +49,26 @@ const StudentApplication = () => {
         }
       }
 
-      // Submit to Supabase
-      const { error } = await supabase
+      // Submit to Supabase with explicit status field
+      const { error, data } = await supabase
         .from("student_applications")
-        .insert([formData]);
+        .insert([{
+          full_name: formData.full_name,
+          email: formData.email,
+          phone: formData.phone,
+          university: formData.university,
+          major: formData.major,
+          graduation_year: formData.graduation_year,
+          why_join_raade: formData.why_join_raade,
+          skills: formData.skills,
+          portfolio_link: formData.portfolio_link,
+          status: "pending" // Explicitly set status
+        }]);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase error:", error);
+        throw error;
+      }
 
       // Success
       toast({
@@ -65,6 +82,7 @@ const StudentApplication = () => {
       
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "There was an error submitting your application. Please try again.";
+      console.error("Form submission error:", error);
       toast({
         title: "Submission Failed",
         description: errorMessage,
@@ -86,7 +104,6 @@ const StudentApplication = () => {
 
   return (
     <div className="bg-black min-h-screen" id="student-form">
-      {/* We don't need a second Navigation component since it's already in App.tsx */}
       <div className="container mx-auto px-6 py-12 md:px-12 pt-24">
         <StudentFormHeader />
 
