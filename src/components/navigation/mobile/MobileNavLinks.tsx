@@ -23,7 +23,7 @@ export interface MobileNavLinksProps {
  */
 const MobileNavLinks = ({ 
   items = navConfig.mainNavItems, // Default to main items from config
-  footerItems = navConfig.footerItems, // Default to footer items from config
+  footerItems = navConfig.footerNavItems, // Corrected property name from footerItems to footerNavItems
   onLinkClick 
 }: MobileNavLinksProps) => {
   const [openDropdowns, setOpenDropdowns] = useState<string[]>([]);
