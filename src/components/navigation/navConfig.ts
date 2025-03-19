@@ -24,9 +24,10 @@ export interface NavItem {
 const mainNavItems: NavItem[] = [
   { name: "About", href: "/about",
     dropdownItems: [
-      { name: "Our Team", href: "/about#team" },
+      { name: "Overview", href: "/about#model" }, // Changed to link to the New Model section
       { name: "Our Approach", href: "/about#approach" },
-      { name: "Our Impact", href: "/about#impact" }
+      { name: "Our Impact", href: "/about#impact" },
+      { name: "Our Team", href: "/about#team" }
     ]
   },
   { 
@@ -44,7 +45,7 @@ const mainNavItems: NavItem[] = [
     dropdownItems: [
       { name: "Overview", href: "/conference#overview" },
       { name: "Why Attend", href: "/conference#why-attend" },
-      { name: "Get Tickets!", href: "/conference#registration", highlight: true } // Changed to highlight
+      { name: "Get Tickets!", href: "/conference/register", highlight: true } // Direct link to registration page
     ]
   }
 ];

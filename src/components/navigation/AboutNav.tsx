@@ -29,6 +29,16 @@ const AboutNav = () => {
             
             <div className="hidden md:flex space-x-8">
               <a 
+                href="#model" 
+                className="text-white hover:text-yellow-400 transition-colors"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById("model")?.scrollIntoView({ behavior: "smooth" });
+                }}
+              >
+                Overview
+              </a>
+              <a 
                 href="#approach" 
                 className="text-white hover:text-yellow-400 transition-colors"
                 onClick={(e) => {

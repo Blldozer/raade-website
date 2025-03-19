@@ -52,6 +52,7 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
       const isApplicationPage = pathname.includes('/studios/apply') || 
                                 pathname.includes('/studios/partner');
       const isAboutPage = pathname === '/about';
+      const isConferenceRegistrationPage = pathname === '/conference/register';
       
       // Set appropriate background based on page type
       if (isIndexPage) {
@@ -66,6 +67,10 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
         // For About page, we start with dark background (light navbar)
         document.body.setAttribute('data-nav-background', 'dark');
         console.log(`useNavBackground (${instanceId.current}): Set to dark for about page`);
+      } else if (isConferenceRegistrationPage) {
+        // For Conference Registration page, explicitly use dark (light navbar)
+        document.body.setAttribute('data-nav-background', 'dark');
+        console.log(`useNavBackground (${instanceId.current}): Set to dark for conference registration page`);
       } else {
         // For other pages, use the provided initial background
         document.body.setAttribute('data-nav-background', initialBackground);
@@ -148,9 +153,14 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
         calculateSectionPositions();
       }, 200);
 
-      // Special handling for About page - make sure the dark background is set
+      // Check if we're on pages that need special handling
+      const isConferenceRegistrationPage = pathname === '/conference/register';
       const isAboutPage = pathname === '/about';
+      
+      // Special handling for About and Conference Registration pages
       if (isAboutPage) {
+        document.body.setAttribute('data-nav-background', 'dark');
+      } else if (isConferenceRegistrationPage) {
         document.body.setAttribute('data-nav-background', 'dark');
       }
 
@@ -160,12 +170,18 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
           // Skip if component unmounted
           if (!isMounted.current) return;
           
-          // Skip background calculation for application pages - always use light navbar
+          // Skip background calculation for pages with fixed navbar style
           const isApplicationPage = pathname.includes('/studios/apply') || 
                                    pathname.includes('/studios/partner');
+          const isConferenceRegistrationPage = pathname === '/conference/register';
           
           if (isApplicationPage) {
             document.body.setAttribute('data-nav-background', 'light');
+            return;
+          }
+          
+          if (isConferenceRegistrationPage) {
+            document.body.setAttribute('data-nav-background', 'dark');
             return;
           }
           
@@ -233,9 +249,8 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
         console.log(`useNavBackground (${instanceId.current}): Removed scroll and resize listeners`);
         
         // In some cases, we want to persist the background attribute for page transitions
-        // Only remove it if we're not on the about page
-        const isAboutPage = pathname === '/about';
-        if (!isAboutPage) {
+        // Only remove it if we're not on pages that need specific handling
+        if (!isAboutPage && !isConferenceRegistrationPage) {
           try {
             document.body.removeAttribute('data-nav-background');
             console.log(`useNavBackground (${instanceId.current}): Cleaned up nav background attribute`);
@@ -252,3 +267,4 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
     }
   }, [initialBackground, pathname, instanceId]);
 };
+

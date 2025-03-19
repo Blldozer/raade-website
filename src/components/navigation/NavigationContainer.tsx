@@ -8,6 +8,7 @@ import { NavigationProvider } from "./context/NavigationContext";
 import { useNavigation } from "./context/useNavigation";
 import { useEffect, useRef } from "react";
 import NoiseTexture from "../ui/NoiseTexture";
+import { useLocation } from "react-router-dom";
 
 interface NavigationContainerProps {
   isHeroPage?: boolean;
@@ -31,6 +32,11 @@ const NavigationContainer = ({
 }: NavigationContainerProps) => {
   // Generate a unique ID for this navigation instance
   const instanceId = useRef(`nav-container-${Math.random().toString(36).substring(2, 9)}`);
+  const location = useLocation();
+  
+  // Check if we're on the conference registration page to ensure dark navbar
+  const isConferenceRegistration = location.pathname === '/conference/register';
+  const finalForceDarkMode = isConferenceRegistration ? true : forceDarkMode;
   
   // Log mounting/unmounting to track duplicate instances
   useEffect(() => {
@@ -42,7 +48,11 @@ const NavigationContainer = ({
   }, []);
 
   return (
-    <NavigationProvider initialProps={{ isHeroPage, forceDarkMode, useShortFormLogo }}>
+    <NavigationProvider initialProps={{ 
+      isHeroPage, 
+      forceDarkMode: finalForceDarkMode, 
+      useShortFormLogo 
+    }}>
       <NavigationContent instanceId={instanceId.current} />
     </NavigationProvider>
   );
@@ -66,8 +76,12 @@ const NavigationContent = ({ instanceId }: { instanceId: string }) => {
     isMobile, 
     isTablet, 
     isHeroPage, 
-    useShortFormLogo 
+    useShortFormLogo,
+    forceDarkMode
   } = state;
+  
+  const location = useLocation();
+  const isConferenceRegistrationPage = location.pathname === '/conference/register';
   
   // Get responsive padding values
   const getPadding = () => {
@@ -79,28 +93,48 @@ const NavigationContent = ({ instanceId }: { instanceId: string }) => {
   // Ensure the nav background is available for scroll detection
   useEffect(() => {
     console.log(`NavigationContent (${instanceId}): Initializing with background state:`, 
-      { isScrolled, isVisible, isDarkBackground, isLightBackground });
+      { isScrolled, isVisible, isDarkBackground, isLightBackground, forceDarkMode });
     
-    // Check if we're on a page with a hero section
+    // Handle special pages
     if (isHeroPage) {
       // Set initial background to light (for dark hero backgrounds)
       document.body.setAttribute('data-nav-background', 'light');
       console.log(`NavigationContent (${instanceId}): Set nav background to light for hero page`);
     }
     
+    // Force dark background for conference registration page
+    if (isConferenceRegistrationPage || forceDarkMode) {
+      document.body.setAttribute('data-nav-background', 'dark');
+      console.log(`NavigationContent (${instanceId}): Forcing dark background for navbar due to page type or prop`);
+    }
+    
     return () => {
       // Clean up only if we set it in this component
-      if (isHeroPage) {
+      if (isHeroPage || isConferenceRegistrationPage || forceDarkMode) {
         document.body.removeAttribute('data-nav-background');
         console.log(`NavigationContent (${instanceId}): Cleaned up nav background attribute`);
       }
     };
-  }, [isHeroPage, instanceId, isScrolled, isVisible, isDarkBackground, isLightBackground]);
+  }, [
+    isHeroPage, 
+    instanceId, 
+    isScrolled, 
+    isVisible, 
+    isDarkBackground, 
+    isLightBackground, 
+    forceDarkMode,
+    isConferenceRegistrationPage
+  ]);
 
   // Get background class based on current section and scroll state
   const getBackgroundClass = () => {
     // Apply enhanced glassmorphism effect with proper light/dark handling when scrolled
     if (isScrolled) {
+      // For conference registration, always use dark background
+      if (isConferenceRegistrationPage || forceDarkMode) {
+        return "bg-[#274675]/80 backdrop-blur-md border-b border-[#274675]/30 shadow-md";
+      }
+      
       return isLightBackground 
         ? "bg-white/70 backdrop-blur-md border-b border-gray-200/50 shadow-sm" 
         : "bg-[#274675]/80 backdrop-blur-md border-b border-[#274675]/30 shadow-md";
@@ -109,6 +143,10 @@ const NavigationContent = ({ instanceId }: { instanceId: string }) => {
     // Transparent when at top
     return "bg-transparent";
   };
+  
+  // Determine the actual background state considering all factors
+  const effectiveLightBackground = 
+    forceDarkMode || isConferenceRegistrationPage ? false : isLightBackground;
 
   return (
     <nav
@@ -122,13 +160,14 @@ const NavigationContent = ({ instanceId }: { instanceId: string }) => {
       data-nav-instance={instanceId}
       data-scrolled={isScrolled ? "true" : "false"}
       data-visible={isVisible ? "true" : "false"}
-      data-background={isLightBackground ? "light" : "dark"}
+      data-background={effectiveLightBackground ? "light" : "dark"}
+      data-forced-dark={forceDarkMode ? "true" : "false"}
     >
       {/* Noise texture overlay for enhanced depth */}
       {isScrolled && (
         <NoiseTexture 
-          opacity={isLightBackground ? 0.03 : 0.07} 
-          blendMode={isLightBackground ? "multiply" : "soft-light"}
+          opacity={effectiveLightBackground ? 0.03 : 0.07} 
+          blendMode={effectiveLightBackground ? "multiply" : "soft-light"}
           scale={150}
         />
       )}
@@ -138,7 +177,7 @@ const NavigationContent = ({ instanceId }: { instanceId: string }) => {
           <NavLogo 
             isScrolled={isScrolled} 
             isHeroPage={isHeroPage} 
-            forceDarkMode={isLightBackground}
+            forceDarkMode={effectiveLightBackground}
             useShortForm={useShortFormLogo}
           />
           
@@ -153,7 +192,7 @@ const NavigationContent = ({ instanceId }: { instanceId: string }) => {
             <DesktopNav 
               isScrolled={isScrolled} 
               isHeroPage={isHeroPage} 
-              forceDarkMode={isLightBackground} 
+              forceDarkMode={effectiveLightBackground} 
             />
             
             <MobileNav />
