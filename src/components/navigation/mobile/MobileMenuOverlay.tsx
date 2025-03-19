@@ -6,6 +6,7 @@ import MobileNavHeader from "./MobileNavHeader";
 import MobileNavFooter from "./MobileNavFooter";
 import { useMobileMenuScroll } from "@/hooks/navigation/useMobileMenuScroll";
 import { NavItem } from "../navConfig";
+import NoiseTexture from "@/components/ui/NoiseTexture";
 
 // Import the navigation config to get the navigation items
 import navConfig from "@/components/navigation/navConfig";
@@ -19,7 +20,7 @@ interface MobileMenuOverlayProps {
  * MobileMenuOverlay Component
  * 
  * Full-screen mobile menu overlay with:
- * - Glassmorphism styling for a modern look
+ * - Enhanced glassmorphism styling with subtle noise texture
  * - Smooth entrance/exit animations
  * - Lock body scroll when open
  * - Organized header, navigation links, and footer sections
@@ -58,7 +59,7 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
           transition={{ duration: 0.3 }}
           className="fixed inset-0 z-[110] overflow-hidden"
         >
-          {/* Backdrop with glassmorphism effect */}
+          {/* Backdrop with enhanced glassmorphism effect */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -68,16 +69,19 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
             onClick={onClose}
           />
           
-          {/* Menu content with glassmorphism styling */}
+          {/* Menu content with enhanced glassmorphism styling */}
           <motion.div
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "tween", ease: "easeOut", duration: 0.3 }}
             className="absolute right-0 top-0 h-full w-full sm:max-w-[400px] 
-                      bg-white/90 backdrop-blur-md shadow-xl flex flex-col"
+                      bg-white/90 backdrop-blur-md shadow-xl flex flex-col relative"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Add subtle noise texture for depth */}
+            <NoiseTexture opacity={0.04} blendMode="multiply" />
+            
             <MobileNavHeader onClose={onClose} />
             
             {/* Scrollable content area */}

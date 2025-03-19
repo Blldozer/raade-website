@@ -7,6 +7,7 @@ import CountdownTimer from "../CountdownTimer";
 import { NavigationProvider } from "./context/NavigationContext";
 import { useNavigation } from "./context/useNavigation";
 import { useEffect } from "react";
+import NoiseTexture from "../ui/NoiseTexture";
 
 interface NavigationContainerProps {
   isHeroPage?: boolean;
@@ -36,7 +37,7 @@ const NavigationContainer = ({
  * NavigationContent Component - Internal component that consumes the navigation context
  * 
  * Handles the actual rendering of navigation elements using shared state
- * Now with glassmorphism styling for a modern, translucent appearance
+ * Features enhanced glassmorphism styling with subtle noise texture for depth
  */
 const NavigationContent = () => {
   const { state } = useNavigation();
@@ -78,7 +79,7 @@ const NavigationContent = () => {
 
   // Get background class based on current section and scroll state
   const getBackgroundClass = () => {
-    // Apply glassmorphism effect when scrolled
+    // Apply enhanced glassmorphism effect with proper light/dark handling when scrolled
     if (isScrolled) {
       return isLightBackground 
         ? "bg-white/70 backdrop-blur-md border-b border-gray-200/50 shadow-sm" 
@@ -99,6 +100,15 @@ const NavigationContent = () => {
           : "-translate-y-full"
       )}
     >
+      {/* Noise texture overlay for enhanced depth */}
+      {isScrolled && (
+        <NoiseTexture 
+          opacity={isLightBackground ? 0.03 : 0.07} 
+          blendMode={isLightBackground ? "multiply" : "soft-light"}
+          scale={150}
+        />
+      )}
+      
       <div className={`max-w-7xl mx-auto ${getPadding()}`}>
         <div className="flex justify-between items-center">
           <NavLogo 

@@ -1,5 +1,7 @@
+
 import React from "react";
 import { motion } from "framer-motion";
+import NoiseTexture from "@/components/ui/NoiseTexture";
 
 /**
  * MobileMenuBackground Component
@@ -7,6 +9,7 @@ import { motion } from "framer-motion";
  * Renders a visually appealing background for the mobile menu with:
  * - Subtle gradient from light to lighter color
  * - Dot pattern overlay for visual interest
+ * - Enhanced with subtle noise texture for depth and richness
  * - Proper z-indexing to stay behind menu content
  * - Gentle animation to enhance the mobile experience
  */
@@ -18,6 +21,9 @@ const MobileMenuBackground = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
+      {/* Subtle noise texture overlay */}
+      <NoiseTexture opacity={0.05} blendMode="multiply" />
+      
       <motion.div 
         className="absolute inset-0 opacity-10" 
         style={{ 
