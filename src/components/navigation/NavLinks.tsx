@@ -1,9 +1,4 @@
 import { Link } from "react-router-dom";
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuList,
-} from "@/components/ui/navigation-menu";
 import { useLocation } from "react-router-dom";
 import NavDropdown from "./NavDropdown";
 import JoinButton from "./JoinButton";
@@ -69,10 +64,10 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
   };
 
   return (
-    <NavigationMenu>
-      <NavigationMenuList className="flex space-x-6">
+    <div className="flex items-center">
+      <ul className="flex space-x-6">
         {navItems.map((item) => (
-          <NavigationMenuItem key={item.name}>
+          <li key={item.name} className="relative">
             {item.dropdownItems ? (
               <NavDropdown
                 name={item.name}
@@ -90,16 +85,16 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
                 {item.name}
               </a>
             )}
-          </NavigationMenuItem>
+          </li>
         ))}
-        <NavigationMenuItem>
+        <li>
           <JoinButton 
             buttonStyles={getButtonStyles()} 
             onClick={onClick}
           />
-        </NavigationMenuItem>
-      </NavigationMenuList>
-    </NavigationMenu>
+        </li>
+      </ul>
+    </div>
   );
 };
 
