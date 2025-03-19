@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import PaymentTotal from "./PaymentTotal";
@@ -7,12 +7,8 @@ import PaymentStatus from "./PaymentStatus";
 import PaymentFormButtons from "./PaymentFormButtons";
 import { usePaymentElements } from "./hooks/usePaymentElements";
 import { usePaymentSubmission } from "./hooks/usePaymentSubmission";
-
-import {
-  PaymentElement,
-  LinkAuthenticationElement,
-  AddressElement
-} from "@stripe/react-stripe-js";
+import { useStripePaymentIntentCheck } from "./hooks/useStripePaymentIntentCheck";
+import PaymentFormElements from "./PaymentFormElements";
 
 interface PaymentFormProps {
   email: string;
@@ -47,6 +43,8 @@ const PaymentForm = ({
 }: PaymentFormProps) => {
   const [message, setMessage] = useState<string | null>(null);
   const [paymentCompleted, setPaymentCompleted] = useState(false);
+  const isMountedRef = useRef(true);
+  const successCalledRef = useRef(false);
   
   // Use custom hooks to manage Stripe elements and payment submission
   const { elements, stripe, isElementsLoading } = usePaymentElements();
@@ -62,12 +60,32 @@ const PaymentForm = ({
     onSuccess: () => {
       setMessage("Payment succeeded!");
       setPaymentCompleted(true);
-      onSuccess();
+      if (!successCalledRef.current) {
+        successCalledRef.current = true;
+        onSuccess();
+      }
     },
     onError,
     setMessage,
     requestId
   });
+
+  // Check for payment intent in URL (for redirect flow)
+  useStripePaymentIntentCheck(
+    stripe,
+    () => {
+      setMessage("Payment succeeded!");
+      setPaymentCompleted(true);
+      if (!successCalledRef.current) {
+        successCalledRef.current = true;
+        onSuccess();
+      }
+    },
+    () => setMessage("Your payment is processing."),
+    (errorMsg) => setMessage(errorMsg),
+    isMountedRef,
+    successCalledRef
+  );
 
   return (
     <Card className="w-full mt-4">
@@ -80,9 +98,7 @@ const PaymentForm = ({
         />
         
         <form id="payment-form" onSubmit={handleSubmit}>
-          <UseStripeElements 
-            email={email} 
-          />
+          <PaymentFormElements email={email} />
           
           <PaymentFormButtons 
             isLoading={isLoading}
@@ -101,55 +117,6 @@ const PaymentForm = ({
         </form>
       </CardContent>
     </Card>
-  );
-};
-
-/**
- * UseStripeElements Component
- * 
- * Renders the Stripe form elements:
- * - Link Authentication Element
- * - Payment Element
- * - Address Element
- */
-const UseStripeElements = ({ email }: { email: string }) => {
-  return (
-    <>
-      <LinkAuthenticationElement 
-        id="link-authentication-element"
-        options={{
-          defaultValues: { email }
-        }}
-      />
-      
-      <PaymentElement 
-        id="payment-element" 
-        options={{
-          layout: "tabs",
-          defaultValues: {
-            billingDetails: {
-              email: email
-            }
-          }
-        }}
-        className="mb-6 mt-4"
-      />
-      
-      <AddressElement 
-        options={{
-          mode: 'billing',
-          fields: {
-            phone: 'always',
-          },
-          validation: {
-            phone: {
-              required: 'always',
-            },
-          },
-        }}
-        className="mb-6"
-      />
-    </>
   );
 };
 
