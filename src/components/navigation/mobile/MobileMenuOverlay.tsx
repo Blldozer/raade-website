@@ -1,6 +1,6 @@
 // This is the right code for the hamburger implementation
 import React from "react";
-import { navItems, mobileFooterItems } from "../navConfig";
+import navConfig from "../navConfig";
 import { useMobileMenuScroll } from "@/hooks/navigation/useMobileMenuScroll";
 import { useNavigation } from "@/hooks/navigation/useNavigation";
 import MobileMenuHeader from "./MobileMenuHeader";
@@ -69,13 +69,13 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
         
         {/* Main navigation content with dropdowns */}
         <MobileMenuContent 
-          navItems={navItems}
-          footerItems={mobileFooterItems}
+          navItems={navConfig.mainNavItems}
+          footerItems={navConfig.footerNavItems}
           onNavigation={handleMenuNavigation}
         />
         
         {/* Footer with CTA and copyright */}
-        <MobileMenuFooter onNavigation={handleMenuNavigation} />
+        <MobileMenuFooter onLinkClick={() => onClose()} />
       </div>
     </motion.div>
   );
