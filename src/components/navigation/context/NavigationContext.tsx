@@ -45,6 +45,7 @@ export const NavigationProvider = ({
   // Determine page context
   const isHeroPage = initialProps.isHeroPage ?? false;
   const useShortFormLogo = initialProps.useShortFormLogo ?? false;
+  const forceDarkMode = initialProps.forceDarkMode ?? false;
   
   // Use section-aware navigation for background detection
   const {
@@ -138,7 +139,8 @@ export const NavigationProvider = ({
     useShortFormLogo,
     currentSection,
     currentSectionId,
-    isLightBackground
+    isLightBackground,
+    forceDarkMode  // Add the forceDarkMode property to the state object
   };
   
   return (

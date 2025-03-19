@@ -26,6 +26,7 @@ export interface NavigationState {
   // Page context
   isHeroPage: boolean;
   useShortFormLogo: boolean;
+  forceDarkMode: boolean; // Added this property to fix the error
 }
 
 /**
