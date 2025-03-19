@@ -13,14 +13,14 @@ const ToggleGroupContext = React.createContext<
   variant: "default",
 })
 
+// Create a TypeSafe component that handles both single and multiple types correctly
 const ToggleGroup = React.forwardRef<
   React.ElementRef<typeof ToggleGroupPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Root> &
     VariantProps<typeof toggleVariants>
->(({ className, variant, size, children, type = "single", ...props }, ref) => (
+>(({ className, variant, size, children, ...props }, ref) => (
   <ToggleGroupPrimitive.Root
     ref={ref}
-    type={type}
     className={cn("flex items-center justify-center gap-1", className)}
     {...props}
   >
