@@ -44,6 +44,7 @@ serve(async (req) => {
     console.log("Creating Stripe instance with secret key");
     const stripe = new Stripe(stripeSecretKey, {
       apiVersion: "2023-10-16",
+      httpClient: Stripe.createFetchHttpClient(),
     });
 
     // Parse the request body
@@ -51,7 +52,7 @@ serve(async (req) => {
     const { ticketType, email, fullName, groupSize } = requestData;
     
     // Log request for debugging
-    console.log("Received payment intent request:", requestData);
+    console.log("Received payment intent request:", JSON.stringify(requestData));
     
     // Validate input data
     if (!ticketType || !email || !fullName) {
@@ -135,11 +136,6 @@ serve(async (req) => {
         },
         automatic_payment_methods: {
           enabled: true,
-        },
-        payment_method_options: {
-          card: {
-            request_three_d_secure: 'automatic',
-          },
         },
       });
 
