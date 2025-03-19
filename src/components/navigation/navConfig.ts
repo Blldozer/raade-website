@@ -12,8 +12,7 @@ export const navItems: NavItem[] = [
     name: "About",
     href: "/about", // Points to the hero section by default
     dropdownItems: [
-      { name: "Overview", href: "/about" }, // Home/hero section
-      { name: "New Model", href: "/about#overview" }, // First section after hero
+      { name: "Overview", href: "/about#overview" }, // Links to new model section
       { name: "Our Approach", href: "/about#approach" },
       { name: "Our Impact", href: "/about#impact" },
       { name: "Meet the Team", href: "/about#team" }
@@ -34,8 +33,6 @@ export const navItems: NavItem[] = [
     dropdownItems: [
       { name: "Overview", href: "/conference" }, // Home/hero section
       { name: "Why Attend", href: "/conference#why" },
-      { name: "Speakers", href: "/conference#speakers" },
-      { name: "Schedule", href: "/conference#schedule" },
       { name: "Registration", href: "/conference#registration" },
     ],
   },

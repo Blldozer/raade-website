@@ -28,6 +28,22 @@ export const useNavigation = () => {
     
     console.log(`Navigation request: ${href} (path: ${basePath}, hash: ${hash}, isSamePage: ${isSamePage})`);
     
+    // Check if this is one of the main navigation links
+    const isMainNavLink = ['/about', '/studios', '/conference'].includes(href);
+    
+    if (isMainNavLink) {
+      // Direct navigation to main sections - always go to top of page
+      console.log(`Main nav link clicked: ${href} - going to top of page`);
+      navigate(href);
+      
+      // Ensure we're at the top of the page
+      window.scrollTo({
+        top: 0,
+        behavior: 'auto'
+      });
+      return;
+    }
+    
     if (isSamePage && hash) {
       // If we're on the same page, just scroll to the element
       console.log(`Scrolling to section #${hash} on current page`);
