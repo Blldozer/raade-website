@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import AboutHero from "../components/about/AboutHero";
 import { useAboutPage } from "../hooks/useAboutPage";
 import ErrorBoundaryFallback from "../components/about/ErrorBoundaryFallback";
@@ -24,6 +24,23 @@ const About = () => {
     scrollToSection
   } = useAboutPage();
   
+  // Add a backup timer to force render after 2 seconds
+  const [forceRender, setForceRender] = useState(false);
+  
+  useEffect(() => {
+    console.log("[ABOUT DEBUG] Initial render - activeSection:", activeSection, "pageInitialized:", pageInitialized);
+    
+    // Force render after 2 seconds as a backup
+    const timer = setTimeout(() => {
+      if (!pageInitialized) {
+        console.warn("[ABOUT DEBUG] Forcing render after timeout");
+        setForceRender(true);
+      }
+    }, 2000);
+    
+    return () => clearTimeout(timer);
+  }, [activeSection, pageInitialized]);
+  
   const location = useLocation();
   
   // Handle scrolling to section when navigated from another page via state
@@ -36,7 +53,7 @@ const About = () => {
   
   // If fatal error, show a simple fallback (outside of all contexts)
   if (hasError) {
-    console.error("About page encountered an error");
+    console.error("[ABOUT DEBUG] About page encountered an error");
     return <ErrorBoundaryFallback />;
   }
 
@@ -50,13 +67,15 @@ const About = () => {
         <AboutHero />
         
         {/* Conditionally render other sections based on activeSection count and initialization state */}
-        <AboutSections 
-          activeSection={activeSection} 
-          pageInitialized={pageInitialized} 
-        />
+        {(pageInitialized || forceRender) && (
+          <AboutSections 
+            activeSection={forceRender ? 5 : activeSection}
+            pageInitialized={true}
+          />
+        )}
         
         {/* Show a loading indicator if needed */}
-        {isLoading && <LoadingIndicator message="Loading RAADE's story..." />}
+        {isLoading && !forceRender && <LoadingIndicator message="Loading RAADE's story..." />}
       </div>
     </ErrorBoundary>
   );

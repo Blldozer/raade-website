@@ -1,5 +1,4 @@
-
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import SectionFallback from './SectionFallback';
 
 // Lazy load heavier components to improve initial page load time
@@ -25,8 +24,8 @@ interface AboutSectionsProps {
  */
 const AboutSections = ({ activeSection, pageInitialized }: AboutSectionsProps) => {
   // Log state for debugging
-  React.useEffect(() => {
-    console.log("AboutSections render - activeSection:", activeSection, "pageInitialized:", pageInitialized);
+  useEffect(() => {
+    console.log("[SECTIONS DEBUG] AboutSections render - activeSection:", activeSection, "pageInitialized:", pageInitialized);
   }, [activeSection, pageInitialized]);
   
   // Create an array of sections to render progressively
@@ -59,8 +58,14 @@ const AboutSections = ({ activeSection, pageInitialized }: AboutSectionsProps) =
 
   // Handle edge case where page isn't initialized
   if (!pageInitialized) {
-    console.log("AboutSections: Page not yet initialized, returning null");
+    console.log("[SECTIONS DEBUG] AboutSections: Page not yet initialized, returning null");
     return null;
+  }
+
+  // FORCE RENDER ALL SECTIONS FOR DEBUGGING
+  console.log(`[SECTIONS DEBUG] Rendering sections from 1 to ${activeSection}`);
+  if (activeSection < 5) {
+    console.warn("[SECTIONS DEBUG] WARNING: Not all sections are being rendered! activeSection =", activeSection);
   }
 
   // Ensure we return at least the first section if activeSection is 0
@@ -68,7 +73,7 @@ const AboutSections = ({ activeSection, pageInitialized }: AboutSectionsProps) =
     [sections[1]] : 
     sections.slice(1, activeSection + 1);
 
-  console.log(`Rendering ${sectionsToRender.length} sections`);
+  console.log(`[SECTIONS DEBUG] Rendering ${sectionsToRender.length} sections out of ${sections.length - 1} total sections`);
   return <>{sectionsToRender}</>;
 };
 

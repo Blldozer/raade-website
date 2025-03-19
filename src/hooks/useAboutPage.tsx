@@ -1,4 +1,3 @@
-
 import { useRef, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSectionNavigation } from './about/useSectionNavigation';
@@ -65,7 +64,8 @@ export const useAboutPage = () => {
     isMounted,
     setActiveSection,
     setIsLoading,
-    setPageInitialized
+    setPageInitialized,
+    sectionsPreloaded
   );
   
   // Handle navigation via the logo to prevent blank screen issues
