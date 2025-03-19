@@ -11,6 +11,15 @@ import PartnerCTA from './join/PartnerCTA';
 // Register ScrollTrigger
 gsap.registerPlugin(ScrollTrigger);
 
+/**
+ * JoinSection Component - Main section for user engagement opportunities
+ * 
+ * Features:
+ * - GSAP animations for enhanced entrance effect
+ * - Section for displaying Innovation Studios and Conference opportunities
+ * - Responsive grid layout for different device sizes
+ * - Custom event handling for section transitions
+ */
 const JoinSection = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -71,6 +80,7 @@ const JoinSection = () => {
 
   return (
     <section 
+      id="build-with-us" // Added id for direct linking
       ref={sectionRef}
       className="relative min-h-screen overflow-hidden py-20 md:py-32"
     >

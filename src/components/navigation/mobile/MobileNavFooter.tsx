@@ -34,7 +34,7 @@ const MobileNavFooter = ({ onLinkClick }: MobileNavFooterProps) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.4 }}
     >
-      {/* Main CTA Button */}
+      {/* Main CTA Button explicitly linking to build-with-us section */}
       <motion.div 
         className="p-5"
         whileHover={{ scale: 1.02 }}
