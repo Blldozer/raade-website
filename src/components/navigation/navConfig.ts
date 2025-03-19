@@ -37,7 +37,7 @@ const mainNavItems: NavItem[] = [
     dropdownItems: [
       { name: "Overview", href: "/studios#overview" },
       { name: "Projects", href: "/studios#projects" },
-      { name: "Apply", href: "/studios#apply" }
+      { name: "Join us", href: "/studios#apply" } // Changed from "Apply" to "Join us"
     ]
   },
   { 
