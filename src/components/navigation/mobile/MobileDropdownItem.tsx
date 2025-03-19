@@ -1,4 +1,3 @@
-
 import React from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -34,6 +33,7 @@ const MobileDropdownItem = ({
   // Handle navigation with proper event handling
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
+    e.stopPropagation(); // Prevent event bubbling
     onNavigation(href);
   };
 

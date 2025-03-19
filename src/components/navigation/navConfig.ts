@@ -1,4 +1,3 @@
-
 export interface NavItem {
   name: string;
   href: string;
@@ -11,9 +10,10 @@ export interface NavItem {
 export const navItems: NavItem[] = [
   {
     name: "About",
-    href: "/about",
+    href: "/about", // Points to the hero section by default
     dropdownItems: [
-      { name: "Overview", href: "/about" },
+      { name: "Overview", href: "/about" }, // Home/hero section
+      { name: "New Model", href: "/about#overview" }, // First section after hero
       { name: "Our Approach", href: "/about#approach" },
       { name: "Our Impact", href: "/about#impact" },
       { name: "Meet the Team", href: "/about#team" }
@@ -21,19 +21,22 @@ export const navItems: NavItem[] = [
   },
   {
     name: "Innovation Studios",
-    href: "/studios",
+    href: "/studios", // Points to the hero section by default
     dropdownItems: [
-      { name: "Overview", href: "/studios#overview" },
+      { name: "Overview", href: "/studios" }, // Home/hero section
       { name: "Current Projects", href: "/studios#projects" },
       { name: "Join Us", href: "/studios#apply" },
     ],
   },
   {
     name: "Conference",
-    href: "/conference",
+    href: "/conference", // Points to the hero section by default
     dropdownItems: [
-      { name: "Overview", href: "/conference" },
-      { name: "Tickets", href: "/conference#registration" },
+      { name: "Overview", href: "/conference" }, // Home/hero section
+      { name: "Why Attend", href: "/conference#why" },
+      { name: "Speakers", href: "/conference#speakers" },
+      { name: "Schedule", href: "/conference#schedule" },
+      { name: "Registration", href: "/conference#registration" },
     ],
   },
 ];
@@ -42,10 +45,14 @@ export const navItems: NavItem[] = [
 export const mobileFooterItems: NavItem[] = [
   {
     name: "Events",
-    href: "/conference",
+    href: "/conference", // Points to conference page hero section
   },
   {
     name: "Contact",
-    href: "/contact",
+    href: "/contact", // Points to contact page hero section
   },
+  {
+    name: "Join Us",
+    href: "/#build", // Points to the "Build with us" section on the homepage
+  }
 ];

@@ -1,4 +1,3 @@
-
 import { useNavigate, useLocation } from "react-router-dom";
 
 /**
@@ -8,6 +7,7 @@ import { useNavigate, useLocation } from "react-router-dom";
  * - Proper handling of hash-based navigation
  * - Cross-page section navigation
  * - Event handling for navigation links
+ * - Smooth scrolling to page top for main navigation items
  */
 export const useNavigation = () => {
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ export const useNavigation = () => {
     if (isSamePage && hash) {
       // If we're on the same page, just scroll to the element
       console.log(`Scrolling to section #${hash} on current page`);
-      const timer = setTimeout(() => {
+      setTimeout(() => {
         const element = document.getElementById(hash);
         if (element) {
           element.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -46,9 +46,15 @@ export const useNavigation = () => {
         state: { scrollToSection: hash }
       });
     } else {
-      // Regular navigation
-      console.log(`Regular navigation to ${href}`);
+      // Regular navigation to a page root (hero section)
+      console.log(`Regular navigation to ${href} (top of page)`);
       navigate(basePath);
+      
+      // Scroll to top after navigation
+      window.scrollTo({
+        top: 0,
+        behavior: 'auto'
+      });
     }
   };
   

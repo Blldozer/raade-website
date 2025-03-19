@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import {
   NavigationMenu,
@@ -60,6 +59,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
   
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
+    e.stopPropagation(); // Prevent bubbling
     
     // First call the onClick handler if provided (for closing mobile menu)
     if (onClick) onClick();
