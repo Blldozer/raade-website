@@ -1,11 +1,10 @@
-
 import React from "react";
 import { X, Search } from "lucide-react";
-import NavLogo from "../NavLogo";
 import { motion } from "framer-motion";
+import NavLogo from "../NavLogo";
 
 interface MobileMenuHeaderProps {
-  onClose: (e: React.MouseEvent) => void;
+  onClose: (e?: React.MouseEvent) => void;
 }
 
 /**
@@ -15,13 +14,19 @@ interface MobileMenuHeaderProps {
  * - Logo with entrance animation
  * - Search button with hover effects
  * - Close button with hover and animation effects
+ * - Sticky positioning to remain visible regardless of scroll
  * 
  * @param onClose - Function to close the menu with event handling
  */
 const MobileMenuHeader = ({ onClose }: MobileMenuHeaderProps) => {
+  const handleClose = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onClose(e);
+  };
+
   return (
     <motion.div 
-      className="flex justify-between items-center p-5 border-b border-gray-200"
+      className="sticky top-0 flex justify-between items-center p-5 border-b border-gray-200 bg-white z-20 shadow-sm"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
@@ -49,7 +54,7 @@ const MobileMenuHeader = ({ onClose }: MobileMenuHeaderProps) => {
         </motion.button>
         
         <motion.button
-          onClick={onClose}
+          onClick={handleClose}
           className="p-2 text-[#274675] hover:bg-gray-100 hover:text-raade-navy rounded-full transition-colors"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}

@@ -1,5 +1,5 @@
-
 import React from "react";
+import { motion } from "framer-motion";
 
 /**
  * MobileMenuBackground Component
@@ -8,18 +8,27 @@ import React from "react";
  * - Subtle gradient from light to lighter color
  * - Dot pattern overlay for visual interest
  * - Proper z-indexing to stay behind menu content
+ * - Gentle animation to enhance the mobile experience
  */
 const MobileMenuBackground = () => {
   return (
-    <div className="absolute inset-0 bg-gradient-to-b from-[#F5F5F0] to-[#EAEAE5] z-0">
-      <div 
+    <motion.div 
+      className="absolute inset-0 bg-gradient-to-b from-[#F5F5F0] to-[#EAEAE5] z-0"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.div 
         className="absolute inset-0 opacity-10" 
         style={{ 
           backgroundImage: `radial-gradient(#274675 0.5px, transparent 0.5px)`,
           backgroundSize: '15px 15px' 
         }}
-      ></div>
-    </div>
+        initial={{ scale: 1.1, opacity: 0 }}
+        animate={{ scale: 1, opacity: 0.1 }}
+        transition={{ duration: 0.7 }}
+      />
+    </motion.div>
   );
 };
 

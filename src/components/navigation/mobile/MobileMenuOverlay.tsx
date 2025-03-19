@@ -1,4 +1,3 @@
-
 import React from "react";
 import { navItems, mobileFooterItems } from "../navConfig";
 import { useMobileMenuScroll } from "@/hooks/navigation/useMobileMenuScroll";
@@ -41,15 +40,15 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
   
   return (
     <motion.div 
-      className="fixed top-0 left-0 w-[100vw] h-[100vh] min-h-screen min-w-full m-0 p-0 z-[9999] flex flex-col overflow-hidden"
+      className="fixed top-0 left-0 w-screen h-screen min-h-screen min-w-full m-0 p-0 z-[9999] flex flex-col overflow-auto"
       style={{
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        width: '100vw',
-        height: '100vh',
+        width: '100%',
+        height: '100%',
         margin: 0,
         padding: 0
       }}
