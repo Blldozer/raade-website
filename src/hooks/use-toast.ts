@@ -8,7 +8,7 @@ import {
   ToastViewport,
   ToastAction,
   ToastClose,
-  type ToastProps,
+  // Don't import ToastProps to avoid conflict
 } from "@/components/ui/toast";
 
 import {
@@ -22,6 +22,7 @@ import {
  */
 export interface ToastActionElement extends React.ReactElement {}
 
+// Define our own ToastProps instead of importing it
 export type ToastProps = {
   title?: React.ReactNode;
   description?: React.ReactNode;

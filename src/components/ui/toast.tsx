@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import * as ToastPrimitives from "@radix-ui/react-toast"
 import { cva, type VariantProps } from "class-variance-authority"
@@ -110,7 +111,12 @@ const ToastDescription = React.forwardRef<
 ))
 ToastDescription.displayName = ToastPrimitives.Description.displayName
 
-type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>
+// Use a more flexible type definition to avoid conflicts with hooks/use-toast.ts
+type ToastProps = React.ComponentPropsWithoutRef<typeof Toast> & {
+  title?: React.ReactNode;
+  description?: React.ReactNode;
+  action?: React.ReactNode;
+}
 
 type ToastActionElement = React.ReactElement<typeof ToastAction>
 
