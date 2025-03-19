@@ -1,3 +1,4 @@
+
 /**
  * Type definitions for navigation items
  */
@@ -24,7 +25,7 @@ export interface NavItem {
 const mainNavItems: NavItem[] = [
   { name: "About", href: "/about",
     dropdownItems: [
-      { name: "Overview", href: "/about#model" }, // Changed to link to the New Model section
+      { name: "Overview", href: "/about#overview" }, // Updated to link to the Overview section
       { name: "Our Approach", href: "/about#approach" },
       { name: "Our Impact", href: "/about#impact" },
       { name: "Our Team", href: "/about#team" }
