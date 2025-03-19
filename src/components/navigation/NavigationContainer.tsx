@@ -6,7 +6,7 @@ import MobileNav from "./mobile/MobileNav";
 import CountdownTimer from "../CountdownTimer";
 import { NavigationProvider } from "./context/NavigationContext";
 import { useNavigation } from "./context/useNavigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import NoiseTexture from "../ui/NoiseTexture";
 
 interface NavigationContainerProps {
@@ -20,15 +20,30 @@ interface NavigationContainerProps {
  * 
  * Delegates rendering to specialized components while providing
  * a shared context for navigation state management
+ * 
+ * Enhanced with unique instance IDs to prevent duplicate rendering
+ * and ensure proper cleanup when navigating between pages
  */
 const NavigationContainer = ({ 
   isHeroPage = false, 
   forceDarkMode = false,
   useShortFormLogo = false 
 }: NavigationContainerProps) => {
+  // Generate a unique ID for this navigation instance
+  const instanceId = useRef(`nav-container-${Math.random().toString(36).substring(2, 9)}`);
+  
+  // Log mounting/unmounting to track duplicate instances
+  useEffect(() => {
+    console.log(`NavigationContainer (${instanceId.current}): Mounting`);
+    
+    return () => {
+      console.log(`NavigationContainer (${instanceId.current}): Unmounting`);
+    };
+  }, []);
+
   return (
     <NavigationProvider initialProps={{ isHeroPage, forceDarkMode, useShortFormLogo }}>
-      <NavigationContent />
+      <NavigationContent instanceId={instanceId.current} />
     </NavigationProvider>
   );
 };
@@ -38,8 +53,10 @@ const NavigationContainer = ({
  * 
  * Handles the actual rendering of navigation elements using shared state
  * Features enhanced glassmorphism styling with subtle noise texture for depth
+ * 
+ * Enhanced with explicit z-index management and better cleanup
  */
-const NavigationContent = () => {
+const NavigationContent = ({ instanceId }: { instanceId: string }) => {
   const { state } = useNavigation();
   const { 
     isScrolled, 
@@ -61,21 +78,24 @@ const NavigationContent = () => {
 
   // Ensure the nav background is available for scroll detection
   useEffect(() => {
+    console.log(`NavigationContent (${instanceId}): Initializing with background state:`, 
+      { isScrolled, isVisible, isDarkBackground, isLightBackground });
+    
     // Check if we're on a page with a hero section
     if (isHeroPage) {
       // Set initial background to light (for dark hero backgrounds)
-      if (!document.body.hasAttribute('data-nav-background')) {
-        document.body.setAttribute('data-nav-background', 'light');
-      }
+      document.body.setAttribute('data-nav-background', 'light');
+      console.log(`NavigationContent (${instanceId}): Set nav background to light for hero page`);
     }
     
     return () => {
       // Clean up only if we set it in this component
       if (isHeroPage) {
         document.body.removeAttribute('data-nav-background');
+        console.log(`NavigationContent (${instanceId}): Cleaned up nav background attribute`);
       }
     };
-  }, [isHeroPage]);
+  }, [isHeroPage, instanceId, isScrolled, isVisible, isDarkBackground, isLightBackground]);
 
   // Get background class based on current section and scroll state
   const getBackgroundClass = () => {
@@ -99,6 +119,10 @@ const NavigationContent = () => {
           ? "translate-y-0" 
           : "-translate-y-full"
       )}
+      data-nav-instance={instanceId}
+      data-scrolled={isScrolled ? "true" : "false"}
+      data-visible={isVisible ? "true" : "false"}
+      data-background={isLightBackground ? "light" : "dark"}
     >
       {/* Noise texture overlay for enhanced depth */}
       {isScrolled && (

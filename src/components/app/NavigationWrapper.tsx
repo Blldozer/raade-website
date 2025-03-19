@@ -1,30 +1,47 @@
 
 import { useLocation } from "react-router-dom";
 import Navigation from "../Navigation";
+import { useEffect, useState } from "react";
 
 /**
  * NavigationWrapper component
- * Handles conditional rendering of navigation based on current route
+ * Enhanced to prevent duplicate navigation instances when scrolling
+ * Uses a consistent pattern across all pages to match Index page behavior
  */
 const NavigationWrapper = () => {
   const location = useLocation();
-  console.log("NavigationWrapper: Current location", location.pathname);
+  const [navProps, setNavProps] = useState({
+    forceDarkMode: false,
+    isHeroPage: false,
+    useShortFormLogo: false
+  });
   
-  // Modified: Show navigation on the About page but with special styling
-  if (location.pathname === '/about') {
-    // Return navigation with special styling for About page
-    return <Navigation forceDarkMode={true} />;
-  }
+  // Set page-specific navigation properties once on mount/route change
+  useEffect(() => {
+    const pathname = location.pathname;
+    console.log("NavigationWrapper: Setting props for", pathname);
+    
+    // Determine page-specific props
+    const isAboutPage = pathname === '/about';
+    const isProjectDetailPage = pathname.startsWith('/projects/');
+    const isApplicationPage = pathname === "/studios/apply" || pathname === "/studios/partner";
+    const isConferencePage = pathname === "/conference";
+    
+    // Set navigation properties based on current route
+    setNavProps({
+      // Force dark mode on project detail pages
+      forceDarkMode: isProjectDetailPage || isAboutPage,
+      
+      // All these pages have hero sections, so set isHeroPage true
+      isHeroPage: isAboutPage || isConferencePage || pathname === '/studios',
+      
+      // Use short form logo where appropriate
+      useShortFormLogo: isApplicationPage
+    });
+  }, [location.pathname]);
   
-  // Check if we're on application pages that need special handling
-  const isApplicationPage = 
-    location.pathname === "/apply/student" || 
-    location.pathname === "/apply/partner";
-  
-  // Force dark mode on project detail pages, but ensure proper styling for application pages
-  const isProjectDetailPage = location.pathname.startsWith('/projects/');
-  
-  return <Navigation forceDarkMode={isProjectDetailPage} />;
+  // Return a single Navigation component with appropriate props
+  return <Navigation {...navProps} />;
 };
 
 export default NavigationWrapper;

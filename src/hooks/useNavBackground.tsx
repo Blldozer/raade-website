@@ -1,5 +1,5 @@
 
-import { useEffect, useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 
 /**
@@ -21,17 +21,22 @@ const throttle = (func: Function, limit: number) => {
  * Hook to manage navigation background color based on current scroll position
  * Sets appropriate data-nav-background attribute on document.body
  * 
- * Section background color mapping:
- * - Dark sections (blue/dark backgrounds): Hero, Transition Stat, Transition Hook
- * - Light sections (white/light backgrounds): Conference Promo, Future Showcase, Join
- * 
- * Navbar color mapping:
- * - When over dark sections: Light navbar (white text)
- * - When over light sections: Dark navbar (navy text)
- * 
- * Enhanced with better error handling and initialization checks
+ * Enhanced with:
+ * - Instance tracking to prevent duplicate event listeners
+ * - Better cleanup of event listeners and DOM attributes
+ * - Improved error handling
  */
 export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') => {
+  // Generate unique instance ID for this hook usage
+  const instanceId = useRef(`nav-bg-${Math.random().toString(36).substring(2, 9)}`);
+  
+  // Track if this hook instance is mounted to prevent memory leaks
+  const isMounted = useRef(true);
+  
+  // Store scroll handler reference for proper cleanup
+  const scrollHandlerRef = useRef<any>(null);
+  const resizeHandlerRef = useRef<any>(null);
+  
   // Get the current location from react-router
   const location = useLocation();
   const pathname = location.pathname;
@@ -40,39 +45,45 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
   // This ensures the navbar has proper contrast immediately on page load
   useLayoutEffect(() => {
     try {
+      console.log(`useNavBackground (${instanceId.current}): Initializing for ${pathname}`);
+      
       // For index page, we always want to start with light navbar (over dark hero)
       const isIndexPage = pathname === '/' || pathname === '';
       const isApplicationPage = pathname.includes('/studios/apply') || 
                                 pathname.includes('/studios/partner');
       const isAboutPage = pathname === '/about';
       
-      console.log("useNavBackground: Path detected", pathname);
-      
+      // Set appropriate background based on page type
       if (isIndexPage) {
         // Force light navbar for index page hero section
         document.body.setAttribute('data-nav-background', 'light');
-        console.log("useNavBackground: Set to light for index page");
+        console.log(`useNavBackground (${instanceId.current}): Set to light for index page`);
       } else if (isApplicationPage) {
         // Force light navbar for application pages with dark backgrounds
         document.body.setAttribute('data-nav-background', 'light');
-        console.log("useNavBackground: Set to light for application page");
+        console.log(`useNavBackground (${instanceId.current}): Set to light for application page`);
       } else if (isAboutPage) {
         // For About page, we start with dark background (light navbar)
         document.body.setAttribute('data-nav-background', 'dark');
-        console.log("useNavBackground: Set to dark for about page");
+        console.log(`useNavBackground (${instanceId.current}): Set to dark for about page`);
       } else {
         // For other pages, use the provided initial background
         document.body.setAttribute('data-nav-background', initialBackground);
-        console.log("useNavBackground: Set to", initialBackground, "for other page");
+        console.log(`useNavBackground (${instanceId.current}): Set to ${initialBackground} for other page`);
       }
     } catch (error) {
-      console.error("Error in useNavBackground layout effect:", error);
+      console.error(`useNavBackground (${instanceId.current}) layout effect error:`, error);
     }
+    
+    return () => {
+      // Mark as unmounted to prevent updates after cleanup
+      isMounted.current = false;
+    };
   }, [initialBackground, pathname]);
 
   useEffect(() => {
     try {
-      console.log("useNavBackground: Setting up sections for", pathname);
+      console.log(`useNavBackground (${instanceId.current}): Setting up sections for ${pathname}`);
       
       // Mark sections with data attributes for light/dark backgrounds
       // DARK BACKGROUND SECTIONS (use light navbar)
@@ -111,6 +122,8 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
       // Function to calculate and cache section positions
       const calculateSectionPositions = () => {
         try {
+          if (!isMounted.current) return;
+          
           sectionPositions = [];
           document.querySelectorAll('section, div[data-background]').forEach(section => {
             const rect = section.getBoundingClientRect();
@@ -122,7 +135,7 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
             });
           });
         } catch (error) {
-          console.error("Error calculating section positions:", error);
+          console.error(`useNavBackground (${instanceId.current}) error calculating positions:`, error);
         }
       };
       
@@ -131,6 +144,7 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
       
       // Recalculate on resize but throttle to avoid performance issues
       const handleResize = throttle(() => {
+        if (!isMounted.current) return;
         calculateSectionPositions();
       }, 200);
 
@@ -143,6 +157,9 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
       // Setup background detection for navigation
       const updateNavBackground = () => {
         try {
+          // Skip if component unmounted
+          if (!isMounted.current) return;
+          
           // Skip background calculation for application pages - always use light navbar
           const isApplicationPage = pathname.includes('/studios/apply') || 
                                    pathname.includes('/studios/partner');
@@ -172,13 +189,15 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
             }
           }
           
-          // Only update if the background has changed
-          const currentAttr = document.body.getAttribute('data-nav-background');
-          if (currentAttr !== currentBackground) {
-            document.body.setAttribute('data-nav-background', currentBackground);
+          // Only update if the background has changed and component is still mounted
+          if (isMounted.current) {
+            const currentAttr = document.body.getAttribute('data-nav-background');
+            if (currentAttr !== currentBackground) {
+              document.body.setAttribute('data-nav-background', currentBackground);
+            }
           }
         } catch (error) {
-          console.error("Error updating navigation background:", error);
+          console.error(`useNavBackground (${instanceId.current}) update error:`, error);
         }
       };
       
@@ -188,14 +207,30 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
       // Throttled scroll handler to reduce CPU usage
       const throttledScrollHandler = throttle(updateNavBackground, 100);
       
+      // Store handlers in refs for proper cleanup
+      scrollHandlerRef.current = throttledScrollHandler;
+      resizeHandlerRef.current = handleResize;
+      
       // Update navigation background on scroll
-      window.addEventListener('scroll', throttledScrollHandler);
+      window.addEventListener('scroll', throttledScrollHandler, { passive: true });
       window.addEventListener('resize', handleResize);
       
+      console.log(`useNavBackground (${instanceId.current}): Attached scroll and resize listeners`);
+      
       return () => {
-        console.log("useNavBackground cleanup for", pathname);
-        window.removeEventListener('scroll', throttledScrollHandler);
-        window.removeEventListener('resize', handleResize);
+        // Set mounted flag to false to prevent updates after unmount
+        isMounted.current = false;
+        
+        // Clean up event listeners
+        if (scrollHandlerRef.current) {
+          window.removeEventListener('scroll', scrollHandlerRef.current);
+        }
+        
+        if (resizeHandlerRef.current) {
+          window.removeEventListener('resize', resizeHandlerRef.current);
+        }
+        
+        console.log(`useNavBackground (${instanceId.current}): Removed scroll and resize listeners`);
         
         // In some cases, we want to persist the background attribute for page transitions
         // Only remove it if we're not on the about page
@@ -203,14 +238,17 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
         if (!isAboutPage) {
           try {
             document.body.removeAttribute('data-nav-background');
+            console.log(`useNavBackground (${instanceId.current}): Cleaned up nav background attribute`);
           } catch (error) {
-            console.error("Error cleaning up nav background attribute:", error);
+            console.error(`useNavBackground (${instanceId.current}) cleanup error:`, error);
           }
         }
       };
     } catch (error) {
-      console.error("Critical error in useNavBackground:", error);
-      return () => {}; // Return empty cleanup function
+      console.error(`useNavBackground (${instanceId.current}) critical error:`, error);
+      return () => {
+        isMounted.current = false;
+      };
     }
-  }, [initialBackground, pathname]);
+  }, [initialBackground, pathname, instanceId]);
 };

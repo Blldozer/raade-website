@@ -7,6 +7,7 @@ import MobileNavFooter from "./MobileNavFooter";
 import { useMobileMenuScroll } from "@/hooks/navigation/useMobileMenuScroll";
 import { NavItem } from "../navConfig";
 import NoiseTexture from "@/components/ui/NoiseTexture";
+import MobileMenuBackground from "./MobileMenuBackground";
 
 // Import the navigation config to get the navigation items
 import navConfig from "@/components/navigation/navConfig";
@@ -24,6 +25,7 @@ interface MobileMenuOverlayProps {
  * - Smooth entrance/exit animations
  * - Lock body scroll when open
  * - Organized header, navigation links, and footer sections
+ * - Improved isolation to prevent stacking issues
  * 
  * @param isOpen - Whether the menu is currently open
  * @param onClose - Function to call to close the menu
@@ -31,21 +33,27 @@ interface MobileMenuOverlayProps {
 const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
   const { contentRef } = useMobileMenuScroll(isOpen);
   
+  // Generate a unique ID for this menu instance
+  const menuId = React.useRef(`mobile-menu-${Math.random().toString(36).substring(2, 9)}`);
+  
   // Get navigation items from navConfig
   // Separate primary navigation items from footer items
   const mainNavItems = navConfig.mainNavItems;
   const footerNavItems = navConfig.footerNavItems || [];
   
-  // Lock body scroll when menu is open
+  // Lock body scroll when menu is open and release when closed
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
+      console.log(`MobileMenu (${menuId.current}): Locking body scroll`);
     } else {
       document.body.style.overflow = "";
+      console.log(`MobileMenu (${menuId.current}): Releasing body scroll`);
     }
     
     return () => {
       document.body.style.overflow = "";
+      console.log(`MobileMenu (${menuId.current}): Cleanup - Ensuring body scroll is released`);
     };
   }, [isOpen]);
   
@@ -58,6 +66,7 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
           className="fixed inset-0 z-[110] overflow-hidden"
+          data-menu-id={menuId.current}
         >
           {/* Backdrop with enhanced glassmorphism effect */}
           <motion.div
@@ -79,14 +88,14 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
                       bg-white/90 backdrop-blur-md shadow-xl flex flex-col relative"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Add subtle noise texture for depth */}
-            <NoiseTexture opacity={0.04} blendMode="multiply" />
+            {/* Enhanced background with noise texture */}
+            <MobileMenuBackground />
             
             <MobileNavHeader onClose={onClose} />
             
             {/* Scrollable content area */}
             <div 
-              className="flex-1 overflow-y-auto py-4 px-6" 
+              className="flex-1 overflow-y-auto py-4 px-6 relative z-10" 
               ref={contentRef}
             >
               <MobileNavLinks 
