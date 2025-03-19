@@ -1,30 +1,44 @@
 
 import { useState, useEffect } from "react";
 
+// Define the device type as a union type to ensure type safety
+export type DeviceType = "mobile" | "tablet" | "desktop" | "large-desktop";
+
 /**
- * Hook for detecting device performance capabilities
+ * Hook to estimate device performance based on device type and screen dimensions
  * 
- * Provides estimated performance level based on:
- * - Device type
- * - Screen resolution (higher resolution = more pixels to render)
+ * Features:
+ * - Estimates performance level based on device type and screen resolution
+ * - Adjusts animations and effects based on performance level
+ * - Provides fallbacks for low-performance devices
+ * - Updates when device parameters change
  */
 export const usePerformanceDetection = (
-  deviceType: 'mobile' | 'tablet' | 'desktop' | 'large-desktop', 
-  width: number, 
-  height: number
+  deviceType: DeviceType,
+  screenWidth: number,
+  screenHeight: number
 ) => {
-  const [performanceLevel, setPerformanceLevel] = useState<'high' | 'medium' | 'low'>('high');
+  const [performanceLevel, setPerformanceLevel] = useState<"high" | "medium" | "low">("medium");
 
+  // Detect performance level based on device type and screen resolution
   useEffect(() => {
-    // Rough performance estimate based on device type and screen resolution
-    if (deviceType === 'mobile' || (width * height > 2000000)) {
-      setPerformanceLevel('medium');
-    } else if (width * height > 4000000) {
-      setPerformanceLevel('low');
-    } else {
-      setPerformanceLevel('high');
-    }
-  }, [deviceType, width, height]);
+    // Determine performance level based on device type and screen resolution
+    const calculatePerformanceLevel = () => {
+      // High-resolution screens on mobile devices can cause performance issues
+      const isHighResolution = screenWidth * screenHeight > 2073600; // More than 1920x1080
+      
+      if (deviceType === "mobile") {
+        return isHighResolution ? "low" : "medium";
+      } else if (deviceType === "tablet") {
+        return isHighResolution ? "medium" : "high";
+      } else {
+        // desktop and large-desktop
+        return "high";
+      }
+    };
+
+    setPerformanceLevel(calculatePerformanceLevel());
+  }, [deviceType, screenWidth, screenHeight]);
 
   return { performanceLevel };
 };

@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useIsMobile } from "../use-mobile";
+import { DeviceType } from "./usePerformanceDetection";
 
 /**
  * Hook for detecting device type and screen measurements
@@ -25,7 +26,7 @@ export const useDeviceDetection = () => {
         height: 768,
         orientation: 'landscape' as const,
         breakpoint: 'lg' as const,
-        deviceType: 'desktop' as const
+        deviceType: 'desktop' as DeviceType
       };
     }
     
@@ -54,7 +55,7 @@ export const useDeviceDetection = () => {
     return '2xl';
   }
   
-  function getDeviceType(width: number) {
+  function getDeviceType(width: number): DeviceType {
     if (width < 768) return 'mobile';
     if (width < 1024) return 'tablet';
     if (width < 1440) return 'desktop';
@@ -69,7 +70,7 @@ export const useDeviceDetection = () => {
   const [height, setHeight] = useState(initialState.height);
   const [orientation, setOrientation] = useState(initialState.orientation);
   const [breakpoint, setBreakpoint] = useState(initialState.breakpoint);
-  const [deviceType, setDeviceType] = useState(initialState.deviceType);
+  const [deviceType, setDeviceType] = useState<DeviceType>(initialState.deviceType);
 
   useEffect(() => {
     // Ensure we're in a browser environment
