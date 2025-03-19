@@ -13,6 +13,7 @@ interface MobileMenuFooterProps {
  * - Animated CTA button with hover effects
  * - Fade-in animations for smooth appearance
  * - Responsive padding for better touch targets
+ * - Proper event handling for navigation
  * 
  * @param onNavigation - Function to handle navigation
  */

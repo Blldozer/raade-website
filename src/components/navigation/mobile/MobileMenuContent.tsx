@@ -32,7 +32,10 @@ const MobileMenuContent = ({
   const [openDropdowns, setOpenDropdowns] = useState<string[]>([]);
 
   // Toggle dropdown visibility
-  const toggleDropdown = (name: string) => {
+  const toggleDropdown = (name: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     setOpenDropdowns(prev => 
       prev.includes(name) 
         ? prev.filter(item => item !== name) 
@@ -91,13 +94,7 @@ const MobileMenuContent = ({
               {item.dropdownItems ? (
                 <div>
                   <motion.button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleDropdown(item.name);
-                      
-                      // Also navigate to the main section when clicking the dropdown header
-                      onNavigation(item.href);
-                    }}
+                    onClick={(e) => toggleDropdown(item.name, e)}
                     className="flex items-center justify-between w-full text-lg text-[#274675] font-alegreyasans font-bold py-2 px-3 rounded-md hover:bg-[#F4F5F4]/60"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
