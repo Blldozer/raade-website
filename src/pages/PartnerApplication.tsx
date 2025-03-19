@@ -9,6 +9,7 @@ import PartnerContactInfo from "@/components/forms/PartnerContactInfo";
 import PartnerProjectInfo from "@/components/forms/PartnerProjectInfo";
 import SubmitButton from "@/components/forms/SubmitButton";
 import SubmissionConfirmation from "@/components/forms/SubmissionConfirmation";
+import { Database } from "@/integrations/supabase/types";
 
 /**
  * PartnerApplication component for handling partner organization applications to RAADE
@@ -46,19 +47,17 @@ const PartnerApplication = () => {
    * Sanitize form data before submission
    * Removes characters that could cause JSON parsing issues
    */
-  const sanitizeData = (data: Record<string, any>) => {
-    const sanitized: Record<string, any> = {};
+  const sanitizeData = (data: typeof formData) => {
+    const sanitized = { ...data };
     
     // Process each field to remove problematic characters
-    for (const key in data) {
-      if (typeof data[key] === 'string') {
+    for (const key in sanitized) {
+      if (typeof sanitized[key as keyof typeof sanitized] === 'string') {
         // Remove trailing commas, control characters, and ensure proper encoding
-        sanitized[key] = data[key]
+        sanitized[key as keyof typeof sanitized] = (sanitized[key as keyof typeof sanitized] as string)
           .trim()
           .replace(/,\s*$/, '') // Remove trailing commas
           .replace(/[\x00-\x1F\x7F]/g, ''); // Remove control characters
-      } else {
-        sanitized[key] = data[key];
       }
     }
     
