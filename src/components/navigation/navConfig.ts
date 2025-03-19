@@ -44,9 +44,8 @@ const mainNavItems: NavItem[] = [
     href: "/conference",
     dropdownItems: [
       { name: "Overview", href: "/conference#overview" },
-      { name: "Speakers", href: "/conference#speakers" },
-      { name: "Schedule", href: "/conference#schedule" },
-      { name: "Register", href: "/conference/register", highlight: true } // Fixed to match route in App.tsx
+      { name: "Why Attend", href: "/conference#why-attend" },
+      { name: "Get Tickets!", href: "/conference#registration", highlight: true } // Changed to highlight
     ]
   }
 ];
