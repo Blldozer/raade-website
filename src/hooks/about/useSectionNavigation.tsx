@@ -5,6 +5,9 @@ import { useLocation } from 'react-router-dom';
 /**
  * Custom hook to handle section navigation within the About page
  * Manages scrolling to specific sections and tracking the active section
+ * 
+ * Provides complete section mappings to ensure all sections can be properly navigated to
+ * while maintaining the correct scroll behavior and visual indicators
  */
 export const useSectionNavigation = () => {
   const [activeSection, setActiveSection] = useState(0);
@@ -14,15 +17,18 @@ export const useSectionNavigation = () => {
   const scrollToSection = useCallback((sectionId: string) => {
     console.log(`Attempting to scroll to section: ${sectionId}`);
     
-    // Map section IDs to their indices in the sections array
+    // Complete section map with all available sections
     const sectionMap: {[key: string]: number} = {
-      'approach': 3,  // Our Approach is the 3rd section (0-indexed)
+      'overview': 1,  // Overview/New Model is the 1st section (after hero, 0-indexed)
+      'model': 1,     // Alternative ID for the same section
+      'reality': 2,   // Reality is the 2nd section
+      'approach': 3,  // Our Approach is the 3rd section
       'impact': 4,    // Our Impact is the 4th section
       'team': 5       // Team is the 5th section
     };
     
-    // Set the active section to ensure it's loaded
-    if (sectionMap[sectionId]) {
+    // Set the active section to ensure proper scrolling
+    if (sectionMap[sectionId] !== undefined) {
       setActiveSection(sectionMap[sectionId]);
       
       // Wait for the section to be rendered

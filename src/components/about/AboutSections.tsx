@@ -1,3 +1,4 @@
+
 import React, { Suspense, lazy, useEffect } from 'react';
 import SectionFallback from './SectionFallback';
 
@@ -14,13 +15,13 @@ interface AboutSectionsProps {
 }
 
 /**
- * AboutSections component - Manages the lazy loading of About page sections
+ * AboutSections component - Manages the rendering of About page sections
  * 
  * Features:
- * - Progressively reveals sections based on the activeSection prop
+ * - Renders all sections once page is initialized
  * - Uses React.Suspense for smooth lazy loading
  * - Custom fallbacks for better user experience during loading
- * - Handles edge cases like uninitialized page state
+ * - Uses activeSection only for scroll positioning, not for controlling visibility
  */
 const AboutSections = ({ activeSection, pageInitialized }: AboutSectionsProps) => {
   // Log state for debugging
@@ -28,13 +29,12 @@ const AboutSections = ({ activeSection, pageInitialized }: AboutSectionsProps) =
     console.log("[SECTIONS DEBUG] AboutSections render - activeSection:", activeSection, "pageInitialized:", pageInitialized);
   }, [activeSection, pageInitialized]);
   
-  // Create an array of sections to render progressively
+  // Create an array of sections to render
   const sections = [
     // Section 0: Always visible hero (not lazy loaded for immediate display)
     null, // Hero is handled separately
     
-    // Sections 1-5: Progressively loaded with more advanced fallbacks
-    // All content sections have light backgrounds (data-background="light")
+    // Sections 1-5: All content sections with light backgrounds
     <Suspense key="newmodel" fallback={<SectionFallback sectionName="New Model" />}>
       <NewModel />
     </Suspense>,
@@ -62,16 +62,12 @@ const AboutSections = ({ activeSection, pageInitialized }: AboutSectionsProps) =
     return null;
   }
 
-  // FORCE RENDER ALL SECTIONS FOR DEBUGGING
-  console.log(`[SECTIONS DEBUG] Rendering sections from 1 to ${activeSection}`);
-  if (activeSection < 5) {
-    console.warn("[SECTIONS DEBUG] WARNING: Not all sections are being rendered! activeSection =", activeSection);
-  }
-
-  // Ensure we return at least the first section if activeSection is 0
-  const sectionsToRender = activeSection === 0 ? 
-    [sections[1]] : 
-    sections.slice(1, activeSection + 1);
+  // IMPORTANT: Always render ALL sections once page is initialized
+  // This is the key fix - we always render all sections from index 1 onwards
+  console.log(`[SECTIONS DEBUG] Rendering all sections (1-5) regardless of activeSection`);
+  
+  // Render all sections starting from index 1 (after hero)
+  const sectionsToRender = sections.slice(1);
 
   console.log(`[SECTIONS DEBUG] Rendering ${sectionsToRender.length} sections out of ${sections.length - 1} total sections`);
   return <>{sectionsToRender}</>;
