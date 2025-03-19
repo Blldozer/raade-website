@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -25,8 +24,7 @@ const PartnerApplication = () => {
     country: "",
     project_idea: "",
     expected_outcome: "",
-    timeline: "",
-    status: "pending" // Add status field with default value
+    timeline: ""
   });
 
   // Handle form input changes
@@ -49,7 +47,9 @@ const PartnerApplication = () => {
         }
       }
 
-      // Submit to Supabase with explicit status field
+      console.log("Submitting partner application:", formData);
+
+      // Submit to Supabase with database default handling status
       const { error, data } = await supabase
         .from("partner_applications")
         .insert([{
@@ -61,14 +61,16 @@ const PartnerApplication = () => {
           country: formData.country,
           project_idea: formData.project_idea,
           expected_outcome: formData.expected_outcome,
-          timeline: formData.timeline,
-          status: "pending" // Explicitly set status
+          timeline: formData.timeline
+          // Let the database handle the status with its default value
         }]);
 
       if (error) {
         console.error("Supabase error:", error);
         throw error;
       }
+
+      console.log("Partner application submitted successfully:", data);
 
       // Success
       toast({
