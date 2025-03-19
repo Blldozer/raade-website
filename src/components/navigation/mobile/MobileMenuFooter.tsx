@@ -1,13 +1,14 @@
 
 import React from "react";
 import { motion } from "framer-motion";
+import { useNavigation } from "@/hooks/navigation/useNavigation";
 
-interface MobileMenuFooterProps {
-  onNavigation: (href: string) => void;
+interface MobileNavFooterProps {
+  onLinkClick: () => void;
 }
 
 /**
- * MobileMenuFooter Component
+ * MobileNavFooter Component
  * 
  * Renders the footer section of the mobile menu with:
  * - Animated CTA button with hover effects
@@ -15,9 +16,17 @@ interface MobileMenuFooterProps {
  * - Responsive padding for better touch targets
  * - Proper event handling for navigation
  * 
- * @param onNavigation - Function to handle navigation
+ * @param onLinkClick - Function to call when a link is clicked
  */
-const MobileMenuFooter = ({ onNavigation }: MobileMenuFooterProps) => {
+const MobileNavFooter = ({ onLinkClick }: MobileNavFooterProps) => {
+  const { handleNavigation } = useNavigation();
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    onLinkClick();
+    handleNavigation(href);
+  };
+
   return (
     <motion.div
       className="flex flex-col"
@@ -34,10 +43,7 @@ const MobileMenuFooter = ({ onNavigation }: MobileMenuFooterProps) => {
         <motion.a
           href="/#build-with-us"
           className="block w-full py-3.5 px-6 bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-[#274675] text-center rounded-md font-alegreyasans font-bold text-lg transition-colors shadow-md hover:shadow-lg"
-          onClick={(e) => {
-            e.preventDefault();
-            onNavigation("/#build-with-us");
-          }}
+          onClick={(e) => handleClick(e, "/#build-with-us")}
           whileHover={{ y: -2 }}
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -65,4 +71,4 @@ const MobileMenuFooter = ({ onNavigation }: MobileMenuFooterProps) => {
   );
 };
 
-export default MobileMenuFooter;
+export default MobileNavFooter;

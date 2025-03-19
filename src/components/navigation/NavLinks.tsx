@@ -1,8 +1,9 @@
+
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import NavDropdown from "./NavDropdown";
 import JoinButton from "./JoinButton";
-import { navItems } from "./navConfig";
+import navConfig from "./navConfig"; // Change from named import to default import
 import { useNavigation as useNavigationContext } from "./context/useNavigation";
 import { useNavigation as useNavigationHook } from "@/hooks/navigation/useNavigation";
 
@@ -90,7 +91,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
   return (
     <div className="flex items-center">
       <ul className="flex space-x-6">
-        {navItems.map((item) => (
+        {navConfig.mainNavItems.map((item) => (
           <li key={item.name} className="relative">
             {item.dropdownItems ? (
               <NavDropdown

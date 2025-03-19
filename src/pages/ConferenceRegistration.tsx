@@ -20,6 +20,9 @@ const ConferenceRegistration = () => {
   // This ensures proper navbar styling immediately on page load
   useNavBackground('dark');
   
+  // Added console.log to debug rendering
+  console.log("Rendering ConferenceRegistration page");
+  
   useEffect(() => {
     // Scroll to top when component mounts
     window.scrollTo(0, 0);
