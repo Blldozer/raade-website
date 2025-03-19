@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -9,7 +10,15 @@ import PartnerProjectInfo from "@/components/forms/PartnerProjectInfo";
 import SubmitButton from "@/components/forms/SubmitButton";
 import SubmissionConfirmation from "@/components/forms/SubmissionConfirmation";
 
-// PartnerApplication component for handling partner organization applications to RAADE
+/**
+ * PartnerApplication component for handling partner organization applications to RAADE
+ * 
+ * This component:
+ * - Manages the application form state
+ * - Handles form submission and validation
+ * - Sanitizes data before sending to Supabase
+ * - Shows confirmation after successful submission
+ */
 const PartnerApplication = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -33,6 +42,29 @@ const PartnerApplication = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  /**
+   * Sanitize form data before submission
+   * Removes characters that could cause JSON parsing issues
+   */
+  const sanitizeData = (data: Record<string, any>) => {
+    const sanitized: Record<string, any> = {};
+    
+    // Process each field to remove problematic characters
+    for (const key in data) {
+      if (typeof data[key] === 'string') {
+        // Remove trailing commas, control characters, and ensure proper encoding
+        sanitized[key] = data[key]
+          .trim()
+          .replace(/,\s*$/, '') // Remove trailing commas
+          .replace(/[\x00-\x1F\x7F]/g, ''); // Remove control characters
+      } else {
+        sanitized[key] = data[key];
+      }
+    }
+    
+    return sanitized;
+  };
+
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,27 +75,25 @@ const PartnerApplication = () => {
       const requiredFields = ["organization_name", "contact_name", "email", "organization_type", "country", "project_idea"];
       for (const field of requiredFields) {
         if (!formData[field as keyof typeof formData]) {
-          throw new Error(`${field.replace("_", " ")} is required`);
+          throw new Error(`${field.replace(/_/g, " ")} is required`);
         }
       }
 
-      console.log("Submitting partner application:", formData);
+      // Basic email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        throw new Error("Please enter a valid email address");
+      }
+
+      // Sanitize data before submission
+      const sanitizedData = sanitizeData(formData);
+      
+      console.log("Submitting partner application:", sanitizedData);
 
       // Submit to Supabase with database default handling status
       const { error, data } = await supabase
         .from("partner_applications")
-        .insert([{
-          organization_name: formData.organization_name,
-          contact_name: formData.contact_name,
-          email: formData.email,
-          phone: formData.phone,
-          organization_type: formData.organization_type,
-          country: formData.country,
-          project_idea: formData.project_idea,
-          expected_outcome: formData.expected_outcome,
-          timeline: formData.timeline
-          // Let the database handle the status with its default value
-        }]);
+        .insert([sanitizedData]);
 
       if (error) {
         console.error("Supabase error:", error);
