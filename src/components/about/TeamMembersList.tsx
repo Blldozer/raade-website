@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import TeamMember from "./TeamMember";
 import { useState, useEffect } from "react";
@@ -21,6 +20,7 @@ interface TeamMembersListProps {
  * - Staggered animations for visual appeal
  * - Mobile-optimized rendering with adaptable grid layout
  * - Tracks loading progress for all team members
+ * - Fixed to ensure immediate display on first page load
  */
 const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListProps) => {
   // Track which images are loaded to improve rendering reliability
@@ -30,9 +30,7 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
 
   // Reset animation state when component mounts or visibility changes
   useEffect(() => {
-    if (isInView && isLoaded) {
-      console.log("TeamMembersList is in view and loaded, preparing animations");
-    }
+    console.log("TeamMembersList mounted - isInView:", isInView, "isLoaded:", isLoaded);
     
     // Listen for online/offline status
     const handleOnline = () => {
@@ -84,8 +82,8 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.12,
-        delayChildren: 0.2
+        staggerChildren: 0.08, // Faster staggering
+        delayChildren: 0.05  // Minimal delay for faster initial display
       }
     }
   };
@@ -112,8 +110,8 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
       <motion.div 
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         variants={container}
-        initial="hidden"
-        animate={isInView && isLoaded ? "show" : "hidden"}
+        initial="show" // IMPORTANT: Start as visible to avoid initial hide
+        animate="show"  // Always show the container
         exit="hidden"
       >
         {teamMembers.map((member, index) => (

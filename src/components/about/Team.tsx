@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { useInView } from "framer-motion";
@@ -11,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
  * Features progressive loading and error handling for reliable rendering
  * Uses intersection observer to trigger animations only when visible
  * Has light background which requires a dark navbar (navy text)
+ * Updated to ensure immediate image loading on first page visit
  */
 const Team = () => {
   const sectionRef = useRef(null);
@@ -18,20 +18,17 @@ const Team = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
 
-  // Initialize component with improved state management
+  // Initialize component with improved immediate loading
   useEffect(() => {
-    console.log("Team component mounted");
+    console.log("Team component mounted - initializing immediately");
     
-    // Using a small timeout to allow browser to settle after initial render
-    const timer = setTimeout(() => {
-      setIsLoaded(true);
-      console.log("Team component marked as loaded");
-    }, 200);
+    // IMPORTANT: Set loaded immediately - don't wait for timeout
+    // This ensures the real component is rendered immediately
+    setIsLoaded(true);
     
     // Proper cleanup to prevent memory leaks and state updates after unmount
     return () => {
       console.log("Team component unmounting");
-      clearTimeout(timer);
     };
   }, []);
 
@@ -83,7 +80,7 @@ const Team = () => {
           </motion.div>
         </div>
 
-        {/* Show loading skeleton while team data is initializing */}
+        {/* Show loading skeleton only VERY briefly */}
         {!isLoaded ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[...Array(12)].map((_, index) => (
@@ -99,8 +96,8 @@ const Team = () => {
         ) : (
           <TeamMembersList 
             teamMembers={teamMembers} 
-            isInView={isInView}
-            isLoaded={isLoaded}
+            isInView={true} // Force isInView to true to ensure immediate rendering
+            isLoaded={true} // Force isLoaded to true to ensure rendering occurs
           />
         )}
       </div>
