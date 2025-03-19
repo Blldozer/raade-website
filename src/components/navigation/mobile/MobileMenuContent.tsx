@@ -38,6 +38,12 @@ const MobileMenuContent = ({
     );
   };
 
+  // Handle navigation with proper event handling
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    onNavigation(href);
+  };
+
   return (
     <div className="flex-grow overflow-y-auto px-5 py-2">
       <nav>
@@ -50,6 +56,9 @@ const MobileMenuContent = ({
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleDropdown(item.name);
+                      
+                      // Also navigate to the main section when clicking the dropdown header
+                      onNavigation(item.href);
                     }}
                     className="flex items-center justify-between w-full text-lg text-[#274675] font-alegreyasans font-bold"
                     aria-expanded={openDropdowns.includes(item.name)}
@@ -68,10 +77,7 @@ const MobileMenuContent = ({
                           <a
                             href={subItem.href}
                             className="block text-base text-[#4A5568] hover:text-[#FBB03B] transition-colors font-alegreyasans"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              onNavigation(subItem.href);
-                            }}
+                            onClick={(e) => handleLinkClick(e, subItem.href)}
                           >
                             {subItem.name}
                           </a>
@@ -84,10 +90,7 @@ const MobileMenuContent = ({
                 <a
                   href={item.href}
                   className="block text-lg text-[#274675] hover:text-[#FBB03B] transition-colors font-alegreyasans font-bold"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onNavigation(item.href);
-                  }}
+                  onClick={(e) => handleLinkClick(e, item.href)}
                 >
                   {item.name}
                 </a>
@@ -104,10 +107,7 @@ const MobileMenuContent = ({
               <a
                 href={item.href}
                 className="block text-lg text-[#274675] hover:text-[#FBB03B] transition-colors font-alegreyasans font-bold"
-                onClick={(e) => {
-                  e.preventDefault();
-                  onNavigation(item.href);
-                }}
+                onClick={(e) => handleLinkClick(e, item.href)}
               >
                 {item.name}
               </a>

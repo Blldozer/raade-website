@@ -22,7 +22,11 @@ export const useNavigation = () => {
     // Parse the URL and hash
     const hasHash = href.includes('#');
     const [path, hash] = hasHash ? href.split('#') : [href, ''];
-    const isSamePage = path === "" || path === "/" || location.pathname === path;
+    const basePath = path === "" ? "/" : path;
+    const isSamePage = location.pathname === basePath || 
+                      (location.pathname === "/" && basePath === "/");
+    
+    console.log(`Navigation request: ${href} (path: ${basePath}, hash: ${hash}, isSamePage: ${isSamePage})`);
     
     if (isSamePage && hash) {
       // If we're on the same page, just scroll to the element
@@ -37,14 +41,14 @@ export const useNavigation = () => {
       }, 100);
     } else if (hasHash) {
       // If we're navigating to a different page with a hash, use state
-      console.log(`Navigating to ${path} with scrollToSection=${hash}`);
-      navigate(path, { 
+      console.log(`Navigating to ${basePath} with scrollToSection=${hash}`);
+      navigate(basePath, { 
         state: { scrollToSection: hash }
       });
     } else {
       // Regular navigation
       console.log(`Regular navigation to ${href}`);
-      navigate(href);
+      navigate(basePath);
     }
   };
   
