@@ -1,17 +1,30 @@
 
-// This is a re-export file to maintain compatibility
+// This file properly exports the toast functionality from the UI components
 import {
-  toast,
-  type ToastActionElement,
+  Toast,
+  ToastTitle,
+  ToastDescription,
+  ToastProvider,
+  ToastViewport,
+  ToastAction,
+  ToastClose,
   type ToastProps,
-} from "@/components/ui/toast"
+  type ToastActionElement,
+} from "@/components/ui/toast";
 
 import {
-  useToast as useToastOriginal,
-} from "@/components/ui/use-toast"
+  useToast as useToastHook,
+} from "@/components/ui/use-toast";
 
-// Re-export with the same name for backwards compatibility
-export const useToast = useToastOriginal;
+/**
+ * Toast API for showing notifications
+ * 
+ * @param props - Toast configuration including title, description, and variant
+ */
+const toast = ({ ...props }: ToastProps) => {
+  const { toast } = useToastHook();
+  return toast(props);
+};
 
-export type { ToastProps, ToastActionElement };
-export { toast };
+// Re-export with a clean API
+export { toast, useToastHook as useToast, type ToastProps, type ToastActionElement };
