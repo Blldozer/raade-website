@@ -91,9 +91,10 @@ const StudentApplication = () => {
       console.log("Submitting student application:", sanitizedData);
 
       // Submit to Supabase with status handled by database default
+      // Fix: Pass the object directly, not as an array
       const { error, data } = await supabase
         .from("student_applications")
-        .insert([sanitizedData]);
+        .insert(sanitizedData);
 
       if (error) {
         console.error("Supabase error:", error);

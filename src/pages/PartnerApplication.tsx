@@ -91,9 +91,10 @@ const PartnerApplication = () => {
       console.log("Submitting partner application:", sanitizedData);
 
       // Submit to Supabase with database default handling status
+      // Fix: Pass the object directly, not as an array
       const { error, data } = await supabase
         .from("partner_applications")
-        .insert([sanitizedData]);
+        .insert(sanitizedData);
 
       if (error) {
         console.error("Supabase error:", error);
