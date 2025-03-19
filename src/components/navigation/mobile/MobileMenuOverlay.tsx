@@ -1,12 +1,10 @@
-import React from "react";
-import { navItems, mobileFooterItems } from "../navConfig";
+
+import React, { useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import MobileNavLinks from "./MobileNavLinks";
+import MobileNavHeader from "./MobileNavHeader";
+import MobileNavFooter from "./MobileNavFooter";
 import { useMobileMenuScroll } from "@/hooks/navigation/useMobileMenuScroll";
-import { useNavigation } from "@/hooks/navigation/useNavigation";
-import MobileMenuHeader from "./MobileMenuHeader";
-import MobileMenuContent from "./MobileMenuContent";
-import MobileMenuFooter from "./MobileMenuFooter";
-import MobileMenuBackground from "./MobileMenuBackground";
-import { motion } from "framer-motion";
 
 interface MobileMenuOverlayProps {
   isOpen: boolean;
@@ -16,67 +14,76 @@ interface MobileMenuOverlayProps {
 /**
  * MobileMenuOverlay Component
  * 
- * Provides a full-screen mobile menu overlay with:
- * - Smooth entrance and exit animations
- * - Proper layout organization with specialized child components
- * - Proper event handling and navigation
+ * Full-screen mobile menu overlay with:
+ * - Glassmorphism styling for a modern look
+ * - Smooth entrance/exit animations
+ * - Lock body scroll when open
+ * - Organized header, navigation links, and footer sections
  * 
  * @param isOpen - Whether the menu is currently open
- * @param onClose - Callback to close the menu
+ * @param onClose - Function to call to close the menu
  */
 const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
-  const { handleNavigation } = useNavigation();
+  const { contentRef } = useMobileMenuScroll(isOpen);
   
   // Lock body scroll when menu is open
-  useMobileMenuScroll(isOpen);
-  
-  // Handle navigation and close the menu
-  const handleMenuNavigation = (href: string) => {
-    onClose();
-    handleNavigation(href);
-  };
-
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
   
   return (
-    <motion.div 
-      className="fixed top-0 left-0 w-screen h-screen min-h-screen min-w-full m-0 p-0 z-[9999] flex flex-col overflow-auto"
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        width: '100%',
-        height: '100%',
-        margin: 0,
-        padding: 0
-      }}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-      role="dialog"
-      aria-modal="true"
-    >
-      {/* Background with subtle pattern */}
-      <MobileMenuBackground />
-      
-      <div className="relative z-10 flex flex-col h-full">
-        {/* Header with logo and close button */}
-        <MobileMenuHeader onClose={onClose} />
-        
-        {/* Main navigation content with dropdowns */}
-        <MobileMenuContent 
-          navItems={navItems}
-          footerItems={mobileFooterItems}
-          onNavigation={handleMenuNavigation}
-        />
-        
-        {/* Footer with CTA and copyright */}
-        <MobileMenuFooter onNavigation={handleMenuNavigation} />
-      </div>
-    </motion.div>
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="fixed inset-0 z-[110] overflow-hidden"
+        >
+          {/* Backdrop with glassmorphism effect */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={onClose}
+          />
+          
+          {/* Menu content with glassmorphism styling */}
+          <motion.div
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "tween", ease: "easeOut", duration: 0.3 }}
+            className="absolute right-0 top-0 h-full w-full sm:max-w-[400px] 
+                      bg-white/90 backdrop-blur-md shadow-xl flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <MobileNavHeader onClose={onClose} />
+            
+            {/* Scrollable content area */}
+            <div 
+              className="flex-1 overflow-y-auto py-4 px-6" 
+              ref={contentRef}
+            >
+              <MobileNavLinks onLinkClick={onClose} />
+            </div>
+            
+            <MobileNavFooter onLinkClick={onClose} />
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

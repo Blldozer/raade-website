@@ -1,3 +1,4 @@
+
 import { cn } from "@/lib/utils";
 import NavLogo from "./NavLogo";
 import DesktopNav from "./DesktopNav";
@@ -35,6 +36,7 @@ const NavigationContainer = ({
  * NavigationContent Component - Internal component that consumes the navigation context
  * 
  * Handles the actual rendering of navigation elements using shared state
+ * Now with glassmorphism styling for a modern, translucent appearance
  */
 const NavigationContent = () => {
   const { state } = useNavigation();
@@ -74,12 +76,16 @@ const NavigationContent = () => {
     };
   }, [isHeroPage]);
 
-  // Get background color class based on current section and scroll state
+  // Get background class based on current section and scroll state
   const getBackgroundClass = () => {
-    if (!isScrolled) return "bg-transparent";
+    // Apply glassmorphism effect when scrolled
+    if (isScrolled) {
+      return isLightBackground 
+        ? "bg-white/70 backdrop-blur-md border-b border-gray-200/50 shadow-sm" 
+        : "bg-[#274675]/80 backdrop-blur-md border-b border-[#274675]/30 shadow-md";
+    }
     
-    // For both light and dark backgrounds, use transparent background when scrolled
-    // We're removing the gray background as requested
+    // Transparent when at top
     return "bg-transparent";
   };
 
