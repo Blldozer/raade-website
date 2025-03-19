@@ -3,7 +3,7 @@
 import * as React from "react";
 import type {
   ToastActionElement,
-  ToastProps as UIToastProps,
+  ToastProps,
 } from "@/components/ui/toast";
 
 const TOAST_LIMIT = 5;
@@ -13,11 +13,14 @@ const TOAST_REMOVE_DELAY = 1000000;
  * Extended ToasterToast type that includes the title, description and action
  * properties needed throughout the application
  */
-export type ToasterToast = UIToastProps & {
+export type ToasterToast = {
   id: string;
   title?: React.ReactNode;
   description?: React.ReactNode;
   action?: ToastActionElement;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  variant?: "default" | "destructive";
 };
 
 const actionTypes = {
@@ -138,8 +141,8 @@ export function useToast() {
 
   const toast = React.useCallback(
     (props: Omit<ToasterToast, "id" | "open" | "onOpenChange">) => {
-      const id = props.id || generateId();
-      const update = (props: ToasterToast) =>
+      const id = generateId();
+      const update = (props: Partial<ToasterToast>) =>
         dispatch({
           type: "UPDATE_TOAST",
           id,

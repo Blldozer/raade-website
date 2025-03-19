@@ -8,24 +8,26 @@ import {
   ToastViewport,
   ToastAction,
   ToastClose,
-  type ToastProps as UIToastProps,
-  type ToastActionElement,
+  type ToastProps,
 } from "@/components/ui/toast";
 
 import {
   useToast as useToastHook,
+  type ToasterToast,
 } from "@/components/ui/use-toast";
 
 /**
  * Extended toast props interface that includes description property
  * This ensures TypeScript compatibility with how we're using toasts throughout the app
  */
-export interface ToastProps extends UIToastProps {
+export interface ToastActionElement extends React.ReactElement {}
+
+export type ToastProps = {
   title?: React.ReactNode;
   description?: React.ReactNode;
   action?: ToastActionElement;
   variant?: "default" | "destructive";
-}
+};
 
 /**
  * Toast API for showing notifications
@@ -39,4 +41,4 @@ const toast = (props: ToastProps) => {
 };
 
 // Re-export with a clean API
-export { toast, useToastHook as useToast, type ToastActionElement };
+export { toast, useToastHook as useToast };
