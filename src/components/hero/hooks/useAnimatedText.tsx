@@ -1,7 +1,14 @@
+
 import { useEffect, useRef, useState } from 'react';
 import { useScroll, useTransform } from 'framer-motion';
 
-// A lightweight text typing effect without GSAP
+/**
+ * A lightweight text typing effect implementation that handles special characters properly
+ * 
+ * @param text - The text to be displayed character by character
+ * @param speed - The speed of typing in milliseconds
+ * @returns Object containing the display text and completion status
+ */
 const useTypingEffect = (text: string, speed: number = 80) => {
   const [displayText, setDisplayText] = useState('');
   const [isComplete, setIsComplete] = useState(false);
@@ -20,7 +27,8 @@ const useTypingEffect = (text: string, speed: number = 80) => {
     let i = 0;
     const timer = setInterval(() => {
       if (i < text.length) {
-        setDisplayText(prev => prev + text.charAt(i));
+        // Use slice instead of concatenation to handle special characters better
+        setDisplayText(text.slice(0, i + 1));
         i++;
       } else {
         clearInterval(timer);
@@ -34,6 +42,10 @@ const useTypingEffect = (text: string, speed: number = 80) => {
   return { displayText, isComplete };
 };
 
+/**
+ * Hook that manages animated text transitions and scroll-based animations
+ * Used in the hero section to create engaging text effects
+ */
 export const useAnimatedText = () => {
   const text2Ref = useRef<HTMLDivElement>(null);
   const orgNameRef = useRef<HTMLHeadingElement>(null);
