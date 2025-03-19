@@ -8,7 +8,7 @@ import {
   ToastViewport,
   ToastAction,
   ToastClose,
-  type ToastProps,
+  type ToastProps as UIToastProps,
   type ToastActionElement,
 } from "@/components/ui/toast";
 
@@ -17,19 +17,26 @@ import {
 } from "@/components/ui/use-toast";
 
 /**
+ * Extended toast props interface that includes description property
+ * This ensures TypeScript compatibility with how we're using toasts throughout the app
+ */
+export interface ToastProps extends UIToastProps {
+  title?: React.ReactNode;
+  description?: React.ReactNode;
+  action?: ToastActionElement;
+  variant?: "default" | "destructive";
+}
+
+/**
  * Toast API for showing notifications
  * 
  * @param props - Toast configuration including title, description, and variant
  * @returns Object with toast id, dismiss and update methods
  */
-interface ExtendedToastProps extends ToastProps {
-  description?: React.ReactNode;
-}
-
-const toast = ({ ...props }: ExtendedToastProps) => {
+const toast = (props: ToastProps) => {
   const { toast } = useToastHook();
   return toast(props);
 };
 
 // Re-export with a clean API
-export { toast, useToastHook as useToast, type ExtendedToastProps as ToastProps, type ToastActionElement };
+export { toast, useToastHook as useToast, type ToastActionElement };

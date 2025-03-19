@@ -1,3 +1,4 @@
+
 import { useToast } from "@/hooks/use-toast"
 import {
   Toast,
@@ -8,6 +9,12 @@ import {
   ToastViewport,
 } from "@/components/ui/toast"
 
+/**
+ * Toaster Component
+ * 
+ * Renders toast notifications with support for title and description
+ * This component manages the display of all toast notifications in the app
+ */
 export function Toaster() {
   const { toasts } = useToast()
 

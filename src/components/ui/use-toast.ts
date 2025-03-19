@@ -3,13 +3,17 @@
 import * as React from "react";
 import type {
   ToastActionElement,
-  ToastProps,
+  ToastProps as UIToastProps,
 } from "@/components/ui/toast";
 
 const TOAST_LIMIT = 5;
 const TOAST_REMOVE_DELAY = 1000000;
 
-type ToasterToast = ToastProps & {
+/**
+ * Extended ToasterToast type that includes the title, description and action
+ * properties needed throughout the application
+ */
+export type ToasterToast = UIToastProps & {
   id: string;
   title?: React.ReactNode;
   description?: React.ReactNode;
@@ -113,6 +117,7 @@ const reducer = (state: State, action: Action): State => {
  * Toast hook for managing toast notifications
  * 
  * Provides methods for adding, updating, and dismissing toasts
+ * Now properly supports title, description and other toast properties
  */
 export function useToast() {
   const [state, dispatch] = React.useReducer(reducer, {
@@ -132,9 +137,9 @@ export function useToast() {
   }, [state.toasts]);
 
   const toast = React.useCallback(
-    ({ ...props }: ToastProps) => {
+    (props: Omit<ToasterToast, "id" | "open" | "onOpenChange">) => {
       const id = props.id || generateId();
-      const update = (props: ToastProps) =>
+      const update = (props: ToasterToast) =>
         dispatch({
           type: "UPDATE_TOAST",
           id,
