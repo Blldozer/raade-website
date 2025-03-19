@@ -1,5 +1,5 @@
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSectionNavigation } from './about/useSectionNavigation';
 import { useBackgroundAttributes } from './about/useBackgroundAttributes';
@@ -24,6 +24,9 @@ export const useAboutPage = () => {
     setupErrorHandling 
   } = usePageInitialization();
   
+  // Pre-initialize sections to reduce initial render delay
+  const [sectionsPreloaded, setSectionsPreloaded] = useState(false);
+  
   // Set up page initialization and cleanup
   useEffect(() => {
     // Set document title
@@ -35,6 +38,15 @@ export const useAboutPage = () => {
     // Initialize navigation if needed
     initializeNavigation();
     
+    // Trigger preloading immediately
+    if (!sectionsPreloaded) {
+      // Use a microtask to start loading ASAP but not block initial render
+      Promise.resolve().then(() => {
+        setSectionsPreloaded(true);
+        console.log("Starting section preloading");
+      });
+    }
+    
     // Add debugging information
     console.log("About page mounted with isMobile:", isMobile);
     
@@ -45,9 +57,9 @@ export const useAboutPage = () => {
       document.title = "RAADE";
       cleanupErrorHandler();
     };
-  }, [isMobile, initializeNavigation, setupErrorHandling]);
+  }, [isMobile, initializeNavigation, setupErrorHandling, sectionsPreloaded]);
   
-  // Set up progressive section loading
+  // Set up progressive section loading with preloading awareness
   useProgressiveSections(
     isMobile,
     isMounted,

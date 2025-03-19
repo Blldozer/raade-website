@@ -27,12 +27,12 @@ const LoadingIndicator = ({ message }: LoadingIndicatorProps) => {
     return () => clearInterval(interval);
   }, []);
 
-  // Update message if loading takes too long
+  // Update message more quickly if loading takes too long
   useEffect(() => {
-    if (loadingTime > 3) {
+    if (loadingTime > 2) {
       setCurrentMessage("Still loading... Thank you for your patience.");
     }
-    if (loadingTime > 6) {
+    if (loadingTime > 4) {
       setCurrentMessage("Almost there! Finalizing content...");
     }
   }, [loadingTime]);
@@ -42,7 +42,7 @@ const LoadingIndicator = ({ message }: LoadingIndicatorProps) => {
       <div className="text-center p-8 rounded-lg">
         <div className="w-16 h-16 border-4 border-[#274675] border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
         <div className="text-2xl font-bold text-[#274675] mb-2">{currentMessage}</div>
-        {loadingTime > 2 && (
+        {loadingTime > 1 && (
           <div className="text-sm text-[#3C403A] mt-2">
             Loading time: {loadingTime}s
           </div>

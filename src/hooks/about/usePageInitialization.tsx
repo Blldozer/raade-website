@@ -18,6 +18,7 @@ export const usePageInitialization = () => {
   const { isMobile } = useResponsive();
   
   // Ultimate failsafe - ensure page renders eventually even if other mechanisms fail
+  // Reduced from 8 seconds to 4 seconds
   useEffect(() => {
     const ultimateTimeout = setTimeout(() => {
       if (isLoading) {
@@ -25,7 +26,7 @@ export const usePageInitialization = () => {
         setIsLoading(false);
         setPageInitialized(true);
       }
-    }, 8000); // 8 seconds absolute maximum wait time
+    }, 4000); // Reduced from 8000ms to 4000ms
     
     return () => clearTimeout(ultimateTimeout);
   }, [isLoading]);

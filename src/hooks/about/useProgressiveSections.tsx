@@ -21,7 +21,7 @@ export const useProgressiveSections = (
   useEffect(() => {
     console.log("useProgressiveSections effect running with isMobile:", isMobile);
     
-    // Safety timeout to ensure loading state doesn't get stuck
+    // Safety timeout to ensure loading state doesn't get stuck - reduced from 5s to 3s
     const safetyTimeout = setTimeout(() => {
       if (!isMounted.current) return;
       
@@ -29,9 +29,9 @@ export const useProgressiveSections = (
       setIsLoading(false);
       setPageInitialized(true);
       setActiveSection(5); // Show all sections
-    }, 5000); // 5-second maximum wait time
+    }, 3000); // Reduced from 5000ms to 3000ms
     
-    // Normal initialization with short delay
+    // Normal initialization with minimal delay - reduced from 500ms to 100ms
     const timer = setTimeout(() => {
       if (!isMounted.current) return;
       
@@ -43,34 +43,38 @@ export const useProgressiveSections = (
       if (isMobile) {
         console.log("Mobile detected, using progressive section loading");
         
-        // Start revealing sections one by one
-        const sectionTimer = setInterval(() => {
-          if (!isMounted.current) {
-            clearInterval(sectionTimer);
-            return;
-          }
-          
-          setActiveSection(prev => {
-            const nextSection = prev + 1;
-            console.log(`Activating section ${nextSection}`);
-            
-            if (nextSection >= 5) {
-              console.log("All sections activated, clearing interval");
-              clearInterval(sectionTimer);
-            }
-            return nextSection;
-          });
-        }, 800); // Delay between sections for better performance on mobile
+        // Start revealing sections in parallel with shorter delays
+        // Instead of sequential loading, we'll load sections with staggered timeouts
+        setTimeout(() => {
+          if (!isMounted.current) return;
+          setActiveSection(1);
+        }, 50); // First section almost immediately
         
-        return () => {
-          clearInterval(sectionTimer);
-        };
+        setTimeout(() => {
+          if (!isMounted.current) return;
+          setActiveSection(2);
+        }, 150); // Second section after 150ms
+        
+        setTimeout(() => {
+          if (!isMounted.current) return;
+          setActiveSection(3);
+        }, 300); // Third section after 300ms
+        
+        setTimeout(() => {
+          if (!isMounted.current) return;
+          setActiveSection(4);
+        }, 450); // Fourth section after 450ms
+        
+        setTimeout(() => {
+          if (!isMounted.current) return;
+          setActiveSection(5);
+        }, 600); // Last section after 600ms
       } else {
         // On desktop, show all sections immediately
         console.log("Desktop detected, showing all sections");
         setActiveSection(5);
       }
-    }, 500);
+    }, 100); // Reduced from 500ms to 100ms
     
     // Cleanup function to clear all timers
     return () => {
