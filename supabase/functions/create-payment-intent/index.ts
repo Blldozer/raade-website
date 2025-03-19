@@ -41,7 +41,11 @@ serve(async (req) => {
       );
     }
 
+    // Log that we are creating Stripe instance (debugging)
     console.log("Creating Stripe instance with secret key");
+    console.log("Secret key starts with:", stripeSecretKey.substring(0, 8));
+    
+    // Create a new Stripe instance
     const stripe = new Stripe(stripeSecretKey, {
       apiVersion: "2023-10-16",
       httpClient: Stripe.createFetchHttpClient(),
@@ -161,8 +165,9 @@ serve(async (req) => {
       console.error("Stripe API error:", stripeError);
       return new Response(
         JSON.stringify({ 
-          error: stripeError.message,
-          details: "There was an error processing your payment request with Stripe. Please try again later."
+          error: "Stripe API error: " + stripeError.message,
+          details: "There was an error processing your payment request with Stripe. Please try again later.",
+          stripeErrorType: stripeError.type || "unknown"
         }),
         { 
           status: 500, 
@@ -176,7 +181,7 @@ serve(async (req) => {
     
     return new Response(
       JSON.stringify({ 
-        error: error.message,
+        error: "Server error: " + error.message,
         details: "There was an error processing your payment request. Please try again or contact support."
       }),
       { 

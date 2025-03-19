@@ -65,19 +65,19 @@ const StripeCheckout = ({
       
       if (error) {
         console.error("Payment intent error from Supabase:", error);
-        setErrorDetails(`Error from server: ${error.message || "Unknown error"}`);
+        setErrorDetails(`Error from payment service: ${error.message || "Unknown error"}`);
         onError(error.message || "Failed to initialize payment");
         return;
       }
       
       if (!data) {
         console.error("No data returned from payment intent function");
-        setErrorDetails("No response from payment server");
+        setErrorDetails("No response from payment service");
         onError("Failed to initialize payment. No response from server.");
         return;
       }
       
-      console.log("Payment intent created:", data);
+      console.log("Payment intent response:", data);
       
       // Handle free tickets (speakers)
       if (data.freeTicket) {
@@ -86,7 +86,7 @@ const StripeCheckout = ({
       }
       
       if (data.error) {
-        console.error("Payment intent error:", data.error);
+        console.error("Payment intent error:", data.error, "Details:", data.details);
         setErrorDetails(data.details || data.error);
         onError(data.error);
         return;

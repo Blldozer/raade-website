@@ -3,7 +3,7 @@ import React from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import { Stripe, StripeElementsOptions, loadStripe } from "@stripe/stripe-js";
 
-// Initialize Stripe with the live publishable key
+// Initialize Stripe with the publishable key
 // Enforce HTTPS by ensuring current protocol is considered
 const stripePromise = loadStripe("pk_live_51QzaGsJCmIJg645X8x5sPqhMAiH4pXBh2e6mbgdxxwgqqsCfM8N7SiOvv98N2l5kVeoAlJj3ab08VG4c6PtgVg4d004QXy2W3m", {
   // Ensure API requests use HTTPS in production
@@ -33,6 +33,29 @@ const StripeElementsProvider: React.FC<StripeElementsProviderProps> = ({
   clientSecret,
   children 
 }) => {
+  // Log initialization for debugging
+  React.useEffect(() => {
+    console.log("StripeElementsProvider initializing with client secret:", 
+      clientSecret ? `${clientSecret.substring(0, 10)}...` : "missing");
+    
+    if (!clientSecret) {
+      console.error("Missing client secret in StripeElementsProvider");
+    }
+    
+    // Initialize Stripe and check if it loaded correctly
+    stripePromise.then(
+      stripe => {
+        if (stripe) {
+          console.log("Stripe SDK loaded successfully");
+        } else {
+          console.error("Failed to load Stripe SDK");
+        }
+      }
+    ).catch(err => {
+      console.error("Error initializing Stripe:", err);
+    });
+  }, [clientSecret]);
+  
   // Enforce HTTPS in production environments
   React.useEffect(() => {
     // Check if we're in production and not using HTTPS
