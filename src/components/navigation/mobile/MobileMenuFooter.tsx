@@ -1,3 +1,4 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 import { useNavigation } from "@/hooks/navigation/useNavigation";
@@ -10,7 +11,7 @@ interface MobileNavFooterProps {
  * MobileNavFooter Component
  * 
  * Renders the footer section of the mobile menu with:
- * - Animated CTA button with hover effects
+ * - Gold CTA button with hover effects (maintaining gold color)
  * - Fade-in animations for smooth appearance
  * - Responsive padding for better touch targets
  * - Proper event handling for navigation
@@ -33,7 +34,7 @@ const MobileNavFooter = ({ onLinkClick }: MobileNavFooterProps) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.4 }}
     >
-      {/* Main CTA Button */}
+      {/* Main CTA Button - Updated to point to the build-with-us section */}
       <motion.div 
         className="p-5"
         whileHover={{ scale: 1.02 }}
@@ -54,15 +55,15 @@ const MobileNavFooter = ({ onLinkClick }: MobileNavFooterProps) => {
       
       {/* Copyright or other info */}
       <motion.div 
-        className="border-t border-gray-200 p-4 text-center bg-gradient-to-b from-[#F5F5F0] to-[#EAEAE5]"
+        className="border-t border-white/10 p-4 text-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.6 }}
       >
-        <p className="text-sm text-gray-600 font-alegreyasans">
+        <p className="text-sm text-white/80 font-alegreyasans">
           &copy; {new Date().getFullYear()} RAADE. All rights reserved.
         </p>
-        <p className="text-xs text-gray-400 mt-1 font-alegreyasans">
+        <p className="text-xs text-white/60 mt-1 font-alegreyasans">
           Rice Association for African Development
         </p>
       </motion.div>
