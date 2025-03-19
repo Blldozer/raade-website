@@ -5,6 +5,10 @@ import MobileNavLinks from "./MobileNavLinks";
 import MobileNavHeader from "./MobileNavHeader";
 import MobileNavFooter from "./MobileNavFooter";
 import { useMobileMenuScroll } from "@/hooks/navigation/useMobileMenuScroll";
+import { NavItem } from "../navConfig";
+
+// Import the navigation config to get the navigation items
+import navConfig from "@/components/navigation/navConfig";
 
 interface MobileMenuOverlayProps {
   isOpen: boolean;
@@ -25,6 +29,11 @@ interface MobileMenuOverlayProps {
  */
 const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
   const { contentRef } = useMobileMenuScroll(isOpen);
+  
+  // Get navigation items from navConfig
+  // Separate primary navigation items from footer items
+  const mainNavItems = navConfig.mainNavItems;
+  const footerNavItems = navConfig.footerNavItems || [];
   
   // Lock body scroll when menu is open
   useEffect(() => {
@@ -76,7 +85,11 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
               className="flex-1 overflow-y-auto py-4 px-6" 
               ref={contentRef}
             >
-              <MobileNavLinks onLinkClick={onClose} />
+              <MobileNavLinks 
+                items={mainNavItems} 
+                footerItems={footerNavItems}
+                onLinkClick={onClose} 
+              />
             </div>
             
             <MobileNavFooter onLinkClick={onClose} />

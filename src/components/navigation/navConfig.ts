@@ -1,55 +1,67 @@
+
+/**
+ * Type definitions for navigation items
+ */
+export interface DropdownItem {
+  name: string;
+  href: string;
+  description?: string;
+  external?: boolean;
+}
+
 export interface NavItem {
   name: string;
   href: string;
-  dropdownItems?: {
-    name: string;
-    href: string;
-  }[];
+  dropdownItems?: DropdownItem[];
+  external?: boolean;
+  highlight?: boolean;
 }
 
-export const navItems: NavItem[] = [
-  {
-    name: "About",
-    href: "/about", // Points to the hero section by default
+/**
+ * Main navigation configuration
+ * Defines the structure of the navigation menu
+ */
+const mainNavItems: NavItem[] = [
+  { name: "Home", href: "/" },
+  { 
+    name: "About", 
+    href: "/about",
     dropdownItems: [
-      { name: "Overview", href: "/about#overview" }, // Links to new model section
+      { name: "Our Team", href: "/about#team" },
       { name: "Our Approach", href: "/about#approach" },
-      { name: "Our Impact", href: "/about#impact" },
-      { name: "Meet the Team", href: "/about#team" }
-    ],
+      { name: "Our Impact", href: "/about#impact" }
+    ]
   },
-  {
-    name: "Innovation Studios",
-    href: "/studios", // Points to the hero section by default
+  { 
+    name: "Innovation Studios", 
+    href: "/innovation-studios" 
+  },
+  { 
+    name: "Conference", 
+    href: "/conference",
     dropdownItems: [
-      { name: "Overview", href: "/studios" }, // Home/hero section
-      { name: "Current Projects", href: "/studios#projects" },
-      { name: "Join Us", href: "/studios#apply" },
-    ],
+      { name: "Overview", href: "/conference#overview" },
+      { name: "Speakers", href: "/conference#speakers" },
+      { name: "Schedule", href: "/conference#schedule" },
+      { name: "Register", href: "/conference/registration", highlight: true }
+    ]
   },
-  {
-    name: "Conference",
-    href: "/conference", // Points to the hero section by default
-    dropdownItems: [
-      { name: "Overview", href: "/conference" }, // Home/hero section
-      { name: "Why Attend", href: "/conference#why" },
-      { name: "Registration", href: "/conference#registration" },
-    ],
-  },
-];
-
-// Additional items for mobile nav footer menu (events, contact)
-export const mobileFooterItems: NavItem[] = [
-  {
-    name: "Events",
-    href: "/conference", // Points to conference page hero section
-  },
-  {
-    name: "Contact",
-    href: "/contact", // Points to contact page hero section
-  },
-  {
-    name: "Join Us",
-    href: "/#build", // Points to the "Build with us" section on the homepage
+  { 
+    name: "Projects", 
+    href: "/projects" 
   }
 ];
+
+/**
+ * Footer navigation items
+ * These appear at the bottom of the mobile menu
+ */
+const footerNavItems: NavItem[] = [
+  { name: "Contact", href: "/contact" },
+  { name: "Privacy Policy", href: "/privacy-policy" }
+];
+
+export default {
+  mainNavItems,
+  footerNavItems
+};

@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+
+import { useEffect, useRef } from 'react';
 
 /**
  * Custom hook to manage scroll behavior when mobile menu is open
@@ -7,10 +8,15 @@ import { useEffect } from 'react';
  * - Locking body scroll when menu is open
  * - Storing and restoring scroll position
  * - Properly handling scrollbar width to prevent layout shift
+ * - Returns a reference for the scrollable content area
  * 
  * @param isOpen - Whether the mobile menu is currently open
+ * @returns - Object containing the content reference for the scrollable area
  */
 export const useMobileMenuScroll = (isOpen: boolean) => {
+  // Create a ref for the scrollable content area
+  const contentRef = useRef<HTMLDivElement>(null);
+  
   useEffect(() => {
     // Store the current scroll position at the time the effect runs
     const scrollPosition = window.scrollY;
@@ -78,4 +84,7 @@ export const useMobileMenuScroll = (isOpen: boolean) => {
       }
     };
   }, [isOpen]);
+  
+  // Return the ref for the content area
+  return { contentRef };
 };

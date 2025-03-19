@@ -1,9 +1,10 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { NavItem } from "../navConfig";
 
-interface MobileNavLinksProps {
+export interface MobileNavLinksProps {
   items: NavItem[];
   footerItems: NavItem[];
   onLinkClick: () => void;
