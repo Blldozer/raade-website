@@ -156,20 +156,21 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <ErrorBoundary 
-          fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
-          suppressDevErrors={isDevelopment} // Suppress dev errors in development mode
-        >
-          <BrowserRouter>
+      <BrowserRouter>
+        {/* TooltipProvider moved inside BrowserRouter */}
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <ErrorBoundary 
+            fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
+            suppressDevErrors={isDevelopment}
+          >
             <ScrollToTop />
             <div className="min-h-screen flex flex-col">
               <NavigationWrapper />
               <ErrorBoundary 
                 fallback={<GlobalErrorFallback error={new Error("Content failed to render")} />}
-                suppressDevErrors={isDevelopment} // Suppress dev errors in development mode
+                suppressDevErrors={isDevelopment}
               >
                 <div className="flex-grow">
                   <Suspense fallback={<PageLoading />}>
@@ -189,10 +190,10 @@ const App = () => {
               </ErrorBoundary>
               <Footer />
             </div>
-          </BrowserRouter>
-        </ErrorBoundary>
-        {isDev && <TouchDebugger />}
-      </TooltipProvider>
+          </ErrorBoundary>
+          {isDev && <TouchDebugger />}
+        </TooltipProvider>
+      </BrowserRouter>
     </QueryClientProvider>
   );
 };

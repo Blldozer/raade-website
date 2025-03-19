@@ -32,11 +32,11 @@ const mainNavItems: NavItem[] = [
   },
   { 
     name: "Innovation Studios", 
-    href: "/innovation-studios",
+    href: "/studios", // Fixed path to match the route in App.tsx
     dropdownItems: [
-      { name: "Overview", href: "/innovation-studios#overview" },
-      { name: "Projects", href: "/innovation-studios#projects" },
-      { name: "Apply", href: "/innovation-studios#apply" }
+      { name: "Overview", href: "/studios#overview" },
+      { name: "Projects", href: "/studios#projects" },
+      { name: "Apply", href: "/studios#apply" }
     ]
   },
   { 
@@ -46,7 +46,7 @@ const mainNavItems: NavItem[] = [
       { name: "Overview", href: "/conference#overview" },
       { name: "Speakers", href: "/conference#speakers" },
       { name: "Schedule", href: "/conference#schedule" },
-      { name: "Register", href: "/conference/registration", highlight: true }
+      { name: "Register", href: "/conference/register", highlight: true } // Fixed to match route in App.tsx
     ]
   }
 ];

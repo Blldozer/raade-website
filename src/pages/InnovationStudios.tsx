@@ -25,6 +25,9 @@ const InnovationStudios = () => {
     scrollToContent
   } = useInnovationStudios();
 
+  // Added console.log to debug rendering
+  console.log("Rendering InnovationStudios page");
+
   return (
     <div className="bg-white">
       {/* Single Navigation component at the top level */}

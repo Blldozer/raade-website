@@ -21,6 +21,7 @@ export const useInnovationStudios = () => {
 
   // Initialize with 'light' for proper contrast over the dark purple hero background
   useLayoutEffect(() => {
+    console.log("useInnovationStudios: Initializing with light nav background");
     document.body.setAttribute('data-nav-background', 'light');
     
     return () => {
@@ -44,13 +45,13 @@ export const useInnovationStudios = () => {
       // Check if we're in overview section
       else if (overviewRef.current && 
           scrollPosition >= overviewRef.current.offsetTop - 100 && 
-          scrollPosition < projectsRef.current?.offsetTop! - 100) {
+          scrollPosition < (projectsRef.current?.offsetTop || Number.MAX_SAFE_INTEGER) - 100) {
         setCurrentSection("overview");
       }
       // Check if we're in projects section
       else if (projectsRef.current && 
           scrollPosition >= projectsRef.current.offsetTop - 100 && 
-          scrollPosition < applyRef.current?.offsetTop! - 100) {
+          scrollPosition < (applyRef.current?.offsetTop || Number.MAX_SAFE_INTEGER) - 100) {
         setCurrentSection("projects");
       }
       // Check if we're in apply section
@@ -68,17 +69,21 @@ export const useInnovationStudios = () => {
     
     // Handle scrolling to sections based on hash
     if (location.hash) {
+      console.log(`useInnovationStudios: Hash detected - ${location.hash}`);
       setTimeout(() => {
         const hash = location.hash.replace('#', '');
         if (hash === 'overview' && overviewRef.current) {
+          console.log("Scrolling to overview section");
           overviewRef.current.scrollIntoView({
             behavior: 'smooth'
           });
         } else if (hash === 'projects' && projectsRef.current) {
+          console.log("Scrolling to projects section");
           projectsRef.current.scrollIntoView({
             behavior: 'smooth'
           });
         } else if (hash === 'apply' && applyRef.current) {
+          console.log("Scrolling to apply section");
           applyRef.current.scrollIntoView({
             behavior: 'smooth'
           });
@@ -88,6 +93,7 @@ export const useInnovationStudios = () => {
     
     // Also handle navigation via state (when coming from another page)
     else if (location.state && location.state.scrollToSection) {
+      console.log(`useInnovationStudios: State scrollToSection detected - ${location.state.scrollToSection}`);
       setTimeout(() => {
         const sectionId = location.state.scrollToSection;
         if (sectionId === 'overview' && overviewRef.current) {
