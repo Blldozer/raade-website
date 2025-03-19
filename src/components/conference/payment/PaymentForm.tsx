@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import PaymentTotal from "./PaymentTotal";
@@ -7,6 +7,12 @@ import PaymentStatus from "./PaymentStatus";
 import PaymentFormButtons from "./PaymentFormButtons";
 import { usePaymentElements } from "./hooks/usePaymentElements";
 import { usePaymentSubmission } from "./hooks/usePaymentSubmission";
+
+import {
+  PaymentElement,
+  LinkAuthenticationElement,
+  AddressElement
+} from "@stripe/react-stripe-js";
 
 interface PaymentFormProps {
   email: string;
@@ -146,11 +152,5 @@ const UseStripeElements = ({ email }: { email: string }) => {
     </>
   );
 };
-
-import {
-  PaymentElement,
-  LinkAuthenticationElement,
-  AddressElement
-} from "@stripe/react-stripe-js";
 
 export default PaymentForm;
