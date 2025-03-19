@@ -1,0 +1,42 @@
+
+import React from "react";
+import { motion } from "framer-motion";
+import { NavItem } from "../navConfig";
+
+interface MobileMenuItemProps {
+  item: NavItem;
+  onNavigation: (href: string) => void;
+}
+
+/**
+ * MobileMenuItem Component
+ * 
+ * Renders a standard menu item with:
+ * - Smooth hover and tap animations
+ * - Proper event handling for navigation
+ * - Consistent styling with the rest of the mobile menu
+ * 
+ * @param item - Navigation item to display
+ * @param onNavigation - Function to handle navigation
+ */
+const MobileMenuItem = ({ item, onNavigation }: MobileMenuItemProps) => {
+  // Handle navigation with proper event handling
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    onNavigation(href);
+  };
+
+  return (
+    <motion.a
+      href={item.href}
+      className="block text-lg text-[#274675] hover:text-[#FBB03B] transition-colors font-alegreyasans font-bold py-2 px-3 rounded-md hover:bg-[#F4F5F4]/60"
+      onClick={(e) => handleLinkClick(e, item.href)}
+      whileHover={{ x: 5, scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      {item.name}
+    </motion.a>
+  );
+};
+
+export default MobileMenuItem;
