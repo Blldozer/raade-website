@@ -41,11 +41,25 @@ serve(async (req) => {
       );
     }
 
+    // Validate the secret key format (should start with sk_)
+    if (!stripeSecretKey.startsWith('sk_')) {
+      console.error("Invalid STRIPE_SECRET_KEY format, should start with sk_");
+      return new Response(
+        JSON.stringify({ 
+          error: "Server configuration error: Invalid Stripe secret key format" 
+        }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
+    }
+
     // Log that we are creating Stripe instance (debugging)
     console.log("Creating Stripe instance with secret key");
-    console.log("Secret key starts with:", stripeSecretKey.substring(0, 8));
+    console.log("Secret key format valid:", stripeSecretKey.substring(0, 7));
     
-    // Create a new Stripe instance
+    // Create a new Stripe instance with the configured secret key
     const stripe = new Stripe(stripeSecretKey, {
       apiVersion: "2023-10-16",
       httpClient: Stripe.createFetchHttpClient(),
@@ -56,7 +70,12 @@ serve(async (req) => {
     const { ticketType, email, fullName, groupSize } = requestData;
     
     // Log request for debugging
-    console.log("Received payment intent request:", JSON.stringify(requestData));
+    console.log("Received payment intent request:", JSON.stringify({
+      ticketType,
+      email,
+      fullName,
+      groupSize: groupSize || "N/A"
+    }));
     
     // Validate input data
     if (!ticketType || !email || !fullName) {
