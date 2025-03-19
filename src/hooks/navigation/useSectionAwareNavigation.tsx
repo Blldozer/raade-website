@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { isLightColor, getElementBackgroundColor } from '@/utils/colorUtils';
 
@@ -79,13 +80,29 @@ export function useSectionAwareNavigation({
     let lightBackground = false;
     
     try {
-      const backgroundColor = getElementBackgroundColor(section as HTMLElement);
-      lightBackground = isLightColor(backgroundColor);
+      // First check if section has explicit data-background attribute
+      const backgroundAttr = section.getAttribute('data-background');
+      
+      if (backgroundAttr === 'light') {
+        lightBackground = true;
+      } else if (backgroundAttr === 'dark') {
+        lightBackground = false;
+      } else {
+        // If no explicit attribute, analyze the actual background color
+        const backgroundColor = getElementBackgroundColor(section as HTMLElement);
+        lightBackground = isLightColor(backgroundColor);
+      }
+      
+      // Update the state based on our analysis
+      setIsLightBackground(lightBackground);
+      
+      // For debugging
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`Section ${section.id || 'unnamed'} background: ${lightBackground ? 'light' : 'dark'}`);
+      }
     } catch (error) {
       console.error('Error analyzing section background:', error);
     }
-    
-    setIsLightBackground(lightBackground);
   }, []);
   
   // Handle intersections detected by the observer
