@@ -11,6 +11,7 @@ import { useLocation } from "react-router-dom";
  * - Sets up navigation with proper background contrast for accessibility
  * - Handles automatic scrolling to specific sections based on URL hash or state
  * - Ensures proper page title for SEO and user experience
+ * - Optimized handling of section navigation with improved error handling
  */
 const ConferencePage = () => {
   const location = useLocation();
@@ -31,34 +32,37 @@ const ConferencePage = () => {
     
     // Update page title to reflect Day Forum instead of Conference
     document.title = "RAADE | Day Forum";
+    
+    console.log("ConferencePage: Mounted with location", location);
   }, []);
   
   // Handle scrolling to a specific section when navigated with state
   useEffect(() => {
     if (location.state && location.state.scrollToSection) {
       const sectionId = location.state.scrollToSection;
+      console.log("ConferencePage: Scrolling to section from state", sectionId);
+      
       // Small delay to ensure the section is rendered
       const timer = setTimeout(() => {
-        const section = document.getElementById(sectionId);
-        if (section) {
-          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        try {
+          const section = document.getElementById(sectionId);
+          if (section) {
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          } else {
+            console.warn(`ConferencePage: Section ${sectionId} not found`);
+          }
+        } catch (error) {
+          console.error("ConferencePage: Error scrolling to section", error);
         }
-      }, 500);
+      }, 300);
       
       return () => clearTimeout(timer);
     }
     
     // Check if URL has hash
-    if (window.location.hash) {
-      const sectionId = window.location.hash.substring(1); // Remove the # character
-      const timer = setTimeout(() => {
-        const section = document.getElementById(sectionId);
-        if (section) {
-          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 500);
-      
-      return () => clearTimeout(timer);
+    if (location.hash) {
+      // The hash is handled by ScrollToTop component
+      console.log("ConferencePage: URL has hash", location.hash);
     }
   }, [location]);
   

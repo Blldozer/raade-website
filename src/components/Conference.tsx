@@ -46,10 +46,14 @@ const Conference = () => {
       <ConferenceHero />
       
       {/* Conference Overview */}
-      <ConferenceOverview />
+      <section id="overview">
+        <ConferenceOverview />
+      </section>
       
-      {/* Why Attend Section */}
-      <ConferenceWhy />
+      {/* Why Attend Section - Added id to match navigation target */}
+      <section id="why-attend">
+        <ConferenceWhy />
+      </section>
       
       {/* Registration Options */}
       <section id="registration">
