@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 
 interface LoadingIndicatorProps {
@@ -6,19 +5,19 @@ interface LoadingIndicatorProps {
 }
 
 /**
- * Loading indicator component with customizable message and fallback timeout
+ * Loading indicator component with customizable message
  * 
  * Features:
  * - Shows loading animation with custom message
- * - Updates message if loading takes too long
  * - Provides visual feedback about loading progress
  * - Fully responsive design for all devices
+ * - Simple clean interface that doesn't distract users
  */
 const LoadingIndicator = ({ message }: LoadingIndicatorProps) => {
   const [loadingTime, setLoadingTime] = useState(0);
   const [currentMessage, setCurrentMessage] = useState(message);
 
-  // Update loading time and potentially show different message if loading takes too long
+  // Update loading time counter
   useEffect(() => {
     const interval = setInterval(() => {
       setLoadingTime(prev => prev + 1);
@@ -27,15 +26,8 @@ const LoadingIndicator = ({ message }: LoadingIndicatorProps) => {
     return () => clearInterval(interval);
   }, []);
 
-  // Update message more quickly if loading takes too long
-  useEffect(() => {
-    if (loadingTime > 2) {
-      setCurrentMessage("Still loading... Thank you for your patience.");
-    }
-    if (loadingTime > 4) {
-      setCurrentMessage("Almost there! Finalizing content...");
-    }
-  }, [loadingTime]);
+  // We're not changing messages anymore based on loading time
+  // This keeps the UI cleaner and less distracting
 
   return (
     <div className="fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center z-50">
