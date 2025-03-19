@@ -27,7 +27,7 @@ export const usePaymentTimeout = (
       isMountedRef.current = false;
       // Clear any pending timeouts
       if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+        window.clearTimeout(timeoutRef.current);
       }
     };
   }, []);
@@ -35,7 +35,7 @@ export const usePaymentTimeout = (
   const startTimeout = () => {
     // Clear any existing timeout
     if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
+      window.clearTimeout(timeoutRef.current);
     }
     
     // Set a new timeout
@@ -49,7 +49,7 @@ export const usePaymentTimeout = (
     timeoutRef.current = timeoutId as unknown as number;
   };
 
-  const clearTimeout = () => {
+  const clearPaymentTimeout = () => {
     if (timeoutRef.current) {
       window.clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
@@ -58,7 +58,7 @@ export const usePaymentTimeout = (
 
   return {
     startTimeout,
-    clearTimeout,
+    clearTimeout: clearPaymentTimeout,
     isMountedRef
   };
 };
