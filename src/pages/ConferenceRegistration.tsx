@@ -10,14 +10,14 @@ import { useNavBackground } from "@/hooks/useNavBackground";
  * Conference Registration Page
  * 
  * This page displays the registration form for conference attendees.
- * The gradient background requires a dark navbar (light text) for proper contrast,
- * so we explicitly set the data-nav-background attribute to "dark".
+ * Uses a dark navbar for proper contrast against the light gradient background.
+ * The forceDarkMode prop is set to true to ensure proper text contrast.
  */
 const ConferenceRegistration = () => {
   const navigate = useNavigate();
   
   // Initialize navigation background control
-  // This ensures proper navbar styling immediately on page load
+  // Setting to 'dark' to ensure proper navbar styling on this page
   useNavBackground('dark');
   
   // Added console.log to debug rendering
@@ -28,7 +28,7 @@ const ConferenceRegistration = () => {
     window.scrollTo(0, 0);
     
     // Set navigation background to dark explicitly for this page
-    // This ensures the navbar will have light text against our gradient background
+    // This ensures the navbar will have light text for proper contrast
     document.body.setAttribute('data-nav-background', 'dark');
     
     // Cleanup function to reset attribute when component unmounts
@@ -39,8 +39,8 @@ const ConferenceRegistration = () => {
   
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#274675]/10 to-white">
-      {/* Don't force dark mode, but rely on data-nav-background attribute */}
-      <Navigation />
+      {/* Force dark mode for the navbar to ensure proper contrast */}
+      <Navigation forceDarkMode={true} />
       <div className="flex-grow pt-20 px-4 md:px-8">
         <div className="max-w-3xl mx-auto py-12">
           <button onClick={() => navigate("/conference")} className="flex items-center text-black hover:text-black/70 mb-6 transition-colors duration-300 font-lora">
