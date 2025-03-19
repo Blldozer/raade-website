@@ -1,7 +1,7 @@
 
 import { useCallback, useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import PaymentForm from "./PaymentForm";
+import PaymentForm from "./payment/PaymentForm";
 import LoadingIndicator from "./payment/LoadingIndicator";
 import ErrorDisplay from "./payment/ErrorDisplay";
 import StripeElementsProvider from "./payment/StripeElementsProvider";
