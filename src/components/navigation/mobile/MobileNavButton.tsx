@@ -1,3 +1,4 @@
+// This is the right code for the hamburger implementation
 import React from 'react';
 import { Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';

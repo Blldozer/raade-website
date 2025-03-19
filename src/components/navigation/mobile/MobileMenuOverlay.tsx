@@ -1,3 +1,4 @@
+// This is the right code for the hamburger implementation
 import React from "react";
 import { navItems, mobileFooterItems } from "../navConfig";
 import { useMobileMenuScroll } from "@/hooks/navigation/useMobileMenuScroll";

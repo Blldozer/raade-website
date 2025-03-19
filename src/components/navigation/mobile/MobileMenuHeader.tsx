@@ -1,3 +1,4 @@
+// This is the right code for the hamburger implementation
 import React from "react";
 import { X, Search } from "lucide-react";
 import { motion } from "framer-motion";

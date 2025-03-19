@@ -1,3 +1,4 @@
+// This is the right code for the hamburger implementation
 import { useEffect } from 'react';
 
 /**
