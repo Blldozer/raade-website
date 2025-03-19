@@ -8,6 +8,7 @@ import NoiseTexture from "@/components/ui/NoiseTexture";
 import { useNavigation } from "../context/useNavigation";
 import { useLocation } from "react-router-dom";
 import { useRef, useEffect } from "react";
+import { useNavBackgroundStyle } from "@/hooks/navigation/useNavBackgroundStyle";
 
 interface NavigationContentProps {
   instanceId: string;
@@ -18,6 +19,7 @@ interface NavigationContentProps {
  * 
  * Handles the actual visual rendering of navigation elements using shared state
  * Features enhanced glassmorphism styling with subtle noise texture for depth
+ * Background styling logic extracted to useNavBackgroundStyle hook
  * 
  * @param instanceId - Unique identifier for this navigation instance (for debugging)
  */
@@ -36,7 +38,9 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
   } = state;
   
   const location = useLocation();
-  const isConferenceRegistrationPage = location.pathname === '/conference/register';
+  
+  // Get styling from our extracted hook
+  const { backgroundClass, isConferenceRegistrationPage, effectiveLightBackground } = useNavBackgroundStyle();
   
   // Get responsive padding values
   const getPadding = () => {
@@ -81,15 +85,11 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
     isConferenceRegistrationPage
   ]);
 
-  // Determine the actual background state considering all factors
-  const effectiveLightBackground = 
-    forceDarkMode || isConferenceRegistrationPage ? false : isLightBackground;
-
   return (
     <nav
       className={cn(
         "fixed w-full z-[100] transition-all duration-300 pointer-events-auto pt-2 sm:pt-3 md:pt-4 isolate", 
-        getBackgroundClass(isScrolled, isLightBackground, isConferenceRegistrationPage, forceDarkMode),
+        backgroundClass,
         isVisible 
           ? "translate-y-0" 
           : "-translate-y-full"
@@ -138,31 +138,6 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
       </div>
     </nav>
   );
-};
-
-/**
- * Helper function to determine navbar background styling based on state
- */
-const getBackgroundClass = (
-  isScrolled: boolean, 
-  isLightBackground: boolean,
-  isConferenceRegistrationPage: boolean,
-  forceDarkMode: boolean
-): string => {
-  // Apply enhanced glassmorphism effect with proper light/dark handling when scrolled
-  if (isScrolled) {
-    // For conference registration, always use dark background
-    if (isConferenceRegistrationPage || forceDarkMode) {
-      return "bg-[#274675]/80 backdrop-blur-md border-b border-[#274675]/30 shadow-md";
-    }
-    
-    return isLightBackground 
-      ? "bg-white/70 backdrop-blur-md border-b border-gray-200/50 shadow-sm" 
-      : "bg-[#274675]/80 backdrop-blur-md border-b border-[#274675]/30 shadow-md";
-  }
-  
-  // Transparent when at top
-  return "bg-transparent";
 };
 
 export default NavigationContent;
