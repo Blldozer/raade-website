@@ -3,7 +3,13 @@ import { useEffect } from 'react';
 
 /**
  * Custom hook to handle progressive section loading
- * Manages revealing sections gradually based on device type
+ * 
+ * Features:
+ * - Manages revealing sections gradually based on device type
+ * - Includes safety timeout to prevent infinite loading state
+ * - Optimized for mobile performance with staggered loading
+ * - Provides clear logging for debugging
+ * - Handles component unmounting gracefully
  */
 export const useProgressiveSections = (
   isMobile: boolean,
@@ -13,17 +19,30 @@ export const useProgressiveSections = (
   setPageInitialized: (isInitialized: boolean) => void
 ) => {
   useEffect(() => {
-    // Initialize with a clearer approach - use a delay to ensure DOM is ready
+    console.log("useProgressiveSections effect running with isMobile:", isMobile);
+    
+    // Safety timeout to ensure loading state doesn't get stuck
+    const safetyTimeout = setTimeout(() => {
+      if (!isMounted.current) return;
+      
+      console.log("Safety timeout triggered - forcing loading complete");
+      setIsLoading(false);
+      setPageInitialized(true);
+      setActiveSection(5); // Show all sections
+    }, 5000); // 5-second maximum wait time
+    
+    // Normal initialization with short delay
     const timer = setTimeout(() => {
       if (!isMounted.current) return;
       
-      console.log("Initial loading complete");
+      console.log("Initial loading complete, isMobile:", isMobile);
       setIsLoading(false);
       setPageInitialized(true);
       
       // On mobile, we'll progressively reveal sections
       if (isMobile) {
         console.log("Mobile detected, using progressive section loading");
+        
         // Start revealing sections one by one
         const sectionTimer = setInterval(() => {
           if (!isMounted.current) {
@@ -41,7 +60,7 @@ export const useProgressiveSections = (
             }
             return nextSection;
           });
-        }, 800); // Increased delay between sections for better performance on mobile
+        }, 800); // Delay between sections for better performance on mobile
         
         return () => {
           clearInterval(sectionTimer);
@@ -51,10 +70,12 @@ export const useProgressiveSections = (
         console.log("Desktop detected, showing all sections");
         setActiveSection(5);
       }
-    }, 500); // Increased initial delay for better reliability
+    }, 500);
     
+    // Cleanup function to clear all timers
     return () => {
       clearTimeout(timer);
+      clearTimeout(safetyTimeout);
     };
   }, [isMobile, isMounted, setActiveSection, setIsLoading, setPageInitialized]);
 };

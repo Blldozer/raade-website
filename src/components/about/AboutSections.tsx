@@ -16,10 +16,19 @@ interface AboutSectionsProps {
 
 /**
  * AboutSections component - Manages the lazy loading of About page sections
- * Progressively reveals sections based on the activeSection prop
- * Each section includes data-background attributes for proper navbar styling
+ * 
+ * Features:
+ * - Progressively reveals sections based on the activeSection prop
+ * - Uses React.Suspense for smooth lazy loading
+ * - Custom fallbacks for better user experience during loading
+ * - Handles edge cases like uninitialized page state
  */
 const AboutSections = ({ activeSection, pageInitialized }: AboutSectionsProps) => {
+  // Log state for debugging
+  React.useEffect(() => {
+    console.log("AboutSections render - activeSection:", activeSection, "pageInitialized:", pageInitialized);
+  }, [activeSection, pageInitialized]);
+  
   // Create an array of sections to render progressively
   const sections = [
     // Section 0: Always visible hero (not lazy loaded for immediate display)
@@ -48,11 +57,19 @@ const AboutSections = ({ activeSection, pageInitialized }: AboutSectionsProps) =
     </Suspense>
   ];
 
-  return (
-    <>
-      {pageInitialized && sections.slice(1, activeSection + 1)}
-    </>
-  );
+  // Handle edge case where page isn't initialized
+  if (!pageInitialized) {
+    console.log("AboutSections: Page not yet initialized, returning null");
+    return null;
+  }
+
+  // Ensure we return at least the first section if activeSection is 0
+  const sectionsToRender = activeSection === 0 ? 
+    [sections[1]] : 
+    sections.slice(1, activeSection + 1);
+
+  console.log(`Rendering ${sectionsToRender.length} sections`);
+  return <>{sectionsToRender}</>;
 };
 
 export default AboutSections;

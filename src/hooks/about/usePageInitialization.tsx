@@ -4,13 +4,31 @@ import { useResponsive } from '../useResponsive';
 
 /**
  * Custom hook to handle the About page initialization and loading state
- * Manages progressive section loading and error handling
+ * 
+ * Features:
+ * - Manages progressive section loading and error handling
+ * - Provides failsafe mechanisms to prevent UI getting stuck
+ * - Handles edge cases like slow network connections
+ * - Properly tracks component lifecycle to prevent memory leaks
  */
 export const usePageInitialization = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [pageInitialized, setPageInitialized] = useState(false);
   const { isMobile } = useResponsive();
+  
+  // Ultimate failsafe - ensure page renders eventually even if other mechanisms fail
+  useEffect(() => {
+    const ultimateTimeout = setTimeout(() => {
+      if (isLoading) {
+        console.warn("Ultimate failsafe triggered - forcing render after timeout");
+        setIsLoading(false);
+        setPageInitialized(true);
+      }
+    }, 8000); // 8 seconds absolute maximum wait time
+    
+    return () => clearTimeout(ultimateTimeout);
+  }, [isLoading]);
   
   // Function to set up error handling
   const setupErrorHandling = (isMounted: boolean) => {
