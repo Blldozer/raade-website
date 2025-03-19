@@ -1,4 +1,3 @@
-
 /**
  * Type definitions for navigation items
  */
@@ -56,7 +55,7 @@ const mainNavItems: NavItem[] = [
  */
 const footerNavItems: NavItem[] = [
   { name: "Contact", href: "/contact" },
-  { name: "Privacy Policy", href: "/privacy-policy" }
+  { name: "Events", href: "/conference" }
 ];
 
 export default {
