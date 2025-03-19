@@ -2,12 +2,14 @@ import { useState, useEffect, ReactNode } from "react";
 import { useLocation } from "react-router-dom";
 import { useResponsive } from "@/hooks/useResponsive";
 import { NavigationContext, NavigationState } from "./NavigationContextDefinition";
+import { useSectionAwareNavigation } from "@/hooks/navigation/useSectionAwareNavigation";
 
 /**
  * NavigationProvider Component
  * 
  * Manages global navigation state and provides it to child components
  * Handles scroll detection, visibility logic, and background styling
+ * Automatically adapts to section backgrounds using Intersection Observer
  * 
  * @param children - Child components that will have access to the context
  * @param initialProps - Optional override props for the navigation
@@ -29,7 +31,6 @@ export const NavigationProvider = ({
   // Core navigation state
   const [isScrolled, setIsScrolled] = useState(false);
   const [isPastHero, setIsPastHero] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   
   // Fix for the nullish coalescing operator error
@@ -43,20 +44,30 @@ export const NavigationProvider = ({
   const isHeroPage = initialProps.isHeroPage ?? false;
   const useShortFormLogo = initialProps.useShortFormLogo ?? false;
   
+  // Use section-aware navigation for background detection
+  const {
+    isLightBackground,
+    isNavbarVisible,
+    currentSection,
+    currentSectionId
+  } = useSectionAwareNavigation({
+    threshold: 0.6,
+    excludeSections: ['.footer', 'footer', '.nav', 'nav']
+  });
+  
+  // Update background when the light/dark detection changes
+  useEffect(() => {
+    // Only update background if we're not overriding with forceDarkMode
+    if (initialProps.forceDarkMode === undefined) {
+      setIsDarkBackground(!isLightBackground);
+    }
+  }, [isLightBackground, initialProps.forceDarkMode]);
+  
   // Handle scroll events to update visibility and scroll state
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       const heroHeight = window.innerHeight * 0.9;
-      
-      // Visibility control based on scroll direction
-      if (currentScrollY < 50) {
-        setIsVisible(true);
-      } else if (currentScrollY > lastScrollY + 10) {
-        setIsVisible(false);
-      } else if (currentScrollY < lastScrollY - 10) {
-        setIsVisible(true);
-      }
       
       setLastScrollY(currentScrollY);
       setIsScrolled(currentScrollY > 20);
@@ -75,12 +86,15 @@ export const NavigationProvider = ({
   const navigationState: NavigationState = {
     isScrolled,
     isPastHero,
-    isVisible,
+    isVisible: isNavbarVisible,
     isDarkBackground,
     isMobile,
     isTablet,
     isHeroPage,
-    useShortFormLogo
+    useShortFormLogo,
+    currentSection,
+    currentSectionId,
+    isLightBackground
   };
   
   return (

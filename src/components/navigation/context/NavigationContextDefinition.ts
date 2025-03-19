@@ -13,6 +13,11 @@ export interface NavigationState {
   // Background and styling
   isDarkBackground: boolean;
   
+  // Section awareness
+  currentSection: Element | null;
+  currentSectionId: string | null;
+  isLightBackground: boolean;
+  
   // Responsive state
   isMobile: boolean;
   isTablet: boolean;

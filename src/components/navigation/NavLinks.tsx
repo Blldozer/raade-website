@@ -3,7 +3,8 @@ import { useLocation } from "react-router-dom";
 import NavDropdown from "./NavDropdown";
 import JoinButton from "./JoinButton";
 import { navItems } from "./navConfig";
-import { useNavigation } from "@/hooks/navigation/useNavigation";
+import { useNavigation as useNavigationContext } from "./context/useNavigation";
+import { useNavigation as useNavigationHook } from "@/hooks/navigation/useNavigation";
 
 interface NavLinksProps {
   className?: string;
@@ -20,35 +21,58 @@ interface NavLinksProps {
  * - Uses React Router for client-side navigation
  * - Conditionally styles links based on context
  * - Supports dropdown menus for section navigation
+ * - Adapts style based on the background color of the current section
  */
 const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = false, forceDarkMode = false }: NavLinksProps) => {
   const location = useLocation();
-  const { handleNavigation } = useNavigation();
+  const { handleNavigation } = useNavigationHook();
+  const { state } = useNavigationContext();
+  const { isDarkBackground, isLightBackground } = state;
   
   const isProjectPage = location.pathname.includes('/projects/');
   const isApplicationPage = location.pathname === "/studios/apply" || location.pathname === "/studios/partner";
   
+  /**
+   * Get text color for nav links based on background and context
+   * - On project pages: always white text on dark background
+   * - On application pages: always white text on dark background
+   * - On light backgrounds: dark blue text (#274675)
+   * - On dark backgrounds: white text
+   */
   const getTextColor = () => {
+    // Special page overrides
     if (isProjectPage || isApplicationPage) {
       return "text-white hover:text-[#FBB03B]";
     }
     
-    if (forceDarkMode) {
+    // When on a light background or when dark mode is forced, use dark text
+    if (forceDarkMode || isLightBackground) {
       return "text-[#274675] hover:text-[#FBB03B]";
     }
     
+    // Default for dark backgrounds
     return "text-white hover:text-[#FBB03B]";
   };
 
+  /**
+   * Get button styles based on background and context
+   * - On project pages: white border, transparent background
+   * - On application pages: white border, transparent background
+   * - On light backgrounds: dark blue/gold styles
+   * - On dark backgrounds: white/gold styles
+   */
   const getButtonStyles = () => {
+    // Special page overrides
     if (isProjectPage || isApplicationPage) {
       return "border-white text-white hover:bg-[#FBB03B] hover:border-[#FBB03B] hover:text-white";
     }
     
-    if (!forceDarkMode) {
+    // When on dark backgrounds and not forced to dark mode, use white button
+    if (!forceDarkMode && !isLightBackground) {
       return "border-white text-white hover:bg-[#FBB03B] hover:border-[#FBB03B] hover:text-white";
     }
     
+    // Default for light backgrounds - gold button
     return "border-[#FBB03B] bg-[#FBB03B] text-white hover:bg-[#274675] hover:border-[#274675] shadow-md";
   };
   

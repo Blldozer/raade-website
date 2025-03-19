@@ -34,15 +34,15 @@ const MobileNav = ({
   // Use the navigation context to get styling info
   const { state } = useNavigation();
   
-  // Determine the actual style to use (context values take precedence)
-  const actualForceDarkMode = state?.isDarkBackground === false || forceDarkMode;
+  // Determine the actual style to use based on background
+  const useDarkMode = state.isLightBackground;
 
   return (
     <div className="block md:hidden">
       {/* Hamburger Menu Button */}
       <MobileNavButton 
         onClick={toggleMenu} 
-        forceDarkMode={actualForceDarkMode} 
+        forceDarkMode={useDarkMode} 
       />
 
       {/* Full Screen Menu Overlay */}

@@ -32,7 +32,10 @@ const DesktopNav = ({
   // Prioritize context values but fall back to props for backward compatibility
   const actualIsScrolled = state.isScrolled || isScrolled;
   const actualIsHeroPage = state.isHeroPage || isHeroPage;
-  const actualForceDarkMode = forceDarkMode || !state.isDarkBackground;
+  
+  // Use light background to determine if we should use dark mode styling
+  // When on light backgrounds, use dark text/dark logo
+  const actualForceDarkMode = state.isLightBackground || forceDarkMode;
   
   return (
     <div className={`hidden md:flex items-center space-x-8 ${className}`}>

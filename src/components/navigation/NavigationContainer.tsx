@@ -38,7 +38,16 @@ const NavigationContainer = ({
  */
 const NavigationContent = () => {
   const { state } = useNavigation();
-  const { isScrolled, isVisible, isDarkBackground, isMobile, isTablet, isHeroPage, useShortFormLogo } = state;
+  const { 
+    isScrolled, 
+    isVisible, 
+    isDarkBackground, 
+    isLightBackground,
+    isMobile, 
+    isTablet, 
+    isHeroPage, 
+    useShortFormLogo 
+  } = state;
   
   // Get responsive padding values
   const getPadding = () => {
@@ -65,13 +74,20 @@ const NavigationContent = () => {
     };
   }, [isHeroPage]);
 
+  // Get background color class based on current section and scroll state
+  const getBackgroundClass = () => {
+    if (!isScrolled) return "bg-transparent";
+    
+    // For both light and dark backgrounds, use transparent background when scrolled
+    // We're removing the gray background as requested
+    return "bg-transparent";
+  };
+
   return (
     <nav
       className={cn(
         "fixed w-full z-[100] transition-all duration-300 pointer-events-auto pt-2 sm:pt-3 md:pt-4 isolate", 
-        isScrolled
-          ? "bg-white/5 backdrop-blur-[2px] shadow-md"
-          : "bg-transparent",
+        getBackgroundClass(),
         isVisible 
           ? "translate-y-0" 
           : "-translate-y-full"
@@ -82,7 +98,7 @@ const NavigationContent = () => {
           <NavLogo 
             isScrolled={isScrolled} 
             isHeroPage={isHeroPage} 
-            forceDarkMode={!isDarkBackground}
+            forceDarkMode={isLightBackground}
             useShortForm={useShortFormLogo}
           />
           
@@ -97,13 +113,10 @@ const NavigationContent = () => {
             <DesktopNav 
               isScrolled={isScrolled} 
               isHeroPage={isHeroPage} 
-              forceDarkMode={!isDarkBackground} 
+              forceDarkMode={isLightBackground} 
             />
-            <MobileNav 
-              isScrolled={isScrolled} 
-              isHeroPage={isHeroPage} 
-              forceDarkMode={!isDarkBackground} 
-            />
+            
+            <MobileNav />
           </div>
         </div>
       </div>
