@@ -26,17 +26,21 @@ const InnovationStudios = () => {
   } = useInnovationStudios();
 
   return (
-    <div>
+    <div className="bg-white">
       {/* Single Navigation component at the top level */}
       <Navigation isHeroPage={true} forceDarkMode={false} />
+      
       <div>
         <HeroSection scrollToContent={scrollToContent} />
+        
         <div ref={overviewRef} id="overview">
           <StudioOverview />
         </div>
+        
         <div ref={projectsRef} id="projects">
           <ProjectsShowcase />
         </div>
+        
         <div ref={applyRef} id="apply">
           <StudioCTA />
         </div>

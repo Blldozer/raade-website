@@ -7,7 +7,7 @@ export interface DropdownItem {
   href: string;
   description?: string;
   external?: boolean;
-  highlight?: boolean; // Added highlight property to the interface
+  highlight?: boolean; // Highlight property for special items
 }
 
 export interface NavItem {
@@ -23,10 +23,7 @@ export interface NavItem {
  * Defines the structure of the navigation menu
  */
 const mainNavItems: NavItem[] = [
-  { name: "Home", href: "/" },
-  { 
-    name: "About", 
-    href: "/about",
+  { name: "About", href: "/about",
     dropdownItems: [
       { name: "Our Team", href: "/about#team" },
       { name: "Our Approach", href: "/about#approach" },
@@ -35,7 +32,12 @@ const mainNavItems: NavItem[] = [
   },
   { 
     name: "Innovation Studios", 
-    href: "/innovation-studios" 
+    href: "/innovation-studios",
+    dropdownItems: [
+      { name: "Overview", href: "/innovation-studios#overview" },
+      { name: "Projects", href: "/innovation-studios#projects" },
+      { name: "Apply", href: "/innovation-studios#apply" }
+    ]
   },
   { 
     name: "Conference", 
@@ -46,10 +48,6 @@ const mainNavItems: NavItem[] = [
       { name: "Schedule", href: "/conference#schedule" },
       { name: "Register", href: "/conference/registration", highlight: true }
     ]
-  },
-  { 
-    name: "Projects", 
-    href: "/projects" 
   }
 ];
 
