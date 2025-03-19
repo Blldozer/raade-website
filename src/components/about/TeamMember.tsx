@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-import { motion } from "framer-motion";
+
 import TeamMemberCard from "./team/TeamMemberCard";
 
 interface TeamMemberProps {
@@ -14,50 +13,17 @@ interface TeamMemberProps {
 }
 
 /**
- * TeamMember component - Wrapper for individual team members
- * Features:
- * - Simple animation for visual appeal
- * - Delegates rendering to TeamMemberCard
- * - Improved for reliable initial rendering
- * - Prioritized loading for first visible members
+ * TeamMember component - Display wrapper for individual team members
+ * This component has been refactored to use more focused sub-components
+ * for better maintainability and organization.
  */
 const TeamMember = ({ member, index, onImageLoad }: TeamMemberProps) => {
-  // Debug component lifecycle
-  useEffect(() => {
-    console.log(`TeamMember for ${member.name} mounted, index: ${index}`);
-    return () => {
-      console.log(`TeamMember for ${member.name} unmounted`);
-    };
-  }, [member.name, index]);
-
-  // Faster, simpler animation for better performance
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { 
-      opacity: 1, 
-      y: 0,
-      transition: { 
-        duration: 0.5,
-        ease: "easeOut" 
-      }
-    }
-  };
-
   return (
-    <motion.div
-      key={`${member.name}-${index}`}
-      variants={item}
-      initial="show" // Start as visible for immediate display
-      className="card group relative overflow-hidden rounded-lg"
-    >
-      <TeamMemberCard 
-        key={member.name}
-        member={member}
-        index={index}
-        onImageLoad={onImageLoad}
-        priority={index < 6} // Prioritize loading for first 6 members
-      />
-    </motion.div>
+    <TeamMemberCard
+      member={member}
+      index={index}
+      onImageLoad={onImageLoad}
+    />
   );
 };
 

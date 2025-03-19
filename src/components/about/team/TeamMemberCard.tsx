@@ -1,4 +1,6 @@
-import { useState, useEffect } from "react";
+
+import { motion } from "framer-motion";
+import { useState } from "react";
 import TeamMemberImage from "./TeamMemberImage";
 import TeamMemberInfo from "./TeamMemberInfo";
 
@@ -11,56 +13,51 @@ interface TeamMemberCardProps {
   };
   index: number;
   onImageLoad?: () => void;
-  priority?: boolean; // Add priority prop for prioritizing loading
 }
 
 /**
  * TeamMemberCard component - Main container for team member display
  * Features:
+ * - Framer Motion animations for enhanced UX
  * - Consistent styling and layout
- * - Performance optimizations for loading
- * - Improved prioritization for visible images
- * - Fixed for reliable loading on mobile
+ * - Performance optimizations for animations
  */
-const TeamMemberCard = ({ member, index, onImageLoad, priority = false }: TeamMemberCardProps) => {
-  const [imageLoaded, setImageLoaded] = useState(false);
-  
-  // Debug component lifecycle
-  useEffect(() => {
-    console.log(`TeamMemberCard for ${member.name} mounted, priority: ${priority}`);
-    return () => {
-      console.log(`TeamMemberCard for ${member.name} unmounted`);
-    };
-  }, [member.name, priority]);
-  
-  // Handle image load event
-  const handleImageLoad = () => {
-    console.log(`Image loaded in TeamMemberCard for ${member.name}`);
-    setImageLoaded(true);
-    // Propagate the event upward
-    if (onImageLoad) {
-      onImageLoad();
+const TeamMemberCard = ({ member, index, onImageLoad }: TeamMemberCardProps) => {
+  // Animation variants with reduced complexity for better performance on mobile
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        type: "spring",
+        damping: 15,
+        stiffness: 100,
+        duration: 0.5
+      }
     }
   };
-  
+
   return (
-    <div className="bg-white rounded-lg shadow-lg overflow-hidden h-full relative">
-      {/* Image section */}
-      <TeamMemberImage 
-        name={member.name} 
-        onImageLoad={handleImageLoad}
-        priority={priority}
-      />
-      
-      {/* Information section */}
-      <TeamMemberInfo
-        name={member.name}
-        position={member.position}
-        classYear={member.classYear}
-        linkedin={member.linkedin}
-        imageLoaded={imageLoaded}
-      />
-    </div>
+    <motion.div 
+      className="relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
+      variants={item}
+      whileHover={{ y: -8, transition: { duration: 0.3 } }}
+    >
+      <div className="absolute top-0 left-0 w-full h-full bg-[#3C403A] rounded-lg" />
+      <div className="relative z-10">
+        <TeamMemberImage 
+          name={member.name} 
+          onImageLoad={onImageLoad} 
+        />
+        
+        <TeamMemberInfo
+          name={member.name}
+          position={member.position}
+          linkedin={member.linkedin}
+        />
+      </div>
+    </motion.div>
   );
 };
 
