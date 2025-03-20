@@ -1,3 +1,4 @@
+
 import React, { useRef, useState, useEffect } from 'react';
 
 // Define NetworkInformation interface based on the W3C specification
@@ -20,6 +21,16 @@ interface VideoBackgroundProps {
   setVideoLoaded: (loaded: boolean) => void;
 }
 
+/**
+ * VideoBackground Component
+ * 
+ * Provides a video background for the hero section with the following features:
+ * - Optimized loading based on connection speed
+ * - Fallback gradient for slow connections or errors
+ * - Hardware-accelerated rendering
+ * - Adjustable opacity to balance with gradient overlay
+ * - Mobile-specific optimizations
+ */
 const VideoBackground = ({ videoLoaded, setVideoLoaded }: VideoBackgroundProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -113,11 +124,11 @@ const VideoBackground = ({ videoLoaded, setVideoLoaded }: VideoBackgroundProps) 
   
   return (
     <div className="absolute inset-0 z-0">
-      {/* Always provide a gradient background as fallback/placeholder */}
+      {/* Enhanced gradient background as fallback/placeholder - using RAADE brand colors */}
       <div 
-        className="absolute inset-0 bg-gradient-to-br from-[#1A365D] via-[#2A466D] to-[#1A365D]"
+        className="absolute inset-0 bg-gradient-to-br from-[#1A365D] via-[#274675] to-[#1A365D]"
         style={{ 
-          opacity: (videoLoaded && !videoError) ? (isMobile ? 0.7 : 0) : 1, 
+          opacity: (videoLoaded && !videoError) ? (isMobile ? 0.85 : 0.6) : 1, 
           transition: 'opacity 0.8s ease-out'
         }}
       />
@@ -132,7 +143,7 @@ const VideoBackground = ({ videoLoaded, setVideoLoaded }: VideoBackgroundProps) 
           playsInline
           className="absolute inset-0 w-full h-full object-cover optimized-video"
           style={{ 
-            opacity: (videoLoaded && !videoError) ? 1 : 0,
+            opacity: (videoLoaded && !videoError) ? 0.85 : 0, // Reduced opacity to let gradient show through more
             transition: 'opacity 0.5s ease-out',
             display: videoError ? 'none' : 'block',
             willChange: 'transform'

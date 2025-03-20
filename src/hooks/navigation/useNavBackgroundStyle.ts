@@ -24,14 +24,15 @@ export const useNavBackgroundStyle = () => {
   
   // Determine if this is a special page that needs dark styling
   const isConferenceRegistrationPage = pathname === '/conference/register';
-  const isConferencePage = pathname === '/conference';
+  const isConferencePage = pathname.includes('/conference');
   const isStudioPage = pathname.includes('/studios');
+  const isHomePage = pathname === '/' || pathname === '';
   
   /**
    * Helper function to determine navbar background styling based on state
    * Priority order:
    * 1. Not scrolled - always transparent regardless of page type
-   * 2. Scrolled + special pages (conference, studios, registration) - subtle dark glassmorphism
+   * 2. Scrolled + special pages - subtle dark glassmorphism 
    * 3. Scrolled + regular pages - subtle glassmorphism
    */
   const getBackgroundClass = (): string => {
@@ -41,7 +42,7 @@ export const useNavBackgroundStyle = () => {
     }
     
     // Second priority: Special pages that should have dark navbar when scrolled
-    if ((isConferenceRegistrationPage || isConferencePage || isStudioPage || forceDarkMode) && isScrolled) {
+    if ((isConferenceRegistrationPage || isConferencePage || isStudioPage || isHomePage || forceDarkMode) && isScrolled) {
       // Dark glassmorphism for these special pages when scrolled
       return "bg-black/20 backdrop-blur-md border-b border-white/10 shadow-md";
     }
@@ -52,7 +53,7 @@ export const useNavBackgroundStyle = () => {
   
   // Determine if we're against a dark background
   // This happens when either:
-  // 1. We're on a page with dark elements behind navbar
+  // 1. We're on a page with dark elements behind navbar (homepage, conference, studios)
   // 2. We have light background mode disabled
   // 3. We're on special pages that force dark navbar
   const isAgainstDarkBackground = 
@@ -60,7 +61,8 @@ export const useNavBackgroundStyle = () => {
     forceDarkMode || 
     isConferenceRegistrationPage ||
     isConferencePage ||
-    isStudioPage;
+    isStudioPage ||
+    isHomePage;
   
   // Only consider fixed styling when scrolled
   const shouldUseFixedStyle = isScrolled && hasFixedNavbarStyle(pathname);
@@ -70,7 +72,8 @@ export const useNavBackgroundStyle = () => {
     isConferenceRegistrationPage,
     isConferencePage,
     isStudioPage,
-    effectiveLightBackground: (forceDarkMode || isConferenceRegistrationPage || isConferencePage || isStudioPage) 
+    isHomePage,
+    effectiveLightBackground: (forceDarkMode || isConferenceRegistrationPage || isConferencePage || isStudioPage || isHomePage) 
       ? false 
       : isLightBackground,
     isAgainstDarkBackground,
