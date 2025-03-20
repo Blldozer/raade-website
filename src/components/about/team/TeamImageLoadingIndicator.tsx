@@ -29,7 +29,7 @@ const TeamImageLoadingIndicator = ({
   onRetry
 }: TeamImageLoadingIndicatorProps) => {
   return (
-    <div className="w-full rounded-lg bg-white shadow-md p-6 mb-8">
+    <div className="w-full rounded-lg bg-white shadow-md p-6 mb-8 border-l-4 border-[#FBB03B]">
       <div className="flex justify-between items-center mb-3">
         <h3 className="text-lg font-medium text-[#274675]">Loading team members</h3>
         <span className="text-sm font-medium text-[#3C403A]">{loadedImages}/{totalImages}</span>
@@ -37,15 +37,15 @@ const TeamImageLoadingIndicator = ({
       
       <Progress 
         value={loadingProgress} 
-        className="h-2 mb-4 bg-gray-200" 
+        className="h-3 mb-4 bg-gray-200" 
       />
       
       <div className="flex justify-between items-center">
         <div className="flex items-center">
           {networkStatus === 'online' ? (
-            <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+            <span className="inline-block w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse"></span>
           ) : (
-            <span className="inline-block w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+            <span className="inline-block w-3 h-3 bg-red-500 rounded-full mr-2"></span>
           )}
           <span className="text-sm text-[#3C403A]">
             {networkStatus === 'online' 
@@ -54,14 +54,16 @@ const TeamImageLoadingIndicator = ({
           </span>
         </div>
         
-        {networkStatus === 'offline' && (
-          <button 
-            onClick={onRetry}
-            className="text-sm px-3 py-1 bg-[#FBB03B] text-white rounded-md hover:bg-[#f9a718] transition-colors"
-          >
-            Retry
-          </button>
-        )}
+        {/* Always show retry button but disable when online */}
+        <button 
+          onClick={onRetry}
+          className={`text-sm px-3 py-1 bg-[#FBB03B] text-white rounded-md 
+            ${networkStatus === 'online' ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#f9a718]'} 
+            transition-colors`}
+          disabled={networkStatus === 'online'}
+        >
+          Retry
+        </button>
       </div>
     </div>
   );

@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { useInView } from "framer-motion";
@@ -21,15 +20,15 @@ const Team = () => {
   const [hasError, setHasError] = useState(false);
   const isMobile = useIsMobile();
 
-  // Initialize component with improved state management
+  // Initialize component with improved state management - reduced delay to 50ms
   useEffect(() => {
     console.log("Team component mounted");
     
-    // Using a small timeout to allow browser to settle after initial render
+    // Reduced timeout to allow browser to settle after initial render
     const timer = setTimeout(() => {
       setIsLoaded(true);
       console.log("Team component marked as loaded");
-    }, 200);
+    }, 50); // Reduced from 200ms to 50ms for faster loading
     
     // Proper cleanup to prevent memory leaks and state updates after unmount
     return () => {
@@ -86,10 +85,11 @@ const Team = () => {
           </motion.div>
         </div>
 
-        {/* Show loading skeleton while team data is initializing */}
+        {/* Show smaller number of skeletons while team data is initializing */}
         {!isLoaded ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[...Array(isMobile ? 6 : 12)].map((_, index) => (
+            {/* Reduced number of placeholder skeletons for faster perceived loading */}
+            {[...Array(isMobile ? 3 : 6)].map((_, index) => (
               <TeamImageSkeleton key={index} />
             ))}
           </div>

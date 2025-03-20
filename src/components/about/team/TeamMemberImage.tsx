@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import ImageLoader from "./ImageLoader";
 
@@ -19,7 +20,9 @@ const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
   const [retryCount, setRetryCount] = useState(0);
   // Track image loading state locally
   const [localImageLoaded, setLocalImageLoaded] = useState(false);
-
+  // Track if image should show loading state - start hidden so we don't show loading for cached images
+  const [showLoading, setShowLoading] = useState(false);
+  
   // Placeholder initials for fallback
   const getInitials = () => {
     const nameParts = name.split(" ");
@@ -40,8 +43,21 @@ const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
     if (imageLoaded) {
       console.log(`Image for ${name} marked as loaded from ImageLoader`);
       setLocalImageLoaded(true);
+      setShowLoading(false);
     }
   }, [imageLoaded, name]);
+  
+  // Show loading state after a short delay if image hasn't loaded yet
+  // This prevents flickering for fast/cached images
+  useEffect(() => {
+    if (!localImageLoaded && !imageLoaded) {
+      const timer = setTimeout(() => {
+        setShowLoading(true);
+      }, 150);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [localImageLoaded, imageLoaded]);
 
   // Debug logging on mount
   useEffect(() => {
@@ -64,7 +80,7 @@ const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
         /* Render image with proper loading states */
         <div className="w-full aspect-[3/4] bg-[#4C504A] relative">
           {/* Show skeleton loading state */}
-          {!localImageLoaded && !imageLoaded && (
+          {showLoading && !localImageLoaded && !imageLoaded && (
             <div className="absolute inset-0 flex items-center justify-center">
               <span className="text-white text-xl">Loading...</span>
             </div>
@@ -87,6 +103,7 @@ const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
               onLoad={(e) => {
                 console.log(`Image for ${name} loaded in DOM`);
                 setLocalImageLoaded(true);
+                setShowLoading(false);
                 onImageLoad?.();
               }}
               onError={(e) => {
@@ -96,8 +113,8 @@ const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
                   setImageError(true);
                 }
               }}
-              // Use eager loading for first visible items, lazy for others
-              loading={retryCount > 0 ? "eager" : "lazy"}
+              // Use eager loading for all images to improve loading speed
+              loading="eager"
             />
           )}
         </div>

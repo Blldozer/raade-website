@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import TeamMember from "./TeamMember";
 import { useState, useEffect } from "react";
@@ -41,7 +40,40 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
   
   // Force skeleton display on mobile until a threshold of images are loaded
   const [showSkeletons, setShowSkeletons] = useState(true);
-  const loadingThreshold = isMobile ? 0.4 : 0.2; // 40% on mobile, 20% on desktop
+  
+  // Reduced thresholds for faster perceived loading
+  const loadingThreshold = isMobile ? 0.2 : 0.1; // 20% on mobile, 10% on desktop (lowered from 40%/20%)
+
+  // Preload first few images for faster initial display
+  useEffect(() => {
+    if (isInView && isLoaded) {
+      // Preload first 3 images immediately
+      const preloadCount = isMobile ? 2 : 3;
+      const preloadImages = teamMembers.slice(0, preloadCount);
+      
+      preloadImages.forEach(member => {
+        const formattedName = member.name.split(" ").join("-");
+        const img = new Image();
+        img.src = `/raade-individual-e-board-photos-webp/${formattedName}-raade-website-image.webp`;
+        
+        img.onload = () => {
+          console.log(`Preloaded image for ${member.name}`);
+          handleImageLoaded(member.name);
+        };
+        
+        img.onerror = () => {
+          // Try JPG fallback immediately
+          const fallbackImg = new Image();
+          fallbackImg.src = `/raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
+          
+          fallbackImg.onload = () => {
+            console.log(`Preloaded fallback image for ${member.name}`);
+            handleImageLoaded(member.name);
+          };
+        };
+      });
+    }
+  }, [isInView, isLoaded, teamMembers]);
 
   // Reset animation state when component mounts or visibility changes
   useEffect(() => {
@@ -118,16 +150,16 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.12,
-        delayChildren: 0.2
+        staggerChildren: 0.08, // Reduced from 0.12 for faster animation
+        delayChildren: 0.1 // Reduced from 0.2 for faster loading perception
       }
     }
   };
 
   return (
     <>
-      {/* Mobile loading indicator - only shown during initial load */}
-      {isMobile && showSkeletons && loadingProgress < 100 && (
+      {/* Always show mobile loading indicator to provide immediate feedback */}
+      {isMobile && loadingProgress < 100 && (
         <TeamImageLoadingIndicator 
           loadingProgress={loadingProgress}
           totalImages={totalImages}
@@ -137,9 +169,9 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
         />
       )}
       
-      {/* Desktop loading progress indicator */}
-      {!isMobile && isInView && isLoaded && loadingProgress < 100 && networkStatus === 'online' && (
-        <div className="w-full mb-8 bg-gray-200 rounded-full h-2.5 hidden sm:block">
+      {/* Desktop loading progress indicator - always visible until 100% */}
+      {!isMobile && isInView && isLoaded && loadingProgress < 100 && (
+        <div className="w-full mb-8 bg-gray-200 rounded-full h-2.5 block">
           <div 
             className="bg-[#FBB03B] h-2.5 rounded-full transition-all duration-300" 
             style={{ width: `${loadingProgress}%` }}

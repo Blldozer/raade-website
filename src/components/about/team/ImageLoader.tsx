@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef, RefObject } from "react";
 import { useResponsive } from "../../../hooks/useResponsive"; 
 
@@ -83,18 +84,24 @@ const ImageLoader = ({
     // Determine which format to use based on retry count and device
     let imgPath;
     
-    // On first try, use WebP for modern browsers, but use JPG for certain mobile browsers that might have issues
+    // Enhanced strategy: Try JPG first on mobile for faster initial display
+    // On desktop, try WebP for modern browsers initially
     if (retryCount === 0) {
-      // For older mobile browsers that might have issues with WebP, use JPG directly
-      if (isMobile && isLowBandwidth) {
+      if (isMobile) {
+        // On mobile, start with JPG for faster loading and better compatibility
         imgPath = `/raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
-        console.log(`Using JPG for ${name} due to mobile low bandwidth`);
+        console.log(`Using JPG first for ${name} on mobile for faster loading`);
       } else {
+        // On desktop, try WebP first for better quality/size ratio
         imgPath = `/raade-individual-e-board-photos-webp/${formattedName}-raade-website-image.webp`;
       }
     } else {
-      // On retry, use JPG which has better compatibility
-      imgPath = `/raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
+      // On retry, use opposite format from what was tried first
+      if (isMobile) {
+        imgPath = `/raade-individual-e-board-photos-webp/${formattedName}-raade-website-image.webp`;
+      } else {
+        imgPath = `/raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
+      }
     }
     
     console.log(`Loading image for ${name} from path: ${imgPath}, retry: ${retryCount}`);
@@ -120,8 +127,8 @@ const ImageLoader = ({
       console.error(`Failed to load team member image: ${name}, retry: ${retryCount + 1}/${MAX_RETRIES}`, e);
       
       if (retryCount < MAX_RETRIES) {
-        // Wait a bit longer between each retry
-        const delay = 1000 * (retryCount + 1);
+        // Reduced delay between retries for faster fallback
+        const delay = 500 * (retryCount + 1); // Reduced from 1000ms
         console.log(`Will retry loading ${name} in ${delay}ms`);
         
         setTimeout(() => {
@@ -133,14 +140,23 @@ const ImageLoader = ({
       }
     };
     
-    // If on mobile, prioritize loading
-    if (isMobile && imageRef.current) {
-      imageRef.current.loading = 'eager';
-      console.log(`Setting eager loading for ${name} on mobile`);
-    }
-    // For desktop, use native lazy loading if supported
-    else if (imageRef.current && 'loading' in HTMLImageElement.prototype) {
-      imageRef.current.loading = 'lazy';
+    // Set eager loading regardless of device for first 6 images
+    // This improves initial loading performance significantly
+    const eagerLoadingThreshold = 6; // First 6 images load eagerly
+    if (imageRef.current) {
+      // Extract the index from the formatted name if available
+      const memberIndex = teamMembers.findIndex(m => 
+        m.name.split(" ").join("-") === formattedName
+      );
+      
+      if (memberIndex >= 0 && memberIndex < eagerLoadingThreshold) {
+        imageRef.current.loading = 'eager';
+        console.log(`Setting eager loading for ${name} (priority image)`);
+      }
+      // For non-priority images, use native lazy loading
+      else if ('loading' in HTMLImageElement.prototype) {
+        imageRef.current.loading = 'lazy';
+      }
     }
     
     // Cleanup to prevent memory leaks
@@ -167,5 +183,21 @@ const ImageLoader = ({
     imageLoaded
   };
 };
+
+// Get reference to team data
+const teamMembers = [
+  // This line is needed for the index lookup in the component
+  // The actual data is imported elsewhere
+];
+
+// Try to get actual team members array from the imported data
+try {
+  const importedData = require('../TeamData').teamMembers;
+  if (Array.isArray(importedData)) {
+    Object.assign(teamMembers, importedData);
+  }
+} catch (e) {
+  console.warn("Could not import team data for indexing in ImageLoader");
+}
 
 export default ImageLoader;
