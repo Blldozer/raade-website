@@ -134,5 +134,15 @@ function startApp() {
   }
 }
 
+// Define window.__REACT_INITIALIZED as a global property
+interface WindowWithReactInitialized extends Window {
+  __REACT_INITIALIZED?: boolean;
+}
+declare global {
+  interface Window {
+    __REACT_INITIALIZED?: boolean;
+  }
+}
+
 // Start by checking font loading state
 ensureFontsLoaded();
