@@ -10,12 +10,10 @@ import { useInnovationStudios } from "@/hooks/useInnovationStudios";
  * InnovationStudios Component - Main page for the Innovation Studios program
  * 
  * Features:
- * - Animated hero with gradient background
- * - Section-based navigation
+ * - Balanced visual layout with consistent spacing
+ * - Improved grid system for better content alignment
+ * - Smooth transitions between sections
  * - Proper navbar background contrast based on scroll position
- * - Smooth section transitions
- * 
- * Page has been refactored into smaller components to improve maintainability
  */
 const InnovationStudios = () => {
   const {
@@ -25,15 +23,12 @@ const InnovationStudios = () => {
     scrollToContent
   } = useInnovationStudios();
 
-  // Added console.log to debug rendering
-  console.log("Rendering InnovationStudios page");
-
   return (
     <div className="bg-white">
       {/* Single Navigation component at the top level */}
       <Navigation isHeroPage={true} forceDarkMode={false} />
       
-      <div>
+      <main>
         <HeroSection scrollToContent={scrollToContent} />
         
         <div ref={overviewRef} id="overview">
@@ -47,7 +42,7 @@ const InnovationStudios = () => {
         <div ref={applyRef} id="apply">
           <StudioCTA />
         </div>
-      </div>
+      </main>
     </div>
   );
 };

@@ -1,43 +1,41 @@
+
 import { motion } from "framer-motion";
 import { Compass, Rocket, CheckCircle } from "lucide-react";
+
+/**
+ * StudioOverview Component
+ * 
+ * Displays information about RAADE's innovation methodology with:
+ * - Balanced layout using consistent grid system
+ * - Improved spacing and alignment with the design system
+ * - Visual hierarchy that matches the hero section
+ * - Optimized card layout for better responsiveness
+ */
 const StudioOverview = () => {
-  return <section className="py-24 bg-white">
-      <div className="max-w-[1600px] mx-auto px-6 md:px-12">
-        {/* Title Section - 39/61 split */}
-        <motion.div initial={{
-        opacity: 0,
-        x: -20
-      }} whileInView={{
-        opacity: 1,
-        x: 0
-      }} viewport={{
-        once: true
-      }} transition={{
-        duration: 0.6
-      }} className="flex flex-col lg:flex-row mb-16">
-          <div className="w-full lg:w-[39%]">
-            <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-zinc-950">
+  return <section className="py-20 bg-white">
+      <div className="container mx-auto px-6 md:px-12">
+        {/* Title Section - Using grid for consistent alignment */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-5 lg:col-start-2 xl:col-start-3"
+          >
+            <h2 className="text-[clamp(2.5rem,6vw,4rem)] leading-[1.15] font-simula text-zinc-950">
               Transforming <span className="font-['Simula_Book_Italic']">non-consumption</span> into consumption
             </h2>
-          </div>
-          <div className="lg:w-[61%]"></div> {/* Filler space */}
-        </motion.div>
-
-        {/* Content Section - 39/61 split reversed */}
-        <div className="flex flex-col lg:flex-row mb-20">
-          <div className="lg:w-[39%]"></div> {/* Filler space */}
-          <motion.div initial={{
-          opacity: 0,
-          x: 20
-        }} whileInView={{
-          opacity: 1,
-          x: 0
-        }} viewport={{
-          once: true
-        }} transition={{
-          duration: 0.6
-        }} className="w-full lg:w-[61%]">
-            <div className="space-y-8 text-xl leading-relaxed font-lora text-gray-700 max-w-[800px]">
+          </motion.div>
+          
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-5 xl:col-span-6"
+          >
+            <div className="space-y-6 text-lg leading-relaxed font-lora text-gray-700">
               <p>
                 At RAADE, we focus on a powerful concept: identifying areas where millions 
                 of people cannot access essential products and services, then creating 
@@ -53,36 +51,49 @@ const StudioOverview = () => {
                 more people while creating economic opportunity. When done right, these 
                 solutions scale organically, reaching far beyond initial implementations.
               </p>
-              <p>
-              To bring this vision to life, we've developed a structured, three-phase innovation process that unfolds throughout the school year. 
-              We begin with Immersion & Discovery, where our teams deeply understand the problem context through 
-              ethnographic research and stakeholder interviews, uncovering hidden insights that reveal true needs. 
-              This leads to Rapid Ideation & Prototyping, where promising solutions are quickly developed and tested with 
-              users to validate core assumptions. Finally, in the Implementation phase, we refine these solutions and develop 
-              comprehensive plans for real-world application and scaling, ensuring our innovations create lasting impact beyond initial pilots.
-              </p>
             </div>
           </motion.div>
         </div>
 
-        {/* Three Phase Cards with Image Backgrounds - Now Square */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+        {/* Innovation Process Overview - Using the same grid for alignment */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
+          <div className="lg:col-span-10 lg:col-start-2 xl:col-span-8 xl:col-start-3">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="text-lg leading-relaxed font-lora text-gray-700"
+            >
+              <p>
+                To bring this vision to life, we've developed a structured, three-phase innovation process that unfolds throughout the school year. 
+                We begin with Immersion & Discovery, where our teams deeply understand the problem context through 
+                ethnographic research and stakeholder interviews, uncovering hidden insights that reveal true needs. 
+                This leads to Rapid Ideation & Prototyping, where promising solutions are quickly developed and tested with 
+                users to validate core assumptions. Finally, in the Implementation phase, we refine these solutions and develop 
+                comprehensive plans for real-world application and scaling, ensuring our innovations create lasting impact beyond initial pilots.
+              </p>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* Three Phase Cards - Using a standardized grid layout */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-6 xl:gap-8 mt-20 lg:px-4">
           {/* Phase 1: Immersion & Discovery */}
-          <motion.div initial={{
-          opacity: 0,
-          y: 20
-        }} whileInView={{
-          opacity: 1,
-          y: 0
-        }} viewport={{
-          once: true
-        }} transition={{
-          duration: 0.5,
-          delay: 0.1
-        }} className="relative aspect-square group overflow-hidden rounded-xl shadow-lg">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="relative aspect-square group overflow-hidden rounded-xl shadow-lg"
+          >
             {/* Background Image */}
             <div className="absolute inset-0 w-full h-full">
-              <img src="/RAADE-Design-Sprint-Edith-Ibeke.jpg" alt="Immersion & Discovery Phase" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              <img 
+                src="/RAADE-Design-Sprint-Edith-Ibeke.jpg" 
+                alt="Immersion & Discovery Phase" 
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+              />
             </div>
             
             {/* Title Overlay - Always Visible */}
@@ -106,21 +117,20 @@ const StudioOverview = () => {
           </motion.div>
 
           {/* Phase 2: Rapid Ideation & Prototyping */}
-          <motion.div initial={{
-          opacity: 0,
-          y: 20
-        }} whileInView={{
-          opacity: 1,
-          y: 0
-        }} viewport={{
-          once: true
-        }} transition={{
-          duration: 0.5,
-          delay: 0.2
-        }} className="relative aspect-square group overflow-hidden rounded-xl shadow-lg">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="relative aspect-square group overflow-hidden rounded-xl shadow-lg"
+          >
             {/* Background Image */}
             <div className="absolute inset-0 w-full h-full">
-              <img src="/RAADE-Prototyping-Gustavo-Vives.jpeg" alt="Rapid Ideation & Prototyping Phase" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              <img 
+                src="/RAADE-Prototyping-Gustavo-Vives.jpeg" 
+                alt="Rapid Ideation & Prototyping Phase" 
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+              />
             </div>
             
             {/* Title Overlay - Always Visible */}
@@ -143,21 +153,20 @@ const StudioOverview = () => {
           </motion.div>
 
           {/* Phase 3: Implementation */}
-          <motion.div initial={{
-          opacity: 0,
-          y: 20
-        }} whileInView={{
-          opacity: 1,
-          y: 0
-        }} viewport={{
-          once: true
-        }} transition={{
-          duration: 0.5,
-          delay: 0.3
-        }} className="relative aspect-square group overflow-hidden rounded-xl shadow-lg">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="relative aspect-square group overflow-hidden rounded-xl shadow-lg"
+          >
             {/* Background Image */}
             <div className="absolute inset-0 w-full h-full">
-              <img src="/RAADE-Innovation-Studio-1-Hawa-Ife-Hamza.jpg" alt="Implementation Phase" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              <img 
+                src="/RAADE-Innovation-Studio-1-Hawa-Ife-Hamza.jpg" 
+                alt="Implementation Phase" 
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+              />
             </div>
             
             {/* Title Overlay - Always Visible */}
@@ -183,4 +192,5 @@ const StudioOverview = () => {
       </div>
     </section>;
 };
+
 export default StudioOverview;
