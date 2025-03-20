@@ -3,6 +3,8 @@ import { useState, useRef } from "react";
 import { Stripe, StripeElements } from "@stripe/stripe-js";
 import { usePaymentErrorHandling } from "./usePaymentErrorHandling";
 import { usePaymentTimeout } from "./usePaymentTimeout";
+import { confirmStripePayment } from "../services/paymentConfirmationService";
+import { usePaymentResultHandler } from "./usePaymentResultHandler";
 
 // Default timeout duration for payment processing
 const PAYMENT_PROCESSING_TIMEOUT = 30000; // 30 seconds
@@ -20,11 +22,11 @@ interface UseStripePaymentConfirmationProps {
 /**
  * Custom hook to handle Stripe payment confirmation
  * 
- * Manages the confirmation process for Stripe payments:
- * - Provides handleConfirmPayment function to process payments
- * - Handles errors and timeouts
- * - Ensures success/error callbacks are only called once
- * - Manages processing state throughout the payment flow
+ * Coordinates the payment confirmation process:
+ * - Manages processing state
+ * - Handles timeouts
+ * - Processes payment results
+ * - Ensures callbacks are only called once
  */
 export const useStripePaymentConfirmation = ({
   stripe,
@@ -42,6 +44,10 @@ export const useStripePaymentConfirmation = ({
 
   // Set up error handling
   const { handleError, errorCalledRef } = usePaymentErrorHandling(onError, requestId);
+  
+  // Set up result handler
+  const { handleSuccess: handleSuccessMessage, handleError: handleErrorMessage, handlePaymentStatus } = 
+    usePaymentResultHandler(setMessage);
   
   // Set up timeout handling
   const { startTimeout, clearTimeout, isMountedRef } = usePaymentTimeout(
@@ -72,19 +78,7 @@ export const useStripePaymentConfirmation = ({
     startTimeout();
 
     try {
-      console.log("Starting payment confirmation...");
-      
-      const { error, paymentIntent } = await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: window.location.href,
-          receipt_email: email,
-          payment_method_data: {
-            billing_details: { email }
-          }
-        },
-        redirect: "if_required"
-      });
+      const { error, paymentIntent } = await confirmStripePayment(stripe, elements, email);
       
       // Clear the timeout since we got a response
       clearTimeout();
@@ -95,20 +89,13 @@ export const useStripePaymentConfirmation = ({
         // This point will only be reached if there's an immediate error when confirming the payment.
         console.error("Payment error:", error.type, error.message);
         
-        if (error.type === "card_error" || error.type === "validation_error") {
-          setMessage(error.message || "An unexpected error occurred");
-          handleError(error.message || "An unexpected error occurred");
-        } else {
-          const errorMessage = `Payment error (${error.type}): ${error.message}`;
-          console.error(errorMessage);
-          setMessage("An unexpected error occurred");
-          handleError(errorMessage);
-        }
+        handleErrorMessage(error);
+        handleError(error.message || "An unexpected error occurred");
         
         return { success: false, reason: "payment-error", error };
       } else if (paymentIntent && paymentIntent.status === "succeeded") {
         // The payment has been processed!
-        setMessage("Payment succeeded!");
+        handleSuccessMessage();
         
         if (!successCalledRef.current) {
           successCalledRef.current = true;
@@ -119,19 +106,7 @@ export const useStripePaymentConfirmation = ({
       } else if (paymentIntent) {
         // Payment requires additional actions or is in another state
         console.log("Payment intent is in state:", paymentIntent.status);
-        switch (paymentIntent.status) {
-          case "processing":
-            setMessage("Your payment is processing.");
-            break;
-          case "requires_payment_method":
-            setMessage("Your payment was not successful, please try again.");
-            break;
-          case "requires_action":
-            setMessage("Additional verification required. Please follow the prompts.");
-            break;
-          default:
-            setMessage(`Payment status: ${paymentIntent.status}`);
-        }
+        handlePaymentStatus(paymentIntent.status);
         
         return { success: false, reason: "requires-action", paymentIntent };
       } else {
