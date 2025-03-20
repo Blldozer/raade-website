@@ -1,9 +1,9 @@
-
 // Service Worker for RAADE Website
-const CACHE_NAME = 'raade-cache-v7'; // Incremented cache version
+const CACHE_NAME = 'raade-cache-v8'; // Incremented cache version
 const FONT_CACHE_NAME = 'raade-fonts-cache-v2'; // Separate cache for fonts
-const IMAGE_CACHE_NAME = 'raade-images-cache-v3';
+const IMAGE_CACHE_NAME = 'raade-images-cache-v4'; // Incremented image cache version
 const EXTERNAL_CACHE_NAME = 'raade-external-cache-v1'; // New cache for external resources
+const TEAM_IMAGES_CACHE_NAME = 'raade-team-images-v1'; // Special cache just for team images
 
 const urlsToCache = [
   '/',
@@ -15,8 +15,19 @@ const urlsToCache = [
   '/public/logos/RAADE-logo-final-black.png',
   '/public/hero-background.webm',
   '/public/hero-background.mp4',
-  // Team member photos folder - will be populated dynamically
-  '/public/raade-individual-e-board-photos-webp'
+];
+
+// Team image patterns to specially handle
+const teamImagePatterns = [
+  '/raade-individual-e-board-photos/',
+  '/raade-individual-e-board-photos-webp/'
+];
+
+// Team image prefixes for common team member names - we'll try to precache these
+const teamMemberPrefixes = [
+  'John-', 'Jane-', 'Michael-', 'Sarah-', 'David-', 
+  'Samuel-', 'Jessica-', 'Emeka-', 'Ngozi-', 'Oluchi-', 
+  'Emmanuel-', 'Chioma-', 'Adeola-', 'Joseph-', 'Mary-'
 ];
 
 // Font files to cache separately with longer expiration
@@ -76,6 +87,20 @@ const isExternalResource = (url) => {
   }
 };
 
+// Helper to check if a URL is a team member image
+const isTeamImage = (url) => {
+  if (typeof url === 'string') {
+    return teamImagePatterns.some(pattern => url.includes(pattern));
+  }
+  
+  try {
+    const urlObj = new URL(url.url || url);
+    return teamImagePatterns.some(pattern => urlObj.pathname.includes(pattern));
+  } catch (e) {
+    return teamImagePatterns.some(pattern => (url.url || url).includes(pattern));
+  }
+};
+
 // Install event - cache assets
 self.addEventListener('install', event => {
   logDebug('Installing...');
@@ -107,6 +132,37 @@ self.addEventListener('install', event => {
         console.error('Font cache install failed:', error);
       }),
       
+    // Initialize team images cache
+    caches.open(TEAM_IMAGES_CACHE_NAME)
+      .then(cache => {
+        logDebug('Initialized team images cache');
+        // Try to pre-cache some common team member image patterns
+        const teamImageUrls = [];
+        
+        // Generate some likely team member image URLs to pre-cache
+        teamImagePatterns.forEach(pattern => {
+          teamMemberPrefixes.forEach(prefix => {
+            teamImageUrls.push(`${pattern}${prefix}raade-website-image.jpg`);
+            teamImageUrls.push(`${pattern}${prefix}raade-website-image.webp`);
+          });
+        });
+        
+        // No need to await this - just try to cache in background
+        teamImageUrls.forEach(url => {
+          fetch(url, { mode: 'no-cors' })
+            .then(response => {
+              if (response.ok) {
+                return cache.put(url, response);
+              }
+            })
+            .catch(() => {
+              // Ignore fetch errors for these preloads
+            });
+        });
+        
+        return Promise.resolve();
+      }),
+      
     // Initialize external resources cache
     caches.open(EXTERNAL_CACHE_NAME)
       .then(cache => {
@@ -126,16 +182,53 @@ self.addEventListener('message', event => {
     const imageUrl = enforceHTTPS(event.data.url);
     
     if (imageUrl) {
+      // Determine which cache to use based on URL
+      const cacheName = isTeamImage(imageUrl) ? TEAM_IMAGES_CACHE_NAME : IMAGE_CACHE_NAME;
+      
       event.waitUntil(
-        caches.open(IMAGE_CACHE_NAME)
+        caches.open(cacheName)
           .then(cache => {
-            logDebug('Caching image', imageUrl);
-            return fetch(imageUrl)
+            logDebug(`Caching image in ${cacheName}`, imageUrl);
+            
+            // Create a request with cache-busting for fresh content
+            const cacheHeaders = new Headers();
+            cacheHeaders.append('Cache-Control', 'no-cache');
+            const imageRequest = new Request(imageUrl, { 
+              headers: cacheHeaders,
+              cache: 'reload' 
+            });
+            
+            return fetch(imageRequest)
               .then(response => {
                 if (!response || response.status !== 200) {
                   throw new Error('Failed to fetch image');
                 }
-                return cache.put(imageUrl, response);
+                
+                // Clone response before using it
+                const responseToCache = response.clone();
+                return cache.put(imageUrl, responseToCache)
+                  .then(() => {
+                    logDebug(`Successfully cached ${imageUrl}`);
+                    // Try to also cache the alternative format
+                    let alternateUrl = imageUrl;
+                    if (imageUrl.includes('.webp')) {
+                      alternateUrl = imageUrl.replace('.webp', '.jpg');
+                    } else if (imageUrl.includes('.jpg')) {
+                      alternateUrl = imageUrl.replace('.jpg', '.webp');
+                    }
+                    
+                    if (alternateUrl !== imageUrl) {
+                      return fetch(alternateUrl, { cache: 'reload' })
+                        .then(altResponse => {
+                          if (altResponse && altResponse.status === 200) {
+                            return cache.put(alternateUrl, altResponse);
+                          }
+                        })
+                        .catch(() => {
+                          // Ignore errors for alternate format
+                        });
+                    }
+                  });
               })
               .catch(error => {
                 console.error('Failed to cache image', imageUrl, error);
@@ -365,6 +458,95 @@ self.addEventListener('fetch', event => {
       return;
     }
     
+    // Special handling for team member images
+    if (isTeamImage(requestUrl)) {
+      logDebug('Team member image request:', requestUrl.pathname);
+      
+      event.respondWith(
+        caches.open(TEAM_IMAGES_CACHE_NAME)
+          .then(cache => {
+            return cache.match(event.request)
+              .then(cachedResponse => {
+                if (cachedResponse) {
+                  logDebug('Serving team image from cache:', requestUrl.pathname);
+                  return cachedResponse;
+                }
+                
+                // If not in cache, try to fetch with a timeout
+                logDebug('Team image not in cache, fetching:', requestUrl.pathname);
+                
+                // Create a timeout Promise that rejects after 3 seconds
+                const timeoutPromise = new Promise((_, reject) => {
+                  setTimeout(() => reject(new Error('Image fetch timeout')), 3000);
+                });
+                
+                // Try the network with a timeout
+                return Promise.race([
+                  fetch(event.request.clone()).then(networkResponse => {
+                    // Clone the response before using it
+                    const responseToCache = networkResponse.clone();
+                    
+                    // Cache the response for future use
+                    cache.put(event.request, responseToCache);
+                    
+                    return networkResponse;
+                  }),
+                  timeoutPromise
+                ])
+                .catch(error => {
+                  logDebug('Team image fetch failed:', error.message);
+                  
+                  // If fetch fails, try alternate format (.jpg instead of .webp or vice versa)
+                  let alternateUrl = requestUrl.href;
+                  let alternateRequest;
+                  
+                  if (requestUrl.pathname.includes('.webp')) {
+                    // Try JPG instead
+                    alternateUrl = requestUrl.href.replace('.webp', '.jpg');
+                    alternateRequest = new Request(alternateUrl, event.request);
+                    
+                    logDebug('Trying JPG instead of WebP:', alternateUrl);
+                  } else if (requestUrl.pathname.includes('.jpg')) {
+                    // Try WebP instead
+                    alternateUrl = requestUrl.href.replace('.jpg', '.webp');
+                    alternateRequest = new Request(alternateUrl, event.request);
+                    
+                    logDebug('Trying WebP instead of JPG:', alternateUrl);
+                  }
+                  
+                  if (alternateRequest) {
+                    // Try to match the alternate format in cache
+                    return cache.match(alternateRequest)
+                      .then(altCachedResponse => {
+                        if (altCachedResponse) {
+                          logDebug('Serving alternate format from cache:', alternateUrl);
+                          return altCachedResponse;
+                        }
+                        
+                        // If not in cache, fetch the alternate format
+                        return fetch(alternateRequest)
+                          .then(altNetworkResponse => {
+                            // Cache the response
+                            cache.put(alternateRequest, altNetworkResponse.clone());
+                            return altNetworkResponse;
+                          })
+                          .catch(() => {
+                            // If all else fails, return a fallback image or 404
+                            logDebug('All image formats failed, returning fallback');
+                            return new Response('Image not found', { status: 404 });
+                          });
+                      });
+                  }
+                  
+                  // No alternate format to try, return a fallback
+                  return new Response('Image not found', { status: 404 });
+                });
+              });
+          })
+      );
+      return;
+    }
+    
     // Handle navigation requests differently - always go to index.html for SPA
     if (isNavigationRequest(event.request)) {
       logDebug('Navigation request:', requestUrl.pathname);
@@ -578,6 +760,7 @@ self.addEventListener('activate', event => {
     IMAGE_CACHE_NAME, 
     FONT_CACHE_NAME, 
     EXTERNAL_CACHE_NAME,
+    TEAM_IMAGES_CACHE_NAME,
     'raade-stripe-cache-v1'
   ];
   
