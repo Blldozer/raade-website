@@ -3,8 +3,33 @@ export const formatTimeUnit = (value: number): string => {
   return value < 10 ? `0${value}` : `${value}`;
 };
 
+/**
+ * Calculates time remaining until target date
+ * 
+ * Features:
+ * - Handles time zone differences correctly
+ * - Prevents negative time values
+ * - Enhanced logging for debugging
+ * - Returns clear expired flag when event has passed
+ * 
+ * @param targetDate The future date to count down to
+ * @returns Object with days, hours, minutes, seconds and expired flag
+ */
 export const calculateTimeLeft = (targetDate: Date) => {
   const now = new Date();
+  
+  // Ensure both dates are valid
+  if (!(targetDate instanceof Date) || isNaN(targetDate.getTime())) {
+    console.error("Invalid target date provided to calculateTimeLeft:", targetDate);
+    return {
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+      expired: true
+    };
+  }
+  
   const difference = targetDate.getTime() - now.getTime();
   
   // Handle negative time differences (event has passed)
@@ -24,10 +49,11 @@ export const calculateTimeLeft = (targetDate: Date) => {
     };
   }
   
+  // Calculate time units
   const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-  const hours = Math.floor(difference / (1000 * 60 * 60) % 24);
-  const minutes = Math.floor(difference / 1000 / 60 % 60);
-  const seconds = Math.floor(difference / 1000 % 60);
+  const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((difference / 1000 / 60) % 60);
+  const seconds = Math.floor((difference / 1000) % 60);
   
   return {
     days,
@@ -38,9 +64,31 @@ export const calculateTimeLeft = (targetDate: Date) => {
   };
 };
 
+/**
+ * Calculates progress percentage between start and end dates
+ * 
+ * @param startDate The start date of the period
+ * @param endDate The end date of the period
+ * @returns Progress percentage (0-100)
+ */
 export const calculateProgress = (startDate: Date, endDate: Date): number => {
   const now = new Date();
+  
+  // Validate dates
+  if (!(startDate instanceof Date) || isNaN(startDate.getTime()) ||
+      !(endDate instanceof Date) || isNaN(endDate.getTime())) {
+    console.error("Invalid dates provided to calculateProgress:", { startDate, endDate });
+    return 0;
+  }
+  
   const totalDuration = endDate.getTime() - startDate.getTime();
+  
+  // Handle invalid date ranges
+  if (totalDuration <= 0) {
+    console.error("Invalid date range in calculateProgress - end date is before or same as start date");
+    return 0;
+  }
+  
   const elapsedDuration = now.getTime() - startDate.getTime();
   
   // Ensure progress is between 0 and 100
@@ -63,6 +111,13 @@ export interface ColorScheme {
   progressFill?: string;
 }
 
+/**
+ * Gets the appropriate color classes based on color scheme and background
+ * 
+ * @param colorScheme Color scheme to use ('light', 'dark', 'auto', or custom object)
+ * @param isDarkBackground Whether the current background is dark
+ * @returns Object with color classes for each element
+ */
 export const getColorClasses = (
   colorScheme: 'light' | 'dark' | 'auto' | ColorScheme, 
   isDarkBackground: boolean
@@ -114,6 +169,12 @@ export const getColorClasses = (
   }
 };
 
+/**
+ * Determines if the current route has a light background
+ * 
+ * @param pathname Current route path
+ * @returns True if the route has a light background
+ */
 export const hasLightBackground = (pathname: string) => {
   // Check specific routes that have light backgrounds
   const lightBackgroundRoutes = [
@@ -127,8 +188,14 @@ export const hasLightBackground = (pathname: string) => {
   );
 };
 
-// New function to handle scroll-based background detection
+/**
+ * Determines if the user has scrolled past the hero section
+ * 
+ * @returns True if scrolled past hero section threshold
+ */
 export const isScrollPastHero = (): boolean => {
-  // Check if scrolled past typical hero section height (100vh)
+  if (typeof window === 'undefined') return false;
+  
+  // Check if scrolled past typical hero section height (70% of viewport height)
   return window.scrollY > window.innerHeight * 0.7;
 };
