@@ -1,12 +1,11 @@
 
-import { useEffect } from "react";
 import { UseFormRegister, FormState, UseFormSetValue, UseFormWatch, Control } from "react-hook-form";
-import { RegistrationFormData, TICKET_TYPES } from "./RegistrationFormTypes";
-import BasicInformation from "./registration/BasicInformation";
+import { RegistrationFormData } from "./RegistrationFormTypes";
 import TicketTypeSelection from "./registration/TicketTypeSelection";
-import GroupRegistration from "./registration/GroupRegistration";
 import SpecialRequests from "./registration/SpecialRequests";
-import { useEmailValidation } from "./registration/useEmailValidation";
+import BasicInformationSection from "./registration/BasicInformationSection";
+import GroupRegistrationSection from "./registration/GroupRegistrationSection";
+import { useGroupSizeReset } from "./registration/useGroupSizeReset";
 
 interface RegistrationFormFieldsProps {
   register: UseFormRegister<RegistrationFormData>;
@@ -17,6 +16,19 @@ interface RegistrationFormFieldsProps {
   onEmailValidation?: (result: { isValid: boolean; message?: string }) => void;
 }
 
+/**
+ * RegistrationFormFields Component
+ * 
+ * Organizes and renders the different sections of the registration form
+ * Each section is now a separate component for better maintainability
+ * 
+ * @param register - React Hook Form register function
+ * @param errors - Form validation errors
+ * @param setValue - React Hook Form setValue function
+ * @param watch - React Hook Form watch function
+ * @param control - React Hook Form control object
+ * @param onEmailValidation - Callback when email validation completes
+ */
 const RegistrationFormFields = ({ 
   register, 
   errors, 
@@ -26,35 +38,16 @@ const RegistrationFormFields = ({
   onEmailValidation
 }: RegistrationFormFieldsProps) => {
   
-  const watchTicketType = watch("ticketType");
-  const watchEmail = watch("email");
-  const isStudentGroup = watchTicketType === TICKET_TYPES.STUDENT_GROUP;
+  // Use the group size reset hook to handle group size logic
+  useGroupSizeReset(watch, setValue);
   
-  const { isCheckingEmail, validationMessage, isValid } = useEmailValidation(
-    watchEmail, 
-    watchTicketType, 
-    onEmailValidation
-  );
-  
-  useEffect(() => {
-    // Reset group size when ticket type changes
-    if (!isStudentGroup) {
-      setValue("groupSize", undefined);
-      setValue("groupEmails", []);
-    } else if (!watch("groupSize")) {
-      setValue("groupSize", 5); // Default group size
-    }
-  }, [watchTicketType, setValue, isStudentGroup, watch]);
-
   return (
     <div className="space-y-4">
-      <BasicInformation 
+      <BasicInformationSection 
         register={register} 
         errors={errors} 
         watch={watch} 
-        isCheckingEmail={isCheckingEmail}
-        emailValidationMessage={validationMessage}
-        emailIsValid={isValid}
+        onEmailValidation={onEmailValidation}
       />
       
       <TicketTypeSelection 
@@ -63,13 +56,11 @@ const RegistrationFormFields = ({
         errors={errors} 
       />
       
-      {isStudentGroup && (
-        <GroupRegistration
-          watch={watch}
-          setValue={setValue}
-          control={control}
-        />
-      )}
+      <GroupRegistrationSection
+        watch={watch}
+        setValue={setValue}
+        control={control}
+      />
 
       <SpecialRequests register={register} />
     </div>
