@@ -1,69 +1,56 @@
 
-// Service Worker for RAADE Website
-const CACHE_NAME = 'raade-cache-v6'; // Increment cache version
-const FONT_CACHE_NAME = 'raade-fonts-cache-v1'; // Separate cache for fonts
-const CSS_CACHE_NAME = 'raade-css-cache-v1'; // Separate cache for CSS
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/src/main.tsx',
-  '/src/index.css',
-  '/src/App.tsx',
-  '/public/logos/RAADE-logo-final-white.png',
-  '/public/logos/RAADE-logo-final-black.png',
-  '/public/hero-background.webm',
-  '/public/hero-background.mp4',
-  // Team member photos folder - will be populated dynamically
-  '/public/raade-individual-e-board-photos-webp'
-];
+/**
+ * Service Worker for RAADE Website
+ * 
+ * Features:
+ * - Network-first strategy for fonts and CSS
+ * - Separate caches for different asset types
+ * - Advanced error recovery
+ * - Optimized offline capability
+ * - HTTPS enforcement in production
+ */
 
-// Font files to explicitly cache
-const fontFilesToCache = [
-  '/fonts/Simula_Book_ImfTVa3.woff',
-  '/fonts/Simula_BookItalic_651eMqB.woff',
-  '/fonts/Amadine.woff'
-];
+// Import utility modules 
+importScripts('/sw-utils/cache-utils.js');
+importScripts('/sw-utils/request-handlers.js');
+importScripts('/sw-utils/message-handlers.js');
 
-// Image-specific cache for better management
-const IMAGE_CACHE_NAME = 'raade-images-cache-v2';
+// Use destructuring to access imported functions
+const { 
+  CACHE_NAMES, 
+  DEBUG, 
+  logDebug, 
+  getCacheAllowlist,
+  getUrlsToCache, 
+  getFontFilesToCache,
+  cacheUrls,
+  cacheFontFiles
+} = self.cacheUtils;
 
-// Force HTTPS for all resources
-const enforceHTTPS = (url) => {
-  // Check if we're in production (not localhost)
-  if (self.location.hostname !== 'localhost' && 
-      self.location.hostname !== '127.0.0.1' &&
-      url.startsWith('http:')) {
-    return url.replace('http:', 'https:');
-  }
-  return url;
-};
+const {
+  isNavigationRequest,
+  isFontFile,
+  isCSSFile,
+  isStripeURL,
+  isPaymentRequest,
+  isImageRequest,
+  handleNavigationRequest,
+  handleFontRequest,
+  handleCSSRequest,
+  handleStripeRequest,
+  handlePaymentRequest,
+  handleImageRequest,
+  handleStandardRequest
+} = self.requestHandlers;
 
-// Debug flag for logging service worker activity
-const DEBUG = true;
-
-// Helper function for conditional logging
-const logDebug = (message, ...args) => {
-  if (DEBUG) {
-    console.log(`SW: ${message}`, ...args);
-  }
-};
-
-// Check if a URL is a font file
-const isFontFile = (url) => {
-  return url.pathname.includes('.woff') || 
-         url.pathname.includes('.woff2') || 
-         url.pathname.includes('.ttf') || 
-         url.pathname.includes('.otf');
-};
-
-// Check if a URL is a CSS file
-const isCSSFile = (url) => {
-  return url.pathname.endsWith('.css');
-};
+const {
+  processMessageEvent,
+  notifyClientsAboutUpdate
+} = self.messageHandlers;
 
 // Install event - cache assets
 self.addEventListener('install', event => {
-  logDebug('Installing service worker v6...');
+  logDebug('Installing service worker...');
   
   // Skip waiting to ensure the new service worker activates immediately
   self.skipWaiting();
@@ -71,31 +58,10 @@ self.addEventListener('install', event => {
   event.waitUntil(
     Promise.all([
       // Cache core app files
-      caches.open(CACHE_NAME)
-        .then(cache => {
-          logDebug('Opened main cache');
-          // Ensure all URLs use HTTPS in production
-          const secureUrls = urlsToCache.map(url => enforceHTTPS(url));
-          return cache.addAll(secureUrls);
-        }),
+      cacheUrls(CACHE_NAMES.MAIN, getUrlsToCache()),
       
       // Explicitly cache font files with network-first strategy
-      caches.open(FONT_CACHE_NAME)
-        .then(cache => {
-          logDebug('Caching font files explicitly');
-          return Promise.all(
-            fontFilesToCache.map(fontFile => 
-              fetch(fontFile, { cache: 'reload' })
-                .then(response => {
-                  if (response.ok) {
-                    return cache.put(fontFile, response);
-                  }
-                  logDebug('Failed to fetch font:', fontFile);
-                })
-                .catch(err => logDebug('Font fetch error:', fontFile, err))
-            )
-          );
-        })
+      cacheFontFiles(getFontFilesToCache())
     ])
     .catch(error => {
       console.error('Cache install failed:', error);
@@ -104,68 +70,7 @@ self.addEventListener('install', event => {
 });
 
 // Message handler for dynamic cache instructions
-self.addEventListener('message', event => {
-  logDebug('Message received', event.data);
-  
-  if (event.data && event.data.type === 'CACHE_IMAGE') {
-    // Handle request to cache a specific image
-    const imageUrl = enforceHTTPS(event.data.url);
-    
-    if (imageUrl) {
-      event.waitUntil(
-        caches.open(IMAGE_CACHE_NAME)
-          .then(cache => {
-            logDebug('Caching image', imageUrl);
-            return fetch(imageUrl)
-              .then(response => {
-                if (!response || response.status !== 200) {
-                  throw new Error('Failed to fetch image');
-                }
-                return cache.put(imageUrl, response);
-              })
-              .catch(error => {
-                console.error('Failed to cache image', imageUrl, error);
-              });
-          })
-      );
-    }
-  } else if (event.data && event.data.type === 'CLEAR_CACHE') {
-    // Allow clearing specific caches
-    const cacheName = event.data.cacheName;
-    if (cacheName) {
-      event.waitUntil(
-        caches.delete(cacheName)
-          .then(success => {
-            logDebug(`Cache ${cacheName} ${success ? 'deleted' : 'not found'}`);
-          })
-      );
-    }
-  } else if (event.data && event.data.type === 'SKIP_WAITING') {
-    // Force the waiting service worker to become active
-    self.skipWaiting();
-  }
-});
-
-// Helper to check if a request is a navigation request
-const isNavigationRequest = (request) => {
-  return request.mode === 'navigate' || 
-         (request.method === 'GET' && 
-          request.headers.get('accept') && 
-          request.headers.get('accept').includes('text/html'));
-};
-
-// Check if a URL is related to Stripe
-const isStripeURL = (url) => {
-  return url.hostname === 'js.stripe.com' || 
-         url.hostname === 'api.stripe.com' || 
-         url.hostname.includes('stripe.com');
-};
-
-// Check if request is for payment API
-const isPaymentRequest = (url) => {
-  return url.pathname.includes('payment') || 
-         url.pathname.includes('create-payment-intent');
-};
+self.addEventListener('message', processMessageEvent);
 
 // Fetch event - serve from cache when offline
 self.addEventListener('fetch', event => {
@@ -183,276 +88,27 @@ self.addEventListener('fetch', event => {
       }
     }
     
-    // Handle navigation requests differently - always go to index.html for SPA
+    // Route request to appropriate handler based on type
     if (isNavigationRequest(event.request)) {
-      logDebug('Navigation request:', requestUrl.pathname);
-      event.respondWith(
-        fetch(event.request)
-          .catch(() => caches.match('/index.html'))
-      );
-      return;
+      event.respondWith(handleNavigationRequest(event));
     }
-    
-    // Special handling for font files - network first with cache fallback
-    if (isFontFile(requestUrl)) {
-      logDebug('Font request:', requestUrl.pathname);
-      
-      event.respondWith(
-        fetch(event.request, { cache: 'reload' })
-          .then(response => {
-            // Cache the fresh font response
-            if (response.ok) {
-              const clonedResponse = response.clone();
-              caches.open(FONT_CACHE_NAME)
-                .then(cache => cache.put(event.request, clonedResponse));
-            }
-            return response;
-          })
-          .catch(() => {
-            logDebug('Font network request failed, using cache');
-            return caches.match(event.request, { cacheName: FONT_CACHE_NAME })
-              .then(cachedResponse => {
-                if (cachedResponse) {
-                  return cachedResponse;
-                }
-                // Try in other caches as fallback
-                return caches.match(event.request);
-              });
-          })
-      );
-      return;
+    else if (isFontFile(requestUrl)) {
+      event.respondWith(handleFontRequest(event));
     }
-    
-    // Special handling for CSS files - network first with cache fallback
-    if (isCSSFile(requestUrl)) {
-      logDebug('CSS request:', requestUrl.pathname);
-      
-      event.respondWith(
-        fetch(event.request, { cache: 'reload' })
-          .then(response => {
-            // Cache the fresh CSS response
-            if (response.ok) {
-              const clonedResponse = response.clone();
-              caches.open(CSS_CACHE_NAME)
-                .then(cache => cache.put(event.request, clonedResponse));
-            }
-            return response;
-          })
-          .catch(() => {
-            logDebug('CSS network request failed, using cache');
-            return caches.match(event.request, { cacheName: CSS_CACHE_NAME })
-              .then(cachedResponse => {
-                if (cachedResponse) {
-                  return cachedResponse;
-                }
-                // Try in other caches as fallback
-                return caches.match(event.request);
-              });
-          })
-      );
-      return;
+    else if (isCSSFile(requestUrl)) {
+      event.respondWith(handleCSSRequest(event));
     }
-    
-    // Special handling for Stripe resources - NEVER cache on first load
-    if (isStripeURL(requestUrl)) {
-      logDebug('Stripe request:', requestUrl.pathname);
-      
-      // Always use network-first strategy for Stripe
-      event.respondWith(
-        fetch(event.request)
-          .then(response => {
-            // Only cache successful responses AFTER first successful load
-            if (response.ok && !requestUrl.pathname.includes('payment-intent')) {
-              logDebug('Caching Stripe resource:', requestUrl.pathname);
-              const responseToCache = response.clone();
-              caches.open('raade-stripe-cache-v1')
-                .then(cache => {
-                  cache.put(event.request, responseToCache);
-                });
-            }
-            return response;
-          })
-          .catch(error => {
-            logDebug('Stripe network request failed, trying cache:', error);
-            // Try to get from cache if offline
-            return caches.match(event.request);
-          })
-      );
-      return;
+    else if (isStripeURL(requestUrl)) {
+      event.respondWith(handleStripeRequest(event));
     }
-    
-    // Special handling for Payment API requests - NEVER cache
-    if (isPaymentRequest(requestUrl)) {
-      logDebug('Payment API request:', requestUrl.pathname);
-      
-      // Never cache payment API requests, always go to network
-      event.respondWith(
-        fetch(event.request)
-          .catch(error => {
-            logDebug('Payment API request failed:', error);
-            return new Response(JSON.stringify({ 
-              error: 'Network error. Please check your connection and try again.' 
-            }), { 
-              status: 503,
-              headers: { 'Content-Type': 'application/json' }
-            });
-          })
-      );
-      return;
+    else if (isPaymentRequest(requestUrl)) {
+      event.respondWith(handlePaymentRequest(event));
     }
-    
-    // Special handling for image requests
-    const isImageRequest = 
-      requestUrl.pathname.includes('/raade-individual-e-board-photos') ||
-      requestUrl.pathname.includes('/raade-individual-e-board-photos-webp') ||
-      /\.(webp|jpg|jpeg|png|gif)$/i.test(requestUrl.pathname);
-    
-    if (isImageRequest) {
-      event.respondWith(
-        caches.open(IMAGE_CACHE_NAME)
-          .then(cache => {
-            return cache.match(event.request)
-              .then(cachedResponse => {
-                if (cachedResponse) {
-                  // Return cached image
-                  logDebug('Serving image from cache', requestUrl.pathname);
-                  return cachedResponse;
-                }
-                
-                // Try network and cache for future use
-                return fetch(event.request)
-                  .then(networkResponse => {
-                    if (!networkResponse || networkResponse.status !== 200) {
-                      throw new Error('Bad network response');
-                    }
-                    
-                    // Clone the response before using it
-                    const responseToCache = networkResponse.clone();
-                    
-                    // Cache the successful response
-                    cache.put(event.request, responseToCache);
-                    
-                    return networkResponse;
-                  })
-                  .catch(error => {
-                    console.error('Network fetch failed for image', requestUrl.pathname, error);
-                    
-                    // For webp images, try falling back to JPG version if available
-                    if (requestUrl.pathname.includes('.webp')) {
-                      const jpgUrl = event.request.url.replace('.webp', '.jpg');
-                      logDebug('Trying JPG fallback', jpgUrl);
-                      
-                      return fetch(jpgUrl)
-                        .then(fallbackResponse => {
-                          if (!fallbackResponse || fallbackResponse.status !== 200) {
-                            throw new Error('Fallback fetch failed too');
-                          }
-                          return fallbackResponse;
-                        })
-                        .catch(fallbackError => {
-                          console.error('Fallback also failed', fallbackError);
-                          // If all fails, return a placeholder or error response
-                          return new Response('Image not available', { status: 404 });
-                        });
-                    }
-                    
-                    // If not a webp or fallback fails, return error
-                    return new Response('Image not available', { status: 404 });
-                  });
-              });
-          })
-      );
-    } else {
-      // Standard strategy for non-special resources
-      // Use a cache-then-network strategy
-      event.respondWith(
-        caches.match(event.request)
-          .then(response => {
-            // Cache hit - return response
-            if (response) {
-              // Start a background fetch to update the cache
-              const fetchPromise = fetch(event.request)
-                .then(networkResponse => {
-                  if (networkResponse.ok) {
-                    const responseToCache = networkResponse.clone();
-                    caches.open(CACHE_NAME)
-                      .then(cache => {
-                        cache.put(event.request, responseToCache);
-                      });
-                  }
-                })
-                .catch(() => {
-                  // Silently fail the background fetch
-                });
-              
-              // Don't wait for the background fetch
-              setTimeout(() => fetchPromise, 0);
-              
-              return response;
-            }
-            
-            // Make a fresh network request - ensure HTTPS in production
-            let secureRequest;
-            try {
-              // Fix for TypeError: Failed to construct 'Request': Cannot construct a Request with a RequestInit whose mode member is set as 'navigate'
-              const requestOptions = {
-                method: event.request.method,
-                headers: event.request.headers,
-                credentials: event.request.credentials,
-                redirect: event.request.redirect,
-                cache: 'reload' // Force validation with the server
-              };
-              
-              // Don't include mode for navigation requests
-              if (event.request.mode !== 'navigate') {
-                requestOptions.mode = event.request.mode;
-              }
-              
-              secureRequest = new Request(
-                enforceHTTPS(event.request.url),
-                requestOptions
-              );
-            } catch (error) {
-              console.error('Error creating secure request', error);
-              return fetch(event.request);
-            }
-            
-            return fetch(secureRequest).then(
-              response => {
-                // Check if we received a valid response
-                if(!response || response.status !== 200) {
-                  return response;
-                }
-
-                // Don't cache non-GET requests
-                if (event.request.method !== 'GET') {
-                  return response;
-                }
-
-                try {
-                  // Clone the response
-                  const responseToCache = response.clone();
-  
-                  caches.open(CACHE_NAME)
-                    .then(cache => {
-                      cache.put(event.request, responseToCache);
-                    });
-                } catch (error) {
-                  console.error('Error caching response', error);
-                }
-
-                return response;
-              }
-            ).catch(error => {
-              console.error('Fetch error', error);
-              // Return cached index.html for navigation requests as fallback
-              if (isNavigationRequest(event.request)) {
-                return caches.match('/index.html');
-              }
-              return new Response('Network error', { status: 500 });
-            });
-          })
-      );
+    else if (isImageRequest(requestUrl)) {
+      event.respondWith(handleImageRequest(event));
+    }
+    else {
+      event.respondWith(handleStandardRequest(event));
     }
   } catch (error) {
     console.error('Critical fetch handler error', error);
@@ -471,51 +127,25 @@ self.addEventListener('fetch', event => {
 self.addEventListener('activate', event => {
   logDebug('Activating new service worker...');
   
-  const cacheWhitelist = [
-    CACHE_NAME, 
-    IMAGE_CACHE_NAME, 
-    FONT_CACHE_NAME, 
-    CSS_CACHE_NAME, 
-    'raade-stripe-cache-v1'
-  ];
-  
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            logDebug('Deleting old cache', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-    .then(() => {
-      logDebug('Activated and claiming clients');
-      
-      // Update the client to use HTTPS if needed
-      self.clients.matchAll().then(clients => {
-        clients.forEach(client => {
-          // Notify clients that the service worker has been updated
-          client.postMessage({ 
-            type: 'SW_UPDATED',
-            version: CACHE_NAME  
-          });
-          
-          // Force HTTPS if needed
-          if (client.url && client.url.startsWith('http:') && 
-              self.location.hostname !== 'localhost' && 
-              self.location.hostname !== '127.0.0.1') {
-            // Inform the client to redirect to HTTPS
-            client.postMessage({ 
-              type: 'USE_HTTPS', 
-              url: client.url.replace('http:', 'https:') 
-            });
-          }
-        });
-      });
-      
-      return self.clients.claim();
-    })
+    caches.keys()
+      .then(cacheNames => {
+        return Promise.all(
+          cacheNames.map(cacheName => {
+            // Delete any cache not in our allowlist
+            if (getCacheAllowlist().indexOf(cacheName) === -1) {
+              logDebug('Deleting old cache', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      })
+      .then(() => {
+        logDebug('Activated and claiming clients');
+        
+        // Notify clients about the update
+        return notifyClientsAboutUpdate()
+          .then(() => self.clients.claim());
+      })
   );
 });

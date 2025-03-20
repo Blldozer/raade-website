@@ -23,7 +23,7 @@ const App = () => {
   useEffect(() => {
     console.log("App: Component mounted");
     
-    // Initialize font loading system
+    // Initialize font loading system with error recovery
     initFontLoading();
     
     // Listen for service worker updates
