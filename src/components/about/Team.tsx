@@ -5,6 +5,8 @@ import { useInView } from "framer-motion";
 import TeamMembersList from "./TeamMembersList";
 import { teamMembers } from "./TeamData";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useIsMobile } from "../hooks/use-mobile";
+import TeamImageSkeleton from "./team/TeamImageSkeleton";
 
 /**
  * Team component - Displays the team section with proper state management
@@ -17,6 +19,7 @@ const Team = () => {
   const isInView = useInView(sectionRef, { once: true, amount: 0.1 });
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const isMobile = useIsMobile();
 
   // Initialize component with improved state management
   useEffect(() => {
@@ -86,14 +89,8 @@ const Team = () => {
         {/* Show loading skeleton while team data is initializing */}
         {!isLoaded ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[...Array(12)].map((_, index) => (
-              <div key={index} className="rounded-lg overflow-hidden">
-                <Skeleton className="aspect-[4/3] w-full" />
-                <div className="p-8 bg-[#3C403A] rounded-b-lg">
-                  <Skeleton className="h-10 w-3/4 mb-2" />
-                  <Skeleton className="h-6 w-1/2" />
-                </div>
-              </div>
+            {[...Array(isMobile ? 6 : 12)].map((_, index) => (
+              <TeamImageSkeleton key={index} />
             ))}
           </div>
         ) : (

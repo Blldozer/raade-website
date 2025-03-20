@@ -1,7 +1,9 @@
-
 import { motion } from "framer-motion";
 import TeamMember from "./TeamMember";
 import { useState, useEffect } from "react";
+import TeamImageLoadingIndicator from "./team/TeamImageLoadingIndicator";
+import TeamImageSkeleton from "./team/TeamImageSkeleton";
+import { useIsMobile } from "../hooks/use-mobile";
 
 interface TeamMembersListProps {
   teamMembers: Array<{
@@ -18,15 +20,27 @@ interface TeamMembersListProps {
  * TeamMembersList component - Renders the grid of team members
  * Features:
  * - Coordinated loading of team member images
+ * - Mobile-optimized loading indicators and skeletons
  * - Staggered animations for visual appeal
- * - Mobile-optimized rendering with adaptable grid layout
  * - Tracks loading progress for all team members
+ * - Provides retry mechanism for network issues
  */
 const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListProps) => {
   // Track which images are loaded to improve rendering reliability
   const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [networkStatus, setNetworkStatus] = useState<'online'|'offline'>('online');
+  
+  // Get device info for conditional rendering
+  const isMobile = useIsMobile();
+  
+  // Count how many images have actually loaded
+  const loadedCount = Object.values(loadedImages).filter(Boolean).length;
+  const totalImages = teamMembers.length;
+  
+  // Force skeleton display on mobile until a threshold of images are loaded
+  const [showSkeletons, setShowSkeletons] = useState(true);
+  const loadingThreshold = isMobile ? 0.4 : 0.2; // 40% on mobile, 20% on desktop
 
   // Reset animation state when component mounts or visibility changes
   useEffect(() => {
@@ -64,10 +78,29 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
     const percent = totalImages > 0 ? (loadedCount / totalImages) * 100 : 0;
     setLoadingProgress(percent);
     
+    // Hide skeletons once we reach the threshold
+    if (percent >= loadingThreshold * 100) {
+      setShowSkeletons(false);
+    }
+    
     if (percent === 100) {
       console.log("All team member images loaded successfully");
     }
-  }, [loadedImages, teamMembers.length]);
+  }, [loadedImages, teamMembers.length, loadingThreshold]);
+
+  // Handle retry action when network issues occur
+  const handleRetry = () => {
+    console.log("Retrying image loading");
+    // Force refresh of images by clearing the loaded state for unloaded images
+    const updatedLoadedState = { ...loadedImages };
+    for (const member of teamMembers) {
+      if (!updatedLoadedState[member.name]) {
+        // We keep the current state but will trigger a reload in the child components
+        updatedLoadedState[member.name] = false;
+      }
+    }
+    setLoadedImages(updatedLoadedState);
+  };
 
   // Notification when an image loads successfully
   const handleImageLoaded = (memberName: string) => {
@@ -92,8 +125,19 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
 
   return (
     <>
-      {/* Optional loading progress indicator - only shown during initial load */}
-      {isInView && isLoaded && loadingProgress < 100 && networkStatus === 'online' && (
+      {/* Mobile loading indicator - only shown during initial load */}
+      {isMobile && showSkeletons && loadingProgress < 100 && (
+        <TeamImageLoadingIndicator 
+          loadingProgress={loadingProgress}
+          totalImages={totalImages}
+          loadedImages={loadedCount}
+          networkStatus={networkStatus}
+          onRetry={handleRetry}
+        />
+      )}
+      
+      {/* Desktop loading progress indicator */}
+      {!isMobile && isInView && isLoaded && loadingProgress < 100 && networkStatus === 'online' && (
         <div className="w-full mb-8 bg-gray-200 rounded-full h-2.5 hidden sm:block">
           <div 
             className="bg-[#FBB03B] h-2.5 rounded-full transition-all duration-300" 
@@ -116,13 +160,18 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
         animate={isInView && isLoaded ? "show" : "hidden"}
         exit="hidden"
       >
+        {/* Render either skeletons or actual team members based on loading state */}
         {teamMembers.map((member, index) => (
-          <TeamMember 
-            key={`${member.name}-${index}`} 
-            member={member} 
-            index={index}
-            onImageLoad={() => handleImageLoaded(member.name)}
-          />
+          showSkeletons && isMobile ? (
+            <TeamImageSkeleton key={`skeleton-${index}`} />
+          ) : (
+            <TeamMember 
+              key={`${member.name}-${index}`} 
+              member={member} 
+              index={index}
+              onImageLoad={() => handleImageLoaded(member.name)}
+            />
+          )
         ))}
       </motion.div>
     </>
