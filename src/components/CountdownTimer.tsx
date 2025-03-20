@@ -16,6 +16,15 @@ interface CountdownTimerProps {
   textColor?: string;
 }
 
+/**
+ * CountdownTimer Component - Displays a countdown to the conference date
+ * 
+ * Features:
+ * - Handles countdown expiration gracefully
+ * - Adapts display based on whether the event has passed
+ * - Supports both navbar and floating display variants
+ * - Auto-detects appropriate color scheme based on background
+ */
 const CountdownTimer = ({
   targetDate,
   className,
@@ -27,7 +36,18 @@ const CountdownTimer = ({
   const location = useLocation();
   
   // Use the provided targetDate or fall back to the default
+  // Using a clearer date format with explicit year, month, day
   const CONFERENCE_DATE = targetDate ? new Date(targetDate) : new Date('2025-04-11T09:00:00');
+  
+  // Add debugging for the target date
+  useEffect(() => {
+    console.log("CountdownTimer initialized with:", {
+      providedDate: targetDate,
+      parsedDate: CONFERENCE_DATE.toISOString(),
+      currentDate: new Date().toISOString(),
+      timeDifference: CONFERENCE_DATE.getTime() - new Date().getTime()
+    });
+  }, [targetDate, CONFERENCE_DATE]);
   
   const [isExpanded, setIsExpanded] = useState(false);
   const [scrollPastHero, setScrollPastHero] = useState(false);

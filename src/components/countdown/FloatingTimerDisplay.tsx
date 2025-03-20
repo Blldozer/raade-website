@@ -1,10 +1,10 @@
 
-import { Card } from "../ui/card";
-import { Button } from "../ui/button";
-import { Timer, ChevronLeft, ChevronRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import TimerDigits from "./TimerDigits";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Clock, X, ChevronDown, AlertCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import TimerDigits from "./TimerDigits";
 import { ColorScheme } from "./timerUtils";
 
 interface FloatingTimerDisplayProps {
@@ -13,11 +13,12 @@ interface FloatingTimerDisplayProps {
     hours: number;
     minutes: number;
     seconds: number;
+    expired?: boolean;
   };
   isExpanded: boolean;
   toggleExpanded: () => void;
   className?: string;
-  colors?: ColorScheme;
+  colors: ColorScheme;
 }
 
 const FloatingTimerDisplay = ({
@@ -27,78 +28,116 @@ const FloatingTimerDisplay = ({
   className,
   colors
 }: FloatingTimerDisplayProps) => {
-  const navigate = useNavigate();
+  const [isMounted, setIsMounted] = useState(false);
+  const isExpired = timeLeft.expired;
+  
+  // Delay mounting to avoid flash on initial page load
+  useEffect(() => {
+    const timer = setTimeout(() => setIsMounted(true), 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
-  // Default colors if none provided
-  const defaultColors = {
-    text: "text-white",
-    accent: "text-raade-gold",
-    iconColor: "text-raade-gold"
-  };
-  const timerColors = colors || defaultColors;
-
-  // Determine if we need to add a background for light mode
-  // If text is dark (indicating we're on a light background), add a navy background
-  const needsBackground = timerColors.text?.includes('text-gray') || timerColors.text?.includes('text-black') || timerColors.text?.includes('text-raade-navy');
-  const cardBackground = needsBackground ? "bg-raade-navy text-white" : "bg-raade-navy";
+  if (!isMounted) return null;
 
   return (
-    <div className={`fixed left-0 top-1/3 z-50 transition-all duration-300 ${isExpanded ? 'translate-x-0' : 'translate-x-[-70%]'} ${className || ''}`}>
-      <Card className={`${cardBackground} ${timerColors.text} shadow-lg hover:shadow-xl transition-shadow rounded-r-lg ${isExpanded ? 'rounded-l-lg' : 'rounded-l-none'}`}>
-        <div className="p-4 flex">
-          {isExpanded ? (
-            <div className="flex flex-col w-full">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Timer size={18} className="text-[#FF9848]" />
-                  <h3 className="text-sm font-bold font-montserrat text-white">Conference Countdown</h3>
-                </div>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={toggleExpanded}
-                  className="p-1 text-white hover:bg-white/10"
-                >
-                  <ChevronLeft size={16} />
-                </Button>
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.3 }}
+        className={cn(
+          "fixed bottom-4 right-4 z-40",
+          className
+        )}
+      >
+        {isExpanded ? (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className={cn(
+              "rounded-lg shadow-lg border p-4 w-64",
+              colors.dropdownBg || "bg-white dark:bg-gray-800",
+              colors.dropdownBorder || "border-gray-200 dark:border-gray-700"
+            )}
+          >
+            <div className="flex justify-between items-center mb-2">
+              <div className="flex items-center">
+                {isExpired ? (
+                  <AlertCircle size={18} className={colors.accent || "text-amber-500"} />
+                ) : (
+                  <Clock size={18} className={colors.accent || "text-amber-500"} />
+                )}
+                <span className={cn("ml-2 font-semibold", colors.highlight || "text-gray-900 dark:text-white")}>
+                  {isExpired ? "Conference Live!" : "Conference Countdown"}
+                </span>
               </div>
-              
-              <TimerDigits 
-                days={timeLeft.days} 
-                hours={timeLeft.hours} 
-                minutes={timeLeft.minutes} 
-                seconds={timeLeft.seconds} 
-                colorClasses={{
-                  accent: "text-[#FF9848]", // Brighter orange that stands out against dark backgrounds
-                  dropdownText: "text-white/80"
-                }} 
-              />
-              
-              <div className="text-center mt-3">
-                <p className="text-xs mb-2 text-white/80">April 11-12, 2025</p>
-                <Button size="sm" onClick={() => navigate("/conference/register")} className="text-white w-full font-lora bg-[#FF9848] hover:bg-[#FF8A4D] font-semibold text-lg">
-                  Register Now
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center">
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <button
                 onClick={toggleExpanded}
-                className="p-1 text-white hover:bg-white/10"
+                className={cn(
+                  "p-1 rounded-full transition-colors",
+                  colors.hoverBg || "hover:bg-gray-100 dark:hover:bg-gray-700"
+                )}
               >
-                <ChevronRight size={16} />
-              </Button>
-              <div className="rotate-90 origin-left whitespace-nowrap mt-16 ml-1 font-bold text-sm text-white">
-                CONFERENCE TIMER
-              </div>
+                <X size={14} className={colors.text || "text-gray-500 dark:text-gray-400"} />
+              </button>
             </div>
-          )}
-        </div>
-      </Card>
-    </div>
+            
+            {isExpired ? (
+              <div className={cn("text-center py-2", colors.dropdownText || "text-gray-600 dark:text-gray-300")}>
+                <p className="text-sm font-medium">The RAADE Conference is happening now!</p>
+                <p className="text-xs mt-1 mb-2">April 11-12, 2025</p>
+              </div>
+            ) : (
+              <TimerDigits
+                days={timeLeft.days}
+                hours={timeLeft.hours}
+                minutes={timeLeft.minutes}
+                seconds={timeLeft.seconds}
+                colorClasses={{
+                  accent: colors.accent,
+                  dropdownText: colors.dropdownText
+                }}
+                size="md"
+              />
+            )}
+            
+            <div className="mt-3 text-center">
+              <Link
+                to={isExpired ? "/conference" : "/conference/register"}
+                className={cn(
+                  "block w-full py-2 px-4 text-sm font-medium text-white rounded-md bg-amber-500 hover:bg-amber-600 transition-colors"
+                )}
+              >
+                {isExpired ? "View Live Schedule" : "Register Now"}
+              </Link>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            onClick={toggleExpanded}
+            className={cn(
+              "flex items-center space-x-2 rounded-full py-2 px-4 shadow-lg",
+              colors.dropdownBg || "bg-white dark:bg-gray-800"
+            )}
+          >
+            {isExpired ? (
+              <AlertCircle size={16} className={colors.accent || "text-amber-500"} />
+            ) : (
+              <Clock size={16} className={colors.accent || "text-amber-500"} />
+            )}
+            <span className={cn("text-sm font-medium", colors.text || "text-gray-900 dark:text-white")}>
+              {isExpired ? "Conference Live!" : `${timeLeft.days}d:${timeLeft.hours}h left`}
+            </span>
+            <ChevronDown size={14} className={colors.text || "text-gray-500 dark:text-gray-400"} />
+          </motion.button>
+        )}
+      </motion.div>
+    </AnimatePresence>
   );
 };
 

@@ -7,6 +7,23 @@ export const calculateTimeLeft = (targetDate: Date) => {
   const now = new Date();
   const difference = targetDate.getTime() - now.getTime();
   
+  // Handle negative time differences (event has passed)
+  if (difference <= 0) {
+    console.log("Target date has passed:", { 
+      target: targetDate.toISOString(), 
+      now: now.toISOString(), 
+      difference 
+    });
+    
+    return {
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+      expired: true
+    };
+  }
+  
   const days = Math.floor(difference / (1000 * 60 * 60 * 24));
   const hours = Math.floor(difference / (1000 * 60 * 60) % 24);
   const minutes = Math.floor(difference / 1000 / 60 % 60);
@@ -16,7 +33,8 @@ export const calculateTimeLeft = (targetDate: Date) => {
     days,
     hours,
     minutes,
-    seconds
+    seconds,
+    expired: false
   };
 };
 
