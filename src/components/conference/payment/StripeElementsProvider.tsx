@@ -1,14 +1,12 @@
 
 import React from "react";
 import { Elements } from "@stripe/react-stripe-js";
-import { Stripe, StripeElementsOptions, loadStripe } from "@stripe/stripe-js";
+import { StripeElementsOptions, loadStripe } from "@stripe/stripe-js";
 
 // Initialize Stripe with the publishable key
-// Enforce HTTPS by ensuring current protocol is considered
+// Use window-safe approach to prevent "global is not defined" errors
 const stripePromise = loadStripe("pk_live_51QzaGsJCmIJg645X8x5sPqhMAiH4pXBh2e6mbgdxxwgqqsCfM8N7SiOvv98N2l5kVeoAlJj3ab08VG4c6PtgVg4d004QXy2W3m", {
-  // Ensure API requests use HTTPS in production
   apiVersion: '2023-10-16',
-  // This ensures that if somehow the site is loaded over HTTP, Stripe still uses HTTPS
   betas: ['stripe_js_enforce_https_beta_1']
 });
 
@@ -41,25 +39,13 @@ const StripeElementsProvider: React.FC<StripeElementsProviderProps> = ({
     if (!clientSecret) {
       console.error("Missing client secret in StripeElementsProvider");
     }
-    
-    // Initialize Stripe and check if it loaded correctly
-    stripePromise.then(
-      stripe => {
-        if (stripe) {
-          console.log("Stripe SDK loaded successfully");
-        } else {
-          console.error("Failed to load Stripe SDK");
-        }
-      }
-    ).catch(err => {
-      console.error("Error initializing Stripe:", err);
-    });
   }, [clientSecret]);
   
   // Enforce HTTPS in production environments
   React.useEffect(() => {
     // Check if we're in production and not using HTTPS
-    if (window.location.protocol === 'http:' && 
+    if (typeof window !== 'undefined' && 
+        window.location.protocol === 'http:' && 
         window.location.hostname !== 'localhost' && 
         window.location.hostname !== '127.0.0.1') {
       

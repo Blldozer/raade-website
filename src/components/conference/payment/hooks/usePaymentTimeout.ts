@@ -17,7 +17,7 @@ export const usePaymentTimeout = (
   onTimeout: () => void
 ) => {
   // Use a ref to store the timeout ID for cleanup
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<number | null>(null);
   
   // Track if the component is still mounted
   const isMountedRef = useRef<boolean>(true);
@@ -30,7 +30,7 @@ export const usePaymentTimeout = (
       
       // Clear any existing timeout
       if (timeoutRef.current) {
-        global.clearTimeout(timeoutRef.current);
+        window.clearTimeout(timeoutRef.current);
         timeoutRef.current = null;
       }
     };
@@ -40,11 +40,11 @@ export const usePaymentTimeout = (
   const startTimeout = () => {
     // Clear any existing timeout first
     if (timeoutRef.current) {
-      global.clearTimeout(timeoutRef.current);
+      window.clearTimeout(timeoutRef.current);
     }
     
     // Set a new timeout
-    timeoutRef.current = setTimeout(() => {
+    timeoutRef.current = window.setTimeout(() => {
       // Only call onTimeout if the component is still mounted
       if (isMountedRef.current) {
         onTimeout();
@@ -56,7 +56,7 @@ export const usePaymentTimeout = (
   // Clear the current timeout
   const clearTimeoutRef = () => {
     if (timeoutRef.current) {
-      global.clearTimeout(timeoutRef.current);
+      window.clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
   };
