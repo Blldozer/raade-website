@@ -1,4 +1,3 @@
-
 import { cn } from "@/lib/utils";
 import NavLogo from "../NavLogo";
 import DesktopNav from "../DesktopNav";
@@ -10,19 +9,19 @@ import { useRef, useEffect } from "react";
 import { useNavBackgroundStyle } from "@/hooks/navigation/useNavBackgroundStyle";
 
 interface NavigationContentProps {
-  instanceId: string;
+  instanceId?: string;
 }
 
 /**
- * NavigationContent Component - Core rendering component for navigation elements
+ * NavigationContent component - The actual rendering of navigation UI
  * 
- * Handles the actual visual rendering of navigation elements using shared state
- * Features clean glassmorphism styling for depth
- * Background styling logic extracted to useNavBackgroundStyle hook
- * 
- * @param instanceId - Unique identifier for this navigation instance (for debugging)
+ * Handles:
+ * - Conditional rendering based on device size (mobile vs desktop)
+ * - Styling based on scroll position and background
+ * - Special page-specific overrides
+ * - Instance tracking to prevent duplicates
  */
-const NavigationContent = ({ instanceId }: NavigationContentProps) => {
+const NavigationContent = ({ instanceId = 'nav-default' }: NavigationContentProps) => {
   const { state } = useNavigation();
   const { 
     isScrolled, 
@@ -93,21 +92,31 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
     isStudioPage
   ]);
 
+  // Get element ref to check for duplicates
+  const navRef = useRef<HTMLElement>(null);
+  
+  // Check for duplicate navigations in the document
+  useEffect(() => {
+    // Wait for DOM to be ready
+    setTimeout(() => {
+      if (navRef.current) {
+        const allNavs = document.querySelectorAll('nav[data-nav-instance]');
+        if (allNavs.length > 1) {
+          console.warn(`[Navigation] Found ${allNavs.length} navigation bars:`, 
+            Array.from(allNavs).map(nav => nav.getAttribute('data-nav-instance')));
+        }
+      }
+    }, 100);
+  }, []);
+
   return (
-    <nav
-      className={cn(
-        "fixed w-full z-[100] transition-all duration-300 pointer-events-auto pt-2 sm:pt-3 md:pt-4 isolate", 
-        backgroundClass,
-        isVisible 
-          ? "translate-y-0" 
-          : "-translate-y-full"
-      )}
+    <nav 
+      ref={navRef}
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ${backgroundClass}`}
+      data-is-scrolled={isScrolled ? "true" : "false"}
+      data-light-background={isLightBackground ? "true" : "false"}
+      data-force-dark={forceDarkMode ? "true" : "false"}
       data-nav-instance={instanceId}
-      data-scrolled={isScrolled ? "true" : "false"}
-      data-visible={isVisible ? "true" : "false"}
-      data-background={effectiveLightBackground ? "light" : "dark"}
-      data-forced-dark={forceDarkMode ? "true" : "false"}
-      data-against-dark-background={isAgainstDarkBackground ? "true" : "false"}
       data-conference-page={isConferencePage ? "true" : "false"}
       data-registration-page={isConferenceRegistrationPage ? "true" : "false"}
       data-studio-page={isStudioPage ? "true" : "false"}

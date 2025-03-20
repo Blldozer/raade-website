@@ -1,5 +1,5 @@
 
-import { useLayoutEffect } from 'react';
+import { useLayoutEffect, useEffect } from 'react';
 
 /**
  * Custom hook to manage document and background attributes for the About page
@@ -30,6 +30,16 @@ export const useBackgroundAttributes = () => {
       } catch (error) {
         console.error("Error cleaning up about page class:", error);
       }
+    };
+  }, []);
+  
+  // Double-check cleanup with regular effect
+  useEffect(() => {
+    return () => {
+      // Second cleanup attempt to ensure attributes are removed
+      document.body.classList.remove('about-page');
+      document.body.removeAttribute('data-nav-background');
+      console.log("useBackgroundAttributes: Cleaned up background attributes");
     };
   }, []);
   

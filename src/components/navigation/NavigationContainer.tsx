@@ -5,6 +5,7 @@ import { NavigationProvider } from "./context/NavigationContext";
 import NavigationContent from "./content/NavigationContent";
 
 interface NavigationContainerProps {
+  instanceId?: string;
   isHeroPage?: boolean;
   forceDarkMode?: boolean;
   useShortFormLogo?: boolean;
@@ -20,12 +21,13 @@ interface NavigationContainerProps {
  * and ensure proper cleanup when navigating between pages
  */
 const NavigationContainer = ({ 
+  instanceId,
   isHeroPage = false, 
   forceDarkMode = false,
   useShortFormLogo = false 
 }: NavigationContainerProps) => {
-  // Generate a unique ID for this navigation instance
-  const instanceId = useRef(`nav-container-${Math.random().toString(36).substring(2, 9)}`);
+  // Generate a unique ID for this navigation instance if not provided
+  const localInstanceId = useRef(instanceId || `nav-container-${Math.random().toString(36).substring(2, 9)}`);
   const location = useLocation();
   
   // Check if we're on the conference registration page to ensure dark navbar
@@ -35,7 +37,7 @@ const NavigationContainer = ({
   
   // Log mounting/unmounting to track duplicate instances
   useEffect(() => {
-    console.log(`NavigationContainer (${instanceId.current}): Mounting on ${location.pathname}`);
+    console.log(`NavigationContainer (${localInstanceId.current}): Mounting on ${location.pathname}`);
     
     // Count navigation elements to detect duplicates
     const navElements = document.querySelectorAll('nav[data-nav-instance]');
@@ -45,7 +47,7 @@ const NavigationContainer = ({
     }
     
     return () => {
-      console.log(`NavigationContainer (${instanceId.current}): Unmounting from ${location.pathname}`);
+      console.log(`NavigationContainer (${localInstanceId.current}): Unmounting from ${location.pathname}`);
     };
   }, [location.pathname]);
 
@@ -55,7 +57,7 @@ const NavigationContainer = ({
       forceDarkMode: finalForceDarkMode, 
       useShortFormLogo 
     }}>
-      <NavigationContent instanceId={instanceId.current} />
+      <NavigationContent instanceId={localInstanceId.current} />
     </NavigationProvider>
   );
 };
