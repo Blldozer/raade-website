@@ -5,7 +5,7 @@
  * Features:
  * - Network-first strategy for fonts and CSS
  * - Separate caches for different asset types
- * - Advanced error recovery
+ * - Non-disruptive update notifications
  * - Optimized offline capability
  * - HTTPS enforcement in production
  */
@@ -52,8 +52,8 @@ const {
 self.addEventListener('install', event => {
   logDebug('Installing service worker...');
   
-  // Skip waiting to ensure the new service worker activates immediately
-  self.skipWaiting();
+  // Do not skip waiting - this helps with gradual rollout
+  // self.skipWaiting(); - Removed for gradual rollout
   
   event.waitUntil(
     Promise.all([
@@ -143,7 +143,7 @@ self.addEventListener('activate', event => {
       .then(() => {
         logDebug('Activated and claiming clients');
         
-        // Notify clients about the update
+        // Notify clients about the update with non-disruptive toast notification
         return notifyClientsAboutUpdate()
           .then(() => self.clients.claim());
       })

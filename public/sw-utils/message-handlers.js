@@ -53,9 +53,14 @@ export const handleSkipWaitingMessage = () => {
 /**
  * Handle VERSION check message from client
  */
-export const handleVersionCheckMessage = () => {
-  // Could implement version checking logic here
-  logDebug('Version check requested');
+export const handleVersionCheckMessage = (event) => {
+  // Send back current version info
+  if (event.source) {
+    event.source.postMessage({
+      type: 'VERSION_INFO',
+      version: CACHE_NAMES.MAIN
+    });
+  }
 };
 
 /**
@@ -82,7 +87,7 @@ export const processMessageEvent = (event) => {
       break;
       
     case 'CHECK_VERSION':
-      handleVersionCheckMessage();
+      handleVersionCheckMessage(event);
       break;
       
     default:
@@ -92,15 +97,18 @@ export const processMessageEvent = (event) => {
 
 /**
  * Notify clients about service worker updates
+ * Uses a non-disruptive approach with toast notification
  */
 export const notifyClientsAboutUpdate = async () => {
   const clients = await self.clients.matchAll();
   
   clients.forEach(client => {
     // Notify clients that the service worker has been updated
+    // Using toast instead of alert
     client.postMessage({ 
       type: 'SW_UPDATED',
-      version: CACHE_NAMES.MAIN
+      version: CACHE_NAMES.MAIN,
+      silent: true  // Flag for silent update notification
     });
     
     // Force HTTPS if needed

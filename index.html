@@ -89,34 +89,30 @@
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      // Service Worker Registration with improved error handling
+      // Improved Service Worker Registration with versioning
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
-          // Add a timestamp to ensure fresh SW is loaded after Cloudflare cache purge
-          const swUrl = '/sw.js?v=' + new Date().getTime();
+          // Use a fixed SW URL without timestamp to prevent unnecessary updates
+          const swUrl = '/sw.js';
+          let refreshing = false;
           
           navigator.serviceWorker.register(swUrl).then(function(registration) {
             console.log('ServiceWorker registration successful with scope: ', registration.scope);
             
-            // Check if there's a waiting service worker and notify user
-            if (registration.waiting) {
-              console.log('New service worker waiting');
-              // Notify the user that a new version is available
-              // This could be a toast notification in the app
-              if (window.confirm('A new version of the application is available. Reload now?')) {
-                // User accepted, tell the service worker to skipWaiting
-                registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-                // Then reload the page
-                window.location.reload();
+            // Monitor for updates but don't force refresh
+            registration.onupdatefound = function() {
+              const installingWorker = registration.installing;
+              if (installingWorker) {
+                installingWorker.onstatechange = function() {
+                  if (installingWorker.state === 'installed') {
+                    if (navigator.serviceWorker.controller) {
+                      // New content is available - will show toast notification
+                      console.log('New service worker installed, will activate on next page load');
+                    }
+                  }
+                };
               }
-            }
-            
-            // Handle updates on controller change
-            navigator.serviceWorker.addEventListener('controllerchange', function() {
-              console.log('Service worker controller changed');
-              // Reload the page to ensure fresh content
-              window.location.reload();
-            });
+            };
             
           }, function(err) {
             console.log('ServiceWorker registration failed: ', err);
@@ -128,15 +124,34 @@
             
             if (event.data.type === 'SW_UPDATED') {
               console.log('Service worker has been updated:', event.data.version);
-              // Notify the user about the update
-              if (window.confirm('Site has been updated. Reload to use the new version?')) {
-                window.location.reload();
+              
+              // If silent update flag is set, don't show modal dialog
+              if (event.data.silent) {
+                // Will display a toast instead of a modal via App.tsx
+                window.dispatchEvent(new CustomEvent('raade:sw-update', { 
+                  detail: { version: event.data.version }
+                }));
+              } else {
+                // Fallback to confirmation dialog only if silent is false
+                if (!refreshing && window.confirm('Site has been updated. Reload to use the new version?')) {
+                  refreshing = true;
+                  window.location.reload();
+                }
               }
             }
             
             if (event.data.type === 'USE_HTTPS') {
               console.log('Redirecting to HTTPS');
               window.location.href = event.data.url;
+            }
+          });
+          
+          // Handle controller change more gracefully
+          navigator.serviceWorker.addEventListener('controllerchange', function() {
+            if (!refreshing) {
+              console.log('Service worker controller changed - no forced refresh');
+              // Will be handled by the toast notification
+              refreshing = true;
             }
           });
         });

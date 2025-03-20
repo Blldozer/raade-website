@@ -3,17 +3,17 @@
  * Cache utility functions for the service worker
  */
 
-// Cache names for different asset types
+// Cache names for different asset types with content-based versioning
 export const CACHE_NAMES = {
-  MAIN: 'raade-cache-v6',
-  FONT: 'raade-fonts-cache-v1',
-  CSS: 'raade-css-cache-v1',
+  MAIN: 'raade-cache-v7', // Increment version for clear updates
+  FONT: 'raade-fonts-cache-v2',
+  CSS: 'raade-css-cache-v2',
   IMAGE: 'raade-images-cache-v2',
   STRIPE: 'raade-stripe-cache-v1'
 };
 
 // Debug flag for logging
-export const DEBUG = true;
+export const DEBUG = false; // Disable debug logs in production
 
 /**
  * Conditional logging helper
