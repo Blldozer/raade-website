@@ -1,10 +1,11 @@
 
 import { useState, useRef } from "react";
-import { Stripe, StripeElements } from "@stripe/stripe-js";
+import { Stripe, StripeElements, PaymentIntent, StripeError } from "@stripe/stripe-js";
 import { usePaymentErrorHandling } from "./usePaymentErrorHandling";
 import { usePaymentTimeout } from "./usePaymentTimeout";
 import { confirmStripePayment } from "../services/paymentConfirmationService";
 import { usePaymentResultHandler } from "./usePaymentResultHandler";
+import { PaymentResult } from "../types";
 
 // Default timeout duration for payment processing
 const PAYMENT_PROCESSING_TIMEOUT = 30000; // 30 seconds
@@ -18,6 +19,13 @@ interface UseStripePaymentConfirmationProps {
   setMessage: (message: string | null) => void;
   requestId?: string | null;
 }
+
+type PaymentConfirmationResult = {
+  success: boolean;
+  reason?: string;
+  paymentIntent?: PaymentIntent;
+  error?: StripeError | Error;
+};
 
 /**
  * Custom hook to handle Stripe payment confirmation
@@ -40,7 +48,7 @@ export const useStripePaymentConfirmation = ({
   const [isProcessing, setIsProcessing] = useState(false);
   
   // Track if success callback has been fired to prevent duplicates
-  const successCalledRef = useRef(false);
+  const successCalledRef = useRef<boolean>(false);
 
   // Set up error handling
   const { handleError, errorCalledRef } = usePaymentErrorHandling(onError, requestId);
@@ -64,7 +72,7 @@ export const useStripePaymentConfirmation = ({
     }
   );
 
-  const handleConfirmPayment = async () => {
+  const handleConfirmPayment = async (): Promise<PaymentConfirmationResult> => {
     if (!stripe || !elements) {
       return { success: false, reason: "stripe-not-loaded" };
     }
@@ -126,11 +134,17 @@ export const useStripePaymentConfirmation = ({
       console.error("Unexpected error during payment:", unexpectedError);
       setMessage("An unexpected error occurred during payment processing");
       
-      handleError(unexpectedError instanceof Error ? 
+      const errorMessage = unexpectedError instanceof Error ? 
         unexpectedError.message : 
-        "An unexpected error occurred: Unknown error");
+        "An unexpected error occurred: Unknown error";
+        
+      handleError(errorMessage);
       
-      return { success: false, reason: "unexpected-error", error: unexpectedError };
+      return { 
+        success: false, 
+        reason: "unexpected-error", 
+        error: unexpectedError instanceof Error ? unexpectedError : new Error(String(unexpectedError))
+      };
     } finally {
       if (isMountedRef.current) {
         setIsProcessing(false);

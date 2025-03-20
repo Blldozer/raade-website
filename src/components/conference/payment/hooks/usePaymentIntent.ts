@@ -1,8 +1,9 @@
 
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { usePaymentIntentState } from "./usePaymentIntentState";
 import { usePaymentIntentTimeout } from "./usePaymentIntentTimeout";
 import { createPaymentIntentRequest } from "../services/paymentIntentService";
+import { PaymentIntentResponse } from "../types";
 
 // Default timeout duration for payment processing
 const PAYMENT_INTENT_TIMEOUT = 20000; // 20 seconds
@@ -14,6 +15,11 @@ interface UsePaymentIntentProps {
   groupSize?: number;
   onSuccess: () => void;
   onError: (error: string) => void;
+}
+
+interface PaymentIntentError {
+  message: string;
+  code?: string;
 }
 
 /**
@@ -55,7 +61,7 @@ export const usePaymentIntent = ({
   // Use timeout management hook
   const { startTimeout, clearTimeout } = usePaymentIntentTimeout({
     timeoutDuration: PAYMENT_INTENT_TIMEOUT,
-    onTimeout: (errorMessage) => {
+    onTimeout: () => {
       if (isMountedRef.current) {
         safeSetLoading(false);
         safeSetErrorDetails("The payment service took too long to respond. Please try again.");
@@ -70,7 +76,7 @@ export const usePaymentIntent = ({
     return () => {
       isMountedRef.current = false;
     };
-  }, []);
+  }, [isMountedRef]);
 
   // Wrap createPaymentIntent in useCallback to avoid recreating on every render
   const createPaymentIntent = useCallback(async () => {
@@ -160,11 +166,13 @@ export const usePaymentIntent = ({
       // Provide more specific error messages based on the error
       let errorMessage = "An unexpected error occurred";
       
-      if (error.message?.includes('timeout')) {
+      const err = error as Error;
+      
+      if (err.message?.includes('timeout')) {
         errorMessage = "The payment service took too long to respond. Please try again.";
-      } else if (error.message?.includes('network')) {
+      } else if (err.message?.includes('network')) {
         errorMessage = "A network error occurred. Please check your internet connection and try again.";
-      } else if (error.code === 'AbortError') {
+      } else if ((error as { code?: string }).code === 'AbortError') {
         errorMessage = "The request was cancelled. Please try again.";
       }
       
@@ -174,7 +182,22 @@ export const usePaymentIntent = ({
       safeSetLoading(false);
       activeRequestRef.current = false;
     }
-  }, [ticketType, email, fullName, groupSize, onSuccess, onError, retryCount]);
+  }, [
+    ticketType, 
+    email, 
+    fullName, 
+    groupSize, 
+    onSuccess, 
+    onError, 
+    activeRequestRef, 
+    safeSetLoading, 
+    safeSetErrorDetails, 
+    startTimeout, 
+    clearTimeout, 
+    isMountedRef, 
+    isSuccessCalledRef, 
+    updatePaymentState
+  ]);
 
   // Create payment intent when the component loads or retryCount changes
   useEffect(() => {

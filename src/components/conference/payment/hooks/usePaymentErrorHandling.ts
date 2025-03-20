@@ -1,5 +1,7 @@
 
 import { useRef } from "react";
+import { StripeError } from "@stripe/stripe-js";
+import { PaymentError } from "../types";
 
 /**
  * Custom hook to handle payment errors
@@ -15,9 +17,9 @@ export const usePaymentErrorHandling = (
   requestId?: string | null
 ) => {
   // Track if error callback has been fired to prevent duplicates
-  const errorCalledRef = useRef(false);
+  const errorCalledRef = useRef<boolean>(false);
 
-  const handleError = (error: string | Error) => {
+  const handleError = (error: string | Error | StripeError | PaymentError) => {
     if (errorCalledRef.current) {
       console.log("Error already reported, ignoring duplicate");
       return;
@@ -26,7 +28,15 @@ export const usePaymentErrorHandling = (
     errorCalledRef.current = true;
     
     // Convert Error objects to string messages
-    const errorMessage = error instanceof Error ? error.message : error;
+    let errorMessage: string;
+    
+    if (typeof error === 'string') {
+      errorMessage = error;
+    } else if ('message' in error && typeof error.message === 'string') {
+      errorMessage = error.message;
+    } else {
+      errorMessage = "Unknown error occurred";
+    }
     
     // Include request ID if available
     const errorWithRequestId = requestId 
