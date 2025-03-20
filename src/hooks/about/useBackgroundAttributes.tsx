@@ -11,6 +11,8 @@ export const useBackgroundAttributes = () => {
   useLayoutEffect(() => {
     console.log("useBackgroundAttributes: Setting initial dark background");
     try {
+      // Set the data attribute for navigation background color
+      // This will be picked up by the main navigation
       document.body.setAttribute('data-nav-background', 'dark');
       
       // Add a class to body to indicate we're on the about page

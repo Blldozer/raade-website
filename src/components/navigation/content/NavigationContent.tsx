@@ -111,6 +111,7 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
       data-conference-page={isConferencePage ? "true" : "false"}
       data-registration-page={isConferenceRegistrationPage ? "true" : "false"}
       data-studio-page={isStudioPage ? "true" : "false"}
+      data-page-path={location.pathname}
     >
       <div className={`max-w-7xl mx-auto ${getPadding()}`}>
         <div className="flex justify-between items-center">

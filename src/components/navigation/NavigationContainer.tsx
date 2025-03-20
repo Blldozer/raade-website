@@ -30,16 +30,24 @@ const NavigationContainer = ({
   
   // Check if we're on the conference registration page to ensure dark navbar
   const isConferenceRegistration = location.pathname === '/conference/register';
+  const isAboutPage = location.pathname === '/about';
   const finalForceDarkMode = isConferenceRegistration ? true : forceDarkMode;
   
   // Log mounting/unmounting to track duplicate instances
   useEffect(() => {
-    console.log(`NavigationContainer (${instanceId.current}): Mounting`);
+    console.log(`NavigationContainer (${instanceId.current}): Mounting on ${location.pathname}`);
+    
+    // Count navigation elements to detect duplicates
+    const navElements = document.querySelectorAll('nav[data-nav-instance]');
+    if (navElements.length > 1) {
+      console.warn(`Multiple navigation elements detected (${navElements.length}):`, 
+        Array.from(navElements).map(el => el.getAttribute('data-nav-instance')));
+    }
     
     return () => {
-      console.log(`NavigationContainer (${instanceId.current}): Unmounting`);
+      console.log(`NavigationContainer (${instanceId.current}): Unmounting from ${location.pathname}`);
     };
-  }, []);
+  }, [location.pathname]);
 
   return (
     <NavigationProvider initialProps={{ 

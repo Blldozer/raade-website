@@ -1,3 +1,4 @@
+
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import AboutHero from "../components/about/AboutHero";
 import { useAboutPage } from "../hooks/useAboutPage";
@@ -6,7 +7,7 @@ import LoadingIndicator from "../components/about/LoadingIndicator";
 import AboutSections from "../components/about/AboutSections";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { useLocation } from "react-router-dom";
-import Navigation from "../components/Navigation"; // Import at the top level
+import Navigation from "../components/Navigation"; // We're keeping just one navigation
 
 /**
  * About page component - Manages the entire About page lifecycle
