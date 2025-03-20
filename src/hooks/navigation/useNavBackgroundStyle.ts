@@ -28,13 +28,14 @@ export const useNavBackgroundStyle = () => {
    * Helper function to determine navbar background styling based on state
    */
   const getBackgroundClass = (): string => {
+    // For conference registration page or when forcing dark mode, always use dark background
+    // regardless of scroll position
+    if (isConferenceRegistrationPage || forceDarkMode) {
+      return "bg-[#274675]/80 backdrop-blur-md border-b border-[#274675]/30 shadow-md";
+    }
+    
     // Apply enhanced glassmorphism effect with proper light/dark handling when scrolled
     if (isScrolled) {
-      // For conference registration, always use dark background
-      if (isConferenceRegistrationPage || forceDarkMode) {
-        return "bg-[#274675]/80 backdrop-blur-md border-b border-[#274675]/30 shadow-md";
-      }
-      
       return isLightBackground 
         ? "bg-white/70 backdrop-blur-md border-b border-gray-200/50 shadow-sm" 
         : "bg-[#274675]/80 backdrop-blur-md border-b border-[#274675]/30 shadow-md";
@@ -47,6 +48,6 @@ export const useNavBackgroundStyle = () => {
   return {
     backgroundClass: getBackgroundClass(),
     isConferenceRegistrationPage,
-    effectiveLightBackground: forceDarkMode || isConferenceRegistrationPage ? false : isLightBackground
+    effectiveLightBackground: isConferenceRegistrationPage || forceDarkMode ? false : isLightBackground
   };
 };

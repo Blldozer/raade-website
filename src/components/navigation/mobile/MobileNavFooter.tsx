@@ -2,6 +2,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useNavigation } from "@/hooks/navigation/useNavigation";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface MobileNavFooterProps {
   onLinkClick: () => void;
@@ -14,18 +15,39 @@ interface MobileNavFooterProps {
  * - Gold CTA button with hover effects (maintaining gold color)
  * - Fade-in animations for smooth appearance
  * - Responsive padding for better touch targets
- * - Proper event handling for navigation
- * - Consistent navigation to the join section
+ * - Consistent navigation to the join section using build-with-us ID
+ * - Uses the same navigation logic as JoinButton component
  * 
  * @param onLinkClick - Function to call when a link is clicked
  */
 const MobileNavFooter = ({ onLinkClick }: MobileNavFooterProps) => {
   const { handleNavigation } = useNavigation();
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  // Handle navigation to join section consistently with JoinButton component
+  const handleJoinClick = (e: React.MouseEvent) => {
     e.preventDefault();
+    
+    // Close mobile menu
     onLinkClick();
-    handleNavigation(href);
+    
+    console.log("MobileNavFooter: Navigating to join section, current path:", location.pathname);
+    
+    // If we're not on the home page, navigate to home and then scroll
+    if (location.pathname !== '/') {
+      console.log("MobileNavFooter: Not on homepage, navigating with state");
+      navigate('/', { state: { scrollToSection: "build-with-us" } });
+    } else {
+      // If we're already on home page, just scroll to the section
+      console.log("MobileNavFooter: On homepage, scrolling directly");
+      const joinSection = document.getElementById('build-with-us');
+      if (joinSection) {
+        joinSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        console.warn("MobileNavFooter: Could not find 'build-with-us' section element");
+      }
+    }
   };
 
   return (
@@ -42,9 +64,9 @@ const MobileNavFooter = ({ onLinkClick }: MobileNavFooterProps) => {
         whileTap={{ scale: 0.98 }}
       >
         <motion.a
-          href="/#join"
+          href="/#build-with-us"
           className="block w-full py-3.5 px-6 bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-[#274675] text-center rounded-md font-alegreyasans font-bold text-lg transition-colors shadow-md hover:shadow-lg"
-          onClick={(e) => handleClick(e, "/#join")}
+          onClick={handleJoinClick}
           whileHover={{ y: -2 }}
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
