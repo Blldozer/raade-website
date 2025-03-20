@@ -32,9 +32,9 @@ const HeroSection = ({ scrollToContent }: { scrollToContent: () => void }) => {
             className="space-y-6 sm:space-y-8 md:space-y-12 lg:space-y-16"
           >
             {[
-              { text: "Design.", gradient: "from-blue-300 to-indigo-500" },
-              { text: "Build.", gradient: "from-purple-400 to-pink-500" },
-              { text: "Scale.", gradient: "from-amber-400 to-orange-500" }
+              { text: "Design." },
+              { text: "Build." },
+              { text: "Scale." }
             ].map((item, index) => (
               <motion.div 
                 key={item.text}
@@ -42,10 +42,8 @@ const HeroSection = ({ scrollToContent }: { scrollToContent: () => void }) => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.2 + 0.3, duration: 0.5 }}
               >
-                <h1 className="text-[clamp(2.5rem,8vw,6rem)] font-simula leading-[1.1] tracking-tight">
-                  <span className={`bg-gradient-to-r ${item.gradient} bg-clip-text text-transparent`}>
-                    {item.text}
-                  </span>
+                <h1 className="text-[clamp(2.5rem,8vw,6rem)] font-simula leading-[1.1] tracking-tight text-white">
+                  {item.text}
                 </h1>
               </motion.div>
             ))}
