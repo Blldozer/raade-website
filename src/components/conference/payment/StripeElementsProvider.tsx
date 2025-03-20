@@ -6,7 +6,7 @@ import { StripeElementsOptions, loadStripe } from "@stripe/stripe-js";
 // Initialize Stripe with the publishable key
 // Use window-safe approach to prevent "global is not defined" errors
 const stripePromise = loadStripe("pk_live_51QzaGsJCmIJg645X8x5sPqhMAiH4pXBh2e6mbgdxxwgqqsCfM8N7SiOvv98N2l5kVeoAlJj3ab08VG4c6PtgVg4d004QXy2W3m", {
-  apiVersion: '2023-10-16',
+  apiVersion: '2025-02-24.acacia',
   betas: ['stripe_js_enforce_https_beta_1']
 });
 
