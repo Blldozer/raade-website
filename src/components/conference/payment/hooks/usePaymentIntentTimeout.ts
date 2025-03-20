@@ -26,7 +26,7 @@ export const usePaymentIntentTimeout = ({
   const startTimeout = () => {
     // Clear any existing timeout first
     if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
+      clearTimeoutRef();
     }
     
     timeoutRef.current = setTimeout(() => {
@@ -35,7 +35,7 @@ export const usePaymentIntentTimeout = ({
   };
   
   // Clear the payment timeout
-  const clearTimeout = () => {
+  const clearTimeoutRef = () => {
     if (timeoutRef.current) {
       window.clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
@@ -44,6 +44,6 @@ export const usePaymentIntentTimeout = ({
   
   return {
     startTimeout,
-    clearTimeout,
+    clearTimeout: clearTimeoutRef,
   };
 };
