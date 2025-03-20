@@ -1,8 +1,17 @@
+
 import React, { memo } from "react";
 import { motion } from "framer-motion";
 import { Calendar, MapPin, Users, Mic, Lightbulb } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * HeroLeftContent Component
+ * 
+ * Displays the main conference information with:
+ * - Consistent fluid typography that works across all devices
+ * - Optimized text scaling for Android and other mobile platforms
+ * - Staggered animations for visual interest
+ */
 const HeroLeftContent = () => {
   const navigate = useNavigate();
   
@@ -19,7 +28,7 @@ const HeroLeftContent = () => {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-xl font-medium text-white font-lora"
+          className="text-[clamp(1rem,5vw,1.25rem)] font-medium text-white font-lora"
         >
           Join us at the RAADE
         </motion.p>
@@ -29,7 +38,7 @@ const HeroLeftContent = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-6xl lg:text-7xl font-bold font-simula text-white"
+            className="text-[clamp(2.5rem,10vw,4.5rem)] font-bold font-simula text-white leading-[1.1]"
             style={{ willChange: "transform, opacity" }}
           >
             AFRICAN
@@ -38,7 +47,7 @@ const HeroLeftContent = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-6xl lg:text-7xl font-bold font-simula text-white"
+            className="text-[clamp(2.5rem,10vw,4.5rem)] font-bold font-simula text-white leading-[1.1]"
             style={{ willChange: "transform, opacity" }}
           >
             DEVELOPMENT FORUM
@@ -54,7 +63,7 @@ const HeroLeftContent = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.7 }}
-            className="text-2xl font-simula text-white mt-6"
+            className="text-[clamp(1.25rem,5vw,2rem)] font-simula text-white mt-6"
           >
             Building Pathways to the Future
           </motion.p>
@@ -104,7 +113,7 @@ const HeroLeftContent = () => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 1 }}
-          className="text-lg text-white/90 max-w-2xl mx-auto font-lora mt-6"
+          className="text-[clamp(1rem,4vw,1.125rem)] text-white/90 max-w-2xl mx-auto font-lora mt-6"
         >
           The RAADE Forum brings together innovative minds to discuss sustainable 
           solutions for Africa's development. With a spotlight on student-led innovation,

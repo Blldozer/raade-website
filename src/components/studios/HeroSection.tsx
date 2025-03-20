@@ -8,7 +8,7 @@ import ScrollDownButton from "@/components/hero/components/ScrollDownButton";
  * Features:
  * - Animated gradient background with subtle overlay effects
  * - Staggered text animation for the main tagline
- * - Fade-in animation for the supporting text
+ * - Improved responsive text scaling for all devices (Android, iOS, desktop)
  * - Scroll down indicator for better UX
  */
 const HeroSection = ({ scrollToContent }: { scrollToContent: () => void }) => {
@@ -23,12 +23,12 @@ const HeroSection = ({ scrollToContent }: { scrollToContent: () => void }) => {
       </div>
       
       <div className="container mx-auto px-4 relative z-20 flex flex-col justify-between h-[calc(100vh-120px)]">
-        <div className="max-w-4xl pl-8 sm:pl-12 pt-32 sm:pt-36">
+        <div className="max-w-4xl pl-4 sm:pl-8 md:pl-12 pt-24 sm:pt-32 md:pt-36">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="space-y-14 md:space-y-20"
+            className="space-y-10 sm:space-y-14 md:space-y-20"
           >
             {["Design.", "Build.", "Scale."].map((word, index) => (
               <motion.div 
@@ -37,7 +37,7 @@ const HeroSection = ({ scrollToContent }: { scrollToContent: () => void }) => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.2 + 0.3, duration: 0.5 }}
               >
-                <h1 className="text-7xl md:text-9xl font-simula text-white">
+                <h1 className="text-[clamp(3.5rem,12vw,9rem)] font-simula text-white leading-[1.1] tracking-tight">
                   {word}
                 </h1>
               </motion.div>
@@ -49,7 +49,7 @@ const HeroSection = ({ scrollToContent }: { scrollToContent: () => void }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2, duration: 0.5 }}
-          className="mt-auto mb-24 text-xl md:text-2xl text-white/90 font-lora max-w-2xl pl-8 sm:pl-12"
+          className="mt-auto mb-16 sm:mb-24 text-[clamp(1rem,4vw,2rem)] text-white/90 font-lora max-w-2xl pl-4 sm:pl-8 md:pl-12"
         >
           A project-driven innovation studio creating market-based solutions for Africa's most pressing challenges.
         </motion.p>
