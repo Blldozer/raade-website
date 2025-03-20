@@ -1,17 +1,71 @@
 
 import { motion } from "framer-motion";
 import ScrollDownButton from "@/components/hero/components/ScrollDownButton";
+import ParticleField from "@/components/hero/ParticleField";
 
 /**
  * HeroSection Component - Animated hero for Innovation Studios page
  * 
  * Features:
- * - Animated gradient background with subtle overlay effects
- * - Staggered text animation for the main tagline
- * - Improved responsive text scaling for all devices (Android, iOS, desktop)
- * - Scroll down indicator for better UX
+ * - Connected, process-oriented animation sequence for the main tagline
+ * - Improved spacing and layout for better visual hierarchy
+ * - Interactive particle elements for engagement
+ * - Responsive design with optimized animations for all devices
  */
 const HeroSection = ({ scrollToContent }: { scrollToContent: () => void }) => {
+  // Animation variants for container
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { 
+        staggerChildren: 0.4,
+        delayChildren: 0.3,
+        duration: 0.6
+      }
+    }
+  };
+  
+  // Animation variants for individual words
+  const wordVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        type: "spring",
+        stiffness: 100,
+        damping: 12
+      }
+    }
+  };
+  
+  // Animation variants for descriptive text
+  const textVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        delay: 1.4,
+        duration: 0.7
+      }
+    }
+  };
+  
+  // Visual connector line animation variants
+  const connectorVariants = {
+    hidden: { height: 0, opacity: 0 },
+    visible: (custom: number) => ({
+      height: "100%",
+      opacity: 0.6,
+      transition: { 
+        delay: 0.3 * (custom + 1),
+        duration: 0.4
+      }
+    })
+  };
+
   return (
     <div className="min-h-screen relative overflow-hidden flex items-center innovation-studios-hero" data-background="dark">
       {/* Animated gradient background */}
@@ -22,37 +76,60 @@ const HeroSection = ({ scrollToContent }: { scrollToContent: () => void }) => {
         </div>
       </div>
       
-      <div className="container mx-auto px-4 relative z-20 flex flex-col justify-between h-[calc(100vh-120px)]">
-        <div className="max-w-4xl pl-4 sm:pl-8 md:pl-12 pt-24 sm:pt-32 md:pt-36">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="space-y-10 sm:space-y-14 md:space-y-20"
-          >
-            {["Design.", "Build.", "Scale."].map((word, index) => (
-              <motion.div 
-                key={word}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.2 + 0.3, duration: 0.5 }}
-              >
-                <h1 className="text-[clamp(3.5rem,12vw,9rem)] font-simula text-white leading-[1.1] tracking-tight">
-                  {word}
-                </h1>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-        
-        <motion.p 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.5 }}
-          className="mt-auto mb-16 sm:mb-24 text-[clamp(1rem,4vw,2rem)] text-white/90 font-lora max-w-2xl pl-4 sm:pl-8 md:pl-12"
+      {/* Interactive particles for engagement */}
+      <ParticleField />
+      
+      <div className="container mx-auto px-4 relative z-20 flex flex-col justify-center min-h-[calc(100vh-120px)]">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="grid grid-cols-1 md:grid-cols-12 gap-6"
         >
-          A project-driven innovation studio creating market-based solutions for Africa's most pressing challenges.
-        </motion.p>
+          {/* Design-Build-Scale process with connecting elements */}
+          <div className="md:col-span-10 md:col-start-2 lg:col-span-8 lg:col-start-3 flex flex-col items-center md:items-start">
+            <div className="space-y-6 sm:space-y-10 md:space-y-14 relative">
+              {/* Process elements with connecting lines */}
+              {["Design.", "Build.", "Scale."].map((word, index) => (
+                <div key={word} className="relative flex items-center">
+                  {/* Connecting line between words (except first) */}
+                  {index > 0 && (
+                    <motion.div 
+                      className="absolute top-[-60px] sm:top-[-90px] md:top-[-110px] left-[50%] md:left-8 w-[2px] bg-[#FBB03B]/60"
+                      style={{ height: 0 }}
+                      variants={connectorVariants}
+                      custom={index-1}
+                    />
+                  )}
+                  
+                  {/* Step number indicator */}
+                  <motion.div 
+                    variants={wordVariants}
+                    className="h-12 w-12 rounded-full bg-[#FBB03B]/20 backdrop-blur-sm flex items-center justify-center text-white text-xl font-simula mr-4 sm:mr-6 hidden md:flex"
+                  >
+                    {index + 1}
+                  </motion.div>
+                  
+                  {/* Step word */}
+                  <motion.h1 
+                    variants={wordVariants}
+                    className="text-[clamp(3.5rem,10vw,8rem)] font-simula text-white leading-[1.1] tracking-tight"
+                  >
+                    {word}
+                  </motion.h1>
+                </div>
+              ))}
+            </div>
+            
+            {/* Description text */}
+            <motion.p 
+              variants={textVariants}
+              className="mt-16 sm:mt-20 text-[clamp(1rem,4vw,1.5rem)] text-white/90 font-lora max-w-2xl text-center md:text-left"
+            >
+              A project-driven innovation studio creating market-based solutions for Africa's most pressing challenges.
+            </motion.p>
+          </div>
+        </motion.div>
       </div>
 
       {/* Add scroll down indicator */}

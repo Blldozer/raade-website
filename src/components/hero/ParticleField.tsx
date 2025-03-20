@@ -11,6 +11,15 @@ interface Particle {
   isPopped: boolean;
 }
 
+/**
+ * ParticleField Component
+ * 
+ * Creates an interactive field of floating particles that users can click.
+ * - Optimized for performance with reduced particle count on mobile
+ * - Memory-efficient with useCallback and useMemo
+ * - Interactive elements that respond to user clicks
+ * - Subtle animations that don't distract from main content
+ */
 const ParticleField = () => {
   const [particleCount, setParticleCount] = useState(12); // Reduced initial count
   const [particles, setParticles] = useState<Particle[]>([]);
@@ -64,12 +73,12 @@ const ParticleField = () => {
   }), []);
 
   return (
-    <div className="absolute inset-0 z-30 pointer-events-auto">
+    <div className="absolute inset-0 z-30 pointer-events-none">
       <AnimatePresence>
         {particles.map((particle) => (
           <motion.div
             key={particle.id}
-            className="absolute cursor-pointer"
+            className="absolute cursor-pointer pointer-events-auto"
             style={getParticleStyle(particle)}
             initial={{ opacity: 0 }}
             animate={
