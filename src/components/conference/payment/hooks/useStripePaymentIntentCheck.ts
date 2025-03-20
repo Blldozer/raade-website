@@ -1,6 +1,8 @@
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { Stripe } from "@stripe/stripe-js";
+import { retrievePaymentIntentFromUrl, retrieveAndCheckPaymentIntent } from "../services/paymentIntentCheckService";
+import { usePaymentIntentStatus } from "./usePaymentIntentStatus";
 
 /**
  * Custom hook to check payment intent status from URL parameters
@@ -13,6 +15,7 @@ import { Stripe } from "@stripe/stripe-js";
  * @param onPaymentProcessing - Callback when payment is processing
  * @param onPaymentFailure - Callback when payment fails
  * @param isMountedRef - Reference to check if component is still mounted
+ * @param successCalledRef - Reference to track if success callback was already called
  */
 export const useStripePaymentIntentCheck = (
   stripe: Stripe | null,
@@ -22,40 +25,37 @@ export const useStripePaymentIntentCheck = (
   isMountedRef: React.MutableRefObject<boolean>,
   successCalledRef: React.MutableRefObject<boolean>
 ) => {
+  // Use the payment status handler hook
+  const { handlePaymentStatus } = usePaymentIntentStatus(
+    onPaymentSuccess,
+    onPaymentProcessing,
+    onPaymentFailure,
+    successCalledRef
+  );
+
   useEffect(() => {
     if (!stripe) {
       return;
     }
 
-    const clientSecret = new URLSearchParams(window.location.search).get(
-      "payment_intent_client_secret"
-    );
+    // Get client secret from URL if present
+    const clientSecret = retrievePaymentIntentFromUrl();
 
     if (!clientSecret) {
       return;
     }
 
     // When returning from a redirect, check payment status
-    stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
+    retrieveAndCheckPaymentIntent(stripe, clientSecret).then(({ paymentIntent }) => {
       if (!isMountedRef.current) return;
       
-      switch (paymentIntent?.status) {
-        case "succeeded":
-          if (!successCalledRef.current) {
-            successCalledRef.current = true;
-            onPaymentSuccess();
-          }
-          break;
-        case "processing":
-          onPaymentProcessing();
-          break;
-        case "requires_payment_method":
-          onPaymentFailure("Your payment was not successful, please try again.");
-          break;
-        default:
-          onPaymentFailure("Something went wrong.");
-          break;
-      }
+      // Handle the payment intent status
+      handlePaymentStatus(paymentIntent?.status);
+    }).catch(error => {
+      if (!isMountedRef.current) return;
+      
+      console.error("Error checking payment intent:", error);
+      onPaymentFailure("Error retrieving payment status. Please contact support.");
     });
-  }, [stripe, onPaymentSuccess, onPaymentProcessing, onPaymentFailure, isMountedRef, successCalledRef]);
+  }, [stripe, onPaymentSuccess, onPaymentProcessing, onPaymentFailure, isMountedRef, successCalledRef, handlePaymentStatus]);
 };
