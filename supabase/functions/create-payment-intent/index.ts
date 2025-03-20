@@ -61,6 +61,37 @@ serve(async (req) => {
       return createErrorResponse("Failed to read request body", undefined, 400, requestId);
     }
     
+    // Handle check-only mode for testing Stripe connection
+    if (requestData.checkOnly) {
+      console.log(`[${requestId}] Stripe connection check requested`);
+      
+      // Create Stripe instance to verify the API key is valid
+      try {
+        const stripe = new Stripe(stripeSecretKey, {
+          apiVersion: "2023-10-16",
+          httpClient: Stripe.createFetchHttpClient(),
+        });
+        
+        // Just try to get account info to verify the key works
+        await stripe.account.retrieve();
+        
+        console.log(`[${requestId}] Stripe connection check successful`);
+        return createResponse({ 
+          success: true, 
+          message: "Stripe connection verified successfully",
+          requestId
+        });
+      } catch (error) {
+        console.error(`[${requestId}] Stripe connection check failed:`, error);
+        return createErrorResponse(
+          `Stripe API error: ${error.message || "Unknown error"}`,
+          "Could not connect to Stripe payment service. Please check API key configuration.",
+          500,
+          requestId
+        );
+      }
+    }
+    
     // Extract and validate request data
     const { ticketType, email, fullName, groupSize } = requestData;
     
