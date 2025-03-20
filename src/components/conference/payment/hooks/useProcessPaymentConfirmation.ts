@@ -1,12 +1,12 @@
 
 import { useState } from "react";
-import { Stripe, StripeElements, PaymentIntent } from "@stripe/stripe-js";
+import { Stripe, StripeElements, PaymentIntent, StripeError } from "@stripe/stripe-js";
 
 export type PaymentConfirmationResult = {
   success: boolean;
   reason?: string;
   paymentIntent?: PaymentIntent;
-  error?: Error;
+  error?: Error | StripeError; // Update type to accept both Error and StripeError
 };
 
 interface UseProcessPaymentConfirmationProps {
@@ -69,15 +69,15 @@ export const useProcessPaymentConfirmation = ({
           return { 
             success: false, 
             reason: "rate-limited",
-            error: new Error("The payment service is currently busy. Please wait a moment before trying again.")
+            error: error as unknown as Error // Type assertion to resolve the error
           };
         }
         
         // Handle other payment confirmation errors
         if (error.type === 'card_error' || error.type === 'validation_error') {
-          return { success: false, reason: "payment-error", error };
+          return { success: false, reason: "payment-error", error: error as unknown as Error };
         } else {
-          return { success: false, reason: error.type, error };
+          return { success: false, reason: error.type, error: error as unknown as Error };
         }
       }
       

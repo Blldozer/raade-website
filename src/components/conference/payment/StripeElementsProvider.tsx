@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import { StripeElementsOptions, loadStripe } from "@stripe/stripe-js";
@@ -12,15 +13,9 @@ const getStripe = () => {
       apiVersion: '2025-02-24.acacia',
       betas: ['stripe_js_enforce_https_beta_1'],
       // Configure Stripe to use essential analytics only
-      // This avoids the benchmark_visitor_id rate limiting issue while keeping fraud detection
       stripeAccount: undefined,
-      locale: 'auto',
-      // Disable advanced telemetry while keeping core fraud monitoring
-      advancedFraudSignals: {
-        ipAddress: true,
-        browserData: true,
-        telemetry: false
-      }
+      locale: 'auto'
+      // The advancedFraudSignals property is not supported in StripeConstructorOptions
     });
   } catch (error) {
     console.error("Failed to initialize Stripe:", error);
@@ -45,7 +40,7 @@ interface StripeElementsProviderProps {
  * - Wraps payment form components with Stripe context
  * - Ensures HTTPS is used in production environment
  * - Has improved error handling and browser compatibility
- * - Uses optimized analytics settings to prevent rate limiting
+ * - Uses optimized settings to prevent rate limiting
  * 
  * @param clientSecret - The client secret from payment intent
  * @param children - Child components that need access to Stripe Elements
@@ -105,15 +100,8 @@ const StripeElementsProvider: React.FC<StripeElementsProviderProps> = ({
     // Ensure Stripe forms are always loaded over HTTPS
     loader: 'always',
     // Optimize API calls by setting locale
-    locale: 'auto',
-    // Configure analytics collection to balance security and performance
-    analytics: {
-      // Enable core analytics needed for fraud prevention
-      enableLogging: true,
-      // Disable non-essential data collection
-      extendedBrowser: false,
-      nonEssentialData: false
-    }
+    locale: 'auto'
+    // The analytics property is not supported in StripeElementsOptions
   };
 
   // If we're in a server-side rendering context or stripe failed to load

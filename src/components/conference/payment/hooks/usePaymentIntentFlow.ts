@@ -1,4 +1,3 @@
-
 import { useRef } from "react";
 import { PaymentIntentResponse } from "../types";
 import { createPaymentIntent } from "./usePaymentIntentCreation";
@@ -206,7 +205,7 @@ export const usePaymentIntentFlow = (
         if (
           error.message?.includes('rate limit') || 
           error.message?.includes('too many requests') ||
-          error.status === 429
+          (error as any).status === 429
         ) {
           lastErrorTime.current = Date.now();
           return handleRetryableError(ticketType, email, fullName, groupSize, attemptId, error);

@@ -45,17 +45,17 @@ export const usePaymentConfirmationResult = () => {
   /**
    * Build an error result object
    * @param reason - Reason code for the failure
-   * @param error - Error object
+   * @param error - Error object (either standard Error or StripeError)
    * @returns Formatted error result
    */
   const buildErrorResult = (
     reason: string, 
-    error?: StripeError | Error
+    error?: Error | StripeError
   ): PaymentConfirmationResult => {
     return { 
       success: false, 
       reason, 
-      error 
+      error: error as Error // Type assertion for compatibility
     };
   };
 
