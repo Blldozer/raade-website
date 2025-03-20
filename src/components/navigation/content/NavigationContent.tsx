@@ -85,8 +85,11 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
     isConferenceRegistrationPage
   ]);
 
-  // Determine if we should show the noise texture
-  const shouldShowNoiseTexture = isScrolled || isConferenceRegistrationPage || forceDarkMode;
+  // Determine when to show the noise texture - always show for glassmorphism effect
+  // but adjust opacity based on scroll state
+  const noiseOpacity = isScrolled || isConferenceRegistrationPage || forceDarkMode
+    ? (effectiveLightBackground ? 0.03 : 0.07)
+    : (effectiveLightBackground ? 0.02 : 0.04);
 
   return (
     <nav
@@ -103,14 +106,12 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
       data-background={effectiveLightBackground ? "light" : "dark"}
       data-forced-dark={forceDarkMode ? "true" : "false"}
     >
-      {/* Noise texture overlay for enhanced depth - only show when needed */}
-      {shouldShowNoiseTexture && (
-        <NoiseTexture 
-          opacity={effectiveLightBackground ? 0.03 : 0.07} 
-          blendMode={effectiveLightBackground ? "multiply" : "soft-light"}
-          scale={150}
-        />
-      )}
+      {/* Noise texture overlay for enhanced glass effect - always show with varying opacity */}
+      <NoiseTexture 
+        opacity={noiseOpacity} 
+        blendMode={effectiveLightBackground ? "multiply" : "soft-light"}
+        scale={150}
+      />
       
       <div className={`max-w-7xl mx-auto ${getPadding()}`}>
         <div className="flex justify-between items-center">

@@ -28,24 +28,26 @@ export const useNavBackgroundStyle = () => {
    * Priority order:
    * 1. Conference registration page or forced dark mode (always dark regardless of scroll)
    * 2. Scrolled state with appropriate light/dark styling
-   * 3. Transparent when at top of page (for regular pages only)
+   * 3. Transparent glassmorphism when at top of page
    */
   const getBackgroundClass = (): string => {
     // First priority: Special pages that should always have dark navbar
     if (isConferenceRegistrationPage || forceDarkMode) {
-      // Always use dark background with proper opacity for these special pages
-      return "bg-[#274675]/90 backdrop-blur-md border-b border-[#274675]/30 shadow-md";
+      // Dark glassmorphism for these special pages
+      return "bg-[#274675]/70 backdrop-blur-md border-b border-[#274675]/30 shadow-md";
     }
     
-    // Second priority: Regular scroll-based styling
+    // Second priority: Regular scroll-based styling with glassmorphism
     if (isScrolled) {
       return isLightBackground 
-        ? "bg-white/70 backdrop-blur-md border-b border-gray-200/50 shadow-sm" 
-        : "bg-[#274675]/80 backdrop-blur-md border-b border-[#274675]/30 shadow-md";
+        ? "bg-white/60 backdrop-blur-md border-b border-gray-200/50 shadow-sm" 
+        : "bg-[#274675]/70 backdrop-blur-md border-b border-[#274675]/30 shadow-md";
     }
     
-    // Default: Transparent when at top (no background color at all for initial render)
-    return "bg-transparent border-transparent";
+    // Default: Subtle glassmorphism when at top
+    return isLightBackground
+      ? "bg-white/10 backdrop-blur-[2px] border-transparent"
+      : "bg-[#274675]/10 backdrop-blur-[2px] border-transparent";
   };
   
   return {
