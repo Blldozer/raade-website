@@ -1,8 +1,9 @@
 
 // Service Worker for RAADE Website
-const CACHE_NAME = 'raade-cache-v6'; // Incremented cache version
-const FONT_CACHE_NAME = 'raade-fonts-cache-v1'; // Separate cache for fonts
-const IMAGE_CACHE_NAME = 'raade-images-cache-v2';
+const CACHE_NAME = 'raade-cache-v7'; // Incremented cache version
+const FONT_CACHE_NAME = 'raade-fonts-cache-v2'; // Separate cache for fonts
+const IMAGE_CACHE_NAME = 'raade-images-cache-v3';
+const EXTERNAL_CACHE_NAME = 'raade-external-cache-v1'; // New cache for external resources
 
 const urlsToCache = [
   '/',
@@ -25,6 +26,13 @@ const fontUrlsToCache = [
   '/fonts/Simula_BookItalic_651eMqB.woff',
 ];
 
+// External resources to allow through CSP and potentially cache
+const externalResources = [
+  'https://cdn.gpteng.co/gptengineer.js',
+  'https://fonts.googleapis.com',
+  'https://fonts.gstatic.com'
+];
+
 // Force HTTPS for all resources
 const enforceHTTPS = (url) => {
   // Check if we're in production (not localhost)
@@ -43,6 +51,28 @@ const DEBUG = true;
 const logDebug = (message, ...args) => {
   if (DEBUG) {
     console.log(`SW: ${message}`, ...args);
+  }
+};
+
+// Helper to check if a URL is an external resource
+const isExternalResource = (url) => {
+  if (typeof url === 'string') {
+    return externalResources.some(resource => url.startsWith(resource));
+  }
+  
+  try {
+    const urlObj = new URL(url.url);
+    return externalResources.some(resource => {
+      try {
+        const resourceHost = new URL(resource).hostname;
+        return urlObj.hostname === resourceHost;
+      } catch (e) {
+        return url.url.includes(resource);
+      }
+    });
+  } catch (e) {
+    // If URL parsing fails, just do a string check
+    return externalResources.some(resource => url.url.includes(resource));
   }
 };
 
@@ -75,6 +105,14 @@ self.addEventListener('install', event => {
       })
       .catch(error => {
         console.error('Font cache install failed:', error);
+      }),
+      
+    // Initialize external resources cache
+    caches.open(EXTERNAL_CACHE_NAME)
+      .then(cache => {
+        logDebug('Initialized external resources cache');
+        // We don't pre-cache external resources, just initialize the cache
+        return Promise.resolve();
       })
   ]));
 });
@@ -127,6 +165,25 @@ self.addEventListener('message', event => {
           })
       );
     }
+  } else if (event.data && event.data.type === 'CACHE_EXTERNAL') {
+    // Handle request to cache an external resource
+    const resourceUrl = event.data.url;
+    
+    if (resourceUrl) {
+      event.waitUntil(
+        caches.open(EXTERNAL_CACHE_NAME)
+          .then(cache => {
+            logDebug('Caching external resource', resourceUrl);
+            return fetch(resourceUrl, { mode: 'no-cors' }) // Use no-cors mode for cross-origin resources
+              .then(response => {
+                return cache.put(resourceUrl, response);
+              })
+              .catch(error => {
+                console.error('Failed to cache external resource', resourceUrl, error);
+              });
+          })
+      );
+    }
   } else if (event.data && event.data.type === 'SKIP_WAITING') {
     // Skip waiting when requested (for immediate updates)
     self.skipWaiting();
@@ -158,8 +215,8 @@ const isFontRequest = (url) => {
          url.pathname.includes('.woff2') || 
          url.pathname.includes('.ttf') || 
          url.pathname.includes('.otf') ||
-         url.pathname.includes('fonts.googleapis.com') ||
-         url.pathname.includes('fonts.gstatic.com');
+         url.hostname.includes('fonts.googleapis.com') ||
+         url.hostname.includes('fonts.gstatic.com');
 };
 
 // Check if a URL is related to Stripe
@@ -173,6 +230,13 @@ const isStripeURL = (url) => {
 const isPaymentRequest = (url) => {
   return url.pathname.includes('payment') || 
          url.pathname.includes('create-payment-intent');
+};
+
+// Check if a URL is for a JS script
+const isScriptRequest = (url) => {
+  return url.pathname.endsWith('.js') || 
+         url.pathname.includes('/gptengineer.js') ||
+         url.pathname.includes('cdn.gpteng.co');
 };
 
 // Fetch event - serve from cache when offline
@@ -189,6 +253,70 @@ self.addEventListener('fetch', event => {
           return;
         }
       }
+    }
+    
+    // Special handling for external resources like gptengineer.js
+    if (isExternalResource(event.request)) {
+      logDebug('External resource request:', requestUrl.pathname);
+      
+      // Network-first strategy with cache fallback for external resources
+      event.respondWith(
+        fetch(event.request)
+          .then(response => {
+            // Clone the response to cache it
+            const responseToCache = response.clone();
+            
+            // Cache the response for future use
+            caches.open(EXTERNAL_CACHE_NAME)
+              .then(cache => {
+                cache.put(event.request, responseToCache);
+                logDebug('Cached external resource:', requestUrl.pathname);
+              })
+              .catch(err => {
+                console.error('Failed to cache external resource:', err);
+              });
+            
+            return response;
+          })
+          .catch(error => {
+            logDebug('External resource fetch failed, trying cache:', error);
+            
+            return caches.open(EXTERNAL_CACHE_NAME)
+              .then(cache => {
+                return cache.match(event.request)
+                  .then(cachedResponse => {
+                    if (cachedResponse) {
+                      logDebug('Serving external resource from cache');
+                      return cachedResponse;
+                    }
+                    
+                    // For scripts like gptengineer.js, provide a fallback that won't break the site
+                    if (isScriptRequest(requestUrl)) {
+                      logDebug('Creating empty script fallback');
+                      // Return an empty script
+                      return new Response('console.log("Script fallback loaded");', {
+                        headers: { 'Content-Type': 'application/javascript' }
+                      });
+                    }
+                    
+                    // For other external resources like fonts, return an appropriate fallback
+                    if (isFontRequest(requestUrl)) {
+                      logDebug('Font request failed, using system fonts');
+                      // Let the browser use system fonts
+                      return new Response('/* Font not available */', {
+                        status: 200,
+                        headers: { 'Content-Type': 'text/css' }
+                      });
+                    }
+                    
+                    // Default fallback
+                    console.error('No fallback available for:', requestUrl.pathname);
+                    return new Response('Resource not available', { status: 404 });
+                  });
+              });
+          })
+      );
+      return;
     }
     
     // Special handling for font requests - cache first strategy with network fallback
@@ -445,7 +573,13 @@ self.addEventListener('fetch', event => {
 self.addEventListener('activate', event => {
   logDebug('Activating...');
   
-  const cacheWhitelist = [CACHE_NAME, IMAGE_CACHE_NAME, FONT_CACHE_NAME, 'raade-stripe-cache-v1'];
+  const cacheWhitelist = [
+    CACHE_NAME, 
+    IMAGE_CACHE_NAME, 
+    FONT_CACHE_NAME, 
+    EXTERNAL_CACHE_NAME,
+    'raade-stripe-cache-v1'
+  ];
   
   event.waitUntil(
     caches.keys().then(cacheNames => {
