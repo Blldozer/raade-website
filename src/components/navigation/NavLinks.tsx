@@ -6,6 +6,7 @@ import JoinButton from "./JoinButton";
 import navConfig from "./navConfig"; // Change from named import to default import
 import { useNavigation as useNavigationContext } from "./context/useNavigation";
 import { useNavigation as useNavigationHook } from "@/hooks/navigation/useNavigation";
+import { useNavBackgroundStyle } from "@/hooks/navigation/useNavBackgroundStyle";
 
 interface NavLinksProps {
   className?: string;
@@ -23,12 +24,16 @@ interface NavLinksProps {
  * - Conditionally styles links based on context
  * - Supports dropdown menus for section navigation
  * - Adapts style based on the background color of the current section
+ * - Ensures white button text when against dark backgrounds
  */
 const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = false, forceDarkMode = false }: NavLinksProps) => {
   const location = useLocation();
   const { handleNavigation } = useNavigationHook();
   const { state } = useNavigationContext();
   const { isDarkBackground, isLightBackground } = state;
+  
+  // Get background context from our hook
+  const { isAgainstDarkBackground } = useNavBackgroundStyle();
   
   const isProjectPage = location.pathname.includes('/projects/');
   const isApplicationPage = location.pathname === "/studios/apply" || location.pathname === "/studios/partner";
@@ -39,6 +44,7 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
    * - On application pages: always white text on dark background
    * - On light backgrounds: dark blue text (#274675)
    * - On dark backgrounds: white text
+   * - When against dark backgrounds: always white text
    */
   const getTextColor = () => {
     // Special page overrides
@@ -46,8 +52,8 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
       return "text-white hover:text-[#FBB03B]";
     }
     
-    // When on a light background or when dark mode is forced, use dark text
-    if (forceDarkMode || isLightBackground) {
+    // When on a light background and not against dark background, use dark text
+    if (!isAgainstDarkBackground && isLightBackground) {
       return "text-[#274675] hover:text-[#FBB03B]";
     }
     
@@ -59,8 +65,8 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
    * Get button styles based on background and context
    * - On project pages: white border, transparent background
    * - On application pages: white border, transparent background
-   * - On light backgrounds: dark blue/gold styles
-   * - On dark backgrounds: white/gold styles
+   * - On light backgrounds (not against dark): dark blue/gold styles
+   * - On dark backgrounds or when against dark backgrounds: white/gold styles
    */
   const getButtonStyles = () => {
     // Special page overrides
@@ -68,8 +74,8 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
       return "border-white text-white hover:bg-[#FBB03B] hover:border-[#FBB03B] hover:text-white";
     }
     
-    // When on dark backgrounds and not forced to dark mode, use white button
-    if (!forceDarkMode && !isLightBackground) {
+    // When on dark backgrounds or when against dark, use white button
+    if (isAgainstDarkBackground || !isLightBackground) {
       return "border-white text-white hover:bg-[#FBB03B] hover:border-[#FBB03B] hover:text-white";
     }
     

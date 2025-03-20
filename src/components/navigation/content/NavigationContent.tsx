@@ -39,7 +39,12 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
   const location = useLocation();
   
   // Get styling from our extracted hook
-  const { backgroundClass, isConferenceRegistrationPage, effectiveLightBackground } = useNavBackgroundStyle();
+  const { 
+    backgroundClass, 
+    isConferenceRegistrationPage, 
+    effectiveLightBackground,
+    isAgainstDarkBackground
+  } = useNavBackgroundStyle();
   
   // Get responsive padding values
   const getPadding = () => {
@@ -98,6 +103,7 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
       data-visible={isVisible ? "true" : "false"}
       data-background={effectiveLightBackground ? "light" : "dark"}
       data-forced-dark={forceDarkMode ? "true" : "false"}
+      data-against-dark-background={isAgainstDarkBackground ? "true" : "false"}
     >
       <div className={`max-w-7xl mx-auto ${getPadding()}`}>
         <div className="flex justify-between items-center">

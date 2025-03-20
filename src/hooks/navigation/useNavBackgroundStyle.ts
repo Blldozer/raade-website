@@ -46,9 +46,16 @@ export const useNavBackgroundStyle = () => {
     return "bg-transparent border-transparent";
   };
   
+  // Determine if we're against a dark background
+  // This happens when either:
+  // 1. We're on a page with dark elements behind navbar
+  // 2. We have light background mode disabled
+  const isAgainstDarkBackground = !isLightBackground || forceDarkMode || isConferenceRegistrationPage;
+  
   return {
     backgroundClass: getBackgroundClass(),
     isConferenceRegistrationPage,
-    effectiveLightBackground: forceDarkMode || isConferenceRegistrationPage ? false : isLightBackground
+    effectiveLightBackground: forceDarkMode || isConferenceRegistrationPage ? false : isLightBackground,
+    isAgainstDarkBackground
   };
 };
