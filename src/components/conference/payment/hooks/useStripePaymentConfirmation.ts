@@ -1,11 +1,11 @@
 
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Stripe, StripeElements, PaymentIntent, StripeError } from "@stripe/stripe-js";
 import { usePaymentErrorHandling } from "./usePaymentErrorHandling";
 import { usePaymentTimeout } from "./usePaymentTimeout";
-import { confirmStripePayment } from "../services/paymentConfirmationService";
-import { usePaymentResultHandler } from "./usePaymentResultHandler";
-import { PaymentResult } from "../types";
+import { usePaymentConfirmationState } from "./usePaymentConfirmationState";
+import { usePaymentConfirmationCallbacks } from "./usePaymentConfirmationCallbacks";
+import { useProcessPaymentConfirmation, PaymentConfirmationResult } from "./useProcessPaymentConfirmation";
 
 // Default timeout duration for payment processing
 const PAYMENT_PROCESSING_TIMEOUT = 30000; // 30 seconds
@@ -19,13 +19,6 @@ interface UseStripePaymentConfirmationProps {
   setMessage: (message: string | null) => void;
   requestId?: string | null;
 }
-
-type PaymentConfirmationResult = {
-  success: boolean;
-  reason?: string;
-  paymentIntent?: PaymentIntent;
-  error?: StripeError | Error;
-};
 
 /**
  * Custom hook to handle Stripe payment confirmation
@@ -45,34 +38,56 @@ export const useStripePaymentConfirmation = ({
   setMessage,
   requestId
 }: UseStripePaymentConfirmationProps) => {
-  const [isProcessing, setIsProcessing] = useState(false);
+  // Get payment confirmation state
+  const { 
+    isMountedRef, 
+    successCalledRef 
+  } = usePaymentConfirmationState();
   
-  // Track if success callback has been fired to prevent duplicates
-  const successCalledRef = useRef<boolean>(false);
-
   // Set up error handling
-  const { handleError, errorCalledRef } = usePaymentErrorHandling(onError, requestId);
+  const { handleError: reportError } = usePaymentErrorHandling(onError, requestId);
   
-  // Set up result handler
-  const { handleSuccess: handleSuccessMessage, handleError: handleErrorMessage, handlePaymentStatus } = 
-    usePaymentResultHandler(setMessage);
+  // Set up callback handlers
+  const { 
+    handleSuccess, 
+    handleError, 
+    handlePaymentStatus 
+  } = usePaymentConfirmationCallbacks({
+    onSuccess,
+    onError,
+    setMessage,
+    requestId
+  });
+  
+  // Set up payment confirmation processor
+  const { 
+    isProcessing, 
+    processPaymentConfirmation 
+  } = useProcessPaymentConfirmation({
+    stripe,
+    elements,
+    email
+  });
   
   // Set up timeout handling
-  const { startTimeout, clearTimeout, isMountedRef } = usePaymentTimeout(
+  const { startTimeout, clearTimeout } = usePaymentTimeout(
     PAYMENT_PROCESSING_TIMEOUT,
     () => {
       if (isMountedRef.current) {
         setMessage("The payment is taking longer than expected. Please check your card details and try again.");
-        setIsProcessing(false);
         
-        if (!errorCalledRef.current) {
-          handleError("Payment processing timed out. Please try again with a different payment method.");
+        if (!successCalledRef.current) {
+          reportError("Payment processing timed out. Please try again with a different payment method.");
         }
       }
     }
   );
 
-  const handleConfirmPayment = async (): Promise<PaymentConfirmationResult> => {
+  /**
+   * Handle payment confirmation
+   * Initiates the payment confirmation process and handles the result
+   */
+  const handleConfirmPayment = async () => {
     if (!stripe || !elements) {
       return { success: false, reason: "stripe-not-loaded" };
     }
@@ -82,48 +97,32 @@ export const useStripePaymentConfirmation = ({
       return { success: false, reason: "already-processing" };
     }
 
-    setIsProcessing(true);
     startTimeout();
 
     try {
-      const { error, paymentIntent } = await confirmStripePayment(stripe, elements, email);
+      const result = await processPaymentConfirmation();
       
       // Clear the timeout since we got a response
       clearTimeout();
       
       if (!isMountedRef.current) return { success: false, reason: "unmounted" };
 
-      if (error) {
-        // This point will only be reached if there's an immediate error when confirming the payment.
-        console.error("Payment error:", error.type, error.message);
-        
-        handleErrorMessage(error);
-        handleError(error.message || "An unexpected error occurred");
-        
-        return { success: false, reason: "payment-error", error };
-      } else if (paymentIntent && paymentIntent.status === "succeeded") {
-        // The payment has been processed!
-        handleSuccessMessage();
-        
-        if (!successCalledRef.current) {
-          successCalledRef.current = true;
-          onSuccess();
+      // Handle the result based on its success status
+      if (result.success && result.paymentIntent) {
+        handleSuccess(result.paymentIntent);
+        return result;
+      } else {
+        // Handle different error cases
+        if (result.reason === "payment-error" && result.error) {
+          handleError(result.error);
+        } else if (result.reason === "requires-action" && result.paymentIntent) {
+          handlePaymentStatus(result.paymentIntent.status || "unknown");
+        } else {
+          setMessage("Something went wrong with your payment. Please try again.");
+          reportError("Payment failed: " + (result.reason || "Unknown reason"));
         }
         
-        return { success: true, paymentIntent };
-      } else if (paymentIntent) {
-        // Payment requires additional actions or is in another state
-        console.log("Payment intent is in state:", paymentIntent.status);
-        handlePaymentStatus(paymentIntent.status);
-        
-        return { success: false, reason: "requires-action", paymentIntent };
-      } else {
-        // Shouldn't normally get here
-        console.warn("No payment intent or error returned");
-        setMessage("Something went wrong with your payment. Please try again.");
-        
-        handleError("Payment failed: No payment confirmation received");
-        return { success: false, reason: "no-response" };
+        return result;
       }
     } catch (unexpectedError) {
       // Clear the timeout
@@ -131,26 +130,26 @@ export const useStripePaymentConfirmation = ({
       
       if (!isMountedRef.current) return { success: false, reason: "unmounted" };
       
-      console.error("Unexpected error during payment:", unexpectedError);
-      setMessage("An unexpected error occurred during payment processing");
-      
-      const errorMessage = unexpectedError instanceof Error ? 
-        unexpectedError.message : 
-        "An unexpected error occurred: Unknown error";
+      const error = unexpectedError instanceof Error ? 
+        unexpectedError : 
+        new Error(String(unexpectedError));
         
-      handleError(errorMessage);
+      handleError(error);
       
       return { 
         success: false, 
-        reason: "unexpected-error", 
-        error: unexpectedError instanceof Error ? unexpectedError : new Error(String(unexpectedError))
+        reason: "unexpected-error",
+        error
       };
-    } finally {
-      if (isMountedRef.current) {
-        setIsProcessing(false);
-      }
     }
   };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   return {
     isProcessing,
