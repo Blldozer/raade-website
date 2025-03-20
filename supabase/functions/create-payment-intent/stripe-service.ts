@@ -1,5 +1,4 @@
-
-import Stripe from "https://esm.sh/stripe@13.7.0";
+import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createTimeout } from "./utils.ts";
 
 // Maximum number of retries for Stripe API calls

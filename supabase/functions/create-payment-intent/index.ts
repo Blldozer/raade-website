@@ -1,6 +1,5 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import Stripe from "https://esm.sh/stripe@13.7.0";
+import Stripe from "https://esm.sh/stripe@14.21.0";
 import { corsHeaders, createResponse, createErrorResponse, createTimeout } from "./utils.ts";
 import { validateStripeKey, validateRequestData } from "./validation.ts";
 import { calculatePaymentAmount } from "./pricing.ts";
@@ -68,7 +67,7 @@ serve(async (req) => {
       // Create Stripe instance to verify the API key is valid
       try {
         const stripe = new Stripe(stripeSecretKey, {
-          apiVersion: "2023-10-16",
+          apiVersion: "2025-02-24.acacia",
           httpClient: Stripe.createFetchHttpClient(),
         });
         
