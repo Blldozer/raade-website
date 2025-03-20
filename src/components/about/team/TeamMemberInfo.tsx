@@ -1,5 +1,5 @@
 
-import { LinkedIn } from "lucide-react";
+import { Linkedin } from "lucide-react";
 import { useState } from "react";
 
 interface TeamMemberInfoProps {
@@ -41,7 +41,7 @@ const TeamMemberInfo = ({ name, position, linkedin }: TeamMemberInfoProps) => {
           className={`mt-3 inline-flex items-center text-white/80 hover:text-white transition-all duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
           aria-label={`${name}'s LinkedIn profile`}
         >
-          <LinkedIn size={16} className="mr-1" />
+          <Linkedin size={16} className="mr-1" />
           <span className="text-sm">LinkedIn</span>
         </a>
       )}
