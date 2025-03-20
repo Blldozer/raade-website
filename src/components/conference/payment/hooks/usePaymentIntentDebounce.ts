@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 
 // Minimum time between payment intent creation attempts (ms)
@@ -18,11 +17,19 @@ export const usePaymentIntentDebounce = () => {
 
   /**
    * Check if a request should be debounced
-   * @returns Boolean indicating if the request should be debounced
+   * @returns False if request should proceed, or timestamp (number) if it should be debounced
    */
-  const shouldDebounceRequest = (): boolean => {
+  const shouldDebounceRequest = (): false | number => {
     const now = Date.now();
-    return now - lastRequestTime < REQUEST_DEBOUNCE_TIME;
+    const timeSinceLastRequest = now - lastRequestTime;
+    
+    // If enough time has passed, allow the request (return false)
+    if (timeSinceLastRequest >= REQUEST_DEBOUNCE_TIME) {
+      return false;
+    }
+    
+    // Otherwise return the timestamp of the last request
+    return lastRequestTime;
   };
 
   /**

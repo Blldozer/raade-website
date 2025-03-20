@@ -83,7 +83,8 @@ export const usePaymentIntentFlow = (
     // Check if we're trying to make requests too quickly
     const debounceTime = shouldDebounceRequest();
     if (debounceTime !== false) {
-      console.log(`Request debounced: Last request was ${Date.now() - (debounceTime as number)}ms ago`);
+      // debounceTime is now guaranteed to be a number, not a boolean
+      console.log(`Request debounced: Last request was ${Date.now() - debounceTime}ms ago`);
       return;
     }
     
