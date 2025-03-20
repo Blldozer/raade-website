@@ -3,7 +3,6 @@ import { createRoot } from 'react-dom/client'
 import { StrictMode } from 'react'
 import App from './App.tsx'
 import './index.css'
-import AppProviders from './components/app/AppProviders.tsx'
 
 // Execute in try-catch to handle any startup errors
 try {
@@ -51,9 +50,7 @@ try {
       const root = createRoot(rootElement);
       root.render(
         <StrictMode>
-          <AppProviders>
-            <App />
-          </AppProviders>
+          <App />
         </StrictMode>
       );
       console.log("Application startup: React rendering completed");
