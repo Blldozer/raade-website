@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import ScrollDownButton from "@/components/hero/components/ScrollDownButton";
 import ExplodableField from "@/components/hero/explodable/ExplodableField";
@@ -8,7 +7,7 @@ import ExplodableField from "@/components/hero/explodable/ExplodableField";
  * 
  * Features:
  * - Connected, process-oriented animation sequence for the main tagline
- * - Interactive building blocks that visitors can click and "explode"
+ * - Interactive building blocks that visitors can drag, stack and rebuild
  * - Visual representation of the design, build, scale process
  * - Responsive design with optimized animations for all devices
  */
@@ -76,7 +75,7 @@ const HeroSection = ({ scrollToContent }: { scrollToContent: () => void }) => {
         </div>
       </div>
       
-      {/* Interactive building blocks that users can interact with */}
+      {/* Interactive building blocks that users can drag and stack */}
       <ExplodableField />
       
       <div className="container mx-auto px-4 relative z-20 flex flex-col justify-center min-h-[calc(100vh-120px)]">
