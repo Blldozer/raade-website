@@ -18,204 +18,26 @@
     <link rel="alternate icon" type="image/png" href="/logos/RAADE-logo-symbol.png" />
     <link rel="apple-touch-icon" href="/logos/RAADE-logo-symbol.png" />
     
-    <!-- Preload critical fonts -->
-    <link rel="preload" href="/fonts/Simula_Book_ImfTVa3.woff" as="font" type="font/woff" crossorigin="anonymous">
-    <link rel="preload" href="/fonts/Amadine.woff" as="font" type="font/woff" crossorigin="anonymous">
-    
-    <!-- Google Fonts with font-display swap -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hammersmith+One&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Zilla+Slab:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Zilla+Slab+Highlight:wght@400;700&family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=Taviraj:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Alegreya+Sans:ital,wght@0,100;0,300;0,400;0,500;0,700;0,800;0,900;1,100;1,300;1,400;1,500;1,700;1,800;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#274675">
-    
-    <!-- Critical CSS inline to prevent render blocking -->
-    <style>
-      /* Core font declarations with font-display: swap */
-      @font-face {
-        font-family: 'Amadine';
-        src: url('/fonts/Amadine.woff') format('woff');
-        font-weight: normal;
-        font-style: normal;
-        font-display: swap;
-      }
-
-      @font-face {
-        font-family: 'Simula Book';
-        src: url('/fonts/Simula_Book_ImfTVa3.woff') format('woff');
-        font-weight: normal;
-        font-style: normal;
-        font-display: swap;
-      }
-
-      @font-face {
-        font-family: 'Simula Book Italic';
-        src: url('/fonts/Simula_BookItalic_651eMqB.woff') format('woff');
-        font-weight: normal;
-        font-style: italic;
-        font-display: swap;
-      }
-      
-      /* Font fallback system */
-      .font-simula {
-        font-family: 'Simula Book', Georgia, 'Times New Roman', serif;
-      }
-      
-      .font-amadine {
-        font-family: 'Amadine', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      }
-      
-      .font-lora {
-        font-family: 'Lora', Georgia, 'Times New Roman', serif;
-      }
-      
-      /* Core layout styles to prevent layout shifts */
-      body {
-        margin: 0;
-        padding: 0;
-        font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      }
-      
-      /* Font loading failure detection */
-      .fonts-failed .font-simula,
-      .fonts-failed .font-amadine,
-      .fonts-failed .font-lora {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      }
-    </style>
   </head>
   <body>
     <div id="root"></div>
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      // Improved Service Worker Registration with versioning
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
-          // Use a fixed SW URL without timestamp to prevent unnecessary updates
-          const swUrl = '/sw.js';
-          let refreshing = false;
-          
-          navigator.serviceWorker.register(swUrl).then(function(registration) {
+          navigator.serviceWorker.register('/sw.js').then(function(registration) {
             console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            
-            // Monitor for updates but don't force refresh
-            registration.onupdatefound = function() {
-              const installingWorker = registration.installing;
-              if (installingWorker) {
-                installingWorker.onstatechange = function() {
-                  if (installingWorker.state === 'installed') {
-                    if (navigator.serviceWorker.controller) {
-                      // New content is available - will show toast notification
-                      console.log('New service worker installed, will activate on next page load');
-                    }
-                  }
-                };
-              }
-            };
-            
           }, function(err) {
             console.log('ServiceWorker registration failed: ', err);
           });
-          
-          // Listen for messages from the service worker
-          navigator.serviceWorker.addEventListener('message', function(event) {
-            console.log('Message from service worker:', event.data);
-            
-            if (event.data.type === 'SW_UPDATED') {
-              console.log('Service worker has been updated:', event.data.version);
-              
-              // If silent update flag is set, don't show modal dialog
-              if (event.data.silent) {
-                // Will display a toast instead of a modal via App.tsx
-                window.dispatchEvent(new CustomEvent('raade:sw-update', { 
-                  detail: { version: event.data.version }
-                }));
-              } else {
-                // Fallback to confirmation dialog only if silent is false
-                if (!refreshing && window.confirm('Site has been updated. Reload to use the new version?')) {
-                  refreshing = true;
-                  window.location.reload();
-                }
-              }
-            }
-            
-            if (event.data.type === 'USE_HTTPS') {
-              console.log('Redirecting to HTTPS');
-              window.location.href = event.data.url;
-            }
-          });
-          
-          // Handle controller change more gracefully
-          navigator.serviceWorker.addEventListener('controllerchange', function() {
-            if (!refreshing) {
-              console.log('Service worker controller changed - no forced refresh');
-              // Will be handled by the toast notification
-              refreshing = true;
-            }
-          });
         });
       }
-      
-      // Font loading failure detection
-      const fontTimeoutId = setTimeout(function() {
-        // If this runs, at least some fonts haven't loaded in time
-        document.documentElement.classList.add('fonts-failed');
-        console.warn('Font loading timed out, using fallback fonts');
-      }, 3000);
-      
-      // Font loading success detection using FontFaceObserver pattern
-      if ('fonts' in document) {
-        Promise.all([
-          document.fonts.load('1em Amadine'),
-          document.fonts.load('1em "Simula Book"'),
-          document.fonts.load('1em Lora')
-        ]).then(function() {
-          console.log('All critical fonts loaded successfully');
-          clearTimeout(fontTimeoutId);
-          document.documentElement.classList.add('fonts-loaded');
-        }).catch(function(err) {
-          console.error('Font loading error:', err);
-          document.documentElement.classList.add('fonts-failed');
-        });
-      }
-      
-      // Recovery mechanism for CSS loading failures
-      function checkCSSLoaded() {
-        // Check if any <link rel="stylesheet"> elements failed to load
-        const cssLinks = document.querySelectorAll('link[rel="stylesheet"]');
-        let failedLinks = 0;
-        
-        cssLinks.forEach(function(link) {
-          if (!link.sheet) {
-            failedLinks++;
-            console.error('CSS failed to load:', link.href);
-            
-            // Try reloading the CSS
-            const newLink = document.createElement('link');
-            newLink.rel = 'stylesheet';
-            newLink.href = link.href + '?reload=' + new Date().getTime();
-            newLink.onload = function() {
-              console.log('Reloaded CSS successfully:', newLink.href);
-            };
-            newLink.onerror = function() {
-              console.error('Failed to reload CSS:', newLink.href);
-            };
-            
-            document.head.appendChild(newLink);
-          }
-        });
-        
-        if (failedLinks > 0) {
-          console.warn(failedLinks + ' CSS files failed to load. Attempting recovery.');
-        }
-      }
-      
-      // Check CSS after window load
-      window.addEventListener('load', function() {
-        // Delay check to allow for normal loading
-        setTimeout(checkCSSLoaded, 2000);
-      });
     </script>
   </body>
 </html>
