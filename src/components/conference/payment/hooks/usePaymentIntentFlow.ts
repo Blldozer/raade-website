@@ -6,7 +6,11 @@ import { usePaymentIntentDebounce } from "./usePaymentIntentDebounce";
 import { usePaymentIntentTimeout } from "./usePaymentIntentTimeout";
 
 // Default timeout duration for payment processing
-const PAYMENT_INTENT_TIMEOUT = 30000; // Increased from 20000 to 30000 ms
+const PAYMENT_INTENT_TIMEOUT = 30000; // 30 seconds
+
+// Configure exponential backoff for rate-limited retries
+const MAX_RETRIES = 3;
+const BASE_DELAY = 2000; // 2 seconds initial delay
 
 /**
  * Custom hook to manage the payment intent creation flow
@@ -16,6 +20,7 @@ const PAYMENT_INTENT_TIMEOUT = 30000; // Increased from 20000 to 30000 ms
  * - Timeout handling
  * - API call management
  * - State updates
+ * - Rate limit handling with backoff strategy
  * 
  * @param isMountedRef - Reference to track if component is mounted
  * @param activeRequestRef - Reference to track active request state
@@ -58,6 +63,74 @@ export const usePaymentIntentFlow = (
       }, 0);
     }
   });
+  
+  // Track retry count to implement exponential backoff
+  const retryCount = useRef(0);
+  const lastErrorTime = useRef<number | null>(null);
+
+  /**
+   * Calculate delay for exponential backoff
+   * @param attempt - Current retry attempt number
+   * @returns Delay time in milliseconds
+   */
+  const getBackoffDelay = (attempt: number): number => {
+    // Exponential backoff formula: BASE_DELAY * 2^attempt + random jitter
+    return BASE_DELAY * Math.pow(2, attempt) + Math.random() * 1000;
+  };
+
+  /**
+   * Handle rate limit or network errors with exponential backoff
+   * @param attemptId - Unique ID for this payment attempt
+   * @param error - Error that occurred
+   */
+  const handleRetryableError = async (
+    ticketType: string,
+    email: string,
+    fullName: string,
+    groupSize: number | undefined,
+    attemptId: string,
+    error: any
+  ) => {
+    const currentRetry = retryCount.current;
+    const isRateLimit = error?.message?.includes('rate limit');
+    
+    if (currentRetry < MAX_RETRIES) {
+      const delay = getBackoffDelay(currentRetry);
+      console.log(`Retrying payment intent creation after ${delay}ms, attempt ${currentRetry + 1}/${MAX_RETRIES}`);
+      
+      // Increment retry count
+      retryCount.current += 1;
+      
+      // Update UI to indicate retry
+      safeSetErrorDetails(
+        isRateLimit 
+          ? `Payment service is busy. Retrying in ${Math.round(delay/1000)} seconds...` 
+          : `Connection issue. Retrying in ${Math.round(delay/1000)} seconds...`
+      );
+      
+      // Wait for calculated delay
+      await new Promise(resolve => setTimeout(resolve, delay));
+      
+      // Only retry if component is still mounted
+      if (isMountedRef.current) {
+        // Re-attempt the payment intent creation
+        return initiatePaymentIntent(ticketType, email, fullName, groupSize);
+      }
+    } else {
+      // Max retries reached, show final error
+      const finalError = isRateLimit
+        ? "Payment service is currently experiencing high volume. Please try again in a few minutes."
+        : "Unable to connect to payment service after multiple attempts. Please try again later.";
+        
+      safeSetErrorDetails(finalError);
+      onError(finalError);
+      
+      // Reset retry count for next attempt
+      setTimeout(() => {
+        retryCount.current = 0;
+      }, 30000); // Reset after 30 seconds
+    }
+  };
 
   /**
    * Initiates the payment intent creation process
@@ -85,6 +158,13 @@ export const usePaymentIntentFlow = (
     if (debounceTime !== false) {
       // debounceTime is now guaranteed to be a number, not a boolean
       console.log(`Request debounced: Last request was ${Date.now() - debounceTime}ms ago`);
+      return;
+    }
+    
+    // Check if we need to enforce a cool-down period after errors
+    if (lastErrorTime.current && Date.now() - lastErrorTime.current < 5000) {
+      console.log("Enforcing cool-down period after recent error");
+      safeSetErrorDetails("Please wait a moment before trying again");
       return;
     }
     
@@ -121,6 +201,17 @@ export const usePaymentIntentFlow = (
       
       if (error) {
         console.error(`Payment intent error: ${error.message || "Unknown error"}, attemptId: ${attemptId}`);
+        
+        // Check if this is a rate limit error
+        if (
+          error.message?.includes('rate limit') || 
+          error.message?.includes('too many requests') ||
+          error.status === 429
+        ) {
+          lastErrorTime.current = Date.now();
+          return handleRetryableError(ticketType, email, fullName, groupSize, attemptId, error);
+        }
+        
         safeSetErrorDetails(`Error from payment service: ${error.message || "Unknown error"}`);
         onError(error.message || "Failed to initialize payment");
         return;
@@ -152,6 +243,9 @@ export const usePaymentIntentFlow = (
       if (data.clientSecret) {
         console.log(`Payment intent created successfully, attemptId: ${attemptId}, amount: $${data.amount || 0}`);
         updatePaymentState(data);
+        
+        // Reset retry count on success
+        retryCount.current = 0;
       } else {
         console.error(`No client secret in response, attemptId: ${attemptId}`, data);
         safeSetErrorDetails("Payment initialization failed. No client secret received.");
@@ -164,6 +258,17 @@ export const usePaymentIntentFlow = (
       if (!isMountedRef.current) return;
       
       console.error(`Unexpected error during payment intent creation, attemptId: ${attemptId}`, error);
+      
+      // Track error time for cool-down
+      lastErrorTime.current = Date.now();
+      
+      // Handle network errors with retry
+      if (error instanceof Error && 
+          (error.message.includes('network') || 
+           error.message.includes('connection') ||
+           error.message.includes('rate limit'))) {
+        return handleRetryableError(ticketType, email, fullName, groupSize, attemptId, error);
+      }
       
       safeSetErrorDetails("An unexpected error occurred. Please try again.");
       onError(error instanceof Error ? error.message : "An unexpected error occurred");

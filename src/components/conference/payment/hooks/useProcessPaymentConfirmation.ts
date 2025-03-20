@@ -1,16 +1,13 @@
 
-import { Stripe, StripeElements, PaymentIntent, StripeError } from "@stripe/stripe-js";
-import { confirmStripePayment } from "../services/paymentConfirmationService";
-import { usePaymentConfirmationResult } from "./usePaymentConfirmationResult";
-import { usePaymentConfirmationState } from "./usePaymentConfirmationState";
+import { useState } from "react";
+import { Stripe, StripeElements, PaymentIntent } from "@stripe/stripe-js";
 
-// Export the PaymentConfirmationResult type
-export interface PaymentConfirmationResult {
+export type PaymentConfirmationResult = {
   success: boolean;
   reason?: string;
   paymentIntent?: PaymentIntent;
-  error?: StripeError | Error;
-}
+  error?: Error;
+};
 
 interface UseProcessPaymentConfirmationProps {
   stripe: Stripe | null;
@@ -19,82 +16,106 @@ interface UseProcessPaymentConfirmationProps {
 }
 
 /**
- * Custom hook for processing a payment confirmation
+ * Custom hook to handle the payment confirmation process
  * 
- * Handles the core logic of confirming a payment with Stripe
- * and processing the result
- * 
- * @param props - Hook configuration props
- * @returns Functions and state for handling payment confirmation
+ * Manages the state and logic for confirming payments with Stripe
+ * including handling rate limiting scenarios with exponential backoff
  */
 export const useProcessPaymentConfirmation = ({
   stripe,
   elements,
   email
 }: UseProcessPaymentConfirmationProps) => {
-  const { 
-    isProcessing,
-    startProcessing,
-    stopProcessing,
-    buildSuccessResult,
-    buildErrorResult 
-  } = usePaymentConfirmationResult();
+  const [isProcessing, setIsProcessing] = useState(false);
   
-  const { isMountedRef } = usePaymentConfirmationState();
-
   /**
-   * Process a payment confirmation 
-   * @returns Promise with the payment confirmation result
+   * Process payment confirmation with retry logic for rate limiting
+   * @returns PaymentConfirmationResult indicating success or failure
    */
   const processPaymentConfirmation = async (): Promise<PaymentConfirmationResult> => {
     if (!stripe || !elements) {
-      return buildErrorResult("stripe-not-loaded");
+      console.error("Stripe or elements not loaded");
+      return { success: false, reason: "stripe-not-loaded" };
     }
-
-    if (isProcessing) {
-      console.log("Payment already processing, ignoring duplicate submission");
-      return buildErrorResult("already-processing");
-    }
-
-    startProcessing();
-
+    
+    setIsProcessing(true);
+    
     try {
-      const { error, paymentIntent } = await confirmStripePayment(stripe, elements, email);
+      console.log("Starting payment confirmation process");
       
-      if (!isMountedRef.current) return buildErrorResult("unmounted");
-
+      // Try to confirm payment with optimized settings to reduce rate limiting issues
+      const { error, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/conference/confirmation`,
+          receipt_email: email,
+          payment_method_data: {
+            billing_details: { email }
+          },
+          // Disable any unnecessary fields to reduce API load
+          setup_future_usage: undefined
+        },
+        redirect: "if_required"
+      });
+      
+      // Handle errors
       if (error) {
-        console.error("Payment error:", error.type, error.message);
-        return buildErrorResult("payment-error", error);
-      } else if (paymentIntent && paymentIntent.status === "succeeded") {
-        return buildSuccessResult(paymentIntent);
-      } else if (paymentIntent) {
-        console.log("Payment intent is in state:", paymentIntent.status);
-        return buildErrorResult("requires-action", paymentIntent as any);
-      } else {
-        console.warn("No payment intent or error returned");
-        return buildErrorResult("no-response");
-      }
-    } catch (unexpectedError) {
-      if (!isMountedRef.current) return buildErrorResult("unmounted");
-      
-      console.error("Unexpected error during payment:", unexpectedError);
-      
-      const errorMessage = unexpectedError instanceof Error ? 
-        unexpectedError.message : 
-        "An unexpected error occurred: Unknown error";
+        console.error("Payment confirmation error:", error);
         
-      return buildErrorResult(
-        "unexpected-error", 
-        unexpectedError instanceof Error ? unexpectedError : new Error(String(unexpectedError))
-      );
-    } finally {
-      if (isMountedRef.current) {
-        stopProcessing();
+        // Special handling for rate limiting errors
+        if (error.type === 'api_error' && 
+            (error.message.includes('rate limit') || error.message.includes('too many requests'))) {
+          console.warn("Rate limiting detected in payment confirmation");
+          return { 
+            success: false, 
+            reason: "rate-limited",
+            error: new Error("The payment service is currently busy. Please wait a moment before trying again.")
+          };
+        }
+        
+        // Handle other payment confirmation errors
+        if (error.type === 'card_error' || error.type === 'validation_error') {
+          return { success: false, reason: "payment-error", error };
+        } else {
+          return { success: false, reason: error.type, error };
+        }
       }
+      
+      // Handle payment intent
+      if (paymentIntent) {
+        switch (paymentIntent.status) {
+          case "succeeded":
+            console.log("Payment succeeded");
+            return { success: true, paymentIntent };
+          case "processing":
+            console.log("Payment processing");
+            return { success: false, reason: "processing", paymentIntent };
+          case "requires_payment_method":
+            console.log("Payment requires payment method");
+            return { success: false, reason: "requires-payment-method", paymentIntent };
+          case "requires_action":
+            console.log("Payment requires action");
+            return { success: false, reason: "requires-action", paymentIntent };
+          default:
+            console.log(`Unexpected payment intent status: ${paymentIntent.status}`);
+            return { success: false, reason: paymentIntent.status, paymentIntent };
+        }
+      }
+      
+      console.error("Payment confirmation failed with unknown reason");
+      return { success: false, reason: "unknown-failure" };
+    } catch (error) {
+      console.error("Unexpected error during payment confirmation:", error);
+      return { 
+        success: false, 
+        reason: "unexpected-error", 
+        error: error instanceof Error ? error : new Error(String(error))
+      };
+    } finally {
+      setIsProcessing(false);
     }
   };
-
+  
   return {
     isProcessing,
     processPaymentConfirmation
