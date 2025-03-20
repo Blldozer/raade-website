@@ -4,7 +4,6 @@ import NavLogo from "../NavLogo";
 import DesktopNav from "../DesktopNav";
 import MobileNav from "../mobile/MobileNav";
 import CountdownTimer from "@/components/CountdownTimer";
-import NoiseTexture from "@/components/ui/NoiseTexture";
 import { useNavigation } from "../context/useNavigation";
 import { useLocation } from "react-router-dom";
 import { useRef, useEffect } from "react";
@@ -18,7 +17,7 @@ interface NavigationContentProps {
  * NavigationContent Component - Core rendering component for navigation elements
  * 
  * Handles the actual visual rendering of navigation elements using shared state
- * Features enhanced glassmorphism styling with subtle noise texture for depth
+ * Features clean glassmorphism styling for depth
  * Background styling logic extracted to useNavBackgroundStyle hook
  * 
  * @param instanceId - Unique identifier for this navigation instance (for debugging)
@@ -85,12 +84,6 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
     isConferenceRegistrationPage
   ]);
 
-  // Determine when to show the noise texture - always show for glassmorphism effect
-  // but adjust opacity based on scroll state
-  const noiseOpacity = isScrolled || isConferenceRegistrationPage || forceDarkMode
-    ? (effectiveLightBackground ? 0.03 : 0.07)
-    : (effectiveLightBackground ? 0.02 : 0.04);
-
   return (
     <nav
       className={cn(
@@ -106,13 +99,6 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
       data-background={effectiveLightBackground ? "light" : "dark"}
       data-forced-dark={forceDarkMode ? "true" : "false"}
     >
-      {/* Noise texture overlay for enhanced glass effect - always show with varying opacity */}
-      <NoiseTexture 
-        opacity={noiseOpacity} 
-        blendMode={effectiveLightBackground ? "multiply" : "soft-light"}
-        scale={150}
-      />
-      
       <div className={`max-w-7xl mx-auto ${getPadding()}`}>
         <div className="flex justify-between items-center">
           <NavLogo 

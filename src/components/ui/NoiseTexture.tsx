@@ -17,6 +17,8 @@ interface NoiseTextureProps {
  * - Configurable opacity, blend mode and scale
  * - Works seamlessly with glassmorphism effects
  * - Compatible with light and dark themes
+ * 
+ * Note: Currently not used in navigation, kept for potential future use.
  */
 const NoiseTexture: React.FC<NoiseTextureProps> = ({
   className,
