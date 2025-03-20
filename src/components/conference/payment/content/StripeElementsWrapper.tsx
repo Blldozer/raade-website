@@ -1,4 +1,5 @@
 
+import React from "react";
 import StripeElementsProvider from "../StripeElementsProvider";
 import PaymentForm from "../PaymentForm";
 import { usePaymentContext } from "./PaymentContext";
@@ -38,6 +39,12 @@ const StripeElementsWrapper: React.FC<StripeElementsWrapperProps> = ({
     groupSize,
     requestId
   } = usePaymentContext();
+
+  // Debug payment intent initialization
+  React.useEffect(() => {
+    console.log("StripeElementsWrapper mounted with client secret:", clientSecret ? "present" : "missing");
+    console.log("Payment context values:", { email, amount, currency, isGroupRegistration, groupSize });
+  }, [clientSecret, email, amount, currency, isGroupRegistration, groupSize]);
 
   return (
     <StripeElementsProvider clientSecret={clientSecret}>

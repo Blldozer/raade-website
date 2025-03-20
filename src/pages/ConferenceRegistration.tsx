@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
 import ConferenceRegistrationForm from "@/components/conference/ConferenceRegistrationForm";
+import StripeStatusCheck from "@/components/conference/payment/StripeStatusCheck";
 import { useNavBackground } from "@/hooks/useNavBackground";
 
 /**
@@ -61,6 +62,11 @@ const ConferenceRegistration = () => {
         }}>
             <h1 className="text-4xl font-bold text-raade-navy mb-4 font-simula">Conference Registration</h1>
             <p className="text-lg text-gray-600 mb-8 font-lora">Register for the RAADE African Development Forum 2025, taking place on April 11-12. Early bird registration is now open!</p>
+            
+            {/* Add the Stripe status check component */}
+            <div className="mb-6">
+              <StripeStatusCheck />
+            </div>
             
             <ConferenceRegistrationForm />
           </motion.div>

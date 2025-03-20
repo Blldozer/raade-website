@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -70,12 +71,9 @@ const ConferenceCard = () => {
             <div className="flex items-center justify-between text-sm">
               <span className="text-[#274675]/70 font-lora">Rice University, Houston, TX</span>
             </div>
-            <Link
-              to="/conference/register"
-              className="block w-full"
-            >
+            <Link to="/conference" className="block w-full">
               <Button className="w-full bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora group">
-                Register for the Forum
+                Learn About the Forum
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
               </Button>
             </Link>

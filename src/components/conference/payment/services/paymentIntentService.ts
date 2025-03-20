@@ -35,15 +35,16 @@ export const createPaymentIntentRequest = async (
   groupSize?: number,
   attemptId?: string
 ): Promise<PaymentIntentResult> => {
-  console.log(`Creating payment intent with:`, { 
+  console.log(`Creating payment intent [${attemptId}]:`, { 
     ticketType, 
     email, 
     fullName, 
-    groupSize,
-    attemptId
+    groupSize
   });
 
   try {
+    const requestStart = Date.now();
+    
     const { data, error } = await supabase.functions.invoke<PaymentIntentResponse>('create-payment-intent', {
       body: {
         ticketType,
@@ -54,23 +55,31 @@ export const createPaymentIntentRequest = async (
       } as PaymentIntentRequestData,
     });
     
+    const requestDuration = Date.now() - requestStart;
+    console.log(`Payment intent request completed in ${requestDuration}ms [${attemptId}]`);
+    
     if (error) {
-      console.error("Payment intent error from Supabase:", error);
+      console.error(`Payment intent error from Supabase [${attemptId}]:`, error);
       return { data: null, error };
     }
     
     if (!data) {
-      console.error("No data returned from payment intent function");
+      console.error(`No data returned from payment intent function [${attemptId}]`);
       return { 
         data: null, 
         error: new Error("No response from payment service") 
       };
     }
     
-    console.log("Payment intent response:", data);
+    console.log(`Payment intent response [${attemptId}]:`, {
+      success: !data.error,
+      amount: data.amount,
+      requestId: data.requestId
+    });
+    
     return { data, error: null };
   } catch (error) {
-    console.error("Error creating payment intent:", error);
+    console.error(`Error creating payment intent [${attemptId}]:`, error);
     return { data: null, error: error as Error };
   }
 };

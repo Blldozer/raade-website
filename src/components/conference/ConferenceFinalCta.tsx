@@ -8,6 +8,12 @@ import { motion } from "framer-motion";
 const ConferenceFinalCta = () => {
   const navigate = useNavigate();
   
+  const handleRegisterClick = () => {
+    navigate("/conference/register");
+    // Scroll to top when navigating
+    window.scrollTo(0, 0);
+  };
+  
   return (
     <section className="py-16 relative overflow-hidden">
       {/* Background with gradient overlay */}
@@ -50,7 +56,7 @@ const ConferenceFinalCta = () => {
                 <Button 
                   size="lg" 
                   className="bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora px-8 py-6 text-lg group relative overflow-hidden"
-                  onClick={() => navigate("/conference/register")}
+                  onClick={handleRegisterClick}
                 >
                   <span className="relative z-10 flex items-center">
                     Register Now

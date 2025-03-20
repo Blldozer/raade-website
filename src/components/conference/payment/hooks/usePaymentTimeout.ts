@@ -2,48 +2,64 @@
 import { useRef, useEffect } from "react";
 
 /**
- * Custom hook to handle payment timeouts
+ * Custom hook to manage payment timeouts
  * 
- * Manages timeout state and cleanup for payment processing
+ * Handles timeout states for payment operations:
+ * - Sets a timeout for payment processing
+ * - Provides cleanup functionality
+ * - Tracks component mount state
  * 
- * @param timeout - Timeout duration in milliseconds
+ * @param timeoutDuration - Duration in ms before timeout
  * @param onTimeout - Callback function when timeout occurs
  */
 export const usePaymentTimeout = (
-  timeout: number,
+  timeoutDuration: number,
   onTimeout: () => void
 ) => {
+  // Use a ref to store the timeout ID for cleanup
   const timeoutRef = useRef<number | null>(null);
-  const isMountedRef = useRef(true);
+  
+  // Track if the component is still mounted
+  const isMountedRef = useRef<boolean>(true);
+
+  // Clear the timeout on unmount
+  useEffect(() => {
+    return () => {
+      // Mark component as unmounted
+      isMountedRef.current = false;
+      
+      // Clear any existing timeout
+      if (timeoutRef.current) {
+        window.clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
+  }, []);
 
   // Start a new timeout
   const startTimeout = () => {
     // Clear any existing timeout first
-    clearTimeoutRef();
+    if (timeoutRef.current) {
+      window.clearTimeout(timeoutRef.current);
+    }
     
     // Set a new timeout
     timeoutRef.current = window.setTimeout(() => {
+      // Only call onTimeout if the component is still mounted
       if (isMountedRef.current) {
         onTimeout();
       }
-    }, timeout);
+      timeoutRef.current = null;
+    }, timeoutDuration);
   };
 
   // Clear the current timeout
   const clearTimeoutRef = () => {
-    if (timeoutRef.current !== null) {
+    if (timeoutRef.current) {
       window.clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
   };
-
-  // Clean up on unmount
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false;
-      clearTimeoutRef();
-    };
-  }, []);
 
   return {
     startTimeout,

@@ -3,7 +3,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star, ExternalLink } from "lucide-react";
+import { Star, ExternalLink, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { TICKET_TYPES, getTicketPrice } from "./RegistrationFormTypes";
 
@@ -20,6 +20,12 @@ const ConferenceRegistration = () => {
   const studentPrice = getTicketPrice(TICKET_TYPES.STUDENT);
   const professionalPrice = getTicketPrice(TICKET_TYPES.PROFESSIONAL);
   const groupPrice = getTicketPrice(TICKET_TYPES.STUDENT_GROUP);
+  
+  const handleRegistration = () => {
+    navigate("/conference/register");
+    // Scroll to top when navigating
+    window.scrollTo(0, 0);
+  };
   
   return (
     <section id="registration" className="py-16 px-4 md:px-8 bg-white">
@@ -70,8 +76,9 @@ const ConferenceRegistration = () => {
                     <span className="text-gray-600 font-lora">Lunch and refreshments</span>
                   </li>
                 </ul>
-                <Button className="w-full bg-raade-navy hover:bg-raade-navy/90 text-white font-lora" onClick={() => navigate("/conference/register")}>
+                <Button className="w-full bg-raade-navy hover:bg-raade-navy/90 text-white font-lora group" onClick={handleRegistration}>
                   Register Now
+                  <ChevronRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </Button>
               </CardContent>
             </Card>
@@ -118,8 +125,9 @@ const ConferenceRegistration = () => {
                     <span className="text-gray-600 font-lora">Lunch and refreshments</span>
                   </li>
                 </ul>
-                <Button className="w-full bg-raade-navy hover:bg-raade-navy/90 text-white font-lora" onClick={() => navigate("/conference/register")}>
+                <Button className="w-full bg-raade-navy hover:bg-raade-navy/90 text-white font-lora group" onClick={handleRegistration}>
                   Register Now
+                  <ChevronRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </Button>
               </CardContent>
             </Card>
@@ -132,8 +140,9 @@ const ConferenceRegistration = () => {
           <p className="text-gray-600 mb-6 font-lora">
             Student groups of 5 or more can register at a discounted rate of ${groupPrice} per person. Select the Student Group option during registration.
           </p>
-          <Button variant="outline" className="border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-lora" onClick={() => navigate("/conference/register")}>
-            Register Now
+          <Button variant="outline" className="border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-lora group" onClick={handleRegistration}>
+            Register Group
+            <ChevronRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
           </Button>
         </div>
       </div>

@@ -43,6 +43,9 @@ export const usePaymentIntentState = () => {
       if (data.requestId) {
         setRequestId(data.requestId);
       }
+      
+      // Mark request as complete
+      activeRequestRef.current = false;
     }
   };
   
@@ -50,6 +53,11 @@ export const usePaymentIntentState = () => {
   const handleRetry = () => {
     // Reset client secret to force a new payment intent creation
     setClientSecret("");
+    // Clear any previous errors
+    setErrorDetails(null);
+    // Ensure active request flag is reset
+    activeRequestRef.current = false;
+    // Increment retry counter to trigger useEffect
     setRetryCount(prev => prev + 1);
   };
   
