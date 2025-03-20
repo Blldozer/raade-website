@@ -10,10 +10,10 @@ interface JoinButtonProps {
  * JoinButton Component - Navigation button to the "join" section
  * 
  * Features:
- * - Cross-page navigation support with consistent section targeting
+ * - Cross-page navigation support
  * - Smooth scrolling to the join section
+ * - Consistent section targeting with ID "join"
  * - Handles both same-page and different-page navigation cases
- * - Uses standardized "build-with-us" section ID
  */
 const JoinButton = ({ buttonStyles, onClick }: JoinButtonProps) => {
   const navigate = useNavigate();
@@ -31,22 +31,22 @@ const JoinButton = ({ buttonStyles, onClick }: JoinButtonProps) => {
     // If we're not on the home page, navigate to home and then scroll
     if (location.pathname !== '/') {
       console.log("JoinButton: Not on homepage, navigating with state");
-      navigate('/', { state: { scrollToSection: "build-with-us" } });
+      navigate('/', { state: { scrollToJoin: true } });
     } else {
       // If we're already on home page, just scroll to the section
       console.log("JoinButton: On homepage, scrolling directly");
-      const joinSection = document.getElementById('build-with-us');
+      const joinSection = document.getElementById('join');
       if (joinSection) {
         joinSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
       } else {
-        console.warn("JoinButton: Could not find 'build-with-us' section element");
+        console.warn("JoinButton: Could not find 'join' section element");
       }
     }
   };
 
   return (
     <a
-      href="/#build-with-us"
+      href="/#join"
       className={`px-6 py-2 rounded-md transition-all duration-300 border-2 text-lg font-alegreyasans font-bold ${buttonStyles}`}
       onClick={handleJoinClick}
     >
