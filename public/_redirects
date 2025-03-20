@@ -2,5 +2,3 @@
 # Redirect all routes to index.html for client-side routing
 /*    /index.html   200
 
-# Force HTTPS
-http://rice-raade.com/* https://rice-raade.com/:splat 301!
