@@ -101,7 +101,7 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
       data-forced-dark={forceDarkMode ? "true" : "false"}
     >
       {/* Noise texture overlay for enhanced depth */}
-      {isScrolled && (
+      {(isScrolled || isConferenceRegistrationPage || forceDarkMode) && (
         <NoiseTexture 
           opacity={effectiveLightBackground ? 0.03 : 0.07} 
           blendMode={effectiveLightBackground ? "multiply" : "soft-light"}
@@ -114,7 +114,7 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
           <NavLogo 
             isScrolled={isScrolled} 
             isHeroPage={isHeroPage} 
-            forceDarkMode={effectiveLightBackground}
+            forceDarkMode={!effectiveLightBackground} 
             useShortForm={useShortFormLogo}
           />
           
@@ -129,7 +129,7 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
             <DesktopNav 
               isScrolled={isScrolled} 
               isHeroPage={isHeroPage} 
-              forceDarkMode={effectiveLightBackground} 
+              forceDarkMode={!effectiveLightBackground} 
             />
             
             <MobileNav />

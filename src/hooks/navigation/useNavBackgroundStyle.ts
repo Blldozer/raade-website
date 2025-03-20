@@ -1,5 +1,6 @@
 
 import { useNavigation } from "@/components/navigation/context/useNavigation";
+import { useLocation } from "react-router-dom";
 
 /**
  * Hook to extract background styling logic for navigation
@@ -7,11 +8,7 @@ import { useNavigation } from "@/components/navigation/context/useNavigation";
  * Centralizes the complex logic for determining navigation background styles
  * based on scroll state, background type, and special page requirements
  * 
- * @param isScrolled - Whether the page has been scrolled
- * @param isLightBackground - Whether the current background is light
- * @param isConferenceRegistrationPage - Whether we're on the conference registration page
- * @param forceDarkMode - Whether dark mode should be forced
- * @returns CSS classes for the navigation background
+ * @returns CSS classes and states for the navigation background
  */
 export const useNavBackgroundStyle = () => {
   const { state } = useNavigation();
@@ -21,26 +18,33 @@ export const useNavBackgroundStyle = () => {
     forceDarkMode
   } = state;
   
+  const location = useLocation();
+  
   // Determine if this is a conference registration page
   const isConferenceRegistrationPage = location.pathname === '/conference/register';
   
   /**
    * Helper function to determine navbar background styling based on state
+   * Priority order:
+   * 1. Conference registration page or forced dark mode (always dark regardless of scroll)
+   * 2. Scrolled state with appropriate light/dark styling
+   * 3. Transparent when at top of page (for regular pages only)
    */
   const getBackgroundClass = (): string => {
-    // Apply enhanced glassmorphism effect with proper light/dark handling when scrolled
+    // First priority: Special pages that should always have dark navbar
+    if (isConferenceRegistrationPage || forceDarkMode) {
+      // Always use dark background with proper opacity for these special pages
+      return "bg-[#274675]/90 backdrop-blur-md border-b border-[#274675]/30 shadow-md";
+    }
+    
+    // Second priority: Regular scroll-based styling
     if (isScrolled) {
-      // For conference registration, always use dark background
-      if (isConferenceRegistrationPage || forceDarkMode) {
-        return "bg-[#274675]/80 backdrop-blur-md border-b border-[#274675]/30 shadow-md";
-      }
-      
       return isLightBackground 
         ? "bg-white/70 backdrop-blur-md border-b border-gray-200/50 shadow-sm" 
         : "bg-[#274675]/80 backdrop-blur-md border-b border-[#274675]/30 shadow-md";
     }
     
-    // Transparent when at top
+    // Default: Transparent when at top
     return "bg-transparent";
   };
   
