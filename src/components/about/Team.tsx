@@ -5,7 +5,7 @@ import { useInView } from "framer-motion";
 import TeamMembersList from "./TeamMembersList";
 import { teamMembers } from "./TeamData";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useIsMobile } from "../hooks/use-mobile";
+import { useIsMobile } from "@/hooks/use-mobile";
 import TeamImageSkeleton from "./team/TeamImageSkeleton";
 
 /**

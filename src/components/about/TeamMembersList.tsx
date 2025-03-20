@@ -1,9 +1,10 @@
+
 import { motion } from "framer-motion";
 import TeamMember from "./TeamMember";
 import { useState, useEffect } from "react";
 import TeamImageLoadingIndicator from "./team/TeamImageLoadingIndicator";
 import TeamImageSkeleton from "./team/TeamImageSkeleton";
-import { useIsMobile } from "../hooks/use-mobile";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface TeamMembersListProps {
   teamMembers: Array<{
