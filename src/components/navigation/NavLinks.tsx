@@ -21,10 +21,10 @@ interface NavLinksProps {
  * 
  * Features:
  * - Uses React Router for client-side navigation
- * - Conditionally styles links based on context
- * - Supports dropdown menus for section navigation
- * - Adapts style based on the background color of the current section
- * - Ensures white button text when against dark backgrounds
+ * - Consistently styles links based on background detection system:
+ *   - Dark backgrounds -> White text with gold hover
+ *   - Light backgrounds -> Navy blue text with gold hover
+ * - Ensures button styling matches link styling for visual consistency
  */
 const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = false, forceDarkMode = false }: NavLinksProps) => {
   const location = useLocation();
@@ -36,46 +36,32 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
   const { isAgainstDarkBackground } = useNavBackgroundStyle();
   
   const isProjectPage = location.pathname.includes('/projects/');
+  const isStudioPage = location.pathname.includes('/studios');
   const isApplicationPage = location.pathname === "/studios/apply" || location.pathname === "/studios/partner";
   
   /**
    * Get text color for nav links based on background and context
-   * - On project pages: always white text on dark background
-   * - On application pages: always white text on dark background
-   * - On light backgrounds: dark blue text (#274675)
    * - On dark backgrounds: white text
-   * - When against dark backgrounds: always white text
+   * - On light backgrounds: dark blue text (#274675)
    */
   const getTextColor = () => {
-    // Special page overrides
-    if (isProjectPage || isApplicationPage) {
+    // Special page overrides or against dark background - use white text
+    if (isProjectPage || isApplicationPage || isStudioPage || isAgainstDarkBackground) {
       return "text-white hover:text-[#FBB03B]";
     }
     
-    // When on a light background and not against dark background, use dark text
-    if (!isAgainstDarkBackground && isLightBackground) {
-      return "text-[#274675] hover:text-[#FBB03B]";
-    }
-    
-    // Default for dark backgrounds
-    return "text-white hover:text-[#FBB03B]";
+    // Default for light backgrounds - use navy blue text
+    return "text-[#274675] hover:text-[#FBB03B]";
   };
 
   /**
    * Get button styles based on background and context
-   * - On project pages: white border, transparent background
-   * - On application pages: white border, transparent background
-   * - On light backgrounds (not against dark): dark blue/gold styles
-   * - On dark backgrounds or when against dark backgrounds: white/gold styles
+   * - On dark backgrounds: white border, transparent background
+   * - On light backgrounds: dark blue/gold styles
    */
   const getButtonStyles = () => {
-    // Special page overrides
-    if (isProjectPage || isApplicationPage) {
-      return "border-white text-white hover:bg-[#FBB03B] hover:border-[#FBB03B] hover:text-white";
-    }
-    
-    // When on dark backgrounds or when against dark, use white button
-    if (isAgainstDarkBackground || !isLightBackground) {
+    // Special page overrides or against dark background - use white button
+    if (isProjectPage || isApplicationPage || isStudioPage || isAgainstDarkBackground) {
       return "border-white text-white hover:bg-[#FBB03B] hover:border-[#FBB03B] hover:text-white";
     }
     

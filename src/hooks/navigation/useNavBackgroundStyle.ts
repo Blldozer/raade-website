@@ -22,15 +22,16 @@ export const useNavBackgroundStyle = () => {
   const location = useLocation();
   const pathname = location.pathname;
   
-  // Determine if this is a conference registration page
+  // Determine if this is a special page that needs dark styling
   const isConferenceRegistrationPage = pathname === '/conference/register';
   const isConferencePage = pathname === '/conference';
+  const isStudioPage = pathname.includes('/studios');
   
   /**
    * Helper function to determine navbar background styling based on state
    * Priority order:
    * 1. Not scrolled - always transparent regardless of page type
-   * 2. Scrolled + special pages (conference, registration) - subtle dark glassmorphism
+   * 2. Scrolled + special pages (conference, studios, registration) - subtle dark glassmorphism
    * 3. Scrolled + regular pages - subtle glassmorphism
    */
   const getBackgroundClass = (): string => {
@@ -40,7 +41,7 @@ export const useNavBackgroundStyle = () => {
     }
     
     // Second priority: Special pages that should have dark navbar when scrolled
-    if ((isConferenceRegistrationPage || isConferencePage || forceDarkMode) && isScrolled) {
+    if ((isConferenceRegistrationPage || isConferencePage || isStudioPage || forceDarkMode) && isScrolled) {
       // Dark glassmorphism for these special pages when scrolled
       return "bg-black/20 backdrop-blur-md border-b border-white/10 shadow-md";
     }
@@ -58,7 +59,8 @@ export const useNavBackgroundStyle = () => {
     !isLightBackground || 
     forceDarkMode || 
     isConferenceRegistrationPage ||
-    isConferencePage;
+    isConferencePage ||
+    isStudioPage;
   
   // Only consider fixed styling when scrolled
   const shouldUseFixedStyle = isScrolled && hasFixedNavbarStyle(pathname);
@@ -67,7 +69,8 @@ export const useNavBackgroundStyle = () => {
     backgroundClass: getBackgroundClass(),
     isConferenceRegistrationPage,
     isConferencePage,
-    effectiveLightBackground: (forceDarkMode || isConferenceRegistrationPage || isConferencePage) 
+    isStudioPage,
+    effectiveLightBackground: (forceDarkMode || isConferenceRegistrationPage || isConferencePage || isStudioPage) 
       ? false 
       : isLightBackground,
     isAgainstDarkBackground,

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
 import { useResponsive } from "@/hooks/useResponsive";
+import { useNavBackgroundStyle } from "@/hooks/navigation/useNavBackgroundStyle";
 
 interface NavLogoProps {
   isScrolled?: boolean;
@@ -14,9 +15,10 @@ interface NavLogoProps {
 
 /**
  * NavLogo component - Displays the RAADE logo with proper state handling
- * Features responsive sizing and color switching based on page context
- * Includes improved navigation handling to prevent routing issues
- * Now with improved duplicate prevention mechanism
+ * Features responsive sizing and background-aware color switching
+ * Uses the background detection system to determine appropriate logo version:
+ * - Dark backgrounds -> White logo
+ * - Light backgrounds -> Black logo
  */
 const NavLogo = ({ 
   isScrolled = false, 
@@ -30,6 +32,9 @@ const NavLogo = ({
   const { isMobile, isTablet, width } = useResponsive();
   const [logoLoaded, setLogoLoaded] = useState(false);
   
+  // Use our background style hook to determine appropriate styling
+  const { isAgainstDarkBackground } = useNavBackgroundStyle();
+  
   // Cache logo paths to ensure consistent rendering
   const blackShortFormLogo = "/logos/RAADE-logo-final-black.png";
   const whiteShortFormLogo = "/logos/RAADE-logo-final-white.png";
@@ -38,8 +43,8 @@ const NavLogo = ({
   const whiteRegularLogo = "/logos/RAADE-logo-final-white.png";
   
   const isProjectPage = location.pathname.includes('/projects/');
-  const isAboutPage = location.pathname === '/about';
-  
+  const isStudioPage = location.pathname.includes('/studios'); // Check if we're on studio pages
+
   // Preload logo images to prevent flash of content
   useEffect(() => {
     const preloadImages = () => {
@@ -88,23 +93,22 @@ const NavLogo = ({
     return "h-20"; // Desktop screens
   }, [forceSize, width]);
   
-  // Determine the correct logo to show based on page context
-  const primaryLogo = isProjectPage 
+  // Determine the correct logo to show based on background context
+  // Following the pattern: dark background -> white logo, light background -> black logo
+  const shouldUseWhiteLogo = isAgainstDarkBackground || isProjectPage || isStudioPage || forceDarkMode;
+  
+  const primaryLogo = shouldUseWhiteLogo
     ? (shouldUseShortForm ? whiteShortFormLogo : whiteRegularLogo)
-    : (forceDarkMode 
-        ? (shouldUseShortForm ? blackShortFormLogo : blackRegularLogo)
-        : (shouldUseShortForm ? whiteShortFormLogo : whiteRegularLogo));
+    : (shouldUseShortForm ? blackShortFormLogo : blackRegularLogo);
     
-  const secondaryLogo = isProjectPage
+  const secondaryLogo = shouldUseWhiteLogo
     ? (shouldUseShortForm ? blackShortFormLogo : blackRegularLogo)
-    : (forceDarkMode
-        ? (shouldUseShortForm ? whiteShortFormLogo : whiteRegularLogo)
-        : (shouldUseShortForm ? blackShortFormLogo : blackRegularLogo));
+    : (shouldUseShortForm ? whiteShortFormLogo : whiteRegularLogo);
 
   // Reset logo state when props change
   useEffect(() => {
     setShowSecondary(false);
-  }, [forceDarkMode, useShortForm, isProjectPage]);
+  }, [forceDarkMode, useShortForm, isProjectPage, isStudioPage, isAgainstDarkBackground]);
 
   const logoSize = getLogoSize();
 

@@ -27,7 +27,8 @@ export const shouldUseDarkNavbar = (pathname: string): boolean => {
   return (
     pathname === '/about' ||
     pathname === '/conference/register' ||
-    pathname.includes('/projects/')
+    pathname.includes('/projects/') ||
+    pathname.includes('/studios') // Added studios path to dark navbar pages
   );
 };
 
@@ -40,8 +41,9 @@ export const shouldUseLightNavbar = (pathname: string): boolean => {
   const isApplicationPage = 
     pathname.includes('/studios/apply') || 
     pathname.includes('/studios/partner');
+  const isStudioPage = pathname.includes('/studios'); // Added studio page detection
   
-  return isIndexPage || isApplicationPage;
+  return isIndexPage || isApplicationPage || isStudioPage; // Added studio page to light navbar pages
 };
 
 /**

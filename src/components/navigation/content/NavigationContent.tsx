@@ -43,6 +43,7 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
     backgroundClass, 
     isConferenceRegistrationPage,
     isConferencePage,
+    isStudioPage,
     effectiveLightBackground,
     isAgainstDarkBackground
   } = useNavBackgroundStyle();
@@ -66,15 +67,15 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
       console.log(`NavigationContent (${instanceId}): Set nav background to light for hero page`);
     }
     
-    // Force dark background for conference registration page
-    if (isConferenceRegistrationPage || isConferencePage || forceDarkMode) {
+    // Force dark background for conference registration page or studios page
+    if (isConferenceRegistrationPage || isConferencePage || isStudioPage || forceDarkMode) {
       document.body.setAttribute('data-nav-background', 'dark');
       console.log(`NavigationContent (${instanceId}): Forcing dark background for navbar due to page type or prop`);
     }
     
     return () => {
       // Clean up only if we set it in this component
-      if (isHeroPage || isConferenceRegistrationPage || isConferencePage || forceDarkMode) {
+      if (isHeroPage || isConferenceRegistrationPage || isConferencePage || isStudioPage || forceDarkMode) {
         document.body.removeAttribute('data-nav-background');
         console.log(`NavigationContent (${instanceId}): Cleaned up nav background attribute`);
       }
@@ -88,7 +89,8 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
     isLightBackground, 
     forceDarkMode,
     isConferenceRegistrationPage,
-    isConferencePage
+    isConferencePage,
+    isStudioPage
   ]);
 
   return (
@@ -108,6 +110,7 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
       data-against-dark-background={isAgainstDarkBackground ? "true" : "false"}
       data-conference-page={isConferencePage ? "true" : "false"}
       data-registration-page={isConferenceRegistrationPage ? "true" : "false"}
+      data-studio-page={isStudioPage ? "true" : "false"}
     >
       <div className={`max-w-7xl mx-auto ${getPadding()}`}>
         <div className="flex justify-between items-center">
