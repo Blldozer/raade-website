@@ -11,16 +11,48 @@ import { useLocation, useNavigate } from "react-router-dom";
  * - Supports smooth scrolling to sections identified by hash fragments
  * - Includes console logging for easier debugging
  * - Handles cases where elements may not be immediately available
+ * - Special handling for 'join' section navigation
  */
 const ScrollToTop = () => {
-  const { pathname, hash } = useLocation();
+  const { pathname, hash, state } = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("ScrollToTop: Pathname changed to", pathname, "with hash", hash);
+    console.log("ScrollToTop: Pathname changed to", pathname, "with hash", hash, "and state", state);
+    
+    // Handle location.state.scrollToJoin (for join section navigation)
+    if (state && state.scrollToJoin && pathname === '/') {
+      console.log("ScrollToTop: scrollToJoin state detected");
+      setTimeout(() => {
+        const joinElement = document.getElementById('join');
+        if (joinElement) {
+          console.log("ScrollToTop: Scrolling to join section");
+          joinElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          console.warn("ScrollToTop: Join section element not found");
+        }
+      }, 300);
+      return;
+    }
+    
+    // Handle location.state.scrollToSection (for other section navigation)
+    if (state && state.scrollToSection) {
+      console.log("ScrollToTop: scrollToSection state detected:", state.scrollToSection);
+      setTimeout(() => {
+        const element = document.getElementById(state.scrollToSection);
+        if (element) {
+          console.log(`ScrollToTop: Scrolling to ${state.scrollToSection} section`);
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          console.warn(`ScrollToTop: Element #${state.scrollToSection} not found`);
+        }
+      }, 300);
+      return;
+    }
     
     // If no hash is present, scroll to top
     if (!hash) {
+      console.log("ScrollToTop: No hash, scrolling to top");
       window.scrollTo(0, 0);
       return;
     }
@@ -54,9 +86,9 @@ const ScrollToTop = () => {
     };
 
     // Small delay to ensure the DOM is fully loaded
-    setTimeout(scrollToElement, 100);
+    setTimeout(scrollToElement, 300);
 
-  }, [pathname, hash, navigate]);
+  }, [pathname, hash, state, navigate]);
 
   return null;
 };

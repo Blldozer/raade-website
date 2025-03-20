@@ -6,23 +6,40 @@ interface JoinButtonProps {
   onClick?: () => void;
 }
 
+/**
+ * JoinButton Component - Navigation button to the "join" section
+ * 
+ * Features:
+ * - Cross-page navigation support
+ * - Smooth scrolling to the join section
+ * - Consistent section targeting with ID "join"
+ * - Handles both same-page and different-page navigation cases
+ */
 const JoinButton = ({ buttonStyles, onClick }: JoinButtonProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Handle scroll to the join section
+  // Handle consistent navigation to the join section
   const handleJoinClick = (e: React.MouseEvent) => {
     e.preventDefault();
+    
+    // Call the onClick callback if provided (for mobile menu closing)
     if (onClick) onClick();
+    
+    console.log("JoinButton: Navigating to join section, current path:", location.pathname);
     
     // If we're not on the home page, navigate to home and then scroll
     if (location.pathname !== '/') {
+      console.log("JoinButton: Not on homepage, navigating with state");
       navigate('/', { state: { scrollToJoin: true } });
     } else {
       // If we're already on home page, just scroll to the section
+      console.log("JoinButton: On homepage, scrolling directly");
       const joinSection = document.getElementById('join');
       if (joinSection) {
         joinSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        console.warn("JoinButton: Could not find 'join' section element");
       }
     }
   };

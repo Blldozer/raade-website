@@ -80,21 +80,26 @@ export const useIndexPage = () => {
         const timer = setTimeout(() => {
           const joinSection = document.getElementById('join');
           if (joinSection) {
+            console.log("Index page: Scrolling to join section");
             joinSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          } else {
+            console.warn("Index page: Join section element not found");
           }
         }, 500);
         
         return timer;
       };
       
-      // Check location state or URL hash for scroll target
+      // Check location state for scroll target
       if (location.state && location.state.scrollToJoin) {
+        console.log("Index page: scrollToJoin state detected");
         const timer = handleScrollToJoin();
         return () => clearTimeout(timer);
       }
       
       // Check if URL has #join hash
       if (window.location.hash === '#join') {
+        console.log("Index page: #join hash detected in URL");
         const timer = handleScrollToJoin();
         return () => clearTimeout(timer);
       }
