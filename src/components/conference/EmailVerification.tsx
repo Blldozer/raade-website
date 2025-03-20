@@ -1,12 +1,8 @@
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useEmailVerification } from "./verification/useEmailVerification";
+import VerificationCodeInput from "./verification/VerificationCodeInput";
+import VerificationActions from "./verification/VerificationActions";
+import VerificationStatus from "./verification/VerificationStatus";
 
 interface EmailVerificationProps {
   email: string;
@@ -17,6 +13,19 @@ interface EmailVerificationProps {
   onVerificationError: (error: string) => void;
 }
 
+/**
+ * EmailVerification Component
+ * 
+ * Manages the email verification workflow for conference registration
+ * Split into smaller components for better maintainability
+ * 
+ * @param email - User's email address
+ * @param fullName - User's full name
+ * @param ticketType - Selected ticket type
+ * @param emailSent - Whether verification email was already sent
+ * @param onVerificationSuccess - Callback for successful verification
+ * @param onVerificationError - Callback for verification errors
+ */
 const EmailVerification = ({
   email,
   fullName,
@@ -25,224 +34,46 @@ const EmailVerification = ({
   onVerificationSuccess,
   onVerificationError
 }: EmailVerificationProps) => {
-  const [verificationCode, setVerificationCode] = useState<string>("");
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [isSendingEmail, setIsSendingEmail] = useState<boolean>(false);
-  const [sendingAttempts, setSendingAttempts] = useState<number>(0);
-  const [sendingError, setSendingError] = useState<string | null>(null);
-  const { toast } = useToast();
-
-  // Attempt to send verification email if it hasn't been sent yet
-  useEffect(() => {
-    const sendVerificationEmail = async () => {
-      if (!emailSent) {
-        setIsSendingEmail(true);
-        setSendingError(null);
-        
-        try {
-          console.log("Sending initial verification email from useEffect to:", email);
-          const { data, error } = await supabase.functions.invoke("send-verification-email", {
-            body: {
-              email,
-              fullName,
-              ticketType,
-              isKnownInstitution: false
-            },
-          });
-
-          if (error) {
-            console.error("Error from send-verification-email function:", error);
-            throw error;
-          }
-
-          if (data.error) {
-            console.error("Error in response from send-verification-email:", data.error);
-            throw new Error(data.error);
-          }
-
-          setSendingAttempts(prev => prev + 1);
-          toast({
-            title: "Verification code sent",
-            description: "A verification code has been sent to your email. Please check your inbox and spam folder.",
-          });
-        } catch (error) {
-          console.error("Error in sending verification email:", error);
-          const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
-          setSendingError(errorMessage);
-          toast({
-            title: "Failed to send verification code",
-            description: errorMessage,
-            variant: "destructive",
-          });
-          onVerificationError(errorMessage);
-        } finally {
-          setIsSendingEmail(false);
-        }
-      }
-    };
-
-    sendVerificationEmail();
-  }, [email, fullName, ticketType, emailSent, toast, onVerificationError]);
-
-  const handleVerifyEmail = async () => {
-    if (!verificationCode) {
-      toast({
-        title: "Verification code required",
-        description: "Please enter the verification code sent to your email.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      console.log("Verifying email with code:", verificationCode);
-      const { data, error } = await supabase.functions.invoke("verify-email-token", {
-        body: {
-          email,
-          token: verificationCode,
-          ticketType
-        },
-      });
-
-      if (error) {
-        console.error("Error from verify-email-token function:", error);
-        throw error;
-      }
-
-      if (data.success) {
-        toast({
-          title: "Email verified",
-          description: "Your email has been successfully verified.",
-        });
-        onVerificationSuccess();
-      } else {
-        throw new Error(data.error || "Failed to verify email");
-      }
-    } catch (error) {
-      console.error("Error verifying email:", error);
-      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
-      toast({
-        title: "Verification failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
-      onVerificationError(errorMessage);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleResendCode = async () => {
-    setIsSendingEmail(true);
-    setSendingError(null);
-
-    try {
-      console.log("Resending verification email to:", email);
-      const { data, error } = await supabase.functions.invoke("send-verification-email", {
-        body: {
-          email,
-          fullName,
-          ticketType,
-          isKnownInstitution: false
-        },
-      });
-
-      if (error) {
-        console.error("Error resending verification email:", error);
-        throw error;
-      }
-
-      setSendingAttempts(prev => prev + 1);
-      toast({
-        title: "Verification code sent",
-        description: "A new verification code has been sent to your email. Please check both your inbox and spam folder.",
-      });
-    } catch (error) {
-      console.error("Error sending verification email:", error);
-      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
-      setSendingError(errorMessage);
-      toast({
-        title: "Failed to send code",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setIsSendingEmail(false);
-    }
-  };
+  const {
+    verificationCode,
+    setVerificationCode,
+    isSubmitting,
+    isSendingEmail,
+    sendingAttempts,
+    sendingError,
+    handleVerifyEmail,
+    handleSendVerificationEmail
+  } = useEmailVerification(
+    email,
+    fullName,
+    ticketType,
+    emailSent,
+    onVerificationSuccess,
+    onVerificationError
+  );
 
   return (
     <div className="space-y-4">
       <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-        <h3 className="font-semibold text-lg mb-2">Email Verification Required</h3>
-        <p className="text-gray-600 mb-4">
-          We've sent a verification code to <span className="font-semibold">{email}</span>. Please check your inbox and spam folder.
-        </p>
-        
-        {sendingError && (
-          <Alert variant="destructive" className="mb-4">
-            <AlertDescription>
-              Error sending verification email: {sendingError}. Please try resending or contact support.
-            </AlertDescription>
-          </Alert>
-        )}
-        
-        {sendingAttempts > 0 && (
-          <div className="bg-blue-50 border border-blue-100 p-3 rounded-md mb-4">
-            <p className="text-blue-700 text-sm">
-              {sendingAttempts === 1 ? (
-                "Verification email sent. If you don't see it in your inbox, please check your spam folder."
-              ) : (
-                `We've attempted to send ${sendingAttempts} verification emails. Please check both your inbox and spam folder.`
-              )}
-            </p>
-          </div>
-        )}
+        <VerificationStatus 
+          sendingError={sendingError} 
+          sendingAttempts={sendingAttempts}
+          email={email}
+        />
         
         <div className="space-y-4">
-          <div>
-            <Label htmlFor="verificationCode">Verification Code</Label>
-            <Input
-              id="verificationCode"
-              placeholder="Enter the 6-digit code"
-              value={verificationCode}
-              onChange={(e) => setVerificationCode(e.target.value.toUpperCase())}
-              className="text-center tracking-wider font-mono text-lg"
-              maxLength={6}
-            />
-          </div>
+          <VerificationCodeInput 
+            value={verificationCode} 
+            onChange={setVerificationCode} 
+          />
           
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Button
-              onClick={handleVerifyEmail}
-              disabled={isSubmitting || !verificationCode}
-              className="w-full bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Verifying...
-                </>
-              ) : (
-                "Verify Email"
-              )}
-            </Button>
-            
-            <Button
-              variant="outline"
-              onClick={handleResendCode}
-              disabled={isSendingEmail}
-              className="w-full mt-2 sm:mt-0"
-            >
-              {isSendingEmail ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                "Resend Code"
-              )}
-            </Button>
-          </div>
+          <VerificationActions 
+            onVerify={handleVerifyEmail}
+            onResend={handleSendVerificationEmail}
+            isVerifying={isSubmitting}
+            isResending={isSendingEmail}
+            isVerifyDisabled={!verificationCode}
+          />
           
           <p className="text-sm text-gray-500">
             The verification code will expire in 24 hours. If you don't receive the code, check your spam folder or click "Resend Code".
