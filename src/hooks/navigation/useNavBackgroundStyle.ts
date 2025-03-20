@@ -42,8 +42,8 @@ export const useNavBackgroundStyle = () => {
       return "bg-black/10 backdrop-blur-md border-b border-white/10 shadow-sm";
     }
     
-    // Default: Completely transparent at top of page (no background or border)
-    return "bg-transparent backdrop-blur-[1px] border-transparent";
+    // Default: Completely transparent at top of page (no background, no blur, no border)
+    return "bg-transparent border-transparent";
   };
   
   return {
