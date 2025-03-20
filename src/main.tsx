@@ -11,7 +11,8 @@ function ensureFontsLoaded() {
     // Create a timeout to ensure the app renders even if fonts take too long
     const fontTimeout = setTimeout(() => {
       console.log("Font loading timeout reached, continuing with fallbacks");
-      document.documentElement.classList.add('fonts-timeout');
+      // Explicitly cast document to Document to ensure TypeScript recognizes documentElement
+      (document as Document).documentElement.classList.add('fonts-timeout');
       startApp();
     }, 3000); // 3 second timeout for font loading
     
@@ -19,18 +20,21 @@ function ensureFontsLoaded() {
     document.fonts.ready.then(() => {
       clearTimeout(fontTimeout);
       console.log("All fonts loaded successfully");
-      document.documentElement.classList.add('fonts-loaded');
+      // Explicitly cast document to Document
+      (document as Document).documentElement.classList.add('fonts-loaded');
       startApp();
     }).catch(err => {
       clearTimeout(fontTimeout);
       console.error("Error loading fonts:", err);
-      document.documentElement.classList.add('fonts-error');
+      // Explicitly cast document to Document
+      (document as Document).documentElement.classList.add('fonts-error');
       startApp();
     });
   } else {
     // Fallback for browsers without document.fonts API
     console.log("Font loading API not available, proceeding with fallbacks");
-    document.documentElement.classList.add('no-font-api');
+    // Explicitly cast document to Document
+    (document as Document).documentElement.classList.add('no-font-api');
     startApp();
   }
 }
