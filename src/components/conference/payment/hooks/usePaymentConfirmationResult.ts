@@ -2,12 +2,8 @@
 import { useState } from "react";
 import { PaymentIntent, StripeError } from "@stripe/stripe-js";
 
-type PaymentConfirmationResult = {
-  success: boolean;
-  reason?: string;
-  paymentIntent?: PaymentIntent;
-  error?: StripeError | Error;
-};
+// Use the exported type from useProcessPaymentConfirmation
+import { PaymentConfirmationResult } from "./useProcessPaymentConfirmation";
 
 /**
  * Custom hook for handling payment confirmation results
@@ -72,4 +68,4 @@ export const usePaymentConfirmationResult = () => {
   };
 };
 
-export type { PaymentConfirmationResult };
+// No need to export the type here anymore as we're now importing it

@@ -1,8 +1,16 @@
 
 import { Stripe, StripeElements, PaymentIntent, StripeError } from "@stripe/stripe-js";
 import { confirmStripePayment } from "../services/paymentConfirmationService";
-import { usePaymentConfirmationResult, PaymentConfirmationResult } from "./usePaymentConfirmationResult";
+import { usePaymentConfirmationResult } from "./usePaymentConfirmationResult";
 import { usePaymentConfirmationState } from "./usePaymentConfirmationState";
+
+// Export the PaymentConfirmationResult type
+export interface PaymentConfirmationResult {
+  success: boolean;
+  reason?: string;
+  paymentIntent?: PaymentIntent;
+  error?: StripeError | Error;
+}
 
 interface UseProcessPaymentConfirmationProps {
   stripe: Stripe | null;
