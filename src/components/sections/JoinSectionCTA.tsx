@@ -1,10 +1,24 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 
 const JoinSectionCTA = () => {
+  const navigate = useNavigate();
+  
+  const handleConferenceClick = () => {
+    navigate("/conference/register");
+    // Ensure we scroll to top
+    window.scrollTo(0, 0);
+  };
+  
+  const handleStudiosClick = () => {
+    navigate("/studios");
+    // Ensure we scroll to top
+    window.scrollTo(0, 0);
+  };
+  
   return (
     <div className="w-full py-16 bg-[#274675] rounded-xl overflow-hidden relative">
       {/* Decorative elements */}
@@ -43,25 +57,23 @@ const JoinSectionCTA = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="flex flex-col sm:flex-row gap-4"
           >
-            <Link to="/studios" className="whitespace-nowrap">
-              <motion.button 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-6 py-3 bg-white text-[#274675] font-medium rounded-md hover:shadow-lg transition-all duration-300 font-lora"
-              >
-                Join Studios
-              </motion.button>
-            </Link>
-            <Link to="/conference/register" className="whitespace-nowrap">
-              <motion.button 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-6 py-3 bg-[#FBB03B] text-white font-medium rounded-md flex items-center hover:shadow-lg transition-all duration-300 font-lora"
-              >
-                Register for Conference
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </motion.button>
-            </Link>
+            <motion.button 
+              onClick={handleStudiosClick}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-3 bg-white text-[#274675] font-medium rounded-md hover:shadow-lg transition-all duration-300 font-lora"
+            >
+              Join Studios
+            </motion.button>
+            <motion.button 
+              onClick={handleConferenceClick}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-3 bg-[#FBB03B] text-white font-medium rounded-md flex items-center hover:shadow-lg transition-all duration-300 font-lora"
+            >
+              Register for Conference
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </motion.button>
           </motion.div>
         </div>
       </div>
