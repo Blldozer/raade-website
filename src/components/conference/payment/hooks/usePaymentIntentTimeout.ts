@@ -46,7 +46,7 @@ export const usePaymentIntentTimeout = ({
       window.clearTimeout(timeoutRef.current);
     }
     
-    // Set a new timeout
+    // Set a new timeout - explicitly use window.setTimeout to avoid issues
     timeoutRef.current = window.setTimeout(() => {
       // Only call onTimeout if the component is still mounted
       if (isMountedRef.current) {

@@ -6,7 +6,7 @@ import { usePaymentIntentDebounce } from "./usePaymentIntentDebounce";
 import { usePaymentIntentTimeout } from "./usePaymentIntentTimeout";
 
 // Default timeout duration for payment processing
-const PAYMENT_INTENT_TIMEOUT = 20000; // 20 seconds
+const PAYMENT_INTENT_TIMEOUT = 30000; // Increased from 20000 to 30000 ms
 
 /**
  * Custom hook to manage the payment intent creation flow
@@ -97,6 +97,8 @@ export const usePaymentIntentFlow = (
     // Generate a unique attempt ID for this specific attempt
     const attemptId = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
     
+    console.log(`Starting payment intent creation, attempt ID: ${attemptId}`);
+    
     // Start timeout timer
     startTimeout();
     
@@ -118,12 +120,14 @@ export const usePaymentIntentFlow = (
       }
       
       if (error) {
+        console.error(`Payment intent error: ${error.message || "Unknown error"}, attemptId: ${attemptId}`);
         safeSetErrorDetails(`Error from payment service: ${error.message || "Unknown error"}`);
         onError(error.message || "Failed to initialize payment");
         return;
       }
       
       if (!data) {
+        console.error(`No response data received, attemptId: ${attemptId}`);
         safeSetErrorDetails("No response from payment service");
         onError("Failed to initialize payment. No response from server.");
         return;
@@ -132,6 +136,7 @@ export const usePaymentIntentFlow = (
       // Handle free tickets (speakers)
       if (data.freeTicket) {
         if (!isSuccessCalledRef.current) {
+          console.log(`Free ticket processed, attemptId: ${attemptId}`);
           onSuccess();
         }
         return;
@@ -145,13 +150,23 @@ export const usePaymentIntentFlow = (
       }
       
       if (data.clientSecret) {
-        console.log(`Payment intent created successfully, attemptId: ${attemptId}`);
+        console.log(`Payment intent created successfully, attemptId: ${attemptId}, amount: $${data.amount || 0}`);
         updatePaymentState(data);
       } else {
         console.error(`No client secret in response, attemptId: ${attemptId}`, data);
         safeSetErrorDetails("Payment initialization failed. No client secret received.");
         onError("Failed to initialize payment. Please try again.");
       }
+    } catch (error) {
+      // Clear the timeout
+      clearTimeout();
+      
+      if (!isMountedRef.current) return;
+      
+      console.error(`Unexpected error during payment intent creation, attemptId: ${attemptId}`, error);
+      
+      safeSetErrorDetails("An unexpected error occurred. Please try again.");
+      onError(error instanceof Error ? error.message : "An unexpected error occurred");
     } finally {
       if (isMountedRef.current) {
         safeSetLoading(false);

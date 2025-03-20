@@ -1,10 +1,11 @@
+
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createTimeout } from "./utils.ts";
 
 // Maximum number of retries for Stripe API calls
 export const MAX_RETRIES = 3;
 // Request timeout in milliseconds
-export const REQUEST_TIMEOUT = 10000;
+export const REQUEST_TIMEOUT = 15000; // Increased from 10000 to 15000
 
 // Create payment intent with retries
 export async function createPaymentIntentWithRetry(
@@ -23,6 +24,8 @@ export async function createPaymentIntentWithRetry(
   let retryCount = 0;
   let lastError = null;
   
+  console.log(`[${requestId}] Starting payment intent creation for ${email}, amount: ${amount}, ticket: ${ticketType}`);
+  
   while (retryCount < MAX_RETRIES && !paymentIntent) {
     if (retryCount > 0) {
       // Exponential backoff: 500ms, 1000ms, 2000ms
@@ -33,10 +36,13 @@ export async function createPaymentIntentWithRetry(
     
     try {
       // Implement timeout for the Stripe API call
-      const timeoutController = new AbortController();
-      const timeoutId = setTimeout(() => timeoutController.abort(), REQUEST_TIMEOUT);
+      const timeoutId = setTimeout(() => {
+        console.error(`[${requestId}] Stripe API call attempt ${retryCount + 1} timed out after ${REQUEST_TIMEOUT}ms`);
+      }, REQUEST_TIMEOUT);
       
       try {
+        console.log(`[${requestId}] Attempting to create payment intent (try ${retryCount + 1}/${MAX_RETRIES})`);
+        
         // Create a Payment Intent
         paymentIntent = await Promise.race([
           stripe.paymentIntents.create({
@@ -59,17 +65,18 @@ export async function createPaymentIntentWithRetry(
         ]);
         
         clearTimeout(timeoutId);
+        console.log(`[${requestId}] Payment intent created successfully: ${paymentIntent.id}`);
       } catch (timeoutError) {
         clearTimeout(timeoutId);
-        if (timeoutController.signal.aborted) {
-          console.error(`[${requestId}] Stripe API call timed out after ${REQUEST_TIMEOUT}ms`);
-          throw new Error(`Stripe API timeout after ${REQUEST_TIMEOUT}ms`);
-        }
+        console.error(`[${requestId}] Error during payment intent creation:`, timeoutError);
         throw timeoutError;
       }
     } catch (stripeError) {
       lastError = stripeError;
-      console.error(`[${requestId}] Stripe API error (attempt ${retryCount + 1}/${MAX_RETRIES}):`, stripeError);
+      console.error(`[${requestId}] Stripe API error (attempt ${retryCount + 1}/${MAX_RETRIES}):`, 
+        stripeError.type || 'unknown', 
+        stripeError.message || 'No message'
+      );
       
       // Check if this is a retryable error
       const isRetryable = 
@@ -86,6 +93,12 @@ export async function createPaymentIntentWithRetry(
     }
     
     retryCount++;
+  }
+  
+  if (paymentIntent) {
+    console.log(`[${requestId}] Successfully created payment intent after ${retryCount} ${retryCount === 1 ? 'try' : 'tries'}`);
+  } else {
+    console.error(`[${requestId}] Failed to create payment intent after ${MAX_RETRIES} attempts`);
   }
   
   return { paymentIntent, lastError };

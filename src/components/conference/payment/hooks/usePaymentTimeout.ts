@@ -1,69 +1,65 @@
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect } from 'react';
 
 /**
- * Custom hook to manage payment timeouts
+ * Custom hook for managing payment processing timeouts
  * 
- * Handles timeout states for payment operations:
- * - Sets a timeout for payment processing
- * - Provides cleanup functionality
- * - Tracks component mount state
+ * Provides a way to set a timeout for payment processing:
+ * - Automatically cleans up on unmount
+ * - Prevents memory leaks
+ * - Explicitly uses window.setTimeout for browser compatibility
  * 
- * @param timeoutDuration - Duration in ms before timeout
- * @param onTimeout - Callback function when timeout occurs
+ * @param timeoutDuration - Timeout duration in milliseconds
+ * @param onTimeout - Callback function to execute when timeout occurs
+ * @returns Functions to control the timeout
  */
 export const usePaymentTimeout = (
   timeoutDuration: number,
   onTimeout: () => void
 ) => {
-  // Use a ref to store the timeout ID for cleanup
-  const timeoutRef = useRef<number | null>(null);
+  const timeoutIdRef = useRef<number | null>(null);
+  const isMountedRef = useRef(true);
   
-  // Track if the component is still mounted
-  const isMountedRef = useRef<boolean>(true);
-
-  // Clear the timeout on unmount
+  // Setup cleanup on component unmount
   useEffect(() => {
+    isMountedRef.current = true;
+    
     return () => {
-      // Mark component as unmounted
       isMountedRef.current = false;
-      
-      // Clear any existing timeout
-      if (timeoutRef.current) {
-        window.clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
+      if (timeoutIdRef.current !== null) {
+        window.clearTimeout(timeoutIdRef.current);
       }
     };
   }, []);
-
+  
   // Start a new timeout
   const startTimeout = () => {
-    // Clear any existing timeout first
-    if (timeoutRef.current) {
-      window.clearTimeout(timeoutRef.current);
+    // Clear existing timeout if one exists
+    if (timeoutIdRef.current !== null) {
+      window.clearTimeout(timeoutIdRef.current);
     }
     
-    // Set a new timeout
-    timeoutRef.current = window.setTimeout(() => {
-      // Only call onTimeout if the component is still mounted
+    // Set new timeout
+    timeoutIdRef.current = window.setTimeout(() => {
+      // Only execute callback if component is still mounted
       if (isMountedRef.current) {
         onTimeout();
       }
-      timeoutRef.current = null;
+      timeoutIdRef.current = null;
     }, timeoutDuration);
   };
-
+  
   // Clear the current timeout
-  const clearTimeoutRef = () => {
-    if (timeoutRef.current) {
-      window.clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
+  const clearTimeout = () => {
+    if (timeoutIdRef.current !== null) {
+      window.clearTimeout(timeoutIdRef.current);
+      timeoutIdRef.current = null;
     }
   };
-
+  
   return {
     startTimeout,
-    clearTimeout: clearTimeoutRef,
+    clearTimeout,
     isMountedRef
   };
 };
