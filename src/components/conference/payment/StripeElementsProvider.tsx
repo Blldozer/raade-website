@@ -11,7 +11,10 @@ const getStripe = () => {
   try {
     return loadStripe(stripeKey, {
       apiVersion: '2025-02-24.acacia',
-      betas: ['stripe_js_enforce_https_beta_1']
+      betas: ['stripe_js_enforce_https_beta_1'],
+      // Disable the benchmark visitor ID collection that's causing rate limiting
+      stripeAccount: undefined,
+      locale: 'auto'
     });
   } catch (error) {
     console.error("Failed to initialize Stripe:", error);
@@ -93,7 +96,9 @@ const StripeElementsProvider: React.FC<StripeElementsProviderProps> = ({
       }
     },
     // Ensure Stripe forms are always loaded over HTTPS
-    loader: 'always'
+    loader: 'always',
+    // Add option to reduce API calls for fraud prevention
+    locale: 'auto'
   };
 
   // If we're in a server-side rendering context or stripe failed to load
