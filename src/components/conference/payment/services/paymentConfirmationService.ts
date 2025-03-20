@@ -2,34 +2,34 @@
 import { Stripe, StripeElements } from "@stripe/stripe-js";
 
 /**
- * Handles the core payment confirmation process through Stripe
+ * Service for confirming Stripe payments
  * 
- * Makes the actual API call to Stripe to confirm the payment
- * and processes the response
+ * Handles the actual payment confirmation process with Stripe
+ * Separated from UI logic for better testability and reuse
  * 
  * @param stripe - Stripe instance
- * @param elements - Stripe Elements instance
- * @param email - Customer email for receipt
- * @returns Object containing success status and other relevant data
+ * @param elements - Stripe elements
+ * @param email - Customer email for payment receipt
+ * @returns Promise with the payment confirmation result
  */
 export const confirmStripePayment = async (
   stripe: Stripe,
   elements: StripeElements,
   email: string
 ) => {
-  console.log("Starting payment confirmation...");
+  // Make sure CardElement is populated with customer payment information
+  if (!elements.getElement("card")) {
+    throw new Error("Card element not found");
+  }
   
-  const { error, paymentIntent } = await stripe.confirmPayment({
-    elements,
-    confirmParams: {
-      return_url: window.location.href,
-      receipt_email: email,
-      payment_method_data: {
+  // Confirm payment with Stripe using CardElement data
+  return stripe.confirmCardPayment(
+    elements.getElement("card")!,
+    {
+      payment_method: {
+        card: elements.getElement("card")!,
         billing_details: { email }
       }
-    },
-    redirect: "if_required"
-  });
-  
-  return { error, paymentIntent };
+    }
+  );
 };

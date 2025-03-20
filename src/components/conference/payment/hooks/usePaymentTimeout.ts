@@ -2,63 +2,52 @@
 import { useRef, useEffect } from "react";
 
 /**
- * Custom hook to manage payment timeouts
+ * Custom hook to handle payment timeouts
  * 
- * Sets up and manages timeouts for payment processing:
- * - Creates timeout for payment operations
- * - Handles cleanup on unmount
- * - Provides functions to start, clear, and reset timeouts
+ * Manages timeout state and cleanup for payment processing
  * 
- * @param timeoutDuration - Duration in milliseconds before timeout
- * @param onTimeout - Callback function to execute when timeout occurs
+ * @param timeout - Timeout duration in milliseconds
+ * @param onTimeout - Callback function when timeout occurs
  */
 export const usePaymentTimeout = (
-  timeoutDuration: number,
+  timeout: number,
   onTimeout: () => void
 ) => {
-  // Track the current payment timeout
   const timeoutRef = useRef<number | null>(null);
-  // Track if component is mounted
   const isMountedRef = useRef(true);
 
-  // Clean up on unmount
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false;
-      // Clear any pending timeouts
-      if (timeoutRef.current) {
-        window.clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
-
+  // Start a new timeout
   const startTimeout = () => {
-    // Clear any existing timeout
-    if (timeoutRef.current) {
-      window.clearTimeout(timeoutRef.current);
-    }
+    // Clear any existing timeout first
+    clearTimeoutRef();
     
     // Set a new timeout
-    const timeoutId = setTimeout(() => {
+    timeoutRef.current = window.setTimeout(() => {
       if (isMountedRef.current) {
-        console.warn("Payment processing timed out after", timeoutDuration, "ms");
         onTimeout();
       }
-    }, timeoutDuration);
-    
-    timeoutRef.current = timeoutId as unknown as number;
+    }, timeout);
   };
 
-  const clearPaymentTimeout = () => {
-    if (timeoutRef.current) {
+  // Clear the current timeout
+  const clearTimeoutRef = () => {
+    if (timeoutRef.current !== null) {
       window.clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
   };
 
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+      clearTimeoutRef();
+    };
+  }, []);
+
   return {
     startTimeout,
-    clearTimeout: clearPaymentTimeout,
+    clearTimeout: clearTimeoutRef,
     isMountedRef
   };
 };
