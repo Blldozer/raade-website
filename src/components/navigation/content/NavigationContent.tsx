@@ -41,7 +41,8 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
   // Get styling from our extracted hook
   const { 
     backgroundClass, 
-    isConferenceRegistrationPage, 
+    isConferenceRegistrationPage,
+    isConferencePage,
     effectiveLightBackground,
     isAgainstDarkBackground
   } = useNavBackgroundStyle();
@@ -66,14 +67,14 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
     }
     
     // Force dark background for conference registration page
-    if (isConferenceRegistrationPage || forceDarkMode) {
+    if (isConferenceRegistrationPage || isConferencePage || forceDarkMode) {
       document.body.setAttribute('data-nav-background', 'dark');
       console.log(`NavigationContent (${instanceId}): Forcing dark background for navbar due to page type or prop`);
     }
     
     return () => {
       // Clean up only if we set it in this component
-      if (isHeroPage || isConferenceRegistrationPage || forceDarkMode) {
+      if (isHeroPage || isConferenceRegistrationPage || isConferencePage || forceDarkMode) {
         document.body.removeAttribute('data-nav-background');
         console.log(`NavigationContent (${instanceId}): Cleaned up nav background attribute`);
       }
@@ -86,7 +87,8 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
     isDarkBackground, 
     isLightBackground, 
     forceDarkMode,
-    isConferenceRegistrationPage
+    isConferenceRegistrationPage,
+    isConferencePage
   ]);
 
   return (
@@ -104,6 +106,8 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
       data-background={effectiveLightBackground ? "light" : "dark"}
       data-forced-dark={forceDarkMode ? "true" : "false"}
       data-against-dark-background={isAgainstDarkBackground ? "true" : "false"}
+      data-conference-page={isConferencePage ? "true" : "false"}
+      data-registration-page={isConferenceRegistrationPage ? "true" : "false"}
     >
       <div className={`max-w-7xl mx-auto ${getPadding()}`}>
         <div className="flex justify-between items-center">

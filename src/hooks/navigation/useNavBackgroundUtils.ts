@@ -45,12 +45,16 @@ export const shouldUseLightNavbar = (pathname: string): boolean => {
 };
 
 /**
- * Determine if a page should always maintain a fixed navbar style
+ * Determine if a page should maintain a fixed navbar style
  * regardless of scroll position
+ * 
+ * Conference pages should now have transparent navbar at the top
+ * and only apply special styling when scrolled
  */
 export const hasFixedNavbarStyle = (pathname: string): boolean => {
+  // We've removed conference pages from this list as they should now 
+  // have transparent navbar at the top
   return (
-    pathname === '/conference/register' ||
     pathname.includes('/studios/apply') || 
     pathname.includes('/studios/partner')
   );
