@@ -1,49 +1,72 @@
 
-import { useRef } from "react";
-
-interface PaymentIntentTimeoutHookProps {
-  timeoutDuration: number;
-  onTimeout: (errorMessage: string) => void;
-}
+import { useRef, useEffect } from "react";
 
 /**
- * Custom hook to handle payment intent timeout management
+ * Custom hook to manage payment intent creation timeouts
  * 
- * Provides functions for setting, clearing, and handling payment intent timeouts
- * Cleans up timeouts on unmount to prevent memory leaks
+ * Provides timeout management for async operations:
+ * - Sets a timeout for payment intent creation
+ * - Provides cleanup functionality
+ * - Tracks component mount state
  * 
- * @param timeoutDuration - Time in milliseconds before timeout occurs
- * @param onTimeout - Callback function when timeout is triggered
+ * @param timeoutDuration - Duration in ms before timeout
+ * @param onTimeout - Callback function when timeout occurs
  */
 export const usePaymentIntentTimeout = ({
   timeoutDuration,
   onTimeout
-}: PaymentIntentTimeoutHookProps) => {
-  // Use ref to track the timeout ID
+}: {
+  timeoutDuration: number;
+  onTimeout: () => void;
+}) => {
+  // Use a ref to store the timeout ID for cleanup
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Set a timeout for the payment intent creation
+  // Track if the component is still mounted
+  const isMountedRef = useRef<boolean>(true);
+
+  // Clear the timeout on unmount
+  useEffect(() => {
+    return () => {
+      // Mark component as unmounted
+      isMountedRef.current = false;
+      
+      // Clear any existing timeout
+      if (timeoutRef.current) {
+        global.clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
+  }, []);
+
+  // Start a new timeout
   const startTimeout = () => {
     // Clear any existing timeout first
     if (timeoutRef.current) {
-      clearTimeoutRef();
+      global.clearTimeout(timeoutRef.current);
     }
     
+    // Set a new timeout
     timeoutRef.current = setTimeout(() => {
-      onTimeout(`Payment intent request timed out after ${timeoutDuration}ms`);
+      // Only call onTimeout if the component is still mounted
+      if (isMountedRef.current) {
+        onTimeout();
+      }
+      timeoutRef.current = null;
     }, timeoutDuration);
   };
-  
-  // Clear the payment timeout
+
+  // Clear the current timeout
   const clearTimeoutRef = () => {
     if (timeoutRef.current) {
-      window.clearTimeout(timeoutRef.current);
+      global.clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
   };
-  
+
   return {
     startTimeout,
     clearTimeout: clearTimeoutRef,
+    isMountedRef
   };
 };
