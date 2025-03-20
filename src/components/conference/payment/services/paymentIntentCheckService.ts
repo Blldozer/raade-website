@@ -1,5 +1,5 @@
 
-import { Stripe } from "@stripe/stripe-js";
+import { Stripe, PaymentIntentResult } from "@stripe/stripe-js";
 
 /**
  * Service for checking payment intent status
@@ -27,7 +27,7 @@ export const retrievePaymentIntentFromUrl = (): string | null => {
 export const retrieveAndCheckPaymentIntent = async (
   stripe: Stripe,
   clientSecret: string
-) => {
+): Promise<PaymentIntentResult> => {
   try {
     const result = await stripe.retrievePaymentIntent(clientSecret);
     return result;

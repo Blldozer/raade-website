@@ -1,5 +1,19 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import { PaymentIntentResponse } from "../types";
+
+interface PaymentIntentRequestData {
+  ticketType: string;
+  email: string;
+  fullName: string;
+  groupSize?: number;
+  attemptId?: string;
+}
+
+interface PaymentIntentResult {
+  data: PaymentIntentResponse | null;
+  error: Error | null;
+}
 
 /**
  * Creates a payment intent by calling the Supabase Edge Function
@@ -20,7 +34,7 @@ export const createPaymentIntentRequest = async (
   fullName: string,
   groupSize?: number,
   attemptId?: string
-) => {
+): Promise<PaymentIntentResult> => {
   console.log(`Creating payment intent with:`, { 
     ticketType, 
     email, 
@@ -30,14 +44,14 @@ export const createPaymentIntentRequest = async (
   });
 
   try {
-    const { data, error } = await supabase.functions.invoke('create-payment-intent', {
+    const { data, error } = await supabase.functions.invoke<PaymentIntentResponse>('create-payment-intent', {
       body: {
         ticketType,
         email,
         fullName,
         groupSize,
         attemptId
-      },
+      } as PaymentIntentRequestData,
     });
     
     if (error) {
@@ -57,6 +71,6 @@ export const createPaymentIntentRequest = async (
     return { data, error: null };
   } catch (error) {
     console.error("Error creating payment intent:", error);
-    return { data: null, error };
+    return { data: null, error: error as Error };
   }
 };

@@ -9,6 +9,15 @@ interface EmailConfirmationSenderProps {
   onComplete: () => void;
 }
 
+interface EmailConfirmationResponse {
+  data: {
+    success?: boolean;
+    message?: string;
+    error?: string;
+  };
+  error: Error | null;
+}
+
 /**
  * EmailConfirmationSender Component
  * 
@@ -21,16 +30,19 @@ interface EmailConfirmationSenderProps {
  * @param registrationData - Registration data for email content
  * @param onComplete - Callback function after email process completes
  */
-export const useEmailConfirmation = (registrationData: RegistrationFormData, onComplete: () => void) => {
-  const [sendingEmail, setSendingEmail] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
-  const [retryCount, setRetryCount] = useState(0);
+export const useEmailConfirmation = (
+  registrationData: RegistrationFormData, 
+  onComplete: () => void
+) => {
+  const [sendingEmail, setSendingEmail] = useState<boolean>(false);
+  const [emailSent, setEmailSent] = useState<boolean>(false);
+  const [retryCount, setRetryCount] = useState<number>(0);
   const { toast } = useToast();
   
   // Track component mount state to prevent state updates after unmount
-  const isMountedRef = useRef(true);
+  const isMountedRef = useRef<boolean>(true);
   // Track if onComplete has been called
-  const completeCalledRef = useRef(false);
+  const completeCalledRef = useRef<boolean>(false);
   // Maximum retry attempts
   const MAX_RETRIES = 3;
   
@@ -79,24 +91,22 @@ export const useEmailConfirmation = (registrationData: RegistrationFormData, onC
       const EMAIL_SEND_TIMEOUT = 10000; // 10 seconds
       
       // Create a timeout promise
-      const timeoutPromise = new Promise((_, reject) => {
+      const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(() => {
           reject(new Error(`Email sending timed out after ${EMAIL_SEND_TIMEOUT}ms`));
         }, EMAIL_SEND_TIMEOUT);
       });
       
       // Create the email sending promise
-      const emailPromise = supabase.functions.invoke('send-conference-confirmation', {
+      const emailPromise = supabase.functions.invoke<EmailConfirmationResponse['data']>('send-conference-confirmation', {
         body: requestData
       });
       
       // Race the timeout against the actual request
       const { data, error } = await Promise.race([
         emailPromise,
-        timeoutPromise.then(() => {
-          throw new Error(`Email sending timed out after ${EMAIL_SEND_TIMEOUT}ms`);
-        })
-      ]) as { data: any, error: any };
+        timeoutPromise
+      ]);
       
       if (!isMountedRef.current) return;
       
@@ -141,17 +151,18 @@ export const useEmailConfirmation = (registrationData: RegistrationFormData, onC
     } catch (error) {
       if (!isMountedRef.current) return;
       
-      console.error("Error invoking confirmation email function:", error);
+      const typedError = error as Error;
+      console.error("Error invoking confirmation email function:", typedError);
       
       // If we have retries left and it's a timeout or network error
       const isRetryableError = 
-        error.message?.includes('timeout') || 
-        error.message?.includes('network') ||
-        error.code === 'AbortError';
+        typedError.message?.includes('timeout') || 
+        typedError.message?.includes('network') ||
+        (error as { code?: string }).code === 'AbortError';
         
       if (isRetryableError && retryCount < MAX_RETRIES) {
         const backoffTime = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s
-        console.log(`Will retry sending email in ${backoffTime}ms due to: ${error.message}`);
+        console.log(`Will retry sending email in ${backoffTime}ms due to: ${typedError.message}`);
         
         setTimeout(() => {
           if (isMountedRef.current) {

@@ -1,5 +1,6 @@
 
 import { useState, useRef } from "react";
+import { PaymentIntentState, PaymentIntentResponse } from "../types";
 
 /**
  * Custom hook to manage payment intent state
@@ -8,27 +9,34 @@ import { useState, useRef } from "react";
  * and provides helper functions for updating that state
  */
 export const usePaymentIntentState = () => {
-  const [clientSecret, setClientSecret] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [amount, setAmount] = useState(0);
-  const [currency, setCurrency] = useState("USD");
-  const [isGroupRegistration, setIsGroupRegistration] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [amount, setAmount] = useState<number>(0);
+  const [currency, setCurrency] = useState<string>("USD");
+  const [isGroupRegistration, setIsGroupRegistration] = useState<boolean>(false);
   const [errorDetails, setErrorDetails] = useState<string | null>(null);
   const [requestId, setRequestId] = useState<string | null>(null);
-  const [retryCount, setRetryCount] = useState(0);
+  const [retryCount, setRetryCount] = useState<number>(0);
   
   // Use refs to track component mount state and callback flags
-  const isMountedRef = useRef(true);
-  const isSuccessCalledRef = useRef(false);
-  const activeRequestRef = useRef(false);
+  const isMountedRef = useRef<boolean>(true);
+  const isSuccessCalledRef = useRef<boolean>(false);
+  const activeRequestRef = useRef<boolean>(false);
   
   // Update payment state with successful response data
-  const updatePaymentState = (data: any) => {
+  const updatePaymentState = (data: PaymentIntentResponse) => {
     if (isMountedRef.current) {
       if (data.clientSecret) {
         setClientSecret(data.clientSecret);
-        setAmount(data.amount);
-        setCurrency(data.currency);
+        
+        if (data.amount !== undefined) {
+          setAmount(data.amount);
+        }
+        
+        if (data.currency) {
+          setCurrency(data.currency);
+        }
+        
         setIsGroupRegistration(data.isGroupRegistration || false);
       }
       

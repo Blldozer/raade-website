@@ -1,5 +1,6 @@
 
-import { Stripe, StripeElements } from "@stripe/stripe-js";
+import { Stripe, StripeElements, StripePaymentElementOptions } from "@stripe/stripe-js";
+import { PaymentResult } from "../types";
 
 /**
  * Service for confirming Stripe payments
@@ -16,7 +17,7 @@ export const confirmStripePayment = async (
   stripe: Stripe,
   elements: StripeElements,
   email: string
-) => {
+): Promise<{error?: any; paymentIntent?: any}> => {
   // Make sure CardElement is populated with customer payment information
   if (!elements.getElement("card")) {
     throw new Error("Card element not found");

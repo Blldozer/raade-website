@@ -1,5 +1,7 @@
 
 import { useRef } from "react";
+import { StripeError } from "@stripe/stripe-js";
+import { PaymentMessageHandlers } from "../types";
 
 /**
  * Custom hook to handle payment result messages and status
@@ -12,7 +14,7 @@ import { useRef } from "react";
  */
 export const usePaymentResultHandler = (
   setMessage: (message: string | null) => void
-) => {
+): PaymentMessageHandlers & { isProcessingRef: React.RefObject<boolean> } => {
   // Track if payment is in processing state
   const isProcessingRef = useRef(false);
 
@@ -28,13 +30,15 @@ export const usePaymentResultHandler = (
    * Handle payment error
    * @param error - Error message or object
    */
-  const handleError = (error: any) => {
+  const handleError = (error: StripeError | Error) => {
     isProcessingRef.current = false;
     
-    if (error.type === "card_error" || error.type === "validation_error") {
+    // Check if it's a stripe error with type
+    if ('type' in error && (error.type === "card_error" || error.type === "validation_error")) {
       setMessage(error.message || "An unexpected error occurred");
     } else {
-      const errorMessage = `Payment error (${error.type}): ${error.message}`;
+      const errorType = 'type' in error ? error.type : 'unknown';
+      const errorMessage = `Payment error (${errorType}): ${error.message}`;
       console.error(errorMessage);
       setMessage("An unexpected error occurred");
     }
