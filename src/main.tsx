@@ -4,9 +4,53 @@ import { StrictMode } from 'react'
 import App from './App.tsx'
 import './index.css'
 
+// Helper function to detect and recover from asset loading issues
+const detectAssetLoadingIssues = () => {
+  // Check if CSS has loaded properly
+  const styleSheets = document.styleSheets;
+  let cssLoaded = false;
+  
+  for (let i = 0; i < styleSheets.length; i++) {
+    try {
+      // If we can access rules, CSS has loaded
+      if (styleSheets[i].cssRules && styleSheets[i].cssRules.length > 0) {
+        cssLoaded = true;
+        break;
+      }
+    } catch (e) {
+      // CORS errors will happen here, ignore them
+      console.log("Couldn't check stylesheet", e);
+    }
+  }
+  
+  if (!cssLoaded) {
+    console.warn("CSS may not have loaded correctly. Attempting recovery...");
+    
+    // Force a refresh of the CSS
+    const indexCss = document.createElement('link');
+    indexCss.rel = 'stylesheet';
+    indexCss.href = '/src/index.css?t=' + new Date().getTime();
+    document.head.appendChild(indexCss);
+    
+    // Show a message to the user
+    if (!window.localStorage.getItem('assetRecoveryAttempted')) {
+      window.localStorage.setItem('assetRecoveryAttempted', 'true');
+      alert("We've detected an issue with the page styles. Refreshing may fix this.");
+    }
+  }
+  
+  // Clear recovery flag after some time
+  setTimeout(() => {
+    window.localStorage.removeItem('assetRecoveryAttempted');
+  }, 5 * 60 * 1000); // 5 minutes
+};
+
 // Execute in try-catch to handle any startup errors
 try {
   console.log("Application startup: Beginning initialization");
+  
+  // Attempt to detect and recover from asset loading issues
+  detectAssetLoadingIssues();
   
   // Get the root element with improved error handling
   const rootElement = document.getElementById("root");
@@ -41,6 +85,13 @@ try {
     window.addEventListener('unhandledrejection', event => {
       console.error("Unhandled promise rejection:", event.reason);
     });
+    
+    // Setup service worker message handler for updates
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({
+        type: 'CHECK_VERSION'
+      });
+    }
     
     // Create root and render app with error handling
     try {

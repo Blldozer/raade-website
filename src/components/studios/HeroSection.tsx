@@ -11,6 +11,7 @@ import ScrollDownButton from "@/components/hero/components/ScrollDownButton";
  * - Improved responsive text scaling optimized for all viewports (mobile, tablet, laptop, desktop)
  * - Custom media query handling for laptop viewport text size
  * - Scroll down indicator for better UX
+ * - Font fallback strategy to prevent text invisibility during font loading
  */
 const HeroSection = ({ scrollToContent }: { scrollToContent: () => void }) => {
   return (

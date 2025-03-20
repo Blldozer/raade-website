@@ -4,6 +4,7 @@ import AppProviders from "./components/app/AppProviders";
 import NavigationWrapper from "./components/app/NavigationWrapper";
 import AppRoutes from "./components/app/AppRoutes";
 import Footer from "./components/Footer";
+import { initFontLoading } from "./utils/fontLoading";
 
 /**
  * App Component - Main application container
@@ -13,6 +14,7 @@ import Footer from "./components/Footer";
  * - Routes centralized in AppRoutes
  * - Navigation logic encapsulated in NavigationWrapper
  * - Simplified structure for better maintainability
+ * - Font loading and error recovery
  */
 const App = () => {
   // Add console logging to help debug startup issues
@@ -20,6 +22,16 @@ const App = () => {
   
   useEffect(() => {
     console.log("App: Component mounted");
+    
+    // Initialize font loading system
+    initFontLoading();
+    
+    // Listen for service worker updates
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        console.log('Service worker controller changed - refreshing content');
+      });
+    }
     
     return () => {
       console.log("App: Component unmounting");

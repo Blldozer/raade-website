@@ -9,3 +9,15 @@
   X-Frame-Options: DENY
   X-XSS-Protection: 1; mode=block
   Content-Security-Policy: frame-ancestors 'none'; default-src 'self'; script-src 'self' https://js.stripe.com https://api.stripe.com https://*.supabase.co https://cdn.gpteng.co 'unsafe-inline'; connect-src 'self' https://*.supabase.co https://api.stripe.com https://*.amazonaws.com wss://*.supabase.co https://*.stripe.com https://pay.google.com https://ingesteer.services-prod.nsvcs.net; frame-src https://js.stripe.com https://hooks.stripe.com https://pay.google.com; img-src 'self' data: https://*.amazonaws.com https://*.supabase.co https://dermbucktbegnbkjzobs.supabase.co https://storage.googleapis.com https://images.unsplash.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com;
+
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/*.css
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.js
+  Cache-Control: public, max-age=31536000, immutable

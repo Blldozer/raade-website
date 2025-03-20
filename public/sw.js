@@ -1,6 +1,8 @@
 
 // Service Worker for RAADE Website
-const CACHE_NAME = 'raade-cache-v5'; // Incremented cache version
+const CACHE_NAME = 'raade-cache-v6'; // Increment cache version
+const FONT_CACHE_NAME = 'raade-fonts-cache-v1'; // Separate cache for fonts
+const CSS_CACHE_NAME = 'raade-css-cache-v1'; // Separate cache for CSS
 const urlsToCache = [
   '/',
   '/index.html',
@@ -13,6 +15,13 @@ const urlsToCache = [
   '/public/hero-background.mp4',
   // Team member photos folder - will be populated dynamically
   '/public/raade-individual-e-board-photos-webp'
+];
+
+// Font files to explicitly cache
+const fontFilesToCache = [
+  '/fonts/Simula_Book_ImfTVa3.woff',
+  '/fonts/Simula_BookItalic_651eMqB.woff',
+  '/fonts/Amadine.woff'
 ];
 
 // Image-specific cache for better management
@@ -39,24 +48,58 @@ const logDebug = (message, ...args) => {
   }
 };
 
+// Check if a URL is a font file
+const isFontFile = (url) => {
+  return url.pathname.includes('.woff') || 
+         url.pathname.includes('.woff2') || 
+         url.pathname.includes('.ttf') || 
+         url.pathname.includes('.otf');
+};
+
+// Check if a URL is a CSS file
+const isCSSFile = (url) => {
+  return url.pathname.endsWith('.css');
+};
+
 // Install event - cache assets
 self.addEventListener('install', event => {
-  logDebug('Installing...');
+  logDebug('Installing service worker v6...');
   
   // Skip waiting to ensure the new service worker activates immediately
   self.skipWaiting();
   
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        logDebug('Opened cache');
-        // Ensure all URLs use HTTPS in production
-        const secureUrls = urlsToCache.map(url => enforceHTTPS(url));
-        return cache.addAll(secureUrls);
-      })
-      .catch(error => {
-        console.error('Cache install failed:', error);
-      })
+    Promise.all([
+      // Cache core app files
+      caches.open(CACHE_NAME)
+        .then(cache => {
+          logDebug('Opened main cache');
+          // Ensure all URLs use HTTPS in production
+          const secureUrls = urlsToCache.map(url => enforceHTTPS(url));
+          return cache.addAll(secureUrls);
+        }),
+      
+      // Explicitly cache font files with network-first strategy
+      caches.open(FONT_CACHE_NAME)
+        .then(cache => {
+          logDebug('Caching font files explicitly');
+          return Promise.all(
+            fontFilesToCache.map(fontFile => 
+              fetch(fontFile, { cache: 'reload' })
+                .then(response => {
+                  if (response.ok) {
+                    return cache.put(fontFile, response);
+                  }
+                  logDebug('Failed to fetch font:', fontFile);
+                })
+                .catch(err => logDebug('Font fetch error:', fontFile, err))
+            )
+          );
+        })
+    ])
+    .catch(error => {
+      console.error('Cache install failed:', error);
+    })
   );
 });
 
@@ -97,6 +140,9 @@ self.addEventListener('message', event => {
           })
       );
     }
+  } else if (event.data && event.data.type === 'SKIP_WAITING') {
+    // Force the waiting service worker to become active
+    self.skipWaiting();
   }
 });
 
@@ -143,6 +189,66 @@ self.addEventListener('fetch', event => {
       event.respondWith(
         fetch(event.request)
           .catch(() => caches.match('/index.html'))
+      );
+      return;
+    }
+    
+    // Special handling for font files - network first with cache fallback
+    if (isFontFile(requestUrl)) {
+      logDebug('Font request:', requestUrl.pathname);
+      
+      event.respondWith(
+        fetch(event.request, { cache: 'reload' })
+          .then(response => {
+            // Cache the fresh font response
+            if (response.ok) {
+              const clonedResponse = response.clone();
+              caches.open(FONT_CACHE_NAME)
+                .then(cache => cache.put(event.request, clonedResponse));
+            }
+            return response;
+          })
+          .catch(() => {
+            logDebug('Font network request failed, using cache');
+            return caches.match(event.request, { cacheName: FONT_CACHE_NAME })
+              .then(cachedResponse => {
+                if (cachedResponse) {
+                  return cachedResponse;
+                }
+                // Try in other caches as fallback
+                return caches.match(event.request);
+              });
+          })
+      );
+      return;
+    }
+    
+    // Special handling for CSS files - network first with cache fallback
+    if (isCSSFile(requestUrl)) {
+      logDebug('CSS request:', requestUrl.pathname);
+      
+      event.respondWith(
+        fetch(event.request, { cache: 'reload' })
+          .then(response => {
+            // Cache the fresh CSS response
+            if (response.ok) {
+              const clonedResponse = response.clone();
+              caches.open(CSS_CACHE_NAME)
+                .then(cache => cache.put(event.request, clonedResponse));
+            }
+            return response;
+          })
+          .catch(() => {
+            logDebug('CSS network request failed, using cache');
+            return caches.match(event.request, { cacheName: CSS_CACHE_NAME })
+              .then(cachedResponse => {
+                if (cachedResponse) {
+                  return cachedResponse;
+                }
+                // Try in other caches as fallback
+                return caches.match(event.request);
+              });
+          })
       );
       return;
     }
@@ -257,12 +363,31 @@ self.addEventListener('fetch', event => {
           })
       );
     } else {
-      // Standard strategy for non-image resources
+      // Standard strategy for non-special resources
+      // Use a cache-then-network strategy
       event.respondWith(
         caches.match(event.request)
           .then(response => {
             // Cache hit - return response
             if (response) {
+              // Start a background fetch to update the cache
+              const fetchPromise = fetch(event.request)
+                .then(networkResponse => {
+                  if (networkResponse.ok) {
+                    const responseToCache = networkResponse.clone();
+                    caches.open(CACHE_NAME)
+                      .then(cache => {
+                        cache.put(event.request, responseToCache);
+                      });
+                  }
+                })
+                .catch(() => {
+                  // Silently fail the background fetch
+                });
+              
+              // Don't wait for the background fetch
+              setTimeout(() => fetchPromise, 0);
+              
               return response;
             }
             
@@ -274,7 +399,8 @@ self.addEventListener('fetch', event => {
                 method: event.request.method,
                 headers: event.request.headers,
                 credentials: event.request.credentials,
-                redirect: event.request.redirect
+                redirect: event.request.redirect,
+                cache: 'reload' // Force validation with the server
               };
               
               // Don't include mode for navigation requests
@@ -343,9 +469,15 @@ self.addEventListener('fetch', event => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', event => {
-  logDebug('Activating...');
+  logDebug('Activating new service worker...');
   
-  const cacheWhitelist = [CACHE_NAME, IMAGE_CACHE_NAME, 'raade-stripe-cache-v1'];
+  const cacheWhitelist = [
+    CACHE_NAME, 
+    IMAGE_CACHE_NAME, 
+    FONT_CACHE_NAME, 
+    CSS_CACHE_NAME, 
+    'raade-stripe-cache-v1'
+  ];
   
   event.waitUntil(
     caches.keys().then(cacheNames => {
@@ -364,6 +496,13 @@ self.addEventListener('activate', event => {
       // Update the client to use HTTPS if needed
       self.clients.matchAll().then(clients => {
         clients.forEach(client => {
+          // Notify clients that the service worker has been updated
+          client.postMessage({ 
+            type: 'SW_UPDATED',
+            version: CACHE_NAME  
+          });
+          
+          // Force HTTPS if needed
           if (client.url && client.url.startsWith('http:') && 
               self.location.hostname !== 'localhost' && 
               self.location.hostname !== '127.0.0.1') {
