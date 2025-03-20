@@ -44,8 +44,8 @@ export const useNavBackgroundStyle = () => {
         : "bg-[#274675]/80 backdrop-blur-md border-b border-[#274675]/30 shadow-md";
     }
     
-    // Default: Transparent when at top
-    return "bg-transparent";
+    // Default: Transparent when at top (no background color at all for initial render)
+    return "bg-transparent border-transparent";
   };
   
   return {

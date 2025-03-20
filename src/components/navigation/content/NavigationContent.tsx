@@ -85,6 +85,9 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
     isConferenceRegistrationPage
   ]);
 
+  // Determine if we should show the noise texture
+  const shouldShowNoiseTexture = isScrolled || isConferenceRegistrationPage || forceDarkMode;
+
   return (
     <nav
       className={cn(
@@ -100,8 +103,8 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
       data-background={effectiveLightBackground ? "light" : "dark"}
       data-forced-dark={forceDarkMode ? "true" : "false"}
     >
-      {/* Noise texture overlay for enhanced depth */}
-      {(isScrolled || isConferenceRegistrationPage || forceDarkMode) && (
+      {/* Noise texture overlay for enhanced depth - only show when needed */}
+      {shouldShowNoiseTexture && (
         <NoiseTexture 
           opacity={effectiveLightBackground ? 0.03 : 0.07} 
           blendMode={effectiveLightBackground ? "multiply" : "soft-light"}
