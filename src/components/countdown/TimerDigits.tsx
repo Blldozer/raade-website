@@ -13,6 +13,7 @@ interface TimerDigitsProps {
   };
   compact?: boolean;
   size?: "sm" | "md" | "lg";
+  expired?: boolean;
 }
 
 const TimerDigits = ({ 
@@ -23,7 +24,8 @@ const TimerDigits = ({
   showLabels = true,
   colorClasses,
   compact = false,
-  size = "md"
+  size = "md",
+  expired = false
 }: TimerDigitsProps) => {
   // Default accent color if none provided
   const accentColor = colorClasses.accent || 'text-[#FF9848]';

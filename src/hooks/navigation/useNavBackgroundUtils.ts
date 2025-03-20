@@ -21,18 +21,25 @@ export const throttle = (func: Function, limit: number) => {
 
 /**
  * Determine if a page should use dark navbar by default
+ * Based on the page path and whether it contains dark background elements
+ * 
  * @param pathname Current route pathname
  */
 export const shouldUseDarkNavbar = (pathname: string): boolean => {
   return (
     pathname === '/about' ||
     pathname === '/conference/register' ||
-    pathname.includes('/projects/')
+    pathname.includes('/projects/') ||
+    pathname.includes('/studios') || // Studios pages use dark navbar
+    pathname === '/' || // Main homepage uses dark navbar due to hero section
+    pathname === ''     // Also handle empty path case
   );
 };
 
 /**
  * Determine if a page should use light navbar (white text) by default
+ * These pages have dark backgrounds that require light text for contrast
+ * 
  * @param pathname Current route pathname
  */
 export const shouldUseLightNavbar = (pathname: string): boolean => {
@@ -40,17 +47,20 @@ export const shouldUseLightNavbar = (pathname: string): boolean => {
   const isApplicationPage = 
     pathname.includes('/studios/apply') || 
     pathname.includes('/studios/partner');
+  const isStudioPage = pathname.includes('/studios');
+  const isConferencePage = pathname.includes('/conference');
   
-  return isIndexPage || isApplicationPage;
+  return isIndexPage || isApplicationPage || isStudioPage || isConferencePage;
 };
 
 /**
- * Determine if a page should always maintain a fixed navbar style
+ * Determine if a page should maintain a fixed navbar style
  * regardless of scroll position
+ * 
+ * Studio application pages should have fixed navbar styling
  */
 export const hasFixedNavbarStyle = (pathname: string): boolean => {
   return (
-    pathname === '/conference/register' ||
     pathname.includes('/studios/apply') || 
     pathname.includes('/studios/partner')
   );

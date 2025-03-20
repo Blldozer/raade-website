@@ -1,3 +1,4 @@
+
 import { useNavigate, useLocation } from "react-router-dom";
 
 /**
@@ -8,6 +9,7 @@ import { useNavigate, useLocation } from "react-router-dom";
  * - Cross-page section navigation
  * - Event handling for navigation links
  * - Smooth scrolling to page top for main navigation items
+ * - Consistent handling of 'join' section navigation
  */
 export const useNavigation = () => {
   const navigate = useNavigate();
@@ -27,6 +29,27 @@ export const useNavigation = () => {
                       (location.pathname === "/" && basePath === "/");
     
     console.log(`Navigation request: ${href} (path: ${basePath}, hash: ${hash}, isSamePage: ${isSamePage})`);
+    
+    // Special handling for join section navigation - always navigate to the index page and scroll to join
+    if (hash === 'join') {
+      if (location.pathname === '/') {
+        // If we're already on the index page, just scroll to the join section
+        console.log("Navigation: Already on index page, scrolling to join section");
+        setTimeout(() => {
+          const joinSection = document.getElementById('join');
+          if (joinSection) {
+            joinSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          } else {
+            console.warn("Navigation: Couldn't find join section element");
+          }
+        }, 100);
+      } else {
+        // If we're on a different page, navigate to index with scrollToJoin state
+        console.log("Navigation: Not on index page, navigating with scrollToJoin state");
+        navigate('/', { state: { scrollToJoin: true } });
+      }
+      return;
+    }
     
     // Check if this is one of the main navigation links
     const isMainNavLink = ['/about', '/studios', '/conference'].includes(href);

@@ -10,6 +10,16 @@ const EnhancedCountdown = () => {
   const targetDate = new Date('2025-04-11T09:00:00');
   const timeLeft = useCountdown(targetDate);
   
+  // Debug target date
+  useEffect(() => {
+    console.log("EnhancedCountdown: Target date set to", {
+      target: targetDate.toISOString(),
+      current: new Date().toISOString(),
+      difference: targetDate.getTime() - new Date().getTime(),
+      timeLeft
+    });
+  }, []);
+  
   // Use framer-motion's animation controls for better performance
   const secondsControls = useAnimation();
   const prevSeconds = useRef(timeLeft.seconds);
@@ -57,43 +67,61 @@ const EnhancedCountdown = () => {
           className="text-2xl md:text-3xl font-bold text-white font-simula mb-4"
           style={{ textShadow: "0 2px 4px rgba(0,0,0,0.2)" }}
         >
-          Time Remaining
+          {timeLeft.expired ? "Conference Has Started!" : "Time Remaining"}
         </h3>
-        <p className="text-white/80 font-lora mb-6 text-base">Don't miss this opportunity to connect and collaborate</p>
+        <p className="text-white/80 font-lora mb-6 text-base">
+          {timeLeft.expired 
+            ? "Join us now for this exciting opportunity to connect and collaborate" 
+            : "Don't miss this opportunity to connect and collaborate"}
+        </p>
         
         {/* Enhanced countdown timer with improved performance */}
         <div
           className="p-6 md:p-9 rounded-xl backdrop-blur-lg bg-gradient-to-br from-[#2D3748]/90 to-[#3730A3]/80 border border-white/15 overflow-hidden relative shadow-[0_10px_25px_-12px_rgba(0,0,0,0.25)]"
         >
-          {/* Direct display of time digits inside the window */}
-          <div className="grid grid-cols-4 gap-3">
-            {/* Days */}
-            <TimeDigit value={timeLeft.days} label="Days" />
-            
-            {/* Hours */}
-            <TimeDigit value={formatTimeUnit(timeLeft.hours)} label="Hours" />
-            
-            {/* Minutes */}
-            <TimeDigit value={formatTimeUnit(timeLeft.minutes)} label="Minutes" />
-            
-            {/* Seconds - with hardware-accelerated animation */}
-            <div className="text-center">
-              <motion.div 
-                animate={secondsControls}
-                className="bg-white/15 backdrop-blur-lg rounded-lg p-3 shadow-inner relative overflow-hidden group"
-                style={{ 
-                  willChange: "transform", 
-                  transform: "translateZ(0)"
-                }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="text-4xl md:text-5xl font-bold text-[#FF9848] font-montserrat relative">
-                  {formatTimeUnit(timeLeft.seconds)}
-                </div>
-                <div className="text-base md:text-lg mt-1 text-white/90 relative">Seconds</div>
-              </motion.div>
+          {timeLeft.expired ? (
+            <div className="text-center py-6">
+              <h4 className="text-3xl md:text-4xl font-bold text-[#FF9848] font-montserrat mb-4">
+                LIVE NOW!
+              </h4>
+              <p className="text-white/90 text-xl">
+                The RAADE Conference is happening right now!
+              </p>
+              <p className="text-white/80 text-lg mt-2">
+                April 11-12, 2025
+              </p>
             </div>
-          </div>
+          ) : (
+            /* Direct display of time digits inside the window */
+            <div className="grid grid-cols-4 gap-3">
+              {/* Days */}
+              <TimeDigit value={timeLeft.days} label="Days" />
+              
+              {/* Hours */}
+              <TimeDigit value={formatTimeUnit(timeLeft.hours)} label="Hours" />
+              
+              {/* Minutes */}
+              <TimeDigit value={formatTimeUnit(timeLeft.minutes)} label="Minutes" />
+              
+              {/* Seconds - with hardware-accelerated animation */}
+              <div className="text-center">
+                <motion.div 
+                  animate={secondsControls}
+                  className="bg-white/15 backdrop-blur-lg rounded-lg p-3 shadow-inner relative overflow-hidden group"
+                  style={{ 
+                    willChange: "transform", 
+                    transform: "translateZ(0)"
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="text-4xl md:text-5xl font-bold text-[#FF9848] font-montserrat relative">
+                    {formatTimeUnit(timeLeft.seconds)}
+                  </div>
+                  <div className="text-base md:text-lg mt-1 text-white/90 relative">Seconds</div>
+                </motion.div>
+              </div>
+            </div>
+          )}
           
           {/* Simplified animated elements - reduced to a single light beam */}
           <motion.div
@@ -116,12 +144,12 @@ const EnhancedCountdown = () => {
       
       <div className="text-center">
         <Link 
-          to="/conference/register" 
+          to={timeLeft.expired ? "/conference" : "/conference/register"} 
           className="inline-block px-6 py-3 w-full sm:w-auto rounded-lg font-bold text-base group relative overflow-hidden"
         >
           <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-[#FF9848] to-[#FF8A4D]"></span>
           <span className="relative flex justify-center items-center text-white">
-            Register Now
+            {timeLeft.expired ? "View Live Schedule" : "Register Now"}
           </span>
         </Link>
       </div>

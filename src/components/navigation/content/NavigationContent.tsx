@@ -1,29 +1,27 @@
-
 import { cn } from "@/lib/utils";
 import NavLogo from "../NavLogo";
 import DesktopNav from "../DesktopNav";
 import MobileNav from "../mobile/MobileNav";
 import CountdownTimer from "@/components/CountdownTimer";
-import NoiseTexture from "@/components/ui/NoiseTexture";
 import { useNavigation } from "../context/useNavigation";
 import { useLocation } from "react-router-dom";
 import { useRef, useEffect } from "react";
 import { useNavBackgroundStyle } from "@/hooks/navigation/useNavBackgroundStyle";
 
 interface NavigationContentProps {
-  instanceId: string;
+  instanceId?: string;
 }
 
 /**
- * NavigationContent Component - Core rendering component for navigation elements
+ * NavigationContent component - The actual rendering of navigation UI
  * 
- * Handles the actual visual rendering of navigation elements using shared state
- * Features enhanced glassmorphism styling with subtle noise texture for depth
- * Background styling logic extracted to useNavBackgroundStyle hook
- * 
- * @param instanceId - Unique identifier for this navigation instance (for debugging)
+ * Handles:
+ * - Conditional rendering based on device size (mobile vs desktop)
+ * - Styling based on scroll position and background
+ * - Special page-specific overrides
+ * - Instance tracking to prevent duplicates
  */
-const NavigationContent = ({ instanceId }: NavigationContentProps) => {
+const NavigationContent = ({ instanceId = 'nav-default' }: NavigationContentProps) => {
   const { state } = useNavigation();
   const { 
     isScrolled, 
@@ -40,7 +38,14 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
   const location = useLocation();
   
   // Get styling from our extracted hook
-  const { backgroundClass, isConferenceRegistrationPage, effectiveLightBackground } = useNavBackgroundStyle();
+  const { 
+    backgroundClass, 
+    isConferenceRegistrationPage,
+    isConferencePage,
+    isStudioPage,
+    effectiveLightBackground,
+    isAgainstDarkBackground
+  } = useNavBackgroundStyle();
   
   // Get responsive padding values
   const getPadding = () => {
@@ -61,15 +66,15 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
       console.log(`NavigationContent (${instanceId}): Set nav background to light for hero page`);
     }
     
-    // Force dark background for conference registration page
-    if (isConferenceRegistrationPage || forceDarkMode) {
+    // Force dark background for conference registration page or studios page
+    if (isConferenceRegistrationPage || isConferencePage || isStudioPage || forceDarkMode) {
       document.body.setAttribute('data-nav-background', 'dark');
       console.log(`NavigationContent (${instanceId}): Forcing dark background for navbar due to page type or prop`);
     }
     
     return () => {
       // Clean up only if we set it in this component
-      if (isHeroPage || isConferenceRegistrationPage || forceDarkMode) {
+      if (isHeroPage || isConferenceRegistrationPage || isConferencePage || isStudioPage || forceDarkMode) {
         document.body.removeAttribute('data-nav-background');
         console.log(`NavigationContent (${instanceId}): Cleaned up nav background attribute`);
       }
@@ -82,39 +87,47 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
     isDarkBackground, 
     isLightBackground, 
     forceDarkMode,
-    isConferenceRegistrationPage
+    isConferenceRegistrationPage,
+    isConferencePage,
+    isStudioPage
   ]);
 
+  // Get element ref to check for duplicates
+  const navRef = useRef<HTMLElement>(null);
+  
+  // Check for duplicate navigations in the document
+  useEffect(() => {
+    // Wait for DOM to be ready
+    setTimeout(() => {
+      if (navRef.current) {
+        const allNavs = document.querySelectorAll('nav[data-nav-instance]');
+        if (allNavs.length > 1) {
+          console.warn(`[Navigation] Found ${allNavs.length} navigation bars:`, 
+            Array.from(allNavs).map(nav => nav.getAttribute('data-nav-instance')));
+        }
+      }
+    }, 100);
+  }, []);
+
   return (
-    <nav
-      className={cn(
-        "fixed w-full z-[100] transition-all duration-300 pointer-events-auto pt-2 sm:pt-3 md:pt-4 isolate", 
-        backgroundClass,
-        isVisible 
-          ? "translate-y-0" 
-          : "-translate-y-full"
-      )}
+    <nav 
+      ref={navRef}
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ${backgroundClass}`}
+      data-is-scrolled={isScrolled ? "true" : "false"}
+      data-light-background={isLightBackground ? "true" : "false"}
+      data-force-dark={forceDarkMode ? "true" : "false"}
       data-nav-instance={instanceId}
-      data-scrolled={isScrolled ? "true" : "false"}
-      data-visible={isVisible ? "true" : "false"}
-      data-background={effectiveLightBackground ? "light" : "dark"}
-      data-forced-dark={forceDarkMode ? "true" : "false"}
+      data-conference-page={isConferencePage ? "true" : "false"}
+      data-registration-page={isConferenceRegistrationPage ? "true" : "false"}
+      data-studio-page={isStudioPage ? "true" : "false"}
+      data-page-path={location.pathname}
     >
-      {/* Noise texture overlay for enhanced depth */}
-      {isScrolled && (
-        <NoiseTexture 
-          opacity={effectiveLightBackground ? 0.03 : 0.07} 
-          blendMode={effectiveLightBackground ? "multiply" : "soft-light"}
-          scale={150}
-        />
-      )}
-      
       <div className={`max-w-7xl mx-auto ${getPadding()}`}>
         <div className="flex justify-between items-center">
           <NavLogo 
             isScrolled={isScrolled} 
             isHeroPage={isHeroPage} 
-            forceDarkMode={effectiveLightBackground}
+            forceDarkMode={!effectiveLightBackground} 
             useShortForm={useShortFormLogo}
           />
           
@@ -129,7 +142,7 @@ const NavigationContent = ({ instanceId }: NavigationContentProps) => {
             <DesktopNav 
               isScrolled={isScrolled} 
               isHeroPage={isHeroPage} 
-              forceDarkMode={effectiveLightBackground} 
+              forceDarkMode={!effectiveLightBackground} 
             />
             
             <MobileNav />

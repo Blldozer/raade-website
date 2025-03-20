@@ -14,7 +14,8 @@ interface MobileNavFooterProps {
  * - Gold CTA button with hover effects (maintaining gold color)
  * - Fade-in animations for smooth appearance
  * - Responsive padding for better touch targets
- * - Proper event handling for navigation
+ * - Consistent navigation to the 'join' section
+ * - Uses the same navigation logic as JoinButton
  * 
  * @param onLinkClick - Function to call when a link is clicked
  */
@@ -34,16 +35,16 @@ const MobileNavFooter = ({ onLinkClick }: MobileNavFooterProps) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.4 }}
     >
-      {/* Main CTA Button - Explicitly links to build-with-us section */}
+      {/* Main CTA Button - Explicitly links to join section */}
       <motion.div 
         className="p-5"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
         <motion.a
-          href="/#build-with-us"
+          href="/#join"
           className="block w-full py-3.5 px-6 bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-[#274675] text-center rounded-md font-alegreyasans font-bold text-lg transition-colors shadow-md hover:shadow-lg"
-          onClick={(e) => handleClick(e, "/#build-with-us")}
+          onClick={(e) => handleClick(e, "/#join")}
           whileHover={{ y: -2 }}
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}

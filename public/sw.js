@@ -1,6 +1,6 @@
 
 // Service Worker for RAADE Website
-const CACHE_NAME = 'raade-cache-v4'; // Incrementing cache version
+const CACHE_NAME = 'raade-cache-v5'; // Incremented cache version
 const urlsToCache = [
   '/',
   '/index.html',
@@ -18,9 +18,6 @@ const urlsToCache = [
 // Image-specific cache for better management
 const IMAGE_CACHE_NAME = 'raade-images-cache-v2';
 
-// Stripe-specific cache for better security handling
-const STRIPE_CACHE_NAME = 'raade-stripe-cache-v1';
-
 // Force HTTPS for all resources
 const enforceHTTPS = (url) => {
   // Check if we're in production (not localhost)
@@ -32,9 +29,19 @@ const enforceHTTPS = (url) => {
   return url;
 };
 
+// Debug flag for logging service worker activity
+const DEBUG = true;
+
+// Helper function for conditional logging
+const logDebug = (message, ...args) => {
+  if (DEBUG) {
+    console.log(`SW: ${message}`, ...args);
+  }
+};
+
 // Install event - cache assets
 self.addEventListener('install', event => {
-  console.log('Service Worker: Installing...');
+  logDebug('Installing...');
   
   // Skip waiting to ensure the new service worker activates immediately
   self.skipWaiting();
@@ -42,20 +49,20 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Service Worker: Opened cache');
+        logDebug('Opened cache');
         // Ensure all URLs use HTTPS in production
         const secureUrls = urlsToCache.map(url => enforceHTTPS(url));
         return cache.addAll(secureUrls);
       })
       .catch(error => {
-        console.error('Service Worker: Cache install failed:', error);
+        console.error('Cache install failed:', error);
       })
   );
 });
 
 // Message handler for dynamic cache instructions
 self.addEventListener('message', event => {
-  console.log('Service Worker: Message received', event.data);
+  logDebug('Message received', event.data);
   
   if (event.data && event.data.type === 'CACHE_IMAGE') {
     // Handle request to cache a specific image
@@ -65,7 +72,7 @@ self.addEventListener('message', event => {
       event.waitUntil(
         caches.open(IMAGE_CACHE_NAME)
           .then(cache => {
-            console.log('Service Worker: Caching image', imageUrl);
+            logDebug('Caching image', imageUrl);
             return fetch(imageUrl)
               .then(response => {
                 if (!response || response.status !== 200) {
@@ -74,15 +81,22 @@ self.addEventListener('message', event => {
                 return cache.put(imageUrl, response);
               })
               .catch(error => {
-                console.error('Service Worker: Failed to cache image', imageUrl, error);
+                console.error('Failed to cache image', imageUrl, error);
               });
           })
       );
     }
-  } else if (event.data && event.data.type === 'CLEAR_WS_ERROR') {
-    // Clear console logging for WebSocket errors (helps in diagnostic situations)
-    console.clear();
-    console.log('Service Worker: Cleared WebSocket error messages');
+  } else if (event.data && event.data.type === 'CLEAR_CACHE') {
+    // Allow clearing specific caches
+    const cacheName = event.data.cacheName;
+    if (cacheName) {
+      event.waitUntil(
+        caches.delete(cacheName)
+          .then(success => {
+            logDebug(`Cache ${cacheName} ${success ? 'deleted' : 'not found'}`);
+          })
+      );
+    }
   }
 });
 
@@ -92,6 +106,19 @@ const isNavigationRequest = (request) => {
          (request.method === 'GET' && 
           request.headers.get('accept') && 
           request.headers.get('accept').includes('text/html'));
+};
+
+// Check if a URL is related to Stripe
+const isStripeURL = (url) => {
+  return url.hostname === 'js.stripe.com' || 
+         url.hostname === 'api.stripe.com' || 
+         url.hostname.includes('stripe.com');
+};
+
+// Check if request is for payment API
+const isPaymentRequest = (url) => {
+  return url.pathname.includes('payment') || 
+         url.pathname.includes('create-payment-intent');
 };
 
 // Fetch event - serve from cache when offline
@@ -104,7 +131,7 @@ self.addEventListener('fetch', event => {
       if (requestUrl.hostname === 'localhost' || requestUrl.hostname === '127.0.0.1') {
         // In production, block these requests entirely
         if (self.location.hostname !== 'localhost' && self.location.hostname !== '127.0.0.1') {
-          console.debug('Service Worker: Blocked development WebSocket connection attempt');
+          logDebug('Blocked development WebSocket connection attempt');
           return;
         }
       }
@@ -112,6 +139,7 @@ self.addEventListener('fetch', event => {
     
     // Handle navigation requests differently - always go to index.html for SPA
     if (isNavigationRequest(event.request)) {
+      logDebug('Navigation request:', requestUrl.pathname);
       event.respondWith(
         fetch(event.request)
           .catch(() => caches.match('/index.html'))
@@ -119,28 +147,49 @@ self.addEventListener('fetch', event => {
       return;
     }
     
-    // Special handling for Stripe resources
-    if (requestUrl.hostname === 'js.stripe.com' || requestUrl.hostname === 'api.stripe.com') {
-      // Always use network-first strategy for Stripe, but cache for offline use
+    // Special handling for Stripe resources - NEVER cache on first load
+    if (isStripeURL(requestUrl)) {
+      logDebug('Stripe request:', requestUrl.pathname);
+      
+      // Always use network-first strategy for Stripe
       event.respondWith(
         fetch(event.request)
           .then(response => {
-            // Clone the response for caching
-            const responseToCache = response.clone();
-            
-            // Only cache successful responses
-            if (response.ok) {
-              caches.open(STRIPE_CACHE_NAME)
+            // Only cache successful responses AFTER first successful load
+            if (response.ok && !requestUrl.pathname.includes('payment-intent')) {
+              logDebug('Caching Stripe resource:', requestUrl.pathname);
+              const responseToCache = response.clone();
+              caches.open('raade-stripe-cache-v1')
                 .then(cache => {
                   cache.put(event.request, responseToCache);
                 });
             }
-            
             return response;
           })
-          .catch(() => {
+          .catch(error => {
+            logDebug('Stripe network request failed, trying cache:', error);
             // Try to get from cache if offline
             return caches.match(event.request);
+          })
+      );
+      return;
+    }
+    
+    // Special handling for Payment API requests - NEVER cache
+    if (isPaymentRequest(requestUrl)) {
+      logDebug('Payment API request:', requestUrl.pathname);
+      
+      // Never cache payment API requests, always go to network
+      event.respondWith(
+        fetch(event.request)
+          .catch(error => {
+            logDebug('Payment API request failed:', error);
+            return new Response(JSON.stringify({ 
+              error: 'Network error. Please check your connection and try again.' 
+            }), { 
+              status: 503,
+              headers: { 'Content-Type': 'application/json' }
+            });
           })
       );
       return;
@@ -160,7 +209,7 @@ self.addEventListener('fetch', event => {
               .then(cachedResponse => {
                 if (cachedResponse) {
                   // Return cached image
-                  console.log('Service Worker: Serving image from cache', requestUrl.pathname);
+                  logDebug('Serving image from cache', requestUrl.pathname);
                   return cachedResponse;
                 }
                 
@@ -180,12 +229,12 @@ self.addEventListener('fetch', event => {
                     return networkResponse;
                   })
                   .catch(error => {
-                    console.error('Service Worker: Network fetch failed for image', requestUrl.pathname, error);
+                    console.error('Network fetch failed for image', requestUrl.pathname, error);
                     
                     // For webp images, try falling back to JPG version if available
                     if (requestUrl.pathname.includes('.webp')) {
                       const jpgUrl = event.request.url.replace('.webp', '.jpg');
-                      console.log('Service Worker: Trying JPG fallback', jpgUrl);
+                      logDebug('Trying JPG fallback', jpgUrl);
                       
                       return fetch(jpgUrl)
                         .then(fallbackResponse => {
@@ -195,7 +244,7 @@ self.addEventListener('fetch', event => {
                           return fallbackResponse;
                         })
                         .catch(fallbackError => {
-                          console.error('Service Worker: Fallback also failed', fallbackError);
+                          console.error('Fallback also failed', fallbackError);
                           // If all fails, return a placeholder or error response
                           return new Response('Image not available', { status: 404 });
                         });
@@ -238,7 +287,7 @@ self.addEventListener('fetch', event => {
                 requestOptions
               );
             } catch (error) {
-              console.error('Service Worker: Error creating secure request', error);
+              console.error('Error creating secure request', error);
               return fetch(event.request);
             }
             
@@ -263,13 +312,13 @@ self.addEventListener('fetch', event => {
                       cache.put(event.request, responseToCache);
                     });
                 } catch (error) {
-                  console.error('Service Worker: Error caching response', error);
+                  console.error('Error caching response', error);
                 }
 
                 return response;
               }
             ).catch(error => {
-              console.error('Service Worker: Fetch error', error);
+              console.error('Fetch error', error);
               // Return cached index.html for navigation requests as fallback
               if (isNavigationRequest(event.request)) {
                 return caches.match('/index.html');
@@ -280,7 +329,7 @@ self.addEventListener('fetch', event => {
       );
     }
   } catch (error) {
-    console.error('Service Worker: Critical fetch handler error', error);
+    console.error('Critical fetch handler error', error);
     // Return a fallback response
     event.respondWith(
       caches.match('/index.html')
@@ -294,23 +343,23 @@ self.addEventListener('fetch', event => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', event => {
-  console.log('Service Worker: Activating...');
+  logDebug('Activating...');
   
-  const cacheWhitelist = [CACHE_NAME, IMAGE_CACHE_NAME, STRIPE_CACHE_NAME];
+  const cacheWhitelist = [CACHE_NAME, IMAGE_CACHE_NAME, 'raade-stripe-cache-v1'];
   
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheWhitelist.indexOf(cacheName) === -1) {
-            console.log('Service Worker: Deleting old cache', cacheName);
+            logDebug('Deleting old cache', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
     })
     .then(() => {
-      console.log('Service Worker: Activated');
+      logDebug('Activated and claiming clients');
       
       // Update the client to use HTTPS if needed
       self.clients.matchAll().then(clients => {

@@ -1,5 +1,7 @@
 
 import { useNavigation } from "@/components/navigation/context/useNavigation";
+import { useLocation } from "react-router-dom";
+import { hasFixedNavbarStyle } from "./useNavBackgroundUtils";
 
 /**
  * Hook to extract background styling logic for navigation
@@ -7,11 +9,7 @@ import { useNavigation } from "@/components/navigation/context/useNavigation";
  * Centralizes the complex logic for determining navigation background styles
  * based on scroll state, background type, and special page requirements
  * 
- * @param isScrolled - Whether the page has been scrolled
- * @param isLightBackground - Whether the current background is light
- * @param isConferenceRegistrationPage - Whether we're on the conference registration page
- * @param forceDarkMode - Whether dark mode should be forced
- * @returns CSS classes for the navigation background
+ * @returns CSS classes and states for the navigation background
  */
 export const useNavBackgroundStyle = () => {
   const { state } = useNavigation();
@@ -21,32 +19,64 @@ export const useNavBackgroundStyle = () => {
     forceDarkMode
   } = state;
   
-  // Determine if this is a conference registration page
-  const isConferenceRegistrationPage = location.pathname === '/conference/register';
+  const location = useLocation();
+  const pathname = location.pathname;
+  
+  // Determine if this is a special page that needs dark styling
+  const isConferenceRegistrationPage = pathname === '/conference/register';
+  const isConferencePage = pathname.includes('/conference');
+  const isStudioPage = pathname.includes('/studios');
+  const isHomePage = pathname === '/' || pathname === '';
   
   /**
    * Helper function to determine navbar background styling based on state
+   * Priority order:
+   * 1. Not scrolled - always transparent regardless of page type
+   * 2. Scrolled + special pages - subtle dark glassmorphism 
+   * 3. Scrolled + regular pages - subtle glassmorphism
    */
   const getBackgroundClass = (): string => {
-    // Apply enhanced glassmorphism effect with proper light/dark handling when scrolled
-    if (isScrolled) {
-      // For conference registration, always use dark background
-      if (isConferenceRegistrationPage || forceDarkMode) {
-        return "bg-[#274675]/80 backdrop-blur-md border-b border-[#274675]/30 shadow-md";
-      }
-      
-      return isLightBackground 
-        ? "bg-white/70 backdrop-blur-md border-b border-gray-200/50 shadow-sm" 
-        : "bg-[#274675]/80 backdrop-blur-md border-b border-[#274675]/30 shadow-md";
+    // First priority: Always transparent at top of page regardless of page type
+    if (!isScrolled) {
+      return "bg-transparent border-transparent";
     }
     
-    // Transparent when at top
-    return "bg-transparent";
+    // Second priority: Special pages that should have dark navbar when scrolled
+    if ((isConferenceRegistrationPage || isConferencePage || isStudioPage || isHomePage || forceDarkMode) && isScrolled) {
+      // Dark glassmorphism for these special pages when scrolled
+      return "bg-black/20 backdrop-blur-md border-b border-white/10 shadow-md";
+    }
+    
+    // Third priority: Subtle glassmorphism when scrolled (same for both light/dark)
+    return "bg-black/10 backdrop-blur-md border-b border-white/10 shadow-sm";
   };
+  
+  // Determine if we're against a dark background
+  // This happens when either:
+  // 1. We're on a page with dark elements behind navbar (homepage, conference, studios)
+  // 2. We have light background mode disabled
+  // 3. We're on special pages that force dark navbar
+  const isAgainstDarkBackground = 
+    !isLightBackground || 
+    forceDarkMode || 
+    isConferenceRegistrationPage ||
+    isConferencePage ||
+    isStudioPage ||
+    isHomePage;
+  
+  // Only consider fixed styling when scrolled
+  const shouldUseFixedStyle = isScrolled && hasFixedNavbarStyle(pathname);
   
   return {
     backgroundClass: getBackgroundClass(),
     isConferenceRegistrationPage,
-    effectiveLightBackground: forceDarkMode || isConferenceRegistrationPage ? false : isLightBackground
+    isConferencePage,
+    isStudioPage,
+    isHomePage,
+    effectiveLightBackground: (forceDarkMode || isConferenceRegistrationPage || isConferencePage || isStudioPage || isHomePage) 
+      ? false 
+      : isLightBackground,
+    isAgainstDarkBackground,
+    shouldUseFixedStyle
   };
 };

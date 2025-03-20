@@ -6,18 +6,25 @@ import { NavigationProvider } from "./context/NavigationContext";
 /**
  * AboutNav Component - Special navigation for the About page
  * 
- * This navigation is specifically designed for the About page,
- * with smooth scrolling to sections and a cleaner look
- * Wrapped with NavigationProvider to ensure context is available
+ * This component is now disabled as we're using the main Navigation component
+ * to prevent duplicate navbars appearing. The code is kept for reference
+ * but should not be used directly.
+ * 
+ * @deprecated Use the main Navigation component with isHeroPage prop instead
  */
 const AboutNav = () => {
+  console.warn("AboutNav component is deprecated and should not be used directly");
+  
+  // Return null to prevent rendering
+  return null;
+  
+  /* Original implementation kept for reference but not used
   return (
     <NavigationProvider initialProps={{ forceDarkMode: true }}>
       <nav className="bg-transparent absolute top-0 left-0 right-0 z-50">
         <div className="container mx-auto px-6 py-3">
           <div className="flex items-center justify-between">
             <div>
-              {/* Use Link instead of a tag to prevent full page reloads */}
               <Link to="/" className="flex items-center">
                 <img 
                   src="/logos/RAADE-logo-final-white.png" 
@@ -77,6 +84,7 @@ const AboutNav = () => {
       </nav>
     </NavigationProvider>
   );
+  */
 };
 
 export default AboutNav;

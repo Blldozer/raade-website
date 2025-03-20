@@ -11,6 +11,14 @@ interface ProjectHeroProps {
   partnerLink?: string;
 }
 
+/**
+ * ProjectHero Component
+ * 
+ * Displays the hero section for individual project pages with:
+ * - Responsive background image with overlay
+ * - Properly scaled text that adapts to all screen sizes/devices
+ * - Project information with sector badge and partner details
+ */
 const ProjectHero = ({ image, name, sector, partner, partnerLink }: ProjectHeroProps) => {
   return (
     <div className="relative h-[60vh] min-h-[400px] overflow-hidden">
@@ -30,10 +38,10 @@ const ProjectHero = ({ image, name, sector, partner, partnerLink }: ProjectHeroP
             <Badge className="mb-4 bg-[#FBB03B] text-white border-none font-lora">
               {sector}
             </Badge>
-            <h1 className="text-4xl md:text-6xl font-simula text-white mb-4 max-w-3xl">
+            <h1 className="text-[clamp(2rem,8vw,4rem)] font-simula text-white mb-4 max-w-3xl leading-[1.2]">
               {name}
             </h1>
-            <div className="flex items-center text-xl text-white/90 font-lora max-w-2xl">
+            <div className="flex items-center text-[clamp(1rem,4vw,1.25rem)] text-white/90 font-lora max-w-2xl">
               <span>Partner: {partner}</span>
               {partnerLink && (
                 <a 

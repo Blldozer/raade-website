@@ -1,3 +1,4 @@
+
 import React, { useRef, memo, useCallback } from 'react';
 import AnimatedText from '../AnimatedText';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -11,18 +12,15 @@ const HeroContent = () => {
   const handleJoinClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     
-    // If we're not on the home page, navigate to home and then scroll
-    if (location.pathname !== '/') {
-      navigate('/', { state: { scrollToJoin: true } });
+    // Always use the consistent 'join' ID
+    const joinSection = document.getElementById('join');
+    if (joinSection) {
+      // Use native scrollIntoView for better performance
+      joinSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else {
-      // If we're already on home page, just scroll to the section
-      const joinSection = document.getElementById('join');
-      if (joinSection) {
-        // Use native scrollIntoView for better performance
-        joinSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+      console.warn("HeroContent: Could not find 'join' section element");
     }
-  }, [location.pathname, navigate]);
+  }, []);
   
   return (
     <div 

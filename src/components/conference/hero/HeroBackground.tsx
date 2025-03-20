@@ -1,15 +1,26 @@
+
 import React, { memo } from "react";
 
+/**
+ * HeroBackground Component
+ * 
+ * Creates the layered visual background for the conference hero section:
+ * - Base gradient using RAADE's gold/orange brand colors with increased opacity
+ * - Team image with reduced opacity and multiply blend for better text contrast
+ * - Subtle grain texture for visual depth
+ * - Gradient overlay for improved readability
+ * - Decorative particles and African continent outline
+ */
 const HeroBackground = () => {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-      {/* Base gradient layer with transparency to allow image visibility - static, no animation */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#FBB03B]/70 via-[#FF9848]/70 to-[#FF8A6A]/70 z-0"></div>
+      {/* Base gradient layer using RAADE brand colors - increased opacity for better visibility */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#FBB03B]/80 via-[#FF9848]/80 to-[#FF8A6A]/80 z-0"></div>
       
-      {/* Team image with static positioning - optimized with will-change */}
+      {/* Team image with optimized opacity for better gradient visibility */}
       <div className="absolute inset-0 z-1">
         <div 
-          className="absolute inset-0 bg-[url('/raade-eboard-baker-institute-cmp.jpg')] bg-cover bg-center opacity-60 mix-blend-multiply"
+          className="absolute inset-0 bg-[url('/raade-eboard-baker-institute-cmp.jpg')] bg-cover bg-center opacity-50 mix-blend-multiply"
           style={{ willChange: "transform" }}
         ></div>
       </div>
@@ -22,9 +33,9 @@ const HeroBackground = () => {
         }}
       ></div>
       
-      {/* Gradient overlay for better text contrast - static */}
+      {/* Gradient overlay for better text contrast - increased opacity */}
       <div 
-        className="absolute inset-0 z-3 opacity-40 bg-gradient-to-t from-black/60 via-transparent to-transparent"
+        className="absolute inset-0 z-3 opacity-50 bg-gradient-to-t from-black/70 via-transparent to-transparent"
       />
       
       {/* Static floating particles - reduced number from 30 to 15 */}

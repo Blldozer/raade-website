@@ -19,6 +19,7 @@ gsap.registerPlugin(ScrollTrigger);
  * - Section for displaying Innovation Studios and Conference opportunities
  * - Responsive grid layout for different device sizes
  * - Custom event handling for section transitions
+ * - Uses consistent ID 'join' to support navigation from all parts of the site
  */
 const JoinSection = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -80,7 +81,7 @@ const JoinSection = () => {
 
   return (
     <section 
-      id="build-with-us" // Added id for direct linking
+      id="join" // Using "join" consistently as the ID
       ref={sectionRef}
       className="relative min-h-screen overflow-hidden py-20 md:py-32"
     >
