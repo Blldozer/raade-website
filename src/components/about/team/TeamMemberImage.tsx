@@ -10,10 +10,11 @@ interface TeamMemberImageProps {
 /**
  * TeamMemberImage component - Renders the team member image with fallbacks
  * Features:
- * - Skeleton loading state
- * - Fallback to initials when image fails to load
- * - Optimized for performance and accessibility
+ * - Improved skeleton loading state
+ * - Better fallback to initials when image fails to load
+ * - Enhanced visual feedback during loading
  * - Fixed for reliable display on all devices including mobile
+ * - Detailed console logging for debugging
  */
 const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
   const [imageError, setImageError] = useState(false);
@@ -23,11 +24,20 @@ const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
   // Track if image should show loading state - start hidden so we don't show loading for cached images
   const [showLoading, setShowLoading] = useState(false);
   
-  // Placeholder initials for fallback
+  // Placeholder initials for fallback - with enhanced error handling
   const getInitials = () => {
+    if (!name || typeof name !== 'string') return 'XX';
     const nameParts = name.split(" ");
-    return `${nameParts[0][0]}${nameParts[1]?.[0] || ''}`;
+    return `${nameParts[0]?.[0] || 'X'}${nameParts[1]?.[0] || ''}`;
   };
+
+  // Log component lifecycle for debugging
+  useEffect(() => {
+    console.log(`TeamMemberImage mounted for "${name}"`);
+    return () => {
+      console.log(`TeamMemberImage unmounted for "${name}"`);
+    };
+  }, [name]);
 
   const { imageRef, imageSrc, imageLoaded } = ImageLoader({
     name,
@@ -58,14 +68,19 @@ const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
       return () => clearTimeout(timer);
     }
   }, [localImageLoaded, imageLoaded]);
-
-  // Debug logging on mount
+  
+  // Force a fallback after a certain timeout to prevent endless waiting
   useEffect(() => {
-    console.log(`TeamMemberImage mounted for ${name}`);
-    return () => {
-      console.log(`TeamMemberImage unmounted for ${name}`);
-    };
-  }, [name]);
+    // If image hasn't loaded after 12 seconds, show fallback
+    const fallbackTimer = setTimeout(() => {
+      if (!localImageLoaded && !imageLoaded) {
+        console.warn(`[TeamMemberImage] Image load timeout for ${name}, showing fallback`);
+        setImageError(true);
+      }
+    }, 12000); // 12-second timeout
+    
+    return () => clearTimeout(fallbackTimer);
+  }, [name, localImageLoaded, imageLoaded]);
 
   return (
     <div className="rounded-t-lg overflow-hidden">
@@ -79,10 +94,11 @@ const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
       ) : (
         /* Render image with proper loading states */
         <div className="w-full aspect-[3/4] bg-[#4C504A] relative">
-          {/* Show skeleton loading state */}
+          {/* Show skeleton loading state with improved visual feedback */}
           {showLoading && !localImageLoaded && !imageLoaded && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-white text-xl">Loading...</span>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className="text-white text-lg mb-2">Loading...</span>
+              <div className="w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
             </div>
           )}
           

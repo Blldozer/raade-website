@@ -18,7 +18,7 @@ interface TeamImageLoadingIndicatorProps {
  * - Mobile-optimized loading indicator with progress tracking
  * - Network status awareness with offline mode support
  * - Progress percentage display with visual indicator
- * - Retry button for connection issues
+ * - Enhanced retry button that works regardless of network status
  * - Responsive design that works on all devices
  */
 const TeamImageLoadingIndicator = ({ 
@@ -28,6 +28,16 @@ const TeamImageLoadingIndicator = ({
   networkStatus,
   onRetry
 }: TeamImageLoadingIndicatorProps) => {
+  
+  // Determine if retry should be enabled - now always enabled if images aren't fully loaded
+  const shouldEnableRetry = loadedImages < totalImages;
+  
+  const handleRetryClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    console.log("Retry button clicked, calling onRetry handler");
+    onRetry?.();
+  };
+  
   return (
     <div className="w-full rounded-lg bg-white shadow-md p-6 mb-8 border-l-4 border-[#FBB03B]">
       <div className="flex justify-between items-center mb-3">
@@ -54,13 +64,14 @@ const TeamImageLoadingIndicator = ({
           </span>
         </div>
         
-        {/* Always show retry button but disable when online */}
+        {/* Modified retry button - now active when images aren't fully loaded */}
         <button 
-          onClick={onRetry}
+          onClick={handleRetryClick}
+          aria-label="Retry loading images"
           className={`text-sm px-3 py-1 bg-[#FBB03B] text-white rounded-md 
-            ${networkStatus === 'online' ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#f9a718]'} 
+            ${shouldEnableRetry ? 'hover:bg-[#f9a718] cursor-pointer' : 'opacity-50 cursor-not-allowed'} 
             transition-colors`}
-          disabled={networkStatus === 'online'}
+          disabled={!shouldEnableRetry}
         >
           Retry
         </button>

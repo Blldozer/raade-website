@@ -1,6 +1,7 @@
 
 import { useState, useEffect, useRef, RefObject } from "react";
 import { useResponsive } from "../../../hooks/useResponsive"; 
+import { teamMembers } from "../TeamData";
 
 /**
  * Extended Navigator interface with connection information
@@ -28,7 +29,7 @@ interface ImageLoaderProps {
  * - Progressive image loading with fallbacks
  * - Bandwidth-aware optimizations for slower connections
  * - Cache registration with service worker if available
- * - Improved mobile handling
+ * - Improved mobile handling with explicit error logging
  */
 const ImageLoader = ({ 
   name, 
@@ -48,63 +49,114 @@ const ImageLoader = ({
   
   // Check if we're in a low bandwidth situation
   const [isLowBandwidth, setIsLowBandwidth] = useState(false);
+  const [connectionType, setConnectionType] = useState<string>('unknown');
   
+  // Track network status explicitly 
+  const [isNetworkActive, setIsNetworkActive] = useState<boolean>(navigator.onLine);
+  
+  // Monitor network status actively
   useEffect(() => {
+    console.log(`[ImageLoader] Initial network status: ${navigator.onLine ? 'online' : 'offline'}`);
+    
+    const handleOnline = () => {
+      console.log('[ImageLoader] Network is online');
+      setIsNetworkActive(true);
+    };
+    
+    const handleOffline = () => {
+      console.log('[ImageLoader] Network is offline');
+      setIsNetworkActive(false);
+    };
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+  
+  // Log connection info on mount to help debug
+  useEffect(() => {
+    console.log(`[ImageLoader] Initializing for ${name} (Mobile: ${isMobile}, Retry: ${retryCount})`);
+    
     // Check connection type if available
     if ('connection' in navigator && navigator.connection) {
       const connection = (navigator as NavigatorWithConnection).connection;
-      if (connection && connection.effectiveType === '2g' || connection.effectiveType === 'slow-2g') {
-        setIsLowBandwidth(true);
-        console.log("Low bandwidth detected, optimizing image loading");
+      if (connection) {
+        const effectiveType = connection.effectiveType || 'unknown';
+        setConnectionType(effectiveType);
+        console.log(`[ImageLoader] Connection type: ${effectiveType}`);
+        
+        setIsLowBandwidth(effectiveType === '2g' || effectiveType === 'slow-2g');
+        
+        // Listen for changes to connection quality
+        const updateConnectionStatus = () => {
+          if (connection) {
+            const newEffectiveType = connection.effectiveType || 'unknown';
+            console.log(`[ImageLoader] Connection changed to: ${newEffectiveType}`);
+            setConnectionType(newEffectiveType);
+            setIsLowBandwidth(newEffectiveType === '2g' || newEffectiveType === 'slow-2g');
+          }
+        };
+        
+        connection.addEventListener('change', updateConnectionStatus);
+        return () => connection.removeEventListener('change', updateConnectionStatus);
       }
-      
-      // Listen for changes to connection quality
-      const updateConnectionStatus = () => {
-        if (connection) {
-          setIsLowBandwidth(connection.effectiveType === '2g' || connection.effectiveType === 'slow-2g');
-        }
-      };
-      
-      connection.addEventListener('change', updateConnectionStatus);
-      return () => connection.removeEventListener('change', updateConnectionStatus);
+    } else {
+      console.log('[ImageLoader] Connection API not available');
     }
-  }, []);
+  }, [name, isMobile]);
 
-  // Preload image with retry logic
+  // Preload image with improved retry logic
   useEffect(() => {
     // Prevent unnecessary retries if we already have too many
     if (retryCount >= MAX_RETRIES && imageError) {
-      console.log(`Maximum retries reached for ${name}, using fallback`);
+      console.log(`[ImageLoader] Maximum retries reached for ${name}, using fallback`);
       return;
     }
 
-    // Create proper image path with safeguards
-    const formattedName = name.split(" ").join("-");
+    // Safety check for network status before attempting to load
+    if (!isNetworkActive) {
+      console.log(`[ImageLoader] Network is offline, delaying image load for ${name}`);
+      return; // Don't attempt to load when offline
+    }
+
+    // Create proper image path with robust formatting
+    // Remove special characters and normalize spaces
+    const safeName = name.replace(/[^\w\s-]/gi, '').trim();
+    const formattedName = safeName.split(" ").join("-");
+    
+    console.log(`[ImageLoader] Formatted name: "${formattedName}" from "${name}"`);
     
     // Determine which format to use based on retry count and device
     let imgPath;
     
-    // Enhanced strategy: Try JPG first on mobile for faster initial display
-    // On desktop, try WebP for modern browsers initially
+    // Enhanced strategy with explicit logging
     if (retryCount === 0) {
+      // First try - pick optimal format based on device
       if (isMobile) {
         // On mobile, start with JPG for faster loading and better compatibility
         imgPath = `/raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
-        console.log(`Using JPG first for ${name} on mobile for faster loading`);
+        console.log(`[ImageLoader] First attempt: JPG for ${name} on mobile`);
       } else {
         // On desktop, try WebP first for better quality/size ratio
         imgPath = `/raade-individual-e-board-photos-webp/${formattedName}-raade-website-image.webp`;
+        console.log(`[ImageLoader] First attempt: WebP for ${name} on desktop`);
       }
     } else {
       // On retry, use opposite format from what was tried first
       if (isMobile) {
         imgPath = `/raade-individual-e-board-photos-webp/${formattedName}-raade-website-image.webp`;
+        console.log(`[ImageLoader] Retry ${retryCount}: WebP for ${name} on mobile`);
       } else {
         imgPath = `/raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
+        console.log(`[ImageLoader] Retry ${retryCount}: JPG for ${name} on desktop`);
       }
     }
     
-    console.log(`Loading image for ${name} from path: ${imgPath}, retry: ${retryCount}`);
+    console.log(`[ImageLoader] Loading image for ${name} from path: ${imgPath}, retry: ${retryCount}`);
     
     // Set the image source - this will be used by the img element
     setImageSrc(imgPath);
@@ -112,64 +164,46 @@ const ImageLoader = ({
     // Create an image object to pre-load
     const img = new Image();
     
-    // Important: Don't add timestamp to prevent caching - allow browser cache to work
-    img.src = imgPath;
-    
     // Set up proper event handlers
     img.onload = () => {
-      console.log(`Pre-loaded team member image: ${name} successfully`);
+      console.log(`[ImageLoader] Successfully loaded image for ${name}`);
       setImageLoaded(true);
       setImageError(false);
       onImageLoad?.();
     };
     
     img.onerror = (e) => {
-      console.error(`Failed to load team member image: ${name}, retry: ${retryCount + 1}/${MAX_RETRIES}`, e);
+      console.error(`[ImageLoader] Failed to load image for ${name} from ${imgPath}`, e);
       
       if (retryCount < MAX_RETRIES) {
         // Reduced delay between retries for faster fallback
         const delay = 500 * (retryCount + 1); // Reduced from 1000ms
-        console.log(`Will retry loading ${name} in ${delay}ms`);
+        console.log(`[ImageLoader] Will retry loading ${name} in ${delay}ms (attempt ${retryCount + 1}/${MAX_RETRIES})`);
         
         setTimeout(() => {
           setRetryCount(retryCount + 1);
         }, delay);
       } else {
-        console.log(`Max retries reached for ${name}, showing fallback`);
+        console.log(`[ImageLoader] Max retries reached for ${name}, showing fallback`);
         setImageError(true);
       }
     };
     
-    // Set eager loading regardless of device for first 6 images
-    // This improves initial loading performance significantly
-    const eagerLoadingThreshold = 6; // First 6 images load eagerly
-    if (imageRef.current) {
-      // Extract the index from the formatted name if available
-      const memberIndex = teamMembers.findIndex(m => 
-        m.name.split(" ").join("-") === formattedName
-      );
-      
-      if (memberIndex >= 0 && memberIndex < eagerLoadingThreshold) {
-        imageRef.current.loading = 'eager';
-        console.log(`Setting eager loading for ${name} (priority image)`);
-      }
-      // For non-priority images, use native lazy loading
-      else if ('loading' in HTMLImageElement.prototype) {
-        imageRef.current.loading = 'lazy';
-      }
-    }
+    // Start loading the image
+    img.src = imgPath;
     
     // Cleanup to prevent memory leaks
     return () => {
       img.onload = null;
       img.onerror = null;
     };
-  }, [name, onImageLoad, retryCount, imageError, setImageError, setRetryCount, isMobile, isLowBandwidth]);
+  }, [name, onImageLoad, retryCount, imageError, setImageError, setRetryCount, isMobile, isNetworkActive]);
 
   // Register image with service worker cache if available
   useEffect(() => {
     if (imageSrc && 'serviceWorker' in navigator && navigator.serviceWorker.controller) {
       // Tell service worker to cache this image
+      console.log(`[ImageLoader] Requesting cache for ${imageSrc}`);
       navigator.serviceWorker.controller.postMessage({
         type: 'CACHE_IMAGE',
         url: imageSrc
@@ -183,21 +217,5 @@ const ImageLoader = ({
     imageLoaded
   };
 };
-
-// Get reference to team data
-const teamMembers = [
-  // This line is needed for the index lookup in the component
-  // The actual data is imported elsewhere
-];
-
-// Try to get actual team members array from the imported data
-try {
-  const importedData = require('../TeamData').teamMembers;
-  if (Array.isArray(importedData)) {
-    Object.assign(teamMembers, importedData);
-  }
-} catch (e) {
-  console.warn("Could not import team data for indexing in ImageLoader");
-}
 
 export default ImageLoader;

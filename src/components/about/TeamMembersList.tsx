@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import TeamMember from "./TeamMember";
 import { useState, useEffect } from "react";
@@ -19,17 +20,18 @@ interface TeamMembersListProps {
 /**
  * TeamMembersList component - Renders the grid of team members
  * Features:
- * - Coordinated loading of team member images
- * - Mobile-optimized loading indicators and skeletons
- * - Staggered animations for visual appeal
- * - Tracks loading progress for all team members
- * - Provides retry mechanism for network issues
+ * - Enhanced loading coordination of team member images
+ * - Improved mobile loading indicators with visual feedback
+ * - Better network status detection and handling
+ * - Robust retry mechanism with force reload capability
+ * - Optimized mobile experience with reduced loading thresholds
  */
 const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListProps) => {
   // Track which images are loaded to improve rendering reliability
   const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
   const [loadingProgress, setLoadingProgress] = useState(0);
-  const [networkStatus, setNetworkStatus] = useState<'online'|'offline'>('online');
+  const [networkStatus, setNetworkStatus] = useState<'online'|'offline'>(navigator.onLine ? 'online' : 'offline');
+  const [retryCount, setRetryCount] = useState(0);
   
   // Get device info for conditional rendering
   const isMobile = useIsMobile();
@@ -42,46 +44,49 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
   const [showSkeletons, setShowSkeletons] = useState(true);
   
   // Reduced thresholds for faster perceived loading
-  const loadingThreshold = isMobile ? 0.2 : 0.1; // 20% on mobile, 10% on desktop (lowered from 40%/20%)
+  const loadingThreshold = isMobile ? 0.2 : 0.1; // 20% on mobile, 10% on desktop
+  
+  // Log component mounting for debugging
+  useEffect(() => {
+    console.log(`TeamMembersList mounted with ${teamMembers.length} members, isMobile: ${isMobile}`);
+    return () => {
+      console.log("TeamMembersList unmounting");
+    };
+  }, [teamMembers.length, isMobile]);
 
   // Preload first few images for faster initial display
   useEffect(() => {
     if (isInView && isLoaded) {
+      console.log("TeamMembersList is in view and loaded, preloading priority images");
+      
       // Preload first 3 images immediately
       const preloadCount = isMobile ? 2 : 3;
       const preloadImages = teamMembers.slice(0, preloadCount);
       
       preloadImages.forEach(member => {
         const formattedName = member.name.split(" ").join("-");
-        const img = new Image();
-        img.src = `/raade-individual-e-board-photos-webp/${formattedName}-raade-website-image.webp`;
         
-        img.onload = () => {
+        // Try both image formats in parallel
+        const imgJpg = new Image();
+        imgJpg.src = `/raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
+        
+        const imgWebp = new Image();
+        imgWebp.src = `/raade-individual-e-board-photos-webp/${formattedName}-raade-website-image.webp`;
+        
+        // Setup handlers for both formats
+        const handleLoad = () => {
           console.log(`Preloaded image for ${member.name}`);
           handleImageLoaded(member.name);
         };
         
-        img.onerror = () => {
-          // Try JPG fallback immediately
-          const fallbackImg = new Image();
-          fallbackImg.src = `/raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
-          
-          fallbackImg.onload = () => {
-            console.log(`Preloaded fallback image for ${member.name}`);
-            handleImageLoaded(member.name);
-          };
-        };
+        imgJpg.onload = handleLoad;
+        imgWebp.onload = handleLoad;
       });
     }
-  }, [isInView, isLoaded, teamMembers]);
+  }, [isInView, isLoaded, teamMembers, isMobile]);
 
-  // Reset animation state when component mounts or visibility changes
+  // Monitor online/offline status
   useEffect(() => {
-    if (isInView && isLoaded) {
-      console.log("TeamMembersList is in view and loaded, preparing animations");
-    }
-    
-    // Listen for online/offline status
     const handleOnline = () => {
       console.log("Browser is online, attempting to reload any failed images");
       setNetworkStatus('online');
@@ -92,23 +97,22 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
       setNetworkStatus('offline');
     };
     
+    // Check initial status
+    setNetworkStatus(navigator.onLine ? 'online' : 'offline');
+    
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
     
-    // Clean up animation states when component unmounts
     return () => {
-      console.log("TeamMembersList unmounting");
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, [isInView, isLoaded]);
+  }, []);
 
   // Calculate loading progress
   useEffect(() => {
-    const totalImages = teamMembers.length;
-    const loadedCount = Object.values(loadedImages).filter(Boolean).length;
-    
     const percent = totalImages > 0 ? (loadedCount / totalImages) * 100 : 0;
+    console.log(`Team image loading progress: ${Math.round(percent)}% (${loadedCount}/${totalImages})`);
     setLoadingProgress(percent);
     
     // Hide skeletons once we reach the threshold
@@ -119,23 +123,36 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
     if (percent === 100) {
       console.log("All team member images loaded successfully");
     }
-  }, [loadedImages, teamMembers.length, loadingThreshold]);
+  }, [loadedImages, totalImages, loadingThreshold, loadedCount]);
 
-  // Handle retry action when network issues occur
+  // Enhanced retry function that forces reload of all unloaded images
   const handleRetry = () => {
-    console.log("Retrying image loading");
-    // Force refresh of images by clearing the loaded state for unloaded images
+    console.log("Retry button clicked, attempting to reload all unloaded images");
+    
+    // Increment retry counter to force ImageLoader components to try again
+    setRetryCount(prev => prev + 1);
+    
+    // Reset loaded state for unloaded images to force a fresh attempt
     const updatedLoadedState = { ...loadedImages };
     for (const member of teamMembers) {
       if (!updatedLoadedState[member.name]) {
-        // We keep the current state but will trigger a reload in the child components
+        console.log(`Marking ${member.name} for reload attempt`);
+        // Explicitly set to false to trigger a reload
         updatedLoadedState[member.name] = false;
       }
     }
     setLoadedImages(updatedLoadedState);
+    
+    // Force skeletons to show briefly to give visual feedback that retry is happening
+    setShowSkeletons(true);
+    setTimeout(() => {
+      if (loadedCount / totalImages >= loadingThreshold) {
+        setShowSkeletons(false);
+      }
+    }, 1000);
   };
 
-  // Notification when an image loads successfully
+  // Handle notification when an image loads successfully
   const handleImageLoaded = (memberName: string) => {
     console.log(`Image loaded for team member: ${memberName}`);
     setLoadedImages(prev => ({
@@ -150,15 +167,15 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.08, // Reduced from 0.12 for faster animation
-        delayChildren: 0.1 // Reduced from 0.2 for faster loading perception
+        staggerChildren: 0.08, // Reduced for faster animation
+        delayChildren: 0.1 // Reduced for faster loading perception
       }
     }
   };
 
   return (
     <>
-      {/* Always show mobile loading indicator to provide immediate feedback */}
+      {/* Always show mobile loading indicator when not all images are loaded */}
       {isMobile && loadingProgress < 100 && (
         <TeamImageLoadingIndicator 
           loadingProgress={loadingProgress}
@@ -183,6 +200,12 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
       {networkStatus === 'offline' && (
         <div className="w-full mb-8 p-4 bg-gray-100 text-gray-700 rounded-lg text-center">
           You appear to be offline. Some team photos may not load properly.
+          <button 
+            onClick={handleRetry}
+            className="mt-2 px-3 py-1 bg-[#FBB03B] text-white rounded-md hover:bg-[#f9a718] transition-colors block mx-auto"
+          >
+            Try Again
+          </button>
         </div>
       )}
     
@@ -199,7 +222,7 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
             <TeamImageSkeleton key={`skeleton-${index}`} />
           ) : (
             <TeamMember 
-              key={`${member.name}-${index}`} 
+              key={`${member.name}-${index}-${retryCount}`} 
               member={member} 
               index={index}
               onImageLoad={() => handleImageLoaded(member.name)}
