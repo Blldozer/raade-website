@@ -160,6 +160,79 @@
     @apply bg-background text-foreground overflow-x-hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+
+    /* Improved font stack with system fonts as fallbacks */
+    font-family: 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  /* Add specific fallback classes for different font loading states */
+  .fonts-timeout body, 
+  .fonts-error body,
+  .no-font-api body {
+    /* Use more reliable system fonts when custom fonts fail */
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  /* Class-based font definitions for specific font families */
+  .font-amadine {
+    font-family: 'Amadine', 'Georgia', serif;
+  }
+
+  .font-simula {
+    font-family: 'Simula Book', 'Georgia', serif;
+  }
+
+  .font-opensans {
+    font-family: 'Open Sans', system-ui, sans-serif;
+  }
+
+  .font-zillaslab {
+    font-family: 'Zilla Slab', 'Georgia', serif;
+  }
+
+  .font-montserrat {
+    font-family: 'Montserrat', system-ui, sans-serif;
+  }
+
+  .font-lora {
+    font-family: 'Lora', 'Georgia', serif;
+  }
+
+  /* Fallback classes for each font when fonts fail to load */
+  .fonts-timeout .font-amadine, 
+  .fonts-error .font-amadine,
+  .no-font-api .font-amadine {
+    font-family: 'Georgia', serif;
+  }
+
+  .fonts-timeout .font-simula, 
+  .fonts-error .font-simula,
+  .no-font-api .font-simula {
+    font-family: 'Georgia', serif;
+  }
+
+  .fonts-timeout .font-opensans, 
+  .fonts-error .font-opensans,
+  .no-font-api .font-opensans {
+    font-family: system-ui, sans-serif;
+  }
+
+  .fonts-timeout .font-zillaslab, 
+  .fonts-error .font-zillaslab,
+  .no-font-api .font-zillaslab {
+    font-family: 'Georgia', serif;
+  }
+
+  .fonts-timeout .font-montserrat, 
+  .fonts-error .font-montserrat,
+  .no-font-api .font-montserrat {
+    font-family: system-ui, sans-serif;
+  }
+
+  .fonts-timeout .font-lora, 
+  .fonts-error .font-lora,
+  .no-font-api .font-lora {
+    font-family: 'Georgia', serif;
   }
 
   /* Improve focus styles for accessibility */
@@ -726,3 +799,4 @@ body {
     transform: none;
   }
 }
+

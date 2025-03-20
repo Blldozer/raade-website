@@ -1,6 +1,9 @@
 
 // Service Worker for RAADE Website
-const CACHE_NAME = 'raade-cache-v5'; // Incremented cache version
+const CACHE_NAME = 'raade-cache-v6'; // Incremented cache version
+const FONT_CACHE_NAME = 'raade-fonts-cache-v1'; // Separate cache for fonts
+const IMAGE_CACHE_NAME = 'raade-images-cache-v2';
+
 const urlsToCache = [
   '/',
   '/index.html',
@@ -15,8 +18,12 @@ const urlsToCache = [
   '/public/raade-individual-e-board-photos-webp'
 ];
 
-// Image-specific cache for better management
-const IMAGE_CACHE_NAME = 'raade-images-cache-v2';
+// Font files to cache separately with longer expiration
+const fontUrlsToCache = [
+  '/fonts/Amadine.woff',
+  '/fonts/Simula_Book_ImfTVa3.woff',
+  '/fonts/Simula_BookItalic_651eMqB.woff',
+];
 
 // Force HTTPS for all resources
 const enforceHTTPS = (url) => {
@@ -46,18 +53,30 @@ self.addEventListener('install', event => {
   // Skip waiting to ensure the new service worker activates immediately
   self.skipWaiting();
   
-  event.waitUntil(
+  event.waitUntil(Promise.all([
+    // Cache regular assets
     caches.open(CACHE_NAME)
       .then(cache => {
-        logDebug('Opened cache');
+        logDebug('Opened main cache');
         // Ensure all URLs use HTTPS in production
         const secureUrls = urlsToCache.map(url => enforceHTTPS(url));
         return cache.addAll(secureUrls);
       })
       .catch(error => {
-        console.error('Cache install failed:', error);
+        console.error('Main cache install failed:', error);
+      }),
+    
+    // Cache font assets with a separate cache
+    caches.open(FONT_CACHE_NAME)
+      .then(cache => {
+        logDebug('Opened font cache');
+        const secureFontUrls = fontUrlsToCache.map(url => enforceHTTPS(url));
+        return cache.addAll(secureFontUrls);
       })
-  );
+      .catch(error => {
+        console.error('Font cache install failed:', error);
+      })
+  ]));
 });
 
 // Message handler for dynamic cache instructions
@@ -86,6 +105,31 @@ self.addEventListener('message', event => {
           })
       );
     }
+  } else if (event.data && event.data.type === 'CACHE_FONT') {
+    // Handle request to cache a specific font
+    const fontUrl = enforceHTTPS(event.data.url);
+    
+    if (fontUrl) {
+      event.waitUntil(
+        caches.open(FONT_CACHE_NAME)
+          .then(cache => {
+            logDebug('Caching font', fontUrl);
+            return fetch(fontUrl)
+              .then(response => {
+                if (!response || response.status !== 200) {
+                  throw new Error('Failed to fetch font');
+                }
+                return cache.put(fontUrl, response);
+              })
+              .catch(error => {
+                console.error('Failed to cache font', fontUrl, error);
+              });
+          })
+      );
+    }
+  } else if (event.data && event.data.type === 'SKIP_WAITING') {
+    // Skip waiting when requested (for immediate updates)
+    self.skipWaiting();
   } else if (event.data && event.data.type === 'CLEAR_CACHE') {
     // Allow clearing specific caches
     const cacheName = event.data.cacheName;
@@ -106,6 +150,16 @@ const isNavigationRequest = (request) => {
          (request.method === 'GET' && 
           request.headers.get('accept') && 
           request.headers.get('accept').includes('text/html'));
+};
+
+// Check if a URL is a font request
+const isFontRequest = (url) => {
+  return url.pathname.includes('.woff') || 
+         url.pathname.includes('.woff2') || 
+         url.pathname.includes('.ttf') || 
+         url.pathname.includes('.otf') ||
+         url.pathname.includes('fonts.googleapis.com') ||
+         url.pathname.includes('fonts.gstatic.com');
 };
 
 // Check if a URL is related to Stripe
@@ -135,6 +189,52 @@ self.addEventListener('fetch', event => {
           return;
         }
       }
+    }
+    
+    // Special handling for font requests - cache first strategy with network fallback
+    if (isFontRequest(requestUrl)) {
+      logDebug('Font request:', requestUrl.pathname);
+      
+      event.respondWith(
+        caches.open(FONT_CACHE_NAME)
+          .then(cache => {
+            return cache.match(event.request)
+              .then(cachedResponse => {
+                if (cachedResponse) {
+                  // Return cached font
+                  logDebug('Serving font from cache', requestUrl.pathname);
+                  return cachedResponse;
+                }
+                
+                // Not in cache, try network
+                return fetch(event.request)
+                  .then(networkResponse => {
+                    if (!networkResponse || networkResponse.status !== 200) {
+                      throw new Error('Bad network response for font');
+                    }
+                    
+                    // Clone the response before using it
+                    const responseToCache = networkResponse.clone();
+                    
+                    // Cache the successful response
+                    cache.put(event.request, responseToCache);
+                    logDebug('Font cached after network fetch', requestUrl.pathname);
+                    
+                    return networkResponse;
+                  })
+                  .catch(error => {
+                    console.error('Network fetch failed for font', requestUrl.pathname, error);
+                    throw error;
+                  });
+              });
+          })
+          .catch(error => {
+            console.error('Font cache error:', error);
+            // If cache fails, try network as last resort
+            return fetch(event.request);
+          })
+      );
+      return;
     }
     
     // Handle navigation requests differently - always go to index.html for SPA
@@ -345,7 +445,7 @@ self.addEventListener('fetch', event => {
 self.addEventListener('activate', event => {
   logDebug('Activating...');
   
-  const cacheWhitelist = [CACHE_NAME, IMAGE_CACHE_NAME, 'raade-stripe-cache-v1'];
+  const cacheWhitelist = [CACHE_NAME, IMAGE_CACHE_NAME, FONT_CACHE_NAME, 'raade-stripe-cache-v1'];
   
   event.waitUntil(
     caches.keys().then(cacheNames => {
