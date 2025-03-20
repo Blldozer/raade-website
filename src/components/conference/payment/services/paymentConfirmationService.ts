@@ -23,13 +23,15 @@ export const confirmStripePayment = async (
   }
   
   // Confirm payment with Stripe using CardElement data
-  return stripe.confirmCardPayment(
-    elements.getElement("card")!,
-    {
-      payment_method: {
-        card: elements.getElement("card")!,
+  return stripe.confirmPayment({
+    elements,
+    confirmParams: {
+      return_url: window.location.href,
+      receipt_email: email,
+      payment_method_data: {
         billing_details: { email }
       }
-    }
-  );
+    },
+    redirect: "if_required"
+  });
 };
