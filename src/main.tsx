@@ -108,18 +108,20 @@ function startApp() {
       document.addEventListener('error', (event) => {
         const target = event.target as HTMLElement;
         if (target.tagName === 'SCRIPT' || target.tagName === 'LINK') {
-          console.error(`Error loading resource: ${(target as HTMLScriptElement | HTMLLinkElement).src || (target as HTMLLinkElement).href}`);
+          // Correctly handle different element types
+          const resourceUrl = target.tagName === 'SCRIPT' 
+            ? (target as HTMLScriptElement).src 
+            : (target as HTMLLinkElement).href;
+            
+          console.error(`Error loading resource: ${resourceUrl}`);
           
           // Try to load it through the service worker cache
-          if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-            const url = (target as HTMLScriptElement | HTMLLinkElement).src || (target as HTMLLinkElement).href;
-            if (url) {
-              console.log("Requesting service worker to cache external resource:", url);
-              navigator.serviceWorker.controller.postMessage({
-                type: 'CACHE_EXTERNAL',
-                url: url
-              });
-            }
+          if ('serviceWorker' in navigator && navigator.serviceWorker.controller && resourceUrl) {
+            console.log("Requesting service worker to cache external resource:", resourceUrl);
+            navigator.serviceWorker.controller.postMessage({
+              type: 'CACHE_EXTERNAL',
+              url: resourceUrl
+            });
           }
         }
       }, true); // Use capture phase
