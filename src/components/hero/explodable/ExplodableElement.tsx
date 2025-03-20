@@ -1,6 +1,24 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import Matter from 'matter-js';
 
+/**
+ * ExplodableElement Component
+ * 
+ * A physics-based interactive element that can be "exploded" on interaction,
+ * creating particles that scatter using the Matter.js physics engine.
+ * 
+ * - Uses Matter.js for realistic physics simulation
+ * - Creates satisfying interaction feedback for users
+ * - Provides visual representation of the "Build" concept
+ * 
+ * @param {number} x - X position
+ * @param {number} y - Y position
+ * @param {number} width - Element width
+ * @param {number} height - Element height
+ * @param {string} color - Element color (defaults to RAADE gold)
+ * @param {number} particleCount - Number of particles created on explosion
+ */
 interface ExplodableElementProps {
   x: number;
   y: number;
@@ -115,7 +133,7 @@ const ExplodableElement: React.FC<ExplodableElementProps> = ({
     <div 
       className="relative"
       style={{ width, height }}
-      onMouseEnter={handleExplode}
+      onClick={handleExplode}
     >
       <canvas
         ref={canvasRef}

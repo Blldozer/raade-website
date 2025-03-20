@@ -1,15 +1,15 @@
 
 import { motion } from "framer-motion";
 import ScrollDownButton from "@/components/hero/components/ScrollDownButton";
-import ParticleField from "@/components/hero/ParticleField";
+import ExplodableField from "@/components/hero/explodable/ExplodableField";
 
 /**
  * HeroSection Component - Animated hero for Innovation Studios page
  * 
  * Features:
  * - Connected, process-oriented animation sequence for the main tagline
- * - Improved spacing and layout for better visual hierarchy
- * - Interactive particle elements for engagement
+ * - Interactive building blocks that visitors can click and "explode"
+ * - Visual representation of the design, build, scale process
  * - Responsive design with optimized animations for all devices
  */
 const HeroSection = ({ scrollToContent }: { scrollToContent: () => void }) => {
@@ -76,8 +76,8 @@ const HeroSection = ({ scrollToContent }: { scrollToContent: () => void }) => {
         </div>
       </div>
       
-      {/* Interactive particles for engagement */}
-      <ParticleField />
+      {/* Interactive building blocks that users can interact with */}
+      <ExplodableField />
       
       <div className="container mx-auto px-4 relative z-20 flex flex-col justify-center min-h-[calc(100vh-120px)]">
         <motion.div
