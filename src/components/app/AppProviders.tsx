@@ -77,7 +77,7 @@ const AppProviders = ({ children }: AppProvidersProps) => {
   }, []);
 
   // Bail early if missing React
-  if (typeof React === 'undefined' || !React) {
+  if (typeof createElement === 'undefined') {
     return (
       <div className="text-center p-4">
         <h2 className="text-xl font-bold text-red-600">App Initialization Error</h2>

@@ -1,6 +1,6 @@
 
 import { createRoot } from 'react-dom/client'
-import { StrictMode } from 'react'
+import { StrictMode, createElement } from 'react'
 import App from './App.tsx'
 import './index.css'
 
@@ -41,15 +41,19 @@ function ensureFontsLoaded() {
   console.log("Starting font loading process");
   
   // Add a class to the document to indicate initial loading state
-  document.documentElement.classList.add('fonts-loading');
+  if (document && document.documentElement) {
+    document.documentElement.classList.add('fonts-loading');
+  }
   
   // Check if the document.fonts API is available
-  if ('fonts' in document) {
+  if (document && 'fonts' in document) {
     // Create a timeout to ensure the app renders even if fonts take too long
     const fontTimeout = setTimeout(() => {
       console.log("Font loading timeout reached, continuing with fallbacks");
-      document.documentElement.classList.add('fonts-timeout');
-      document.documentElement.classList.remove('fonts-loading');
+      if (document.documentElement) {
+        document.documentElement.classList.add('fonts-timeout');
+        document.documentElement.classList.remove('fonts-loading');
+      }
       startApp();
     }, 2000); // Reduced timeout for mobile devices
     
@@ -57,21 +61,27 @@ function ensureFontsLoaded() {
     document.fonts.ready.then(() => {
       clearTimeout(fontTimeout);
       console.log("All fonts loaded successfully");
-      document.documentElement.classList.add('fonts-loaded');
-      document.documentElement.classList.remove('fonts-loading');
+      if (document.documentElement) {
+        document.documentElement.classList.add('fonts-loaded');
+        document.documentElement.classList.remove('fonts-loading');
+      }
       startApp();
     }).catch(err => {
       clearTimeout(fontTimeout);
       console.error("Error loading fonts:", err);
-      document.documentElement.classList.add('fonts-error');
-      document.documentElement.classList.remove('fonts-loading');
+      if (document.documentElement) {
+        document.documentElement.classList.add('fonts-error');
+        document.documentElement.classList.remove('fonts-loading');
+      }
       startApp();
     });
   } else {
     // Fallback for browsers without document.fonts API
     console.log("Font loading API not available, proceeding with fallbacks");
-    document.documentElement.classList.add('no-font-api');
-    document.documentElement.classList.remove('fonts-loading');
+    if (document && document.documentElement) {
+      document.documentElement.classList.add('no-font-api');
+      document.documentElement.classList.remove('fonts-loading');
+    }
     startApp();
   }
 }
@@ -157,7 +167,7 @@ function startApp() {
     };
     
     // Check for React availability
-    if (typeof React === 'undefined' || !React) {
+    if (typeof createElement === 'undefined') {
       console.error("React is not defined - critical initialization error");
       createFallbackUI(rootElement, "Failed to load required resources. Please check your internet connection and try again.");
       return;
