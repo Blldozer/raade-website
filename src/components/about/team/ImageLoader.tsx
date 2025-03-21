@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef, RefObject } from "react";
 import { useResponsive } from "../../../hooks/useResponsive"; 
 import { teamMembers } from "../TeamData";
@@ -137,20 +138,20 @@ const ImageLoader = ({
       // First try - pick optimal format based on device
       if (isMobile) {
         // On mobile, start with JPG for faster loading and better compatibility
-        imgPath = `raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
+        imgPath = `/raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
         console.log(`[ImageLoader] First attempt: JPG for ${name} on mobile`);
       } else {
         // On desktop, try WebP first for better quality/size ratio
-        imgPath = `raade-individual-e-board-photos-webp/${formattedName}-raade-website-image.webp`;
+        imgPath = `/raade-individual-e-board-photos-webp/${formattedName}-raade-website-image.webp`;
         console.log(`[ImageLoader] First attempt: WebP for ${name} on desktop`);
       }
     } else {
       // On retry, use opposite format from what was tried first
       if (isMobile) {
-        imgPath = `raade-individual-e-board-photos-webp/${formattedName}-raade-website-image.webp`;
+        imgPath = `/raade-individual-e-board-photos-webp/${formattedName}-raade-website-image.webp`;
         console.log(`[ImageLoader] Retry ${retryCount}: WebP for ${name} on mobile`);
       } else {
-        imgPath = `raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
+        imgPath = `/raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
         console.log(`[ImageLoader] Retry ${retryCount}: JPG for ${name} on desktop`);
       }
     }

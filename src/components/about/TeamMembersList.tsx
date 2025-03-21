@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import TeamMember from "./TeamMember";
 import { useState, useEffect } from "react";
@@ -58,70 +59,31 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
     if (isInView && isLoaded) {
       console.log("TeamMembersList is in view and loaded, preloading priority images");
       
-      // Preload ALL images immediately with more aggressive approach
-      teamMembers.forEach((member, index) => {
-        // Remove special characters and normalize spaces
-        const safeName = member.name.replace(/[^\w\s-]/gi, '').trim();
-        const formattedName = safeName.split(" ").join("-");
+      // Preload first 3 images immediately
+      const preloadCount = isMobile ? 2 : 3;
+      const preloadImages = teamMembers.slice(0, preloadCount);
+      
+      preloadImages.forEach(member => {
+        const formattedName = member.name.split(" ").join("-");
         
-        // Delay slightly for later images to prioritize the first few
-        const delay = Math.min(index * 100, 1000); // Cap at 1 second max delay
+        // Try both image formats in parallel
+        const imgJpg = new Image();
+        imgJpg.src = `/raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
         
-        setTimeout(() => {
-          // Try both formats simultaneously with cache directive
-          const imgJpg = new Image();
-          const jpgPath = `raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
-          imgJpg.src = jpgPath;
-          
-          const imgWebp = new Image();
-          const webpPath = `raade-individual-e-board-photos-webp/${formattedName}-raade-website-image.webp`;
-          imgWebp.src = webpPath;
-          
-          // Also add link preload tags to document head
-          if (index < 5) { // Only add preload tags for first 5 images
-            const preloadJpg = document.createElement('link');
-            preloadJpg.rel = 'preload';
-            preloadJpg.as = 'image';
-            preloadJpg.href = jpgPath;
-            preloadJpg.crossOrigin = 'anonymous';
-            document.head.appendChild(preloadJpg);
-            
-            const preloadWebp = document.createElement('link');
-            preloadWebp.rel = 'preload';
-            preloadWebp.as = 'image';
-            preloadWebp.href = webpPath;
-            preloadWebp.crossOrigin = 'anonymous';
-            document.head.appendChild(preloadWebp);
-          }
-          
-          // Setup handlers for both formats
-          const handleLoad = (format: string) => {
-            console.log(`Preloaded ${format} image for ${member.name}`);
-            handleImageLoaded(member.name);
-            
-            // Cache the successful format in sessionStorage for immediate access
-            try {
-              sessionStorage.setItem(`team-image-${member.name}`, format === 'jpg' ? jpgPath : webpPath);
-            } catch (e) {
-              console.error('Failed to cache image path in sessionStorage', e);
-            }
-          };
-          
-          imgJpg.onload = () => handleLoad('jpg');
-          imgWebp.onload = () => handleLoad('webp');
-          
-          // Handle errors more gracefully
-          imgJpg.onerror = () => {
-            console.log(`Failed to load JPG for ${member.name}, trying WebP only`);
-          };
-          
-          imgWebp.onerror = () => {
-            console.log(`Failed to load WebP for ${member.name}, trying JPG only`);
-          };
-        }, delay);
+        const imgWebp = new Image();
+        imgWebp.src = `/raade-individual-e-board-photos-webp/${formattedName}-raade-website-image.webp`;
+        
+        // Setup handlers for both formats
+        const handleLoad = () => {
+          console.log(`Preloaded image for ${member.name}`);
+          handleImageLoaded(member.name);
+        };
+        
+        imgJpg.onload = handleLoad;
+        imgWebp.onload = handleLoad;
       });
     }
-  }, [isInView, isLoaded, teamMembers]);
+  }, [isInView, isLoaded, teamMembers, isMobile]);
 
   // Monitor online/offline status
   useEffect(() => {
@@ -198,19 +160,6 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
       [memberName]: true
     }));
   };
-
-  // Add direct access to preloaded images from sessionStorage
-  useEffect(() => {
-    // Check if any images were previously cached in this session
-    teamMembers.forEach(member => {
-      const cachedImagePath = sessionStorage.getItem(`team-image-${member.name}`);
-      if (cachedImagePath) {
-        console.log(`Found cached image path for ${member.name}: ${cachedImagePath}`);
-        // Mark as loaded directly from cache
-        handleImageLoaded(member.name);
-      }
-    });
-  }, [teamMembers]);
 
   // Container animation with reduced delay for better performance
   const container = {
