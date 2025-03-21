@@ -21,6 +21,7 @@ interface TeamMemberCardProps {
  * - Framer Motion animations for enhanced UX
  * - Consistent styling and layout
  * - Performance optimizations for animations
+ * - Mobile-first design approach for reliable rendering
  */
 const TeamMemberCard = ({ member, index, onImageLoad }: TeamMemberCardProps) => {
   // Animation variants with reduced complexity for better performance on mobile
