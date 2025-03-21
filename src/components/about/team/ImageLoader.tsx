@@ -56,15 +56,15 @@ const ImageLoader = ({
   
   // Monitor network status actively
   useEffect(() => {
-    console.log(`[ImageLoader] Initial network status: ${navigator.onLine ? 'online' : 'offline'}`);
+    console.log(`[DEBUG-TEAM] Initial network status: ${navigator.onLine ? 'online' : 'offline'} for ${name}`);
     
     const handleOnline = () => {
-      console.log('[ImageLoader] Network is online');
+      console.log(`[DEBUG-TEAM] Network is online for ${name}`);
       setIsNetworkActive(true);
     };
     
     const handleOffline = () => {
-      console.log('[ImageLoader] Network is offline');
+      console.log(`[DEBUG-TEAM] Network is offline for ${name}`);
       setIsNetworkActive(false);
     };
     
@@ -75,11 +75,11 @@ const ImageLoader = ({
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, []);
+  }, [name]);
   
   // Log connection info on mount to help debug
   useEffect(() => {
-    console.log(`[ImageLoader] Initializing for ${name} (Mobile: ${isMobile}, Retry: ${retryCount})`);
+    console.log(`[DEBUG-TEAM] Initializing ImageLoader for ${name} (Mobile: ${isMobile}, Retry: ${retryCount})`);
     
     // Check connection type if available
     if ('connection' in navigator && navigator.connection) {
@@ -87,7 +87,7 @@ const ImageLoader = ({
       if (connection) {
         const effectiveType = connection.effectiveType || 'unknown';
         setConnectionType(effectiveType);
-        console.log(`[ImageLoader] Connection type: ${effectiveType}`);
+        console.log(`[DEBUG-TEAM] Connection type for ${name}: ${effectiveType}`);
         
         setIsLowBandwidth(effectiveType === '2g' || effectiveType === 'slow-2g');
         
@@ -95,7 +95,7 @@ const ImageLoader = ({
         const updateConnectionStatus = () => {
           if (connection) {
             const newEffectiveType = connection.effectiveType || 'unknown';
-            console.log(`[ImageLoader] Connection changed to: ${newEffectiveType}`);
+            console.log(`[DEBUG-TEAM] Connection changed to: ${newEffectiveType} for ${name}`);
             setConnectionType(newEffectiveType);
             setIsLowBandwidth(newEffectiveType === '2g' || newEffectiveType === 'slow-2g');
           }
@@ -105,21 +105,21 @@ const ImageLoader = ({
         return () => connection.removeEventListener('change', updateConnectionStatus);
       }
     } else {
-      console.log('[ImageLoader] Connection API not available');
+      console.log(`[DEBUG-TEAM] Connection API not available for ${name}`);
     }
-  }, [name, isMobile]);
+  }, [name, isMobile, retryCount]);
 
   // Preload image with improved retry logic
   useEffect(() => {
     // Prevent unnecessary retries if we already have too many
     if (retryCount >= MAX_RETRIES && imageError) {
-      console.log(`[ImageLoader] Maximum retries reached for ${name}, using fallback`);
+      console.log(`[DEBUG-TEAM] Maximum retries reached for ${name}, using fallback`);
       return;
     }
 
     // Safety check for network status before attempting to load
     if (!isNetworkActive) {
-      console.log(`[ImageLoader] Network is offline, delaying image load for ${name}`);
+      console.log(`[DEBUG-TEAM] Network is offline, delaying image load for ${name}`);
       return; // Don't attempt to load when offline
     }
 
@@ -128,7 +128,7 @@ const ImageLoader = ({
     const safeName = name.replace(/[^\w\s-]/gi, '').trim();
     const formattedName = safeName.split(" ").join("-");
     
-    console.log(`[ImageLoader] Formatted name: "${formattedName}" from "${name}"`);
+    console.log(`[DEBUG-TEAM] Formatted name: "${formattedName}" from "${name}"`);
     
     // Determine which format to use based on retry count and device
     let imgPath;
@@ -139,24 +139,24 @@ const ImageLoader = ({
       if (isMobile) {
         // On mobile, start with JPG for faster loading and better compatibility
         imgPath = `/raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
-        console.log(`[ImageLoader] First attempt: JPG for ${name} on mobile`);
+        console.log(`[DEBUG-TEAM] First attempt: JPG for ${name} on mobile, path: ${imgPath}`);
       } else {
         // On desktop, try WebP first for better quality/size ratio
         imgPath = `/raade-individual-e-board-photos-webp/${formattedName}-raade-website-image.webp`;
-        console.log(`[ImageLoader] First attempt: WebP for ${name} on desktop`);
+        console.log(`[DEBUG-TEAM] First attempt: WebP for ${name} on desktop, path: ${imgPath}`);
       }
     } else {
       // On retry, use opposite format from what was tried first
       if (isMobile) {
         imgPath = `/raade-individual-e-board-photos-webp/${formattedName}-raade-website-image.webp`;
-        console.log(`[ImageLoader] Retry ${retryCount}: WebP for ${name} on mobile`);
+        console.log(`[DEBUG-TEAM] Retry ${retryCount}: WebP for ${name} on mobile, path: ${imgPath}`);
       } else {
         imgPath = `/raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
-        console.log(`[ImageLoader] Retry ${retryCount}: JPG for ${name} on desktop`);
+        console.log(`[DEBUG-TEAM] Retry ${retryCount}: JPG for ${name} on desktop, path: ${imgPath}`);
       }
     }
     
-    console.log(`[ImageLoader] Loading image for ${name} from path: ${imgPath}, retry: ${retryCount}`);
+    console.log(`[DEBUG-TEAM] Starting image load for ${name} from path: ${imgPath}, retry: ${retryCount}`);
     
     // Set the image source - this will be used by the img element
     setImageSrc(imgPath);
@@ -166,25 +166,34 @@ const ImageLoader = ({
     
     // Set up proper event handlers
     img.onload = () => {
-      console.log(`[ImageLoader] Successfully loaded image for ${name}`);
+      console.log(`[DEBUG-TEAM] Successfully loaded image for ${name}`);
       setImageLoaded(true);
       setImageError(false);
       onImageLoad?.();
     };
     
     img.onerror = (e) => {
-      console.error(`[ImageLoader] Failed to load image for ${name} from ${imgPath}`, e);
+      console.error(`[DEBUG-TEAM] Failed to load image for ${name} from ${imgPath}, error:`, e);
+      
+      // Check if the image actually exists by making a HEAD request
+      fetch(imgPath, { method: 'HEAD' })
+        .then(response => {
+          console.log(`[DEBUG-TEAM] HEAD request for ${imgPath} returned status: ${response.status} (${response.ok ? 'OK' : 'Not Found'})`);
+        })
+        .catch(error => {
+          console.error(`[DEBUG-TEAM] HEAD request for ${imgPath} failed:`, error);
+        });
       
       if (retryCount < MAX_RETRIES) {
         // Reduced delay between retries for faster fallback
         const delay = 500 * (retryCount + 1); // Reduced from 1000ms
-        console.log(`[ImageLoader] Will retry loading ${name} in ${delay}ms (attempt ${retryCount + 1}/${MAX_RETRIES})`);
+        console.log(`[DEBUG-TEAM] Will retry loading ${name} in ${delay}ms (attempt ${retryCount + 1}/${MAX_RETRIES})`);
         
         setTimeout(() => {
           setRetryCount(retryCount + 1);
         }, delay);
       } else {
-        console.log(`[ImageLoader] Max retries reached for ${name}, showing fallback`);
+        console.log(`[DEBUG-TEAM] Max retries reached for ${name}, showing fallback`);
         setImageError(true);
       }
     };
@@ -203,7 +212,7 @@ const ImageLoader = ({
   useEffect(() => {
     if (imageSrc && 'serviceWorker' in navigator && navigator.serviceWorker.controller) {
       // Tell service worker to cache this image
-      console.log(`[ImageLoader] Requesting cache for ${imageSrc}`);
+      console.log(`[DEBUG-TEAM] Requesting cache for ${imageSrc}`);
       navigator.serviceWorker.controller.postMessage({
         type: 'CACHE_IMAGE',
         url: imageSrc

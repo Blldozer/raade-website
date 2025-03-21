@@ -1,25 +1,18 @@
 
-import React from 'react';
-import { Progress } from "@/components/ui/progress";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useState, useEffect } from 'react';
 
 interface TeamImageLoadingIndicatorProps {
   loadingProgress: number;
   totalImages: number;
   loadedImages: number;
   networkStatus: 'online' | 'offline';
-  onRetry?: () => void;
+  onRetry: () => void;
 }
 
 /**
- * TeamImageLoadingIndicator component - Shows loading progress for team images
- * 
- * Features:
- * - Mobile-optimized loading indicator with progress tracking
- * - Network status awareness with offline mode support
- * - Progress percentage display with visual indicator
- * - Enhanced retry button that works regardless of network status
- * - Responsive design that works on all devices
+ * TeamImageLoadingIndicator component
+ * Displays loading progress for team member images on mobile devices
+ * Provides visual feedback and retry capability with detailed logs
  */
 const TeamImageLoadingIndicator = ({ 
   loadingProgress, 
@@ -28,54 +21,79 @@ const TeamImageLoadingIndicator = ({
   networkStatus,
   onRetry
 }: TeamImageLoadingIndicatorProps) => {
+  const [showRetryMessage, setShowRetryMessage] = useState(false);
   
-  // Determine if retry should be enabled - now always enabled if images aren't fully loaded
-  const shouldEnableRetry = loadedImages < totalImages;
+  // Track retry attempts for better debugging
+  const [retryAttempts, setRetryAttempts] = useState(0);
   
-  const handleRetryClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    console.log("Retry button clicked, calling onRetry handler");
-    onRetry?.();
+  // Show retry message if nothing loads after 3 seconds
+  useEffect(() => {
+    console.log(`[DEBUG-TEAM] Retry message timer starting. Current progress: ${loadingProgress}%`);
+    
+    const timer = setTimeout(() => {
+      // Only show retry message if progress is still at 0%
+      if (loadedImages === 0 && loadingProgress === 0) {
+        console.log('[DEBUG-TEAM] No images loaded after 3s, showing retry message');
+        setShowRetryMessage(true);
+      }
+    }, 3000);
+    
+    return () => clearTimeout(timer);
+  }, [loadedImages, loadingProgress]);
+
+  const handleRetryClick = () => {
+    console.log('[DEBUG-TEAM] Retry button clicked in loading indicator');
+    setRetryAttempts(prev => prev + 1);
+    
+    // Log network status when retry is clicked
+    console.log(`[DEBUG-TEAM] Network status at retry: ${networkStatus}`);
+    console.log(`[DEBUG-TEAM] Online status from navigator: ${navigator.onLine ? 'online' : 'offline'}`);
+    
+    // Call the provided retry handler
+    onRetry();
+    
+    // Reset the retry message after clicking
+    setShowRetryMessage(false);
   };
-  
+
   return (
-    <div className="w-full rounded-lg bg-white shadow-md p-6 mb-8 border-l-4 border-[#FBB03B]">
-      <div className="flex justify-between items-center mb-3">
-        <h3 className="text-lg font-medium text-[#274675]">Loading team members</h3>
-        <span className="text-sm font-medium text-[#3C403A]">{loadedImages}/{totalImages}</span>
+    <div className="w-full mb-8 bg-white rounded-lg p-4 shadow">
+      <div className="flex justify-between items-center mb-2">
+        <span className="text-gray-700 font-medium">Loading team photos</span>
+        <span className="text-gray-500 text-sm">{loadedImages}/{totalImages}</span>
       </div>
       
-      <Progress 
-        value={loadingProgress} 
-        className="h-3 mb-4 bg-gray-200" 
-      />
+      <div className="w-full bg-gray-200 rounded-full h-2.5">
+        <div 
+          className="bg-[#FBB03B] h-2.5 rounded-full transition-all duration-300" 
+          style={{ width: `${loadingProgress}%` }}
+        />
+      </div>
       
-      <div className="flex justify-between items-center">
-        <div className="flex items-center">
-          {networkStatus === 'online' ? (
-            <span className="inline-block w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse"></span>
-          ) : (
-            <span className="inline-block w-3 h-3 bg-red-500 rounded-full mr-2"></span>
-          )}
-          <span className="text-sm text-[#3C403A]">
-            {networkStatus === 'online' 
-              ? `Loading: ${Math.round(loadingProgress)}%` 
-              : 'Connection issue detected'}
-          </span>
+      {/* Connection info - helps debug network issues */}
+      <div className="mt-2 text-xs text-gray-500 flex justify-between">
+        <span>Connection: {networkStatus}</span>
+        <span>Retry attempts: {retryAttempts}</span>
+      </div>
+      
+      {/* Show retry UI if needed */}
+      {(showRetryMessage || loadingProgress === 0 || networkStatus === 'offline') && (
+        <div className="mt-3 text-center">
+          <p className="text-sm text-gray-600 mb-2">
+            {networkStatus === 'offline' 
+              ? "You appear to be offline. Please check your connection." 
+              : "Having trouble loading images?"}
+          </p>
+          <button
+            onClick={handleRetryClick}
+            className="px-4 py-2 bg-[#FBB03B] text-white rounded hover:bg-[#f9a718] transition-colors"
+            // Only disable if explicitly offline and at least one retry was attempted
+            disabled={networkStatus === 'offline' && retryAttempts > 0}
+          >
+            Try Again
+          </button>
         </div>
-        
-        {/* Modified retry button - now active when images aren't fully loaded */}
-        <button 
-          onClick={handleRetryClick}
-          aria-label="Retry loading images"
-          className={`text-sm px-3 py-1 bg-[#FBB03B] text-white rounded-md 
-            ${shouldEnableRetry ? 'hover:bg-[#f9a718] cursor-pointer' : 'opacity-50 cursor-not-allowed'} 
-            transition-colors`}
-          disabled={!shouldEnableRetry}
-        >
-          Retry
-        </button>
-      </div>
+      )}
     </div>
   );
 };

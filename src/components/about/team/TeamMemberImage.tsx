@@ -33,9 +33,9 @@ const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
 
   // Log component lifecycle for debugging
   useEffect(() => {
-    console.log(`TeamMemberImage mounted for "${name}"`);
+    console.log(`[DEBUG-TEAM] TeamMemberImage mounted for "${name}"`);
     return () => {
-      console.log(`TeamMemberImage unmounted for "${name}"`);
+      console.log(`[DEBUG-TEAM] TeamMemberImage unmounted for "${name}"`);
     };
   }, [name]);
 
@@ -51,7 +51,7 @@ const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
   // Effect to coordinate imageLoaded state from ImageLoader with local state
   useEffect(() => {
     if (imageLoaded) {
-      console.log(`Image for ${name} marked as loaded from ImageLoader`);
+      console.log(`[DEBUG-TEAM] Image for ${name} marked as loaded from ImageLoader`);
       setLocalImageLoaded(true);
       setShowLoading(false);
     }
@@ -61,20 +61,22 @@ const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
   // This prevents flickering for fast/cached images
   useEffect(() => {
     if (!localImageLoaded && !imageLoaded) {
+      console.log(`[DEBUG-TEAM] Starting loading timer for ${name}`);
       const timer = setTimeout(() => {
+        console.log(`[DEBUG-TEAM] Setting showLoading=true for ${name} after timer`);
         setShowLoading(true);
       }, 150);
       
       return () => clearTimeout(timer);
     }
-  }, [localImageLoaded, imageLoaded]);
+  }, [localImageLoaded, imageLoaded, name]);
   
   // Force a fallback after a certain timeout to prevent endless waiting
   useEffect(() => {
     // If image hasn't loaded after 12 seconds, show fallback
     const fallbackTimer = setTimeout(() => {
       if (!localImageLoaded && !imageLoaded) {
-        console.warn(`[TeamMemberImage] Image load timeout for ${name}, showing fallback`);
+        console.warn(`[DEBUG-TEAM] Image load timeout for ${name}, showing fallback`);
         setImageError(true);
       }
     }, 12000); // 12-second timeout
@@ -117,15 +119,15 @@ const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
                 minHeight: '10rem' // Ensure minimum height even before load
               }}
               onLoad={(e) => {
-                console.log(`Image for ${name} loaded in DOM`);
+                console.log(`[DEBUG-TEAM] Image for ${name} loaded in DOM successfully`);
                 setLocalImageLoaded(true);
                 setShowLoading(false);
                 onImageLoad?.();
               }}
               onError={(e) => {
-                console.error(`Error loading image for ${name}:`, e);
+                console.error(`[DEBUG-TEAM] Error loading image for ${name} in DOM:`, e);
                 if (retryCount >= 2) {
-                  console.log(`Setting image error to true for ${name} after max retries`);
+                  console.log(`[DEBUG-TEAM] Setting image error to true for ${name} after max retries in DOM`);
                   setImageError(true);
                 }
               }}

@@ -48,16 +48,16 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
   
   // Log component mounting for debugging
   useEffect(() => {
-    console.log(`TeamMembersList mounted with ${teamMembers.length} members, isMobile: ${isMobile}`);
+    console.log(`[DEBUG-TEAM] TeamMembersList mounted with ${teamMembers.length} members, isMobile: ${isMobile}`);
     return () => {
-      console.log("TeamMembersList unmounting");
+      console.log("[DEBUG-TEAM] TeamMembersList unmounting");
     };
   }, [teamMembers.length, isMobile]);
 
   // Preload first few images for faster initial display
   useEffect(() => {
     if (isInView && isLoaded) {
-      console.log("TeamMembersList is in view and loaded, preloading priority images");
+      console.log("[DEBUG-TEAM] TeamMembersList is in view and loaded, preloading priority images");
       
       // Preload first 3 images immediately
       const preloadCount = isMobile ? 2 : 3;
@@ -75,12 +75,35 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
         
         // Setup handlers for both formats
         const handleLoad = () => {
-          console.log(`Preloaded image for ${member.name}`);
+          console.log(`[DEBUG-TEAM] Preloaded image for ${member.name}`);
           handleImageLoaded(member.name);
         };
         
+        // Log errors for preloads
+        const handleError = (format: string, error: ErrorEvent) => {
+          console.error(`[DEBUG-TEAM] Failed to preload ${format} image for ${member.name}:`, error);
+          
+          // Check if the image actually exists
+          const imgPath = format === 'jpg' 
+            ? `/raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`
+            : `/raade-individual-e-board-photos-webp/${formattedName}-raade-website-image.webp`;
+            
+          fetch(imgPath, { method: 'HEAD' })
+            .then(response => {
+              console.log(`[DEBUG-TEAM] HEAD request for ${imgPath} returned status: ${response.status} (${response.ok ? 'OK' : 'Not Found'})`);
+            })
+            .catch(error => {
+              console.error(`[DEBUG-TEAM] HEAD request for ${imgPath} failed:`, error);
+            });
+        };
+        
         imgJpg.onload = handleLoad;
+        imgJpg.onerror = (e) => handleError('jpg', e as ErrorEvent);
+        
         imgWebp.onload = handleLoad;
+        imgWebp.onerror = (e) => handleError('webp', e as ErrorEvent);
+        
+        console.log(`[DEBUG-TEAM] Attempting to preload images for ${member.name}`);
       });
     }
   }, [isInView, isLoaded, teamMembers, isMobile]);
@@ -88,17 +111,19 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
   // Monitor online/offline status
   useEffect(() => {
     const handleOnline = () => {
-      console.log("Browser is online, attempting to reload any failed images");
+      console.log("[DEBUG-TEAM] Browser is online, attempting to reload any failed images");
       setNetworkStatus('online');
     };
     
     const handleOffline = () => {
-      console.log("Browser is offline, images may fail to load");
+      console.log("[DEBUG-TEAM] Browser is offline, images may fail to load");
       setNetworkStatus('offline');
     };
     
     // Check initial status
-    setNetworkStatus(navigator.onLine ? 'online' : 'offline');
+    const initialStatus = navigator.onLine ? 'online' : 'offline';
+    console.log(`[DEBUG-TEAM] Initial network status: ${initialStatus}`);
+    setNetworkStatus(initialStatus);
     
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
@@ -112,31 +137,50 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
   // Calculate loading progress
   useEffect(() => {
     const percent = totalImages > 0 ? (loadedCount / totalImages) * 100 : 0;
-    console.log(`Team image loading progress: ${Math.round(percent)}% (${loadedCount}/${totalImages})`);
+    console.log(`[DEBUG-TEAM] Team image loading progress: ${Math.round(percent)}% (${loadedCount}/${totalImages})`);
     setLoadingProgress(percent);
+    
+    // List which images have loaded and which haven't
+    if (Object.keys(loadedImages).length > 0) {
+      const loaded = Object.entries(loadedImages)
+        .filter(([_, isLoaded]) => isLoaded)
+        .map(([name, _]) => name);
+      
+      const notLoaded = Object.entries(loadedImages)
+        .filter(([_, isLoaded]) => !isLoaded)
+        .map(([name, _]) => name);
+      
+      console.log(`[DEBUG-TEAM] Loaded images (${loaded.length}): ${loaded.join(', ')}`);
+      console.log(`[DEBUG-TEAM] Not loaded images (${notLoaded.length}): ${notLoaded.join(', ')}`);
+    }
     
     // Hide skeletons once we reach the threshold
     if (percent >= loadingThreshold * 100) {
+      console.log(`[DEBUG-TEAM] Reached loading threshold of ${loadingThreshold * 100}%, hiding skeletons`);
       setShowSkeletons(false);
     }
     
     if (percent === 100) {
-      console.log("All team member images loaded successfully");
+      console.log("[DEBUG-TEAM] All team member images loaded successfully");
     }
   }, [loadedImages, totalImages, loadingThreshold, loadedCount]);
 
   // Enhanced retry function that forces reload of all unloaded images
   const handleRetry = () => {
-    console.log("Retry button clicked, attempting to reload all unloaded images");
+    console.log("[DEBUG-TEAM] Retry button clicked, attempting to reload all unloaded images");
     
     // Increment retry counter to force ImageLoader components to try again
-    setRetryCount(prev => prev + 1);
+    setRetryCount(prevCount => {
+      const newCount = prevCount + 1;
+      console.log(`[DEBUG-TEAM] Incrementing retry count from ${prevCount} to ${newCount}`);
+      return newCount;
+    });
     
     // Reset loaded state for unloaded images to force a fresh attempt
     const updatedLoadedState = { ...loadedImages };
     for (const member of teamMembers) {
       if (!updatedLoadedState[member.name]) {
-        console.log(`Marking ${member.name} for reload attempt`);
+        console.log(`[DEBUG-TEAM] Marking ${member.name} for reload attempt`);
         // Explicitly set to false to trigger a reload
         updatedLoadedState[member.name] = false;
       }
@@ -154,7 +198,7 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
 
   // Handle notification when an image loads successfully
   const handleImageLoaded = (memberName: string) => {
-    console.log(`Image loaded for team member: ${memberName}`);
+    console.log(`[DEBUG-TEAM] Image loaded successfully for team member: ${memberName}`);
     setLoadedImages(prev => ({
       ...prev,
       [memberName]: true

@@ -9,6 +9,15 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    // Add verbose headers for debugging image loading issues
+    headers: {
+      'Cache-Control': 'no-store',
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Cross-Origin-Resource-Policy': 'cross-origin',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Expose-Headers': '*',
+    }
   },
   plugins: [
     react(),
