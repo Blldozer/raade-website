@@ -2,54 +2,114 @@
 import { useState, useEffect } from "react";
 
 /**
- * Hook for detecting input capabilities of the device
+ * Hook for detecting input capabilities with improved error handling
  * 
- * Provides information about:
- * - Pointer type (coarse/fine)
- * - Hover capabilities
- * - Touch support
- * - Motion preferences
+ * Features:
+ * - Detects touch, hover, and pointer capabilities
+ * - Gracefully handles cases where window/navigator is not available
+ * - Better error recovery for mobile devices
  */
 export const useInputCapabilities = () => {
-  const [hasPrecisePointer, setHasPrecisePointer] = useState(true);
-  const [hasHoverCapability, setHasHoverCapability] = useState(true);
-  const [hasCoarsePointer, setHasCoarsePointer] = useState(false);
-  const [touchCapability, setTouchCapability] = useState<'none' | 'limited' | 'full'>('none');
-  const [preferReducedMotion, setPreferReducedMotion] = useState(false);
+  // Safe environment detection
+  const hasWindow = typeof window !== 'undefined';
+  const hasNavigator = typeof navigator !== 'undefined';
+  
+  // Initialize with sensible defaults
+  const [hasTouch, setHasTouch] = useState(() => {
+    if (!hasWindow || !hasNavigator) return false;
+    try {
+      return 'ontouchstart' in window || 
+          navigator.maxTouchPoints > 0 || 
+          (navigator as any).msMaxTouchPoints > 0;
+    } catch (e) {
+      console.warn("Error detecting touch capability:", e);
+      return false;
+    }
+  });
+  
+  const [canHover, setCanHover] = useState(() => {
+    if (!hasWindow) return true; // Default to true as fallback
+    try {
+      // matchMedia might not be available in all browsers
+      return window.matchMedia('(hover: hover)').matches;
+    } catch (e) {
+      console.warn("Error detecting hover capability:", e);
+      return !hasTouch; // Fallback based on touch
+    }
+  });
+  
+  const [hasPointer, setHasPointer] = useState(() => {
+    if (!hasWindow) return true; // Default to true as fallback
+    try {
+      return window.matchMedia('(pointer: fine)').matches;
+    } catch (e) {
+      console.warn("Error detecting pointer capability:", e);
+      return !hasTouch; // Fallback based on touch
+    }
+  });
 
+  // Update capabilities when environment changes
   useEffect(() => {
-    // Check for pointer capabilities
-    if (window.matchMedia) {
-      // Check if the device has hover capability
-      const hasHoverQuery = window.matchMedia('(hover: hover)');
-      setHasHoverCapability(hasHoverQuery.matches);
-      
-      // Check if the device has a coarse pointer (typically touch)
-      const hasCoarsePointerQuery = window.matchMedia('(pointer: coarse)');
-      setHasCoarsePointer(hasCoarsePointerQuery.matches);
-      
-      // Check if the device has a fine pointer (mouse, stylus)
-      const hasFinePointerQuery = window.matchMedia('(pointer: fine)');
-      setHasPrecisePointer(hasFinePointerQuery.matches);
-      
-      // Check if user prefers reduced motion
-      const prefersReducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-      setPreferReducedMotion(prefersReducedMotionQuery.matches);
-    }
+    if (!hasWindow) return;
     
-    // Determine touch capability
-    if ('ontouchstart' in window) {
-      setTouchCapability(hasCoarsePointer ? 'full' : 'limited');
-    } else {
-      setTouchCapability('none');
+    try {
+      // Function to update capabilities
+      const updateCapabilities = () => {
+        try {
+          // Touch detection
+          setHasTouch(
+            'ontouchstart' in window || 
+            (navigator && navigator.maxTouchPoints > 0) || 
+            (navigator && (navigator as any).msMaxTouchPoints > 0)
+          );
+          
+          // Hover detection (with fallback)
+          try {
+            setCanHover(window.matchMedia('(hover: hover)').matches);
+          } catch (e) {
+            console.warn("matchMedia hover detection failed:", e);
+          }
+          
+          // Pointer detection (with fallback)
+          try {
+            setHasPointer(window.matchMedia('(pointer: fine)').matches);
+          } catch (e) {
+            console.warn("matchMedia pointer detection failed:", e);
+          }
+        } catch (e) {
+          console.error("Error in updateCapabilities:", e);
+        }
+      };
+      
+      // Call once to ensure initial state is correct
+      updateCapabilities();
+      
+      // Additional touch event listeners for more accurate detection
+      const touchStartHandler = () => {
+        if (!hasTouch) setHasTouch(true);
+        // Remove listener once we've detected touch
+        window.removeEventListener('touchstart', touchStartHandler);
+      };
+      
+      // Monitor for touch events
+      window.addEventListener('touchstart', touchStartHandler, { once: true });
+      
+      // Clean up
+      return () => {
+        window.removeEventListener('touchstart', touchStartHandler);
+      };
+    } catch (error) {
+      console.error("Critical error in useInputCapabilities:", error);
+      // Return default values if we can't detect
+      return () => {};
     }
-  }, [hasCoarsePointer]);
+  }, [hasWindow, hasNavigator, hasTouch]);
 
   return {
-    hasPrecisePointer,
-    hasHoverCapability,
-    hasCoarsePointer,
-    touchCapability,
-    preferReducedMotion
+    hasTouch,
+    canHover,
+    hasPointer,
+    // Simplified input type detection
+    inputType: hasPointer ? (canHover ? 'mouse' : 'stylus') : (hasTouch ? 'touch' : 'unknown')
   };
 };
