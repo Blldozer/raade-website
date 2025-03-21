@@ -38,7 +38,7 @@ const MobileMenuHeader = ({ onClose }: MobileMenuHeaderProps) => {
         transition={{ duration: 0.4, delay: 0.1 }}
       >
         <NavLogo 
-          forceDarkMode={true} 
+          forceDarkMode={false} 
           useShortForm={true}
           forceSize="h-8"
         />
