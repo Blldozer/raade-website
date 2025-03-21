@@ -1,18 +1,25 @@
 
-import { useState, useEffect } from 'react';
+import React from 'react';
+import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface TeamImageLoadingIndicatorProps {
   loadingProgress: number;
   totalImages: number;
   loadedImages: number;
   networkStatus: 'online' | 'offline';
-  onRetry: () => void;
+  onRetry?: () => void;
 }
 
 /**
- * TeamImageLoadingIndicator component
- * Simplified version with more aggressive retry behavior
- * Shows loading progress with clear visual feedback
+ * TeamImageLoadingIndicator component - Shows loading progress for team images
+ * 
+ * Features:
+ * - Mobile-optimized loading indicator with progress tracking
+ * - Network status awareness with offline mode support
+ * - Progress percentage display with visual indicator
+ * - Retry button for connection issues
+ * - Responsive design that works on all devices
  */
 const TeamImageLoadingIndicator = ({ 
   loadingProgress, 
@@ -21,68 +28,43 @@ const TeamImageLoadingIndicator = ({
   networkStatus,
   onRetry
 }: TeamImageLoadingIndicatorProps) => {
-  const [showRetryMessage, setShowRetryMessage] = useState(false);
-  const [retryAttempts, setRetryAttempts] = useState(0);
-  
-  // Show retry message sooner - after 2 seconds instead of 3
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (loadedImages === 0 && loadingProgress === 0) {
-        setShowRetryMessage(true);
-      }
-    }, 2000); // Reduced time to show retry option
-    
-    return () => clearTimeout(timer);
-  }, [loadedImages, loadingProgress]);
-
-  // More aggressive retry with forced reload
-  const handleRetryClick = () => {
-    setRetryAttempts(prev => prev + 1);
-    
-    // Call the provided retry handler
-    onRetry();
-    
-    // Reset the retry message after clicking
-    setShowRetryMessage(false);
-  };
-
   return (
-    <div className="w-full mb-8 bg-white rounded-lg p-4 shadow">
-      <div className="flex justify-between items-center mb-2">
-        <span className="text-gray-700 font-medium">Loading team photos</span>
-        <span className="text-gray-500 text-sm">{loadedImages}/{totalImages}</span>
+    <div className="w-full rounded-lg bg-white shadow-md p-6 mb-8 border-l-4 border-[#FBB03B]">
+      <div className="flex justify-between items-center mb-3">
+        <h3 className="text-lg font-medium text-[#274675]">Loading team members</h3>
+        <span className="text-sm font-medium text-[#3C403A]">{loadedImages}/{totalImages}</span>
       </div>
       
-      <div className="w-full bg-gray-200 rounded-full h-2.5">
-        <div 
-          className="bg-[#FBB03B] h-2.5 rounded-full transition-all duration-300" 
-          style={{ width: `${loadingProgress}%` }}
-        />
-      </div>
+      <Progress 
+        value={loadingProgress} 
+        className="h-3 mb-4 bg-gray-200" 
+      />
       
-      {/* Connection info */}
-      <div className="mt-2 text-xs text-gray-500 flex justify-between">
-        <span>Connection: {networkStatus}</span>
-        <span>Retry attempts: {retryAttempts}</span>
-      </div>
-      
-      {/* More prominent retry UI that shows up sooner */}
-      {(showRetryMessage || loadingProgress < 10 || networkStatus === 'offline') && (
-        <div className="mt-3 text-center">
-          <p className="text-sm text-gray-600 mb-2">
-            {networkStatus === 'offline' 
-              ? "You appear to be offline. Please check your connection." 
-              : "Having trouble loading images?"}
-          </p>
-          <button
-            onClick={handleRetryClick}
-            className="px-4 py-2 bg-[#FBB03B] text-white rounded hover:bg-[#f9a718] transition-colors"
-            disabled={networkStatus === 'offline' && retryAttempts > 0}
-          >
-            Try Again
-          </button>
+      <div className="flex justify-between items-center">
+        <div className="flex items-center">
+          {networkStatus === 'online' ? (
+            <span className="inline-block w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+          ) : (
+            <span className="inline-block w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+          )}
+          <span className="text-sm text-[#3C403A]">
+            {networkStatus === 'online' 
+              ? `Loading: ${Math.round(loadingProgress)}%` 
+              : 'Connection issue detected'}
+          </span>
         </div>
-      )}
+        
+        {/* Always show retry button but disable when online */}
+        <button 
+          onClick={onRetry}
+          className={`text-sm px-3 py-1 bg-[#FBB03B] text-white rounded-md 
+            ${networkStatus === 'online' ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#f9a718]'} 
+            transition-colors`}
+          disabled={networkStatus === 'online'}
+        >
+          Retry
+        </button>
+      </div>
     </div>
   );
 };

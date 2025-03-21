@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import TeamMember from "./TeamMember";
 import { useState, useEffect } from "react";
@@ -18,107 +17,148 @@ interface TeamMembersListProps {
 }
 
 /**
- * TeamMembersList component with simplified loading approach
- * Shows skeletons during loading with minimal thresholds
- * Focuses on reliability over complex loading strategies
+ * TeamMembersList component - Renders the grid of team members
+ * Features:
+ * - Coordinated loading of team member images
+ * - Mobile-optimized loading indicators and skeletons
+ * - Staggered animations for visual appeal
+ * - Tracks loading progress for all team members
+ * - Provides retry mechanism for network issues
  */
 const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListProps) => {
-  // Track which images are loaded
+  // Track which images are loaded to improve rendering reliability
   const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
   const [loadingProgress, setLoadingProgress] = useState(0);
-  const [networkStatus, setNetworkStatus] = useState<'online'|'offline'>(navigator.onLine ? 'online' : 'offline');
-  const [retryCount, setRetryCount] = useState(0);
+  const [networkStatus, setNetworkStatus] = useState<'online'|'offline'>('online');
   
-  // Get device info
+  // Get device info for conditional rendering
   const isMobile = useIsMobile();
   
-  // Count loaded images
+  // Count how many images have actually loaded
   const loadedCount = Object.values(loadedImages).filter(Boolean).length;
   const totalImages = teamMembers.length;
   
-  // Show skeletons until threshold or timeout
+  // Force skeleton display on mobile until a threshold of images are loaded
   const [showSkeletons, setShowSkeletons] = useState(true);
   
-  // Simplified threshold - show content faster
-  const loadingThreshold = 0.1; // 10% loaded is enough to show content
-  
-  // Monitor online/offline status
+  // Reduced thresholds for faster perceived loading
+  const loadingThreshold = isMobile ? 0.2 : 0.1; // 20% on mobile, 10% on desktop (lowered from 40%/20%)
+
+  // Preload first few images for faster initial display
   useEffect(() => {
-    const handleOnline = () => setNetworkStatus('online');
-    const handleOffline = () => setNetworkStatus('offline');
+    if (isInView && isLoaded) {
+      // Preload first 3 images immediately
+      const preloadCount = isMobile ? 2 : 3;
+      const preloadImages = teamMembers.slice(0, preloadCount);
+      
+      preloadImages.forEach(member => {
+        const formattedName = member.name.split(" ").join("-");
+        const img = new Image();
+        img.src = `/raade-individual-e-board-photos-webp/${formattedName}-raade-website-image.webp`;
+        
+        img.onload = () => {
+          console.log(`Preloaded image for ${member.name}`);
+          handleImageLoaded(member.name);
+        };
+        
+        img.onerror = () => {
+          // Try JPG fallback immediately
+          const fallbackImg = new Image();
+          fallbackImg.src = `/raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
+          
+          fallbackImg.onload = () => {
+            console.log(`Preloaded fallback image for ${member.name}`);
+            handleImageLoaded(member.name);
+          };
+        };
+      });
+    }
+  }, [isInView, isLoaded, teamMembers]);
+
+  // Reset animation state when component mounts or visibility changes
+  useEffect(() => {
+    if (isInView && isLoaded) {
+      console.log("TeamMembersList is in view and loaded, preparing animations");
+    }
+    
+    // Listen for online/offline status
+    const handleOnline = () => {
+      console.log("Browser is online, attempting to reload any failed images");
+      setNetworkStatus('online');
+    };
+    
+    const handleOffline = () => {
+      console.log("Browser is offline, images may fail to load");
+      setNetworkStatus('offline');
+    };
     
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
     
+    // Clean up animation states when component unmounts
     return () => {
+      console.log("TeamMembersList unmounting");
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, []);
+  }, [isInView, isLoaded]);
 
   // Calculate loading progress
   useEffect(() => {
+    const totalImages = teamMembers.length;
+    const loadedCount = Object.values(loadedImages).filter(Boolean).length;
+    
     const percent = totalImages > 0 ? (loadedCount / totalImages) * 100 : 0;
     setLoadingProgress(percent);
     
-    // Hide skeletons once threshold reached
+    // Hide skeletons once we reach the threshold
     if (percent >= loadingThreshold * 100) {
       setShowSkeletons(false);
     }
-  }, [loadedImages, totalImages, loadingThreshold, loadedCount]);
-
-  // Force hide skeletons after timeout
-  useEffect(() => {
-    // Hide skeletons after 3 seconds regardless of load state
-    const timer = setTimeout(() => {
-      setShowSkeletons(false);
-    }, 3000);
     
-    return () => clearTimeout(timer);
-  }, []);
+    if (percent === 100) {
+      console.log("All team member images loaded successfully");
+    }
+  }, [loadedImages, teamMembers.length, loadingThreshold]);
 
-  // Simple retry function
+  // Handle retry action when network issues occur
   const handleRetry = () => {
-    // Increment retry counter to force reload
-    setRetryCount(prevCount => prevCount + 1);
-    
-    // Reset loaded state for images
+    console.log("Retrying image loading");
+    // Force refresh of images by clearing the loaded state for unloaded images
     const updatedLoadedState = { ...loadedImages };
     for (const member of teamMembers) {
-      updatedLoadedState[member.name] = false;
+      if (!updatedLoadedState[member.name]) {
+        // We keep the current state but will trigger a reload in the child components
+        updatedLoadedState[member.name] = false;
+      }
     }
     setLoadedImages(updatedLoadedState);
-    
-    // Show skeletons briefly for visual feedback
-    setShowSkeletons(true);
-    setTimeout(() => {
-      setShowSkeletons(false);
-    }, 1000);
   };
 
-  // Handle image load notification
+  // Notification when an image loads successfully
   const handleImageLoaded = (memberName: string) => {
+    console.log(`Image loaded for team member: ${memberName}`);
     setLoadedImages(prev => ({
       ...prev,
       [memberName]: true
     }));
   };
 
-  // Container animation with minimal delay
+  // Container animation with reduced delay for better performance
   const container = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.05, // Reduced for faster appearance
-        delayChildren: 0.05 // Minimal delay
+        staggerChildren: 0.08, // Reduced from 0.12 for faster animation
+        delayChildren: 0.1 // Reduced from 0.2 for faster loading perception
       }
     }
   };
 
   return (
     <>
-      {/* Mobile loading indicator */}
+      {/* Always show mobile loading indicator to provide immediate feedback */}
       {isMobile && loadingProgress < 100 && (
         <TeamImageLoadingIndicator 
           loadingProgress={loadingProgress}
@@ -129,7 +169,7 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
         />
       )}
       
-      {/* Desktop loading progress */}
+      {/* Desktop loading progress indicator - always visible until 100% */}
       {!isMobile && isInView && isLoaded && loadingProgress < 100 && (
         <div className="w-full mb-8 bg-gray-200 rounded-full h-2.5 block">
           <div 
@@ -139,16 +179,10 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
         </div>
       )}
       
-      {/* Offline message */}
+      {/* Show offline message when needed */}
       {networkStatus === 'offline' && (
         <div className="w-full mb-8 p-4 bg-gray-100 text-gray-700 rounded-lg text-center">
           You appear to be offline. Some team photos may not load properly.
-          <button 
-            onClick={handleRetry}
-            className="mt-2 px-3 py-1 bg-[#FBB03B] text-white rounded-md hover:bg-[#f9a718] transition-colors block mx-auto"
-          >
-            Try Again
-          </button>
         </div>
       )}
     
@@ -159,13 +193,13 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
         animate={isInView && isLoaded ? "show" : "hidden"}
         exit="hidden"
       >
-        {/* Show either skeletons or actual team members */}
+        {/* Render either skeletons or actual team members based on loading state */}
         {teamMembers.map((member, index) => (
           showSkeletons && isMobile ? (
             <TeamImageSkeleton key={`skeleton-${index}`} />
           ) : (
             <TeamMember 
-              key={`${member.name}-${index}-${retryCount}`} 
+              key={`${member.name}-${index}`} 
               member={member} 
               index={index}
               onImageLoad={() => handleImageLoaded(member.name)}

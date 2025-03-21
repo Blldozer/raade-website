@@ -9,13 +9,6 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
-    // Simplified headers for better image loading
-    headers: {
-      'Cache-Control': 'no-cache',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': '*',
-    }
   },
   plugins: [
     react(),
@@ -34,9 +27,18 @@ export default defineConfig(({ mode }) => ({
     sourcemap: false,
     // Minify output for production
     minify: 'terser',
-    // Disable HMR in production
-    hmr: false
-  },
-  // Improve asset handling
-  assetsInclude: ['**/*.jpg', '**/*.webp', '**/*.png'],
+    // Ensure no WebSocket HMR connections are attempted in production
+    manifest: true,
+    // Disable HMR explicitly in production build
+    hmr: false,
+    // Improve chunk loading strategy
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom'],
+          gsap: ['gsap', 'gsap/ScrollTrigger', 'gsap/ScrollToPlugin'],
+        }
+      }
+    }
+  }
 }));
