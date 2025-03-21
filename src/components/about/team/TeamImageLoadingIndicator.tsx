@@ -11,8 +11,8 @@ interface TeamImageLoadingIndicatorProps {
 
 /**
  * TeamImageLoadingIndicator component
- * Displays loading progress for team member images on mobile devices
- * Provides visual feedback and retry capability with detailed logs
+ * Simplified version with more aggressive retry behavior
+ * Shows loading progress with clear visual feedback
  */
 const TeamImageLoadingIndicator = ({ 
   loadingProgress, 
@@ -22,32 +22,22 @@ const TeamImageLoadingIndicator = ({
   onRetry
 }: TeamImageLoadingIndicatorProps) => {
   const [showRetryMessage, setShowRetryMessage] = useState(false);
-  
-  // Track retry attempts for better debugging
   const [retryAttempts, setRetryAttempts] = useState(0);
   
-  // Show retry message if nothing loads after 3 seconds
+  // Show retry message sooner - after 2 seconds instead of 3
   useEffect(() => {
-    console.log(`[DEBUG-TEAM] Retry message timer starting. Current progress: ${loadingProgress}%`);
-    
     const timer = setTimeout(() => {
-      // Only show retry message if progress is still at 0%
       if (loadedImages === 0 && loadingProgress === 0) {
-        console.log('[DEBUG-TEAM] No images loaded after 3s, showing retry message');
         setShowRetryMessage(true);
       }
-    }, 3000);
+    }, 2000); // Reduced time to show retry option
     
     return () => clearTimeout(timer);
   }, [loadedImages, loadingProgress]);
 
+  // More aggressive retry with forced reload
   const handleRetryClick = () => {
-    console.log('[DEBUG-TEAM] Retry button clicked in loading indicator');
     setRetryAttempts(prev => prev + 1);
-    
-    // Log network status when retry is clicked
-    console.log(`[DEBUG-TEAM] Network status at retry: ${networkStatus}`);
-    console.log(`[DEBUG-TEAM] Online status from navigator: ${navigator.onLine ? 'online' : 'offline'}`);
     
     // Call the provided retry handler
     onRetry();
@@ -70,14 +60,14 @@ const TeamImageLoadingIndicator = ({
         />
       </div>
       
-      {/* Connection info - helps debug network issues */}
+      {/* Connection info */}
       <div className="mt-2 text-xs text-gray-500 flex justify-between">
         <span>Connection: {networkStatus}</span>
         <span>Retry attempts: {retryAttempts}</span>
       </div>
       
-      {/* Show retry UI if needed */}
-      {(showRetryMessage || loadingProgress === 0 || networkStatus === 'offline') && (
+      {/* More prominent retry UI that shows up sooner */}
+      {(showRetryMessage || loadingProgress < 10 || networkStatus === 'offline') && (
         <div className="mt-3 text-center">
           <p className="text-sm text-gray-600 mb-2">
             {networkStatus === 'offline' 
@@ -87,7 +77,6 @@ const TeamImageLoadingIndicator = ({
           <button
             onClick={handleRetryClick}
             className="px-4 py-2 bg-[#FBB03B] text-white rounded hover:bg-[#f9a718] transition-colors"
-            // Only disable if explicitly offline and at least one retry was attempted
             disabled={networkStatus === 'offline' && retryAttempts > 0}
           >
             Try Again
