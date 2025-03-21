@@ -1,3 +1,4 @@
+
 // This is the right code for the hamburger implementation
 import React from "react";
 import { X, Search } from "lucide-react";
@@ -38,7 +39,7 @@ const MobileMenuHeader = ({ onClose }: MobileMenuHeaderProps) => {
         transition={{ duration: 0.4, delay: 0.1 }}
       >
         <NavLogo 
-          forceDarkMode={true} 
+          forceDarkMode={false} 
           useShortForm={true}
           forceSize="h-8"
         />
