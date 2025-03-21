@@ -70,11 +70,11 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
         setTimeout(() => {
           // Try both formats simultaneously with cache directive
           const imgJpg = new Image();
-          const jpgPath = `/raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
+          const jpgPath = `raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
           imgJpg.src = jpgPath;
           
           const imgWebp = new Image();
-          const webpPath = `/raade-individual-e-board-photos-webp/${formattedName}-raade-website-image.webp`;
+          const webpPath = `raade-individual-e-board-photos-webp/${formattedName}-raade-website-image.webp`;
           imgWebp.src = webpPath;
           
           // Also add link preload tags to document head
