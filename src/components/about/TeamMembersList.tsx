@@ -41,8 +41,8 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
   // Force skeleton display on mobile until a threshold of images are loaded
   const [showSkeletons, setShowSkeletons] = useState(true);
   
-  // Reduced thresholds for faster perceived loading
-  const loadingThreshold = isMobile ? 0.2 : 0.1; // 20% on mobile, 10% on desktop (lowered from 40%/20%)
+  // Reduced thresholds for faster perceived loading - lower threshold to ensure images display
+  const loadingThreshold = isMobile ? 0.05 : 0.1; // 5% on mobile (reduced from 20%), 10% on desktop
 
   // Preload first few images for faster initial display
   useEffect(() => {
@@ -116,9 +116,16 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
       setShowSkeletons(false);
     }
     
+    // Ensure skeletons disappear even if no images load after 3 seconds
+    const timer = setTimeout(() => {
+      setShowSkeletons(false);
+    }, 3000);
+    
     if (percent === 100) {
       console.log("All team member images loaded successfully");
     }
+    
+    return () => clearTimeout(timer);
   }, [loadedImages, teamMembers.length, loadingThreshold]);
 
   // Handle retry action when network issues occur
@@ -195,7 +202,7 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
       >
         {/* Render either skeletons or actual team members based on loading state */}
         {teamMembers.map((member, index) => (
-          showSkeletons && isMobile ? (
+          (showSkeletons && isMobile && index < 3) ? (
             <TeamImageSkeleton key={`skeleton-${index}`} />
           ) : (
             <TeamMember 
