@@ -1,5 +1,5 @@
 
-import { ReactNode, useEffect } from "react";
+import React, { ReactNode, useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { TooltipProvider } from "@/components/ui/tooltip";
