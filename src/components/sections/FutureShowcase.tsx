@@ -9,19 +9,19 @@ const nutritionProject = projects.find(p => p.slug === "child-nutrition-initiati
 const womenProject = projects.find(p => p.slug === "womens-entrepreneurship-program");
 const showcaseProjects = [{
   title: sunfiProject?.name || "SunFi Solar Access Program",
-  image: sunfiProject?.image || "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&q=80",
+  image: sunfiProject?.image || "/innovation-studios-project-cards/RAADE-Sunfi-Solar-Panel-image.jpeg",
   description: sunfiProject?.challenge || "Limited access to clean energy in rural Nigerian communities",
   category: "ENERGY",
   slug: sunfiProject?.slug || "sunfi-solar-initiative"
 }, {
   title: nutritionProject?.name || "Child Nutrition Initiative",
-  image: nutritionProject?.image || "https://images.unsplash.com/photo-1493770348161-369560ae357d?auto=format&fit=crop&q=80",
+  image: nutritionProject?.image || "/innovation-studios-project-cards/RAADE-nutrition-project-image.jpeg",
   description: nutritionProject?.challenge || "Nearly 1/3 of under-five children in Nigeria suffer from malnutrition; rising inflation has put commercial baby foods beyond reach for most families.",
   category: "HEALTHCARE",
   slug: nutritionProject?.slug || "child-nutrition-initiative"
 }, {
   title: womenProject?.name || "Women's Entrepreneurship Program",
-  image: womenProject?.image || "/Women Enterpreneurs.jpg",
+  image: womenProject?.image || "/innovation-studios-project-cards/RAADE-womens-entrepreneurship-project-image.jpeg",
   description: womenProject?.challenge || "Young mothers with limited education struggle to maintain small businesses",
   category: "BUSINESS",
   slug: womenProject?.slug || "womens-entrepreneurship-program"
