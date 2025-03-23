@@ -1,8 +1,13 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { Resend } from "npm:resend@4.0.0";
 
-const resendApiKey = Deno.env.get("RESEND_API_KEY") || "re_Nn1yMwZ5_BH6KaYzBaD3cKroP3rxRpUjx";
+const resendApiKey = Deno.env.get("RESEND_API_KEY");
+
+if (!resendApiKey) {
+  console.error("Missing RESEND_API_KEY environment variable");
+  throw new Error("RESEND_API_KEY environment variable is required");
+}
+
 const resend = new Resend(resendApiKey);
 
 const corsHeaders = {
@@ -139,7 +144,7 @@ serve(async (req) => {
             </div>
             <div class="footer">
               <p>This is an automated message. Please do not reply to this email.</p>
-              <p>© 2024 RAADE - Rice Association for African Development</p>
+              <p>&copy; 2024 RAADE - Rice Association for African Development</p>
             </div>
           </div>
         </body>
@@ -177,7 +182,7 @@ Best regards,
 The RAADE Conference Team
 
 This is an automated message. Please do not reply to this email.
-© 2024 RAADE - Rice Association for African Development
+&copy; 2024 RAADE - Rice Association for African Development
     `;
 
     // Determine the best sender email to use

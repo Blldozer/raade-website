@@ -1,11 +1,15 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 import { Resend } from "npm:resend@4.0.0";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
-const resendApiKey = Deno.env.get("RESEND_API_KEY") || "re_Nn1yMwZ5_BH6KaYzBaD3cKroP3rxRpUjx";
+const resendApiKey = Deno.env.get("RESEND_API_KEY");
+
+if (!resendApiKey) {
+  console.error("Missing RESEND_API_KEY environment variable");
+  throw new Error("RESEND_API_KEY environment variable is required");
+}
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 const resend = new Resend(resendApiKey);
@@ -118,7 +122,7 @@ serve(async (req) => {
               <p>Best regards,<br>The RAADE Conference Team</p>
             </div>
             <div class="footer">
-              <p>© 2024 RAADE - Rice Association for African Development</p>
+              <p>&copy; 2024 RAADE - Rice Association for African Development</p>
               <p>This is an automated message from the conference registration system.</p>
             </div>
           </div>
@@ -145,7 +149,7 @@ If you have any issues, please contact us at conference@raade.org for assistance
 Best regards,
 The RAADE Conference Team
 
-© 2024 RAADE - Rice Association for African Development
+&copy; 2024 RAADE - Rice Association for African Development
 This is an automated message from the conference registration system.
     `;
 
