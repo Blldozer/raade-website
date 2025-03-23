@@ -21,7 +21,7 @@ const showcaseProjects = [{
   slug: nutritionProject?.slug || "child-nutrition-initiative"
 }, {
   title: womenProject?.name || "Women's Entrepreneurship Program",
-  image: womenProject?.image || "/innovation-studios-project-cards/RAADE-womens-entrepreneurship-project-image.jpeg",
+  image: womenProject?.image || "/innovation-studios-project-cards/RAADE-Women Entrepreneurs.jpg",
   description: womenProject?.challenge || "Young mothers with limited education struggle to maintain small businesses",
   category: "BUSINESS",
   slug: womenProject?.slug || "womens-entrepreneurship-program"

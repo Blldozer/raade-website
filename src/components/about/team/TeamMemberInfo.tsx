@@ -1,4 +1,3 @@
-
 import { Linkedin } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -34,7 +33,7 @@ const TeamMemberInfo = ({ name, position, linkedin }: TeamMemberInfoProps) => {
       animate="animate"
       variants={textAnimation}
     >
-      <h3 className="text-xl font-bold mb-1">{name}</h3>
+      <h3 className="text-xl font-simula font-bold mb-1">{name}</h3>
       <p className="text-sm text-gray-200 mb-2">{position}</p>
       
       {linkedin && (

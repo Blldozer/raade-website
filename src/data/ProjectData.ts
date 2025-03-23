@@ -123,7 +123,7 @@ export const projects: Project[] = [
     partnerLink: "https://ipeacei.org/",
     challenge: "Young mothers with limited education struggle to maintain small businesses; cycle of poverty persists across generations",
     sector: "Business",
-    image: "/Women Enterpreneurs.jpg",
+    image: "/innovation-studios-project-cards/RAADE-Women Entrepreneurs.jpg",
     slug: "womens-entrepreneurship-program",
     description: "In Meru County, Kenya, many young mothers with limited formal education struggle to maintain small businesses that could lift their families out of poverty. Partnering with International Peace Initiatives, our team is designing interventions to enhance business skills and build self-confidence among vulnerable women entrepreneurs. We're developing practical tools and support systems that address both technical business challenges and the underlying social dynamics that affect women's economic participation. This initiative aims to create sustainable pathways to financial independence that can break intergenerational cycles of poverty.",
     goals: [
