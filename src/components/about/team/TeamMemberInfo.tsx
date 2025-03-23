@@ -15,6 +15,7 @@ interface TeamMemberInfoProps {
  * - LinkedIn link integration when available
  * - Hover animations for interactive elements
  * - Mobile-optimized spacing and sizing
+ * - Consistent styling with RAADE brand elements
  */
 const TeamMemberInfo = ({ name, position, linkedin }: TeamMemberInfoProps) => {
   // Improve fade-in animation with proper timing

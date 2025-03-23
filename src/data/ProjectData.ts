@@ -29,7 +29,7 @@ export const projects: Project[] = [
     challenge: "Limited access to clean energy in rural Nigerian communities; decentralized market with price verification challenges",
     sector: "Energy", // Keep primary sector for backwards compatibility
     sectors: ["Energy", "Business"], // Add multiple sectors
-    image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&q=80",
+    image: "/innovation-studios-project-cards/RAADE-Sunfi-Solar-Panel-image.jpeg",
     slug: "sunfi-solar-initiative",
     description: "The SunFi Solar Access Program addresses Nigeria's significant energy gap, where nearly half the population lacks reliable electricity access. In partnership with SunFi Energy, we're reimagining how distributed energy partners (DEPs) can expand solar power access across Nigeria. Our team is developing strategies to optimize this entrepreneurial distribution model, enabling more efficient deployment of affordable solar solutions to underserved communities. By enhancing the effectiveness of local energy entrepreneurs, this initiative aims to create pathways to clean energy that can scale nationwide.",
     goals: [
@@ -52,7 +52,7 @@ export const projects: Project[] = [
     partnerLink: "https://www.mwan.org/",
     challenge: "Only 31% of rural Nigerian women have access to skilled birth attendance; significant reliance on traditional birth attendants",
     sector: "Healthcare",
-    image: "https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&q=80",
+    image: "/innovation-studios-project-cards/RAADE-maternal-health-image.jpeg",
     slug: "maternal-health-platform",
     description: "Nigeria faces one of the world's highest maternal mortality rates, with rural women particularly vulnerable due to limited access to skilled healthcare providers. Working with the Medical Women's Association of Nigeria (MWAN), our team is redesigning the maternal healthcare delivery experience to increase skilled birth attendance in rural communities. We're developing solutions that bridge traditional and modern healthcare approaches, addressing the social, cultural, and logistical barriers that prevent women from accessing life-saving care. This initiative aims to create sustainable pathways to quality maternal healthcare that respect cultural contexts while improving health outcomes.",
     goals: [
@@ -76,7 +76,7 @@ export const projects: Project[] = [
     partnerLink: "https://www.mwan.org/",
     challenge: "Nearly 1/3 of under-five children in Nigeria suffer from malnutrition; rising inflation has put commercial baby foods beyond reach for most families.",
     sector: "Healthcare",
-    image: "https://images.unsplash.com/photo-1493770348161-369560ae357d?auto=format&fit=crop&q=80",
+    image: "/innovation-studios-project-cards/RAADE-nutrition-project-image.jpeg",
     slug: "child-nutrition-initiative",
     description: "Malnutrition underlies over half of childhood deaths in Nigeria, with commercial complementary foods increasingly unaffordable due to rising inflation. In collaboration with the Medical Women's Association of Nigeria, our team is designing innovative, affordable nutrition solutions for children aged 6-23 months using locally available ingredients. We're developing both the food formulations and educational strategies to help caregivers prepare nutritious meals during the critical transition from exclusive breastfeeding to solid foods. By creating accessible nutrition pathways, this project aims to address a fundamental driver of child mortality and development challenges.",
     goals: [
@@ -101,7 +101,7 @@ export const projects: Project[] = [
     challenge: "UNESCO predicts many Nigerian languages may vanish by 2025; limited documentation and educational integration",
     sector: "Education", // Keep primary sector for backwards compatibility
     sectors: ["Education", "Technology"], // Add multiple sectors
-    image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&q=80",
+    image: "/innovation-studios-project-cards/RAADE-izesan-image.jpeg",
     slug: "language-preservation-platform",
     description: "Nigeria is home to over 520 languages, many of which face extinction within a generation. In partnership with Izesan Limited, our team is designing digital resources to revitalize critically endangered indigenous languages in Taraba and Bayelsa states. We're developing innovative learning experiences for children aged 2-10 that incorporate indigenous languages as the medium of instruction, aligning with Nigeria's National Language Policy. By combining educational technology with community engagement strategies, this project aims to preserve cultural heritage while creating new pathways for mother-tongue education across Nigeria.",
     goals: [
@@ -146,7 +146,7 @@ export const projects: Project[] = [
     partner: "Electoral technology startup",
     challenge: "Electoral systems plagued by fraud, intimidation, disenfranchisement, and logistical inefficiencies",
     sector: "Technology",
-    image: "https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?auto=format&fit=crop&q=80",
+    image: "/innovation-studios-project-cards/RAADE-elect-ai-image.jpeg",
     slug: "electoral-innovation",
     description: "Electoral processes worldwide face persistent challenges with fraud, accessibility, and transparency that undermine democratic participation. In collaboration with Elect.ai, our team is developing innovations to modernize voting systems, particularly in African contexts. We're designing secure, accessible voting technology that leverages existing telecommunications infrastructure to expand democratic participation while enhancing election integrity. By addressing both technical and social aspects of the electoral process, this initiative aims to create more inclusive, transparent democratic systems that can build public trust and reduce election-day tensions.",
     goals: [
