@@ -60,23 +60,26 @@ const AppProviders = ({ children }: AppProvidersProps) => {
     };
   }, []);
 
+  // First wrap with Query Client, then other providers
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
+    <React.StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
           <ErrorBoundary 
             fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
             suppressDevErrors={isDevelopment}
           >
-            <ScrollToTop />
-            {children}
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <ScrollToTop />
+              {children}
+            </TooltipProvider>
+            {isDevelopment && <TouchDebugger />}
           </ErrorBoundary>
-          {isDevelopment && <TouchDebugger />}
-        </TooltipProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </React.StrictMode>
   );
 };
 
