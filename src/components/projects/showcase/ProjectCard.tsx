@@ -1,6 +1,4 @@
-
 import { Link } from "react-router-dom";
-import { useState } from "react";
 import { motion, Variants } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, ExternalLink } from "lucide-react";
@@ -16,65 +14,22 @@ interface ProjectCardProps {
  * ProjectCard Component
  * 
  * Displays an individual project card with:
- * - Responsive image thumbnail with hover effects and error handling
+ * - Responsive image thumbnail with hover effects
  * - Dynamic badges for project sectors
  * - Challenge information appearing on hover
  * - Partner information on a single line with external link when available
- * 
- * Features:
- * - Image error handling with retry mechanism
- * - Loading states for better mobile performance
- * - Optimized for all device types
  * 
  * @param project - The project data to display
  * @param setHoveredProject - Function to track hover state
  * @param itemVariants - Animation variants for the card
  */
 const ProjectCard = ({ project, setHoveredProject, itemVariants }: ProjectCardProps) => {
-  // Track image loading and error states
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageError, setImageError] = useState(false);
-  const [retryCount, setRetryCount] = useState(0);
-  
-  // Get project sectors for display
+  // Function to get all project sectors for display
   const getProjectSectors = (project: Project) => {
     if (project.sectors) {
       return project.sectors;
     }
     return [project.sector];
-  };
-
-  // Handle image load error with retry logic
-  const handleImageError = () => {
-    console.log(`Image load error for project: ${project.name}, retry: ${retryCount}`);
-    
-    if (retryCount < 2) {
-      // Try to reload the image
-      const timer = setTimeout(() => {
-        setRetryCount(retryCount + 1);
-        setImageError(false); // Reset error to try loading again
-      }, 1000);
-      
-      return () => clearTimeout(timer);
-    } else {
-      // After retries, show error state
-      console.error(`Failed to load image for ${project.name} after ${retryCount} retries`);
-      setImageError(true);
-    }
-  };
-
-  // Generate placeholder background color based on project name
-  const getPlaceholderColor = () => {
-    const colors = [
-      'bg-blue-500', 'bg-green-500', 'bg-yellow-500', 
-      'bg-purple-500', 'bg-pink-500', 'bg-indigo-500'
-    ];
-    
-    // Simple hash of the project name to get consistent color
-    const hashCode = project.name.split('').reduce(
-      (hash, char) => char.charCodeAt(0) + ((hash << 5) - hash), 0
-    );
-    return colors[Math.abs(hashCode) % colors.length];
   };
 
   return (
@@ -87,32 +42,11 @@ const ProjectCard = ({ project, setHoveredProject, itemVariants }: ProjectCardPr
       <div className="relative h-full rounded-xl overflow-hidden shadow-lg bg-white border border-gray-100 hover:shadow-xl transition-all duration-500 flex flex-col">
         {/* Image Container */}
         <div className="relative h-[300px] overflow-hidden">
-          {/* Placeholder before image loads */}
-          <div className={`absolute inset-0 ${getPlaceholderColor()} flex items-center justify-center`}>
-            {!imageLoaded && !imageError && (
-              <div className="text-white font-bold">{project.name.split(' ')[0]}</div>
-            )}
-            {imageError && (
-              <div className="text-white text-center p-4">
-                <div className="font-bold mb-1">{project.name}</div>
-                <div className="text-sm">{project.sector}</div>
-              </div>
-            )}
-          </div>
-          
-          {/* Actual image with error handling */}
-          {!imageError && (
-            <img 
-              src={`${project.image}?${retryCount}`} // Add retry param to force reload
-              alt={project.name} 
-              className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-110 ${
-                imageLoaded ? 'opacity-100' : 'opacity-0'
-              }`}
-              onLoad={() => setImageLoaded(true)}
-              onError={handleImageError}
-              loading="eager" // Load eagerly for better mobile performance
-            />
-          )}
+          <img 
+            src={project.image} 
+            alt={project.name} 
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+          />
           
           {/* Multiple Category Badges */}
           <div className="absolute top-4 right-4 flex flex-wrap justify-end gap-2 z-10">

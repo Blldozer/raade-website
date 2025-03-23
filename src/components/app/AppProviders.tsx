@@ -1,5 +1,5 @@
 
-import React, { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -60,26 +60,23 @@ const AppProviders = ({ children }: AppProvidersProps) => {
     };
   }, []);
 
-  // First wrap with Query Client, then other providers
   return (
-    <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
           <ErrorBoundary 
             fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
             suppressDevErrors={isDevelopment}
           >
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <ScrollToTop />
-              {children}
-            </TooltipProvider>
-            {isDevelopment && <TouchDebugger />}
+            <ScrollToTop />
+            {children}
           </ErrorBoundary>
-        </BrowserRouter>
-      </QueryClientProvider>
-    </React.StrictMode>
+          {isDevelopment && <TouchDebugger />}
+        </TooltipProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 };
 
