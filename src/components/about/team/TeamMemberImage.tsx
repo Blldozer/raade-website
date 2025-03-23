@@ -26,7 +26,7 @@ const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
   // Placeholder initials for fallback
   const getInitials = () => {
     const nameParts = name.split(" ");
-    return `${nameParts[0][0]}${nameParts[1]?.[0] || ''}`;
+    return `${nameParts[0]?.[0] || ''}${nameParts[1]?.[0] || ''}`;
   };
 
   const { imageRef, imageSrc, imageLoaded } = ImageLoader({
@@ -100,7 +100,7 @@ const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
                 display: 'block', // Force display block to ensure visibility
                 minHeight: '10rem' // Ensure minimum height even before load
               }}
-              onLoad={(e) => {
+              onLoad={() => {
                 console.log(`Image for ${name} loaded in DOM`);
                 setLocalImageLoaded(true);
                 setShowLoading(false);

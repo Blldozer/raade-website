@@ -1,5 +1,6 @@
 
 import { Linkedin } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface TeamMemberInfoProps {
   name: string;
@@ -8,35 +9,47 @@ interface TeamMemberInfoProps {
 }
 
 /**
- * TeamMemberInfo component - Displays team member details
+ * TeamMemberInfo component - Displays team member details with proper contrast
  * Features:
- * - Properly styled text with responsive sizing
- * - Optional LinkedIn integration
- * - Accessible link handling
+ * - High contrast text for better readability
+ * - LinkedIn link integration when available
+ * - Hover animations for interactive elements
+ * - Mobile-optimized spacing and sizing
  */
 const TeamMemberInfo = ({ name, position, linkedin }: TeamMemberInfoProps) => {
+  // Improve fade-in animation with proper timing
+  const textAnimation = {
+    initial: { opacity: 0, y: 10 },
+    animate: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.3 }
+    }
+  };
+
   return (
-    <div className="p-8">
-      {linkedin ? (
-        <h3 className="text-3xl md:text-4xl lg:text-5xl font-simula text-white mb-2 flex items-center gap-3">
-          <a 
-            href={linkedin} 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="hover:text-[#FBB03B] transition-colors flex items-center gap-2"
-          >
-            {name} <Linkedin className="w-6 h-6 md:w-8 md:h-8 inline text-[#FBB03B]" />
-          </a>
-        </h3>
-      ) : (
-        <h3 className="text-3xl md:text-4xl lg:text-5xl font-simula text-white mb-2">
-          {name}
-        </h3>
+    <motion.div 
+      className="p-4 bg-[#3C403A] text-white"
+      initial="initial"
+      animate="animate"
+      variants={textAnimation}
+    >
+      <h3 className="text-xl font-bold mb-1">{name}</h3>
+      <p className="text-sm text-gray-200 mb-2">{position}</p>
+      
+      {linkedin && (
+        <a 
+          href={linkedin} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="inline-flex items-center text-[#FBB03B] hover:text-[#f9a718] text-sm transition-colors"
+          aria-label={`${name}'s LinkedIn profile`}
+        >
+          <Linkedin size={16} className="mr-1" />
+          <span>LinkedIn</span>
+        </a>
       )}
-      <p className="text-xl md:text-2xl text-gray-300 font-lora">
-        {position}
-      </p>
-    </div>
+    </motion.div>
   );
 };
 

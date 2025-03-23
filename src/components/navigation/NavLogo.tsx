@@ -11,6 +11,7 @@ interface NavLogoProps {
   forceDarkMode?: boolean;
   forceSize?: string;
   useShortForm?: boolean;
+  forceBlackLogo?: boolean; // New prop to specifically force black logo
 }
 
 /**
@@ -19,13 +20,18 @@ interface NavLogoProps {
  * Uses the background detection system to determine appropriate logo version:
  * - Dark backgrounds -> White logo
  * - Light backgrounds -> Black logo
+ * 
+ * Override options:
+ * - forceBlackLogo - Will always use the black logo regardless of background
+ * - forceDarkMode - Will use the white logo (assumes dark background)
  */
 const NavLogo = ({ 
   isScrolled = false, 
   isHeroPage = false, 
   forceDarkMode = false,
   forceSize,
-  useShortForm = false
+  useShortForm = false,
+  forceBlackLogo = false
 }: NavLogoProps) => {
   const location = useLocation();
   const [showSecondary, setShowSecondary] = useState(false);
@@ -94,8 +100,11 @@ const NavLogo = ({
   }, [forceSize, width]);
   
   // Determine the correct logo to show based on background context
+  // NEW LOGIC: forceBlackLogo takes precedence over all other options
   // Following the pattern: dark background -> white logo, light background -> black logo
-  const shouldUseWhiteLogo = isAgainstDarkBackground || isProjectPage || isStudioPage || forceDarkMode;
+  const shouldUseWhiteLogo = forceBlackLogo 
+    ? false 
+    : (isAgainstDarkBackground || isProjectPage || isStudioPage || forceDarkMode);
   
   const primaryLogo = shouldUseWhiteLogo
     ? (shouldUseShortForm ? whiteShortFormLogo : whiteRegularLogo)
@@ -108,7 +117,7 @@ const NavLogo = ({
   // Reset logo state when props change
   useEffect(() => {
     setShowSecondary(false);
-  }, [forceDarkMode, useShortForm, isProjectPage, isStudioPage, isAgainstDarkBackground]);
+  }, [forceDarkMode, useShortForm, isProjectPage, isStudioPage, isAgainstDarkBackground, forceBlackLogo]);
 
   const logoSize = getLogoSize();
 
