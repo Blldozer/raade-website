@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface StripeCheckoutProps {
   ticketType: string;
@@ -56,15 +57,11 @@ const StripeCheckout = ({
       // Log the checkout attempt
       console.log("Starting checkout process for:", { ticketType, email, fullName });
       
-      // Call the Supabase Edge Function to create a checkout session
-      const response = await fetch(
-        "https://dermbucktbegnbkjzobs.supabase.co/functions/v1/create-checkout-session",
+      // Use Supabase client to call the edge function instead of direct fetch
+      const { data, error } = await supabase.functions.invoke(
+        "create-checkout-session",
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
+          body: {
             ticketType,
             email,
             fullName,
@@ -75,30 +72,27 @@ const StripeCheckout = ({
             specialRequests,
             successUrl,
             cancelUrl
-          }),
+          }
         }
       );
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Checkout error:", errorData);
-        throw new Error(errorData.message || "Failed to create checkout session");
+      if (error) {
+        console.error("Checkout error:", error);
+        throw new Error(error.message || "Failed to create checkout session");
       }
       
-      const { url, sessionId } = await response.json();
-      
-      if (!url) {
+      if (!data || !data.url) {
         throw new Error("No checkout URL returned");
       }
       
-      console.log("Redirecting to Stripe Checkout:", url);
+      console.log("Redirecting to Stripe Checkout:", data.url);
       
       // Store the session ID in sessionStorage for post-checkout verification
-      sessionStorage.setItem("checkoutSessionId", sessionId);
+      sessionStorage.setItem("checkoutSessionId", data.sessionId);
       sessionStorage.setItem("registrationEmail", email);
       
       // Redirect to Stripe Checkout
-      window.location.href = url;
+      window.location.href = data.url;
       
     } catch (error) {
       console.error("Checkout error:", error);
