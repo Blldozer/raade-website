@@ -35,11 +35,17 @@ const PaymentSection = ({
   onBackClick
 }: PaymentSectionProps) => {
   // Ensure groupEmails is always correctly formatted for the StripeCheckout component
+  // Fixed: Add proper type checking and null handling
   const processedGroupEmails = Array.isArray(registrationData.groupEmails) 
-    ? registrationData.groupEmails.map(email => 
-        typeof email === 'object' && email !== null && 'value' in email 
-          ? email.value 
-          : String(email || ''))
+    ? registrationData.groupEmails
+        .filter(Boolean) // Remove nullish values
+        .map(email => {
+          if (typeof email === 'object' && email !== null && 'value' in email) {
+            return typeof email.value === 'string' ? email.value : '';
+          }
+          return String(email || '');
+        })
+        .filter(email => email.length > 0) // Remove empty strings
     : [];
 
   return (

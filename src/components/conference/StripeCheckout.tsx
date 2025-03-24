@@ -69,9 +69,18 @@ const StripeCheckout = ({
       }
       
       // Prepare sanitized group emails (ensure they're all strings)
-      const sanitizedGroupEmails = groupEmails.filter(Boolean).map(email => 
-        typeof email === 'object' && email !== null ? String(email.value || '') : String(email)
-      );
+      // Fixed: Add proper null checks and type guards
+      const sanitizedGroupEmails = groupEmails
+        .filter(Boolean) // Remove nullish values
+        .map(emailItem => {
+          if (typeof emailItem === 'object' && emailItem !== null) {
+            // If it's an object with a value property, extract the value safely
+            return typeof emailItem.value === 'string' ? emailItem.value : '';
+          }
+          // If it's a string or can be converted to string safely
+          return String(emailItem || '');
+        })
+        .filter(email => email.length > 0); // Filter out empty strings
       
       // Use Supabase client to call the edge function instead of direct fetch
       const { data, error } = await supabase.functions.invoke(
