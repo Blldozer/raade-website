@@ -6,6 +6,7 @@ import ErrorBoundary from "../ErrorBoundary";
 import GlobalErrorFallback from "./GlobalErrorFallback";
 import ScrollToTop from "./ScrollToTop";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import NavigationWrapper from "./NavigationWrapper";
 
 // Import main pages
 import Index from "../../pages/Index";
@@ -43,6 +44,8 @@ const AppRoutes = () => {
     >
       <ScrollToTopWrapper>
         <TooltipProvider>
+          {/* NavigationWrapper now inside proper context */}
+          <NavigationWrapper />
           <div className="flex-grow">
             <Suspense fallback={<PageLoading />}>
               <Routes>

@@ -8,6 +8,8 @@ import { useEffect, useState, useRef } from "react";
  * Ensures only ONE instance of Navigation exists across the application
  * Sets proper navigation props based on current route
  * Enhanced to prevent duplicate navigation instances
+ * 
+ * NOTE: Must be used inside a Router context
  */
 const NavigationWrapper = () => {
   const location = useLocation();
