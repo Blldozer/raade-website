@@ -1,7 +1,6 @@
 
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ReactNode } from "react";
 
 /**
  * ScrollToTop component
@@ -14,7 +13,7 @@ import { ReactNode } from "react";
  * - Handles cases where elements may not be immediately available
  * - Special handling for 'join' section navigation
  */
-const ScrollToTop = ({ children }: { children: ReactNode }) => {
+const ScrollToTop = () => {
   const { pathname, hash, state } = useLocation();
   const navigate = useNavigate();
 
@@ -91,7 +90,7 @@ const ScrollToTop = ({ children }: { children: ReactNode }) => {
 
   }, [pathname, hash, state, navigate]);
 
-  return <>{children}</>;
+  return null;
 };
 
 export default ScrollToTop;

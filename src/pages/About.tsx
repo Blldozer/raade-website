@@ -1,30 +1,50 @@
-import React from "react";
+
+import React, { useEffect, useState } from "react";
 import AboutHero from "../components/about/AboutHero";
 import { useAboutPage } from "../hooks/useAboutPage";
 import ErrorBoundaryFallback from "../components/about/ErrorBoundaryFallback";
+import LoadingIndicator from "../components/about/LoadingIndicator";
 import AboutSections from "../components/about/AboutSections";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { useLocation } from "react-router-dom";
 
 /**
  * About page component - Manages the entire About page lifecycle
- * Features immediate content rendering for better user experience
- * No loading screens to match the behavior of other pages
+ * Features progressive loading, error handling, and navigation fixes
  * Includes responsive design considerations for all device sizes
  * Enhanced with better error boundaries and navigation context handling
  */
 const About = () => {
   const {
+    isLoading,
     activeSection,
     hasError,
+    pageInitialized,
     isMobile,
     scrollToSection
   } = useAboutPage();
   
+  // Add a backup timer to force render after 2 seconds
+  const [forceRender, setForceRender] = useState(false);
+  
+  useEffect(() => {
+    console.log("[ABOUT DEBUG] Initial render - activeSection:", activeSection, "pageInitialized:", pageInitialized);
+    
+    // Force render after 2 seconds as a backup
+    const timer = setTimeout(() => {
+      if (!pageInitialized) {
+        console.warn("[ABOUT DEBUG] Forcing render after timeout");
+        setForceRender(true);
+      }
+    }, 2000);
+    
+    return () => clearTimeout(timer);
+  }, [activeSection, pageInitialized]);
+  
   const location = useLocation();
   
   // Handle scrolling to section when navigated from another page via state
-  React.useEffect(() => {
+  useEffect(() => {
     if (location.state && location.state.scrollToSection) {
       const sectionId = location.state.scrollToSection;
       scrollToSection(sectionId);
@@ -40,14 +60,21 @@ const About = () => {
   return (
     <ErrorBoundary fallback={<ErrorBoundaryFallback />}>
       <div className="bg-white min-h-screen">
+        {/* About page content now relies on the NavigationWrapper in App.tsx */}
+        
         {/* Always show hero section */}
         <AboutHero />
         
-        {/* Always render all sections without waiting for initialization */}
-        <AboutSections 
-          activeSection={5} // Always show all sections
-          pageInitialized={true} // Always consider page initialized
-        />
+        {/* Conditionally render other sections based on activeSection count and initialization state */}
+        {(pageInitialized || forceRender) && (
+          <AboutSections 
+            activeSection={forceRender ? 5 : activeSection}
+            pageInitialized={true}
+          />
+        )}
+        
+        {/* Show a loading indicator if needed */}
+        {isLoading && !forceRender && <LoadingIndicator message="Loading RAADE's story..." />}
       </div>
     </ErrorBoundary>
   );

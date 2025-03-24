@@ -1,41 +1,27 @@
-import { useState, useEffect, memo } from "react";
+
+import { useState, useRef, useEffect } from "react";
 import ImageLoader from "./ImageLoader";
 
 interface TeamMemberImageProps {
   name: string;
   onImageLoad?: () => void;
-  isPriority?: boolean;
 }
 
 /**
- * TeamMemberImage component - Renders the team member image with optimized loading
+ * TeamMemberImage component - Renders the team member image with fallbacks
  * Features:
- * - Improved performance with proper placeholders and size reservation
- * - Efficient image loading with WebP format support
- * - Prevents layout shifts during scrolling
- * - Memoized to prevent unnecessary re-renders
- * - Eliminates jerky scrolling behavior
+ * - Skeleton loading state
+ * - Fallback to initials when image fails to load
+ * - Optimized for performance and accessibility
+ * - Fixed for reliable display on all devices including mobile
  */
-const TeamMemberImage = memo(({ name, onImageLoad, isPriority = false }: TeamMemberImageProps) => {
-  // Use the simplified ImageLoader hook
-  const { imageRef, imageSrc, imageLoaded, imageError } = ImageLoader({
-    name,
-    onImageLoad
-  });
-  
-  // Always consider an image visually loaded after a short timeout
-  const [forceLoaded, setForceLoaded] = useState(false);
-  
-  // Show a placeholder immediately and let the real image load in the background
-  useEffect(() => {
-    // Immediately set forced loaded to true for UI stability
-    setForceLoaded(true);
-    
-    // Let the real image load in the background
-    if (imageLoaded) {
-      console.log(`Image for ${name} loaded successfully`);
-    }
-  }, [imageLoaded, name]);
+const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
+  const [imageError, setImageError] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  // Track image loading state locally
+  const [localImageLoaded, setLocalImageLoaded] = useState(false);
+  // Track if image should show loading state - start hidden so we don't show loading for cached images
+  const [showLoading, setShowLoading] = useState(false);
   
   // Placeholder initials for fallback
   const getInitials = () => {
@@ -43,58 +29,98 @@ const TeamMemberImage = memo(({ name, onImageLoad, isPriority = false }: TeamMem
     return `${nameParts[0]?.[0] || ''}${nameParts[1]?.[0] || ''}`;
   };
 
+  const { imageRef, imageSrc, imageLoaded } = ImageLoader({
+    name,
+    onImageLoad,
+    retryCount,
+    setRetryCount,
+    setImageError,
+    imageError
+  });
+
+  // Effect to coordinate imageLoaded state from ImageLoader with local state
+  useEffect(() => {
+    if (imageLoaded) {
+      console.log(`Image for ${name} marked as loaded from ImageLoader`);
+      setLocalImageLoaded(true);
+      setShowLoading(false);
+    }
+  }, [imageLoaded, name]);
+  
+  // Show loading state after a short delay if image hasn't loaded yet
+  // This prevents flickering for fast/cached images
+  useEffect(() => {
+    if (!localImageLoaded && !imageLoaded) {
+      const timer = setTimeout(() => {
+        setShowLoading(true);
+      }, 150);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [localImageLoaded, imageLoaded]);
+
+  // Debug logging on mount
+  useEffect(() => {
+    console.log(`TeamMemberImage mounted for ${name}`);
+    return () => {
+      console.log(`TeamMemberImage unmounted for ${name}`);
+    };
+  }, [name]);
+
   return (
-    <div className="rounded-t-lg overflow-hidden h-full">
-      {/* Render green block if image failed to load */}
+    <div className="rounded-t-lg overflow-hidden">
+      {/* Render fallback if image failed to load */}
       {imageError ? (
-        <div className="w-full aspect-[3/4] bg-green-600 flex items-center justify-center">
+        <div className="w-full aspect-[3/4] bg-[#4C504A] flex items-center justify-center">
           <span className="text-white text-3xl font-bold">
             {getInitials()}
           </span>
         </div>
       ) : (
-        /* Render image with proper placeholders */
-        <div 
-          className="w-full aspect-[3/4] bg-[#4C504A] relative"
-          style={{
-            // Reserve exact space with fixed aspect ratio to prevent layout shifts
-            height: '0',
-            paddingBottom: '133.33%' // 4:3 aspect ratio (75%)
-          }}
-        >
-          {/* The actual image with efficient loading */}
+        /* Render image with proper loading states */
+        <div className="w-full aspect-[3/4] bg-[#4C504A] relative">
+          {/* Show skeleton loading state */}
+          {showLoading && !localImageLoaded && !imageLoaded && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-white text-xl">Loading...</span>
+            </div>
+          )}
+          
+          {/* The actual image with proper error and load handling */}
           {imageSrc && (
             <img
               ref={imageRef}
               src={imageSrc}
               alt={name}
-              width={300}
-              height={400}
-              className="absolute top-0 left-0 w-full h-full object-cover"
+              width="100%"
+              height="auto"
+              className="w-full h-full object-cover transition-opacity duration-300"
               style={{ 
-                opacity: imageLoaded ? 1 : 0.3, // Show faded image while loading for better UX
-                willChange: 'opacity', // Hint to browser for optimization
-                transform: 'translateZ(0)' // Force GPU acceleration
+                opacity: (localImageLoaded || imageLoaded) ? 1 : 0,
+                display: 'block', // Force display block to ensure visibility
+                minHeight: '10rem' // Ensure minimum height even before load
               }}
-              loading={isPriority ? "eager" : "lazy"}
-              decoding="async" // Use async decoding for better performance
-              fetchPriority={isPriority ? "high" : "auto"} // Modern browsers optimization
+              onLoad={() => {
+                console.log(`Image for ${name} loaded in DOM`);
+                setLocalImageLoaded(true);
+                setShowLoading(false);
+                onImageLoad?.();
+              }}
+              onError={(e) => {
+                console.error(`Error loading image for ${name}:`, e);
+                if (retryCount >= 2) {
+                  console.log(`Setting image error to true for ${name} after max retries`);
+                  setImageError(true);
+                }
+              }}
+              // Use eager loading for all images to improve loading speed
+              loading="eager"
             />
-          )}
-          
-          {/* Show initials as placeholder while loading for immediate visual feedback */}
-          {!imageLoaded && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-white text-3xl font-bold">{getInitials()}</span>
-            </div>
           )}
         </div>
       )}
     </div>
   );
-});
-
-// Display name for debugging
-TeamMemberImage.displayName = "TeamMemberImage";
+};
 
 export default TeamMemberImage;

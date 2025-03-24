@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { useState } from "react";
 import TeamMemberImage from "./TeamMemberImage";
@@ -12,7 +13,6 @@ interface TeamMemberCardProps {
   };
   index: number;
   onImageLoad?: () => void;
-  isPriority?: boolean;
 }
 
 /**
@@ -23,7 +23,7 @@ interface TeamMemberCardProps {
  * - Performance optimizations for animations
  * - Mobile-first design approach for reliable rendering
  */
-const TeamMemberCard = ({ member, index, onImageLoad, isPriority }: TeamMemberCardProps) => {
+const TeamMemberCard = ({ member, index, onImageLoad }: TeamMemberCardProps) => {
   // Animation variants with reduced complexity for better performance on mobile
   const item = {
     hidden: { opacity: 0, y: 20 },
@@ -49,8 +49,7 @@ const TeamMemberCard = ({ member, index, onImageLoad, isPriority }: TeamMemberCa
       <div className="relative z-10">
         <TeamMemberImage 
           name={member.name} 
-          onImageLoad={onImageLoad}
-          isPriority={isPriority}
+          onImageLoad={onImageLoad} 
         />
         
         <TeamMemberInfo
