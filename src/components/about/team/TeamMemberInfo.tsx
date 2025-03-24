@@ -1,3 +1,4 @@
+
 import { Linkedin } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -8,12 +9,13 @@ interface TeamMemberInfoProps {
 }
 
 /**
- * TeamMemberInfo component - Displays team member details with proper contrast
+ * TeamMemberInfo component - Displays team member details with improved typography
  * Features:
- * - High contrast text for better readability
- * - LinkedIn link integration when available
- * - Hover animations for interactive elements
- * - Mobile-optimized spacing and sizing
+ * - Simula font for names (maintained for brand consistency)
+ * - Lora font for positions (complementary serif pairing)
+ * - Decorative accent line using RAADE brand yellow-orange
+ * - Enhanced contrast for better readability
+ * - Mobile-responsive design considerations
  */
 const TeamMemberInfo = ({ name, position, linkedin }: TeamMemberInfoProps) => {
   // Improve fade-in animation with proper timing
@@ -33,8 +35,12 @@ const TeamMemberInfo = ({ name, position, linkedin }: TeamMemberInfoProps) => {
       animate="animate"
       variants={textAnimation}
     >
-      <h3 className="text-xl font-simula font-bold mb-1">{name}</h3>
-      <p className="text-sm text-gray-200 mb-2">{position}</p>
+      <h3 className="text-xl font-simula font-bold mb-2">{name}</h3>
+      
+      {/* Decorative accent line using brand yellow-orange color */}
+      <div className="w-8 h-0.5 bg-[#FBB03B] mb-2.5" aria-hidden="true"></div>
+      
+      <p className="font-lora text-sm text-[#f4f5f4] mb-3 italic">{position}</p>
       
       {linkedin && (
         <a 
