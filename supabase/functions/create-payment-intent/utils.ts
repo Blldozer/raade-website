@@ -1,4 +1,3 @@
-
 // Set up CORS headers for the Edge Function
 export const corsHeaders = {
   'Access-Control-Allow-Origin': '*', // Allow requests from any origin during development
@@ -81,15 +80,32 @@ export const createRateLimitResponse = (retrySeconds = 60, requestId?: string) =
 
 /**
  * Create a timeout promise that rejects after specified time
+ * with proper cleanup capabilities
  * 
  * @param ms - Timeout in milliseconds
  * @param message - Error message
- * @returns Promise that rejects after timeout
+ * @returns Object with promise and cleanup function
  */
-export const createTimeout = (ms: number, message: string): Promise<never> => {
-  return new Promise((_, reject) => {
-    setTimeout(() => reject(new Error(message)), ms);
+export const createTimeout = (ms: number, message: string): { 
+  promise: Promise<never>; 
+  cleanup: () => void;
+} => {
+  let timeoutId: number | undefined;
+  
+  const promise = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => {
+      reject(new Error(message));
+    }, ms);
   });
+  
+  const cleanup = () => {
+    if (timeoutId !== undefined) {
+      clearTimeout(timeoutId);
+      timeoutId = undefined;
+    }
+  };
+  
+  return { promise, cleanup };
 };
 
 /**

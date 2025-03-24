@@ -38,22 +38,41 @@ serve(async (req) => {
     // Parse the request body with timeout
     let requestData;
     try {
-      const body = await req.text();
-      if (!body) {
-        console.error(`[${requestId}] Empty request body`);
-        return createErrorResponse("Empty request body", undefined, 400, requestId);
-      }
+      const bodyTextPromise = req.text();
+      
+      // Create a timeout with cleanup function
+      const { promise: timeoutPromise, cleanup: cleanupTimeout } = createTimeout(
+        5000, 
+        "Request body parsing timed out"
+      );
       
       try {
-        requestData = JSON.parse(body);
-      } catch (parseError) {
-        console.error(`[${requestId}] Failed to parse request body:`, parseError);
-        return createErrorResponse(
-          "Invalid request format: Unable to parse JSON", 
-          undefined,
-          400, 
-          requestId
-        );
+        // Race between body parsing and timeout
+        const body = await Promise.race([bodyTextPromise, timeoutPromise]);
+        
+        // If we get here, the body was parsed successfully - clean up the timeout
+        cleanupTimeout();
+        
+        if (!body) {
+          console.error(`[${requestId}] Empty request body`);
+          return createErrorResponse("Empty request body", undefined, 400, requestId);
+        }
+        
+        try {
+          requestData = JSON.parse(body);
+        } catch (parseError) {
+          console.error(`[${requestId}] Failed to parse request body:`, parseError);
+          return createErrorResponse(
+            "Invalid JSON in request body",
+            "Please provide a valid JSON payload",
+            400,
+            requestId
+          );
+        }
+      } catch (error) {
+        // Always clean up the timeout to prevent memory leaks
+        cleanupTimeout();
+        throw error;
       }
     } catch (bodyError) {
       console.error(`[${requestId}] Error reading request body:`, bodyError);
