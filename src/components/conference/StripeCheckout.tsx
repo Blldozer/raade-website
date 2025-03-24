@@ -54,8 +54,24 @@ const StripeCheckout = ({
       const successUrl = `${window.location.origin}/conference/success?session_id={CHECKOUT_SESSION_ID}`;
       const cancelUrl = `${window.location.origin}/conference/register`;
       
-      // Log the checkout attempt
-      console.log("Starting checkout process for:", { ticketType, email, fullName });
+      // Log the checkout attempt with more details for group registrations
+      if (ticketType === "student-group") {
+        console.log("Starting group checkout process:", { 
+          ticketType, 
+          email, 
+          fullName, 
+          groupSize,
+          totalEmails: groupEmails.length,
+          groupEmails
+        });
+      } else {
+        console.log("Starting checkout process for:", { ticketType, email, fullName });
+      }
+      
+      // Prepare sanitized group emails (ensure they're all strings)
+      const sanitizedGroupEmails = groupEmails.filter(Boolean).map(email => 
+        typeof email === 'object' && email !== null ? String(email.value || '') : String(email)
+      );
       
       // Use Supabase client to call the edge function instead of direct fetch
       const { data, error } = await supabase.functions.invoke(
@@ -66,7 +82,7 @@ const StripeCheckout = ({
             email,
             fullName,
             groupSize,
-            groupEmails,
+            groupEmails: sanitizedGroupEmails, // Send sanitized array of emails
             organization,
             role,
             specialRequests,

@@ -34,10 +34,12 @@ const PaymentSection = ({
   onPaymentError,
   onBackClick
 }: PaymentSectionProps) => {
-  // Ensure groupEmails is always treated as an array of strings
-  const sanitizedGroupEmails = Array.isArray(registrationData.groupEmails) 
+  // Ensure groupEmails is always correctly formatted for the StripeCheckout component
+  const processedGroupEmails = Array.isArray(registrationData.groupEmails) 
     ? registrationData.groupEmails.map(email => 
-        typeof email === 'string' ? email : String(email.value || ''))
+        typeof email === 'object' && email !== null && 'value' in email 
+          ? email.value 
+          : String(email || ''))
     : [];
 
   return (
@@ -49,7 +51,7 @@ const PaymentSection = ({
         email={registrationData.email}
         fullName={registrationData.fullName}
         groupSize={registrationData.groupSize}
-        groupEmails={sanitizedGroupEmails}
+        groupEmails={processedGroupEmails}
         organization={registrationData.organization}
         role={registrationData.role}
         specialRequests={registrationData.specialRequests}
