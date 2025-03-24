@@ -21,14 +21,29 @@ const ImageLoader = ({ name, onImageLoad }: ImageLoaderProps) => {
   const imageRef = useRef<HTMLImageElement>(null);
   const { isMobile } = useResponsive();
 
-  // Create image path - log this for debugging
-  const formattedName = name.split(" ").join("-").toLowerCase(); // Make lowercase for consistency
-  const imagePath = `/raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
+  // Check if we're in production
+  const isProduction = process.env.NODE_ENV === 'production';
   
-  // Log the image path for debugging
+  // Create image path - preserve capitalization to match actual file names
+  const formattedName = name.split(" ").map(part => 
+    part.charAt(0).toUpperCase() + part.slice(1)
+  ).join("-");
+  
+  // Use absolute URLs in production for reliability
+  const imagePath = isProduction 
+    ? `https://rice-raade.com/raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`
+    : `/raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
+  
+  // Log the image path and environment for debugging
   useEffect(() => {
-    console.log(`Attempting to load image from path: ${imagePath}`);
-  }, [imagePath]);
+    console.log(`Environment: ${isProduction ? 'Production' : 'Development'}`);
+    console.log(`Attempting to load image for: ${name}`);
+    console.log(`Formatted image name: ${formattedName}`);
+    console.log(`Full image path: ${imagePath}`);
+    if (isProduction) {
+      console.log(`Base URL: ${window.location.origin}`);
+    }
+  }, [imagePath, isProduction, name, formattedName]);
 
   // Effect to preload image
   useEffect(() => {
@@ -58,6 +73,20 @@ const ImageLoader = ({ name, onImageLoad }: ImageLoaderProps) => {
     img.onerror = (e) => {
       clearTimeout(timeoutTimer);
       console.error(`❌ Failed to load image for ${name}`, e);
+      
+      // Try with a direct fetch to get more error details
+      fetch(img.src)
+        .then(response => {
+          if (!response.ok) {
+            console.error(`Fetch failed with status: ${response.status}`);
+          } else {
+            console.log(`Fetch succeeded but image load failed - possible CORS issue`);
+          }
+        })
+        .catch(err => {
+          console.error(`Network error fetching image: ${err.message}`);
+        });
+      
       setImageError(true);
     };
     
