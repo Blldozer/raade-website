@@ -60,6 +60,24 @@ export const useRegistrationForm = () => {
     }
   };
 
+  // Function to reset the form and payment state
+  // This is useful when a user navigates back from Stripe checkout
+  const resetForm = () => {
+    setShowPayment(false);
+    setRegistrationData(null);
+    form.reset({
+      ticketType: "",
+      fullName: "",
+      email: "",
+      organization: "",
+      role: "",
+      specialRequests: "",
+      groupEmails: [],
+      groupSize: undefined,
+    });
+    setEmailValidated(false);
+  };
+
   return {
     form,
     isSubmitting,
@@ -69,5 +87,6 @@ export const useRegistrationForm = () => {
     handleEmailValidation,
     handleInitialSubmit,
     setShowPayment,
+    resetForm,
   };
 };

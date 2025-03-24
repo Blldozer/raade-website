@@ -1,4 +1,5 @@
 
+import { useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import RegistrationFormFields from "./RegistrationFormFields";
 import PaymentSection from "./PaymentSection";
@@ -17,10 +18,47 @@ const ConferenceRegistrationForm = () => {
     handleEmailValidation,
     handleInitialSubmit,
     setShowPayment,
+    resetForm
   } = useRegistrationForm();
 
   const { toast } = useToast();
 
+  // Check for any existing session data on mount - helps with back navigation
+  useEffect(() => {
+    const checkForExistingSession = () => {
+      const sessionId = sessionStorage.getItem("checkoutSessionId");
+      
+      // If there's a checkout session ID in storage, clear it when returning to the form
+      if (sessionId) {
+        console.log("Found existing checkout session ID, clearing session data");
+        sessionStorage.removeItem("checkoutSessionId");
+        sessionStorage.removeItem("registrationEmail");
+        
+        // If we're already showing payment, also reset the form
+        if (showPayment) {
+          toast({
+            title: "Session Reset",
+            description: "Your previous checkout session has been cleared.",
+            variant: "default",
+          });
+          resetForm();
+        }
+      }
+    };
+    
+    checkForExistingSession();
+    
+    // Also listen for storage events in case it changes in another tab
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "checkoutSessionId" && !e.newValue) {
+        checkForExistingSession();
+      }
+    };
+    
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, [showPayment]);
+  
   const handlePaymentSuccess = () => {
     form.reset();
     setShowPayment(false);

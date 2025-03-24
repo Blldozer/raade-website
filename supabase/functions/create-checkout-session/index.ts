@@ -44,8 +44,16 @@ function calculatePrice(ticketType: string, groupSize?: number) {
 }
 
 serve(async (req) => {
-  // Generate a unique ID for request tracking
-  const requestId = crypto.randomUUID();
+  // Extract request ID from user input or generate a new one
+  let requestId;
+  try {
+    const body = await req.text();
+    const requestData = JSON.parse(body);
+    requestId = requestData.requestId || crypto.randomUUID();
+  } catch (error) {
+    requestId = crypto.randomUUID();
+  }
+  
   console.log(`[${requestId}] Request started`);
   
   // Handle CORS preflight requests
@@ -73,9 +81,11 @@ serve(async (req) => {
 
     // Parse the request body
     let requestData;
+    let retryCount = 0;
     try {
       const body = await req.text();
       requestData = JSON.parse(body);
+      retryCount = requestData.retryCount || 0;
     } catch (error) {
       console.error(`[${requestId}] Failed to parse request body:`, error);
       return new Response(
@@ -116,7 +126,7 @@ serve(async (req) => {
       );
     }
 
-    console.log(`[${requestId}] Creating checkout session for ${email}, ticket: ${ticketType}`);
+    console.log(`[${requestId}] Creating checkout session for ${email}, ticket: ${ticketType}, attempt: ${retryCount + 1}`);
     
     try {
       // Calculate price information
@@ -127,6 +137,10 @@ serve(async (req) => {
         apiVersion: "2025-02-24.acacia",
         httpClient: Stripe.createFetchHttpClient(),
       });
+      
+      // Create a unique idempotency key to prevent duplicate checkouts
+      // If this is a retry, append the retry count to ensure a new key
+      const idempotencyKey = `${requestId}-${email}-${ticketType}-${retryCount}`;
       
       // Create Checkout Session
       const session = await stripe.checkout.sessions.create({
@@ -152,15 +166,18 @@ serve(async (req) => {
           fullName,
           email,
           requestId,
+          retryCount: String(retryCount),
           organization: organization || "",
           role: role || "",
           specialRequests: specialRequests || "",
           groupSize: priceInfo.isGroup ? String(groupSize) : "",
           groupEmails: priceInfo.isGroup ? JSON.stringify(groupEmails) : ""
         },
+      }, {
+        idempotencyKey // Add idempotency key to prevent duplicates
       });
       
-      console.log(`[${requestId}] Checkout session created: ${session.id}`);
+      console.log(`[${requestId}] Checkout session created: ${session.id}, attempt: ${retryCount + 1}`);
       
       // Return the session URL
       return new Response(
@@ -176,11 +193,39 @@ serve(async (req) => {
       );
       
     } catch (error) {
-      console.error(`[${requestId}] Stripe error:`, error);
+      console.error(`[${requestId}] Stripe error (attempt ${retryCount + 1}):`, error);
+      
+      // Determine if this is a recoverable error
+      const isRecoverable = 
+        error.code === 'resource_already_exists' || 
+        error.code === 'idempotency_key_in_use' ||
+        (typeof error.message === 'string' && (
+          error.message.includes('already exists') ||
+          error.message.includes('session') ||
+          error.message.includes('idempotency')
+        ));
+      
+      // Special handling for recoverable errors
+      if (isRecoverable) {
+        return new Response(
+          JSON.stringify({ 
+            error: "Checkout session conflict", 
+            message: "A previous checkout session exists. Please try again.",
+            isRecoverable: true,
+            requestId
+          }), 
+          { 
+            status: 409, // Conflict status code
+            headers: { ...corsHeaders, "Content-Type": "application/json" } 
+          }
+        );
+      }
+      
       return new Response(
         JSON.stringify({ 
           error: "Payment processing error", 
-          message: error.message || "Failed to create checkout session"
+          message: error.message || "Failed to create checkout session",
+          requestId
         }), 
         { 
           status: 400, 
@@ -194,7 +239,8 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         error: "Server error", 
-        message: "An unexpected error occurred"
+        message: "An unexpected error occurred",
+        requestId
       }), 
       { 
         status: 500, 
