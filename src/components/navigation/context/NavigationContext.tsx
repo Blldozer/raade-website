@@ -125,7 +125,7 @@ export const NavigationProvider = ({
         console.log(`NavigationContext (${instanceId}): Cleaned up nav background attribute`);
       }
     };
-  }, [instanceId, isHeroPage, initialProps.forceDarkMode, location.pathname]);
+  }, [instanceId, isHeroPage, initialProps.forceDarkMode, location.pathname, isMounted]);
   
   // Compile state into a single object for the context
   const navigationState: NavigationState = {
@@ -140,7 +140,7 @@ export const NavigationProvider = ({
     currentSection,
     currentSectionId,
     isLightBackground,
-    forceDarkMode  // Add the forceDarkMode property to the state object
+    forceDarkMode
   };
   
   return (

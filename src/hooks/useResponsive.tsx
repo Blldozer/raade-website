@@ -29,5 +29,4 @@ export const useResponsive = () => {
 };
 
 // Default export for backward compatibility
-const useResponsiveHook = useResponsive;
-export default useResponsiveHook;
+export default useResponsive;

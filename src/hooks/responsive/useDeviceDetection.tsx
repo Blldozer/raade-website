@@ -13,6 +13,7 @@ import { DeviceType } from "./usePerformanceDetection";
  * - Better handling of server-side rendering
  */
 export const useDeviceDetection = () => {
+  // Get mobile state from our dedicated hook
   const isMobile = useIsMobile();
   
   // Start with accurate initial values based on window dimensions
@@ -62,52 +63,26 @@ export const useDeviceDetection = () => {
     return 'large-desktop';
   }
   
-  const initialState = getInitialState();
-  const [isTablet, setIsTablet] = useState(initialState.isTablet);
-  const [isDesktop, setIsDesktop] = useState(initialState.isDesktop);
-  const [isLargeDesktop, setIsLargeDesktop] = useState(initialState.isLargeDesktop);
-  const [width, setWidth] = useState(initialState.width);
-  const [height, setHeight] = useState(initialState.height);
-  const [orientation, setOrientation] = useState(initialState.orientation);
-  const [breakpoint, setBreakpoint] = useState(initialState.breakpoint);
-  const [deviceType, setDeviceType] = useState<DeviceType>(initialState.deviceType);
+  const [state, setState] = useState(getInitialState());
 
   useEffect(() => {
     // Ensure we're in a browser environment
     if (typeof window === 'undefined') return;
     
     const checkSize = () => {
-      const currentWidth = window.innerWidth;
-      const currentHeight = window.innerHeight;
+      const width = window.innerWidth;
+      const height = window.innerHeight;
       
-      setWidth(currentWidth);
-      setHeight(currentHeight);
-      setOrientation(currentHeight > currentWidth ? 'portrait' : 'landscape');
-      
-      // Set device types and breakpoints
-      if (currentWidth < 640) {
-        setDeviceType('mobile');
-        setBreakpoint('xs');
-      } else if (currentWidth >= 640 && currentWidth < 768) {
-        setDeviceType('mobile');
-        setBreakpoint('sm');
-      } else if (currentWidth >= 768 && currentWidth < 1024) {
-        setIsTablet(true);
-        setDeviceType('tablet');
-        setBreakpoint('md');
-      } else if (currentWidth >= 1024 && currentWidth < 1280) {
-        setIsDesktop(true);
-        setDeviceType('desktop');
-        setBreakpoint('lg');
-      } else if (currentWidth >= 1280 && currentWidth < 1440) {
-        setIsDesktop(true);
-        setDeviceType('desktop');
-        setBreakpoint('xl');
-      } else {
-        setIsLargeDesktop(true);
-        setDeviceType('large-desktop');
-        setBreakpoint('2xl');
-      }
+      setState({
+        isTablet: width >= 768 && width < 1024,
+        isDesktop: width >= 1024 && width < 1440,
+        isLargeDesktop: width >= 1440,
+        width,
+        height,
+        orientation: height > width ? 'portrait' : 'landscape',
+        breakpoint: getBreakpoint(width),
+        deviceType: getDeviceType(width)
+      });
     };
 
     // Check immediately
@@ -131,13 +106,13 @@ export const useDeviceDetection = () => {
 
   return {
     isMobile,
-    isTablet,
-    isDesktop,
-    isLargeDesktop,
-    width,
-    height,
-    orientation,
-    breakpoint,
-    deviceType
+    isTablet: state.isTablet,
+    isDesktop: state.isDesktop,
+    isLargeDesktop: state.isLargeDesktop,
+    width: state.width,
+    height: state.height,
+    orientation: state.orientation,
+    breakpoint: state.breakpoint,
+    deviceType: state.deviceType
   };
 };

@@ -1,5 +1,5 @@
 
-import { useEffect, useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useResponsive } from "./useResponsive";
 import { useNavBackground } from "./useNavBackground";
@@ -18,7 +18,7 @@ export const useIndexPage = () => {
   const location = useLocation();
   
   // Initialize device performance state
-  const isLowPerformanceDevice = false;
+  const [isLowPerformanceDevice] = useState(false);
   
   // Use the hook to manage navbar background colors based on section visibility
   // Initialize with 'light' since the hero section has a dark background

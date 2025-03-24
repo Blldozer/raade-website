@@ -1,5 +1,5 @@
 
-import * as React from "react"
+import { useState, useEffect } from "react"
 
 const MOBILE_BREAKPOINT = 768
 
@@ -19,9 +19,9 @@ export function useIsMobile() {
     return window.innerWidth < MOBILE_BREAKPOINT;
   };
   
-  const [isMobile, setIsMobile] = React.useState(getInitialState);
+  const [isMobile, setIsMobile] = useState(getInitialState());
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Ensure we're in a browser environment
     if (typeof window === 'undefined') return;
     
@@ -29,18 +29,30 @@ export function useIsMobile() {
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
     
     // Define the change handler
-    const onChange = () => {
+    const handleChange = () => {
       setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     };
     
-    // Set up the event listener
-    mql.addEventListener("change", onChange);
+    // Set up the event listener - use the modern approach
+    if (mql.addEventListener) {
+      mql.addEventListener("change", handleChange);
+    } else {
+      // Fallback for older browsers
+      mql.addListener(handleChange);
+    }
     
     // Set the initial value explicitly again to ensure consistency
     setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     
     // Cleanup on unmount
-    return () => mql.removeEventListener("change", onChange);
+    return () => {
+      if (mql.removeEventListener) {
+        mql.removeEventListener("change", handleChange);
+      } else {
+        // Fallback for older browsers
+        mql.removeListener(handleChange);
+      }
+    };
   }, []);
 
   return isMobile;
