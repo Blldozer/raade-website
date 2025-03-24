@@ -46,12 +46,15 @@ function calculatePrice(ticketType: string, groupSize?: number) {
 serve(async (req) => {
   // Extract request ID from user input or generate a new one
   let requestId;
+  let requestData;
+  
   try {
     const body = await req.text();
-    const requestData = JSON.parse(body);
+    requestData = JSON.parse(body);
     requestId = requestData.requestId || crypto.randomUUID();
   } catch (error) {
     requestId = crypto.randomUUID();
+    console.error(`[${requestId}] Error parsing request body:`, error);
   }
   
   console.log(`[${requestId}] Request started`);
@@ -79,22 +82,25 @@ serve(async (req) => {
       );
     }
 
-    // Parse the request body
-    let requestData;
+    // Parse the request body again if it wasn't successfully parsed earlier
     let retryCount = 0;
-    try {
-      const body = await req.text();
-      requestData = JSON.parse(body);
+    if (!requestData) {
+      try {
+        const body = await req.text();
+        requestData = JSON.parse(body);
+        retryCount = requestData.retryCount || 0;
+      } catch (error) {
+        console.error(`[${requestId}] Failed to parse request body:`, error);
+        return new Response(
+          JSON.stringify({ error: "Invalid request format" }), 
+          { 
+            status: 400, 
+            headers: { ...corsHeaders, "Content-Type": "application/json" } 
+          }
+        );
+      }
+    } else {
       retryCount = requestData.retryCount || 0;
-    } catch (error) {
-      console.error(`[${requestId}] Failed to parse request body:`, error);
-      return new Response(
-        JSON.stringify({ error: "Invalid request format" }), 
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, "Content-Type": "application/json" } 
-        }
-      );
     }
     
     // Extract registration data
@@ -113,7 +119,9 @@ serve(async (req) => {
     
     // Validate required fields
     if (!ticketType || !email || !fullName || !successUrl || !cancelUrl) {
-      console.error(`[${requestId}] Missing required fields`);
+      console.error(`[${requestId}] Missing required fields:`, {
+        ticketType, email, fullName, successUrl, cancelUrl
+      });
       return new Response(
         JSON.stringify({ 
           error: "Missing required fields",
@@ -195,6 +203,27 @@ serve(async (req) => {
     } catch (error) {
       console.error(`[${requestId}] Stripe error (attempt ${retryCount + 1}):`, error);
       
+      // Check if this is a network-related error
+      const errorMessage = error.message || "Unknown error";
+      if (
+        errorMessage.includes("network") || 
+        errorMessage.includes("connection") || 
+        errorMessage.includes("timeout")
+      ) {
+        return new Response(
+          JSON.stringify({ 
+            error: "Network error", 
+            message: "Could not connect to payment service. Please try again.",
+            isRecoverable: true,
+            requestId
+          }), 
+          { 
+            status: 503, // Service Unavailable
+            headers: { ...corsHeaders, "Content-Type": "application/json" } 
+          }
+        );
+      }
+      
       // Determine if this is a recoverable error
       const isRecoverable = 
         error.code === 'resource_already_exists' || 
@@ -224,7 +253,7 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ 
           error: "Payment processing error", 
-          message: error.message || "Failed to create checkout session",
+          message: errorMessage || "Failed to create checkout session",
           requestId
         }), 
         { 
@@ -239,7 +268,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         error: "Server error", 
-        message: "An unexpected error occurred",
+        message: error.message || "An unexpected error occurred",
         requestId
       }), 
       { 

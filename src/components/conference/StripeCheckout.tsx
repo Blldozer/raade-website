@@ -10,7 +10,7 @@ interface StripeCheckoutProps {
   email: string;
   fullName: string;
   groupSize?: number;
-  groupEmails?: string[];
+  groupEmails?: Array<string | { value: string } | null>;
   organization?: string;
   role?: string;
   specialRequests?: string;
@@ -100,20 +100,19 @@ const StripeCheckout = ({
         });
       }
       
-      // Prepare sanitized group emails (ensure they're all strings)
-      // Fixed: Add proper null checks and type guards
+      // Process email list to ensure all values are valid
       const sanitizedGroupEmails = groupEmails
-        .filter((emailItem): emailItem is string | { value: string } => {
+        .filter((email): email is (string | { value: string }) => {
           // Filter out null and undefined values
-          return emailItem !== null && emailItem !== undefined;
+          return email !== null && email !== undefined;
         })
         .map(emailItem => {
-          if (typeof emailItem === 'object' && emailItem !== null) {
-            // If it's an object with a value property, extract the value safely
-            return typeof emailItem.value === 'string' ? emailItem.value : '';
+          if (typeof emailItem === 'object' && emailItem.value !== undefined) {
+            // Extract value from object format
+            return emailItem.value;
           }
-          // If it's a string or can be converted to string safely
-          return String(emailItem || '');
+          // Return string directly
+          return String(emailItem);
         })
         .filter(email => email.length > 0); // Filter out empty strings
       
