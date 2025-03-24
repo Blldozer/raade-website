@@ -1,7 +1,7 @@
 
 import { useLocation } from "react-router-dom";
 import Navigation from "../Navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 
 /**
  * NavigationWrapper component
@@ -20,18 +20,12 @@ const NavigationWrapper = () => {
   });
   
   // Create an instance ID to track this wrapper
-  const instanceId = useRef(`nav-wrapper-${Math.random().toString(36).substring(2, 9)}`);
-  
-  // Track if we've already set up navigation for this page
-  const navigationRendered = useRef(false);
+  const uniqueId = `nav-wrapper-${Math.random().toString(36).substring(2, 9)}`;
   
   // Set page-specific navigation properties once on mount/route change
   useEffect(() => {
     const pathname = location.pathname;
-    console.log(`NavigationWrapper (${instanceId.current}): Setting props for ${pathname}`);
-    
-    // Reset the navigation rendered flag on route change
-    navigationRendered.current = false;
+    console.log(`NavigationWrapper (${uniqueId}): Setting props for ${pathname}`);
     
     // Determine page-specific props
     const isAboutPage = pathname === '/about';
@@ -52,18 +46,10 @@ const NavigationWrapper = () => {
       useShortFormLogo: isApplicationPage
     });
     
-    // Set navigation rendered flag
-    navigationRendered.current = true;
-    
     return () => {
-      console.log(`NavigationWrapper (${instanceId.current}): Cleaning up props for ${pathname}`);
+      console.log(`NavigationWrapper (${uniqueId}): Cleaning up props for ${pathname}`);
     };
   }, [location.pathname]);
-  
-  // Only render navigation if we haven't already for this page
-  if (!navigationRendered.current) {
-    console.log(`NavigationWrapper (${instanceId.current}): First render for ${location.pathname}`);
-  }
   
   // Return a single Navigation component with appropriate props
   return <Navigation {...navProps} />;

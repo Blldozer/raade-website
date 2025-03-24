@@ -1,6 +1,6 @@
 
 import { Route, Routes } from "react-router-dom";
-import { Suspense, lazy, ReactNode } from "react";
+import { Suspense, lazy } from "react";
 import PageLoading from "./PageLoading";
 import ErrorBoundary from "../ErrorBoundary";
 import GlobalErrorFallback from "./GlobalErrorFallback";
@@ -20,15 +20,6 @@ import SpeakerProfile from "../../pages/SpeakerProfile";
 import RegistrationSuccess from "../../pages/RegistrationSuccess";
 
 /**
- * ScrollToTopWrapper Component
- * 
- * Properly wraps ScrollToTop with children prop support
- */
-const ScrollToTopWrapper = ({ children }: { children: ReactNode }) => (
-  <ScrollToTop>{children}</ScrollToTop>
-);
-
-/**
  * AppRoutes component
  * Centralizes all application routes with error boundaries and suspense
  */
@@ -41,8 +32,8 @@ const AppRoutes = () => {
       fallback={<GlobalErrorFallback error={new Error("Content failed to render")} />}
       suppressDevErrors={isDevelopment}
     >
-      <ScrollToTopWrapper>
-        {/* NavigationWrapper now inside proper context */}
+      <ScrollToTop>
+        {/* NavigationWrapper inside proper context */}
         <NavigationWrapper />
         <div className="flex-grow">
           <Suspense fallback={<PageLoading />}>
@@ -60,7 +51,7 @@ const AppRoutes = () => {
             </Routes>
           </Suspense>
         </div>
-      </ScrollToTopWrapper>
+      </ScrollToTop>
     </ErrorBoundary>
   );
 };

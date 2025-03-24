@@ -28,7 +28,6 @@ const App = () => {
   return (
     <AppProviders>
       <div className="min-h-screen flex flex-col">
-        {/* NavigationWrapper moved to AppRoutes to ensure it's within Router context */}
         <AppRoutes />
         <Footer />
       </div>

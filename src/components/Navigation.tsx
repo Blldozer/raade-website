@@ -22,7 +22,7 @@ const Navigation = ({
   useShortFormLogo = false 
 }: NavigationProps) => {
   // Generate a unique ID for this navigation instance
-  const instanceId = useRef(`nav-main-${Math.random().toString(36).substring(2, 9)}`);
+  const uniqueId = `nav-main-${Math.random().toString(36).substring(2, 9)}`;
   const location = useLocation();
   const [mounted, setMounted] = useState(false);
   
@@ -30,11 +30,11 @@ const Navigation = ({
   useEffect(() => {
     // Check if we've already mounted navigation for this page
     if (mounted) {
-      console.warn(`Navigation (${instanceId.current}): Already mounted on ${location.pathname}, skipping duplicate render`);
+      console.warn(`Navigation (${uniqueId}): Already mounted on ${location.pathname}, skipping duplicate render`);
       return;
     }
     
-    console.log(`Navigation (${instanceId.current}): Mounting with props:`, 
+    console.log(`Navigation (${uniqueId}): Mounting with props:`, 
       { isHeroPage, forceDarkMode, useShortFormLogo, path: location.pathname });
     
     // Track existing navigation elements to prevent duplicates
@@ -45,14 +45,14 @@ const Navigation = ({
     setMounted(true);
     
     return () => {
-      console.log(`Navigation (${instanceId.current}): Unmounting from ${location.pathname}`);
+      console.log(`Navigation (${uniqueId}): Unmounting from ${location.pathname}`);
       setMounted(false);
     };
   }, [isHeroPage, forceDarkMode, useShortFormLogo, location.pathname, mounted]);
   
   return (
     <NavigationContainer
-      instanceId={instanceId.current}
+      instanceId={uniqueId}
       isHeroPage={isHeroPage}
       forceDarkMode={forceDarkMode}
       useShortFormLogo={useShortFormLogo}

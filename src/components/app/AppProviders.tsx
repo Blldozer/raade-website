@@ -2,7 +2,7 @@
 import { ReactNode, useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
-import { Toaster as SonnerToaster } from "sonner";
+import { Toaster } from "sonner";
 import ErrorBoundary from "../ErrorBoundary";
 import GlobalErrorFallback from "./GlobalErrorFallback";
 import TouchDebugger from "../TouchDebugger";
@@ -77,8 +77,8 @@ const AppProviders = ({ children }: AppProvidersProps) => {
               suppressDevErrors={isDevelopment}
             >
               {children}
-              <SonnerToaster />
-              {isDevelopment && process.env.NODE_ENV === 'development' && <TouchDebugger />}
+              <Toaster />
+              {isDevelopment && <TouchDebugger />}
             </ErrorBoundary>
           </TooltipProvider>
         </QueryClientProvider>
