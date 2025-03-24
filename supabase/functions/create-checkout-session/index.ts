@@ -43,6 +43,76 @@ function calculatePrice(ticketType: string, groupSize?: number) {
   }
 }
 
+// Helper function to sanitize and validate input
+function validateRequestData(requestData: any) {
+  // Required fields validation
+  const requiredFields = ['ticketType', 'email', 'fullName', 'successUrl', 'cancelUrl'];
+  const missingFields = requiredFields.filter(field => !requestData[field]);
+  
+  if (missingFields.length > 0) {
+    return {
+      isValid: false,
+      error: `Missing required fields: ${missingFields.join(', ')}`
+    };
+  }
+  
+  // Data type validation
+  if (typeof requestData.ticketType !== 'string' || !['student', 'professional', 'student-group'].includes(requestData.ticketType)) {
+    return {
+      isValid: false,
+      error: "Invalid ticket type. Must be 'student', 'professional', or 'student-group'"
+    };
+  }
+  
+  if (typeof requestData.email !== 'string' || !requestData.email.includes('@')) {
+    return {
+      isValid: false,
+      error: "Invalid email format"
+    };
+  }
+  
+  if (typeof requestData.fullName !== 'string' || requestData.fullName.length < 2) {
+    return {
+      isValid: false,
+      error: "Invalid full name"
+    };
+  }
+  
+  // Group size validation for student-group
+  if (requestData.ticketType === 'student-group') {
+    if (!requestData.groupSize || requestData.groupSize < 5) {
+      return {
+        isValid: false,
+        error: "Group registrations require at least 5 participants"
+      };
+    }
+  }
+  
+  return { isValid: true };
+}
+
+// Sanitize group emails
+function sanitizeGroupEmails(emails: any): string[] {
+  if (!Array.isArray(emails)) {
+    return [];
+  }
+  
+  return emails
+    .filter((email): email is (string | { value: string }) => {
+      // Filter out null and undefined values
+      return email !== null && email !== undefined;
+    })
+    .map(emailItem => {
+      if (typeof emailItem === 'object' && emailItem.value !== undefined) {
+        // Extract value from object format
+        return emailItem.value;
+      }
+      // Return string directly if it's a string
+      return String(emailItem);
+    })
+    .filter(email => email.length > 0 && typeof email === 'string' && email.includes('@')); // Filter out invalid emails
+}
+
 serve(async (req) => {
   // Extract request ID from user input or generate a new one
   let requestId;
@@ -55,6 +125,18 @@ serve(async (req) => {
   } catch (error) {
     requestId = crypto.randomUUID();
     console.error(`[${requestId}] Error parsing request body:`, error);
+    
+    return new Response(
+      JSON.stringify({ 
+        error: "Invalid request format", 
+        message: "Could not parse request body",
+        requestId
+      }), 
+      { 
+        status: 400, 
+        headers: { ...corsHeaders, "Content-Type": "application/json" } 
+      }
+    );
   }
   
   console.log(`[${requestId}] Request started`);
@@ -103,7 +185,24 @@ serve(async (req) => {
       retryCount = requestData.retryCount || 0;
     }
     
-    // Extract registration data
+    // Validate request data
+    const validation = validateRequestData(requestData);
+    if (!validation.isValid) {
+      console.error(`[${requestId}] Validation error:`, validation.error);
+      return new Response(
+        JSON.stringify({ 
+          error: "Validation error", 
+          message: validation.error,
+          requestId 
+        }), 
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
+    }
+    
+    // Extract validated registration data
     const { 
       ticketType, 
       email,
@@ -117,23 +216,9 @@ serve(async (req) => {
       cancelUrl
     } = requestData;
     
-    // Validate required fields
-    if (!ticketType || !email || !fullName || !successUrl || !cancelUrl) {
-      console.error(`[${requestId}] Missing required fields:`, {
-        ticketType, email, fullName, successUrl, cancelUrl
-      });
-      return new Response(
-        JSON.stringify({ 
-          error: "Missing required fields",
-          message: "Please provide ticketType, email, fullName, successUrl, and cancelUrl"
-        }), 
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, "Content-Type": "application/json" } 
-        }
-      );
-    }
-
+    // Sanitize group emails
+    const sanitizedGroupEmails = sanitizeGroupEmails(groupEmails);
+    
     console.log(`[${requestId}] Creating checkout session for ${email}, ticket: ${ticketType}, attempt: ${retryCount + 1}`);
     
     try {
@@ -179,7 +264,7 @@ serve(async (req) => {
           role: role || "",
           specialRequests: specialRequests || "",
           groupSize: priceInfo.isGroup ? String(groupSize) : "",
-          groupEmails: priceInfo.isGroup ? JSON.stringify(groupEmails) : ""
+          groupEmails: priceInfo.isGroup ? JSON.stringify(sanitizedGroupEmails) : ""
         },
       }, {
         idempotencyKey // Add idempotency key to prevent duplicates

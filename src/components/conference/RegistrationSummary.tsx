@@ -1,5 +1,7 @@
 
-import { RegistrationFormData, getTicketPriceText } from "./RegistrationFormTypes";
+import { Card, CardContent } from "@/components/ui/card";
+import { RegistrationFormData } from "./RegistrationFormTypes";
+import { calculateTotalPrice } from "./RegistrationFormTypes";
 
 interface RegistrationSummaryProps {
   registrationData: RegistrationFormData;
@@ -8,69 +10,87 @@ interface RegistrationSummaryProps {
 /**
  * RegistrationSummary Component
  * 
- * Displays a summary of the user's registration information including:
- * - Personal details
- * - Ticket type and pricing
- * - Group size and total cost for group registrations
- * - All information is presented in an accessible, responsive layout
+ * Displays a summary of the user's registration details:
+ * - Shows key registration information
+ * - Calculates and displays pricing
+ * - Properly handles dark mode display
+ * - Provides clear visual structure with responsive design
  * 
- * @param registrationData - The form data from the registration form
+ * @param registrationData - The form data to display in the summary
  */
 const RegistrationSummary = ({ registrationData }: RegistrationSummaryProps) => {
-  const isStudentGroup = registrationData.ticketType === "student-group";
+  const { 
+    fullName, 
+    email, 
+    organization, 
+    role,
+    ticketType, 
+    groupSize, 
+    specialRequests 
+  } = registrationData;
   
-  // Calculate total price for group registrations
-  let totalPrice = "";
-  if (isStudentGroup && registrationData.groupSize) {
-    const perPersonPrice = 30;
-    const totalAmount = perPersonPrice * registrationData.groupSize;
-    totalPrice = `$${totalAmount} total ($${perPersonPrice}/person × ${registrationData.groupSize})`;
-  }
+  // Calculate total price
+  const totalPrice = calculateTotalPrice(ticketType, groupSize);
   
+  // Get formatted ticket type for display
+  const getFormattedTicketType = () => {
+    switch (ticketType) {
+      case "student":
+        return "Student";
+      case "professional":
+        return "Professional";
+      case "student-group":
+        return `Student Group (${groupSize} attendees)`;
+      default:
+        return ticketType;
+    }
+  };
+
   return (
-    <div className="bg-gray-50 p-4 rounded-md">
-      <h3 className="font-medium mb-2 font-simula">Registration Summary</h3>
-      <dl className="space-y-1">
-        <div className="flex flex-wrap">
-          <dt className="font-medium w-32 font-lora">Name:</dt>
-          <dd className="font-lora">{registrationData.fullName}</dd>
-        </div>
-        <div className="flex flex-wrap">
-          <dt className="font-medium w-32 font-lora">Email:</dt>
-          <dd className="font-lora break-all">{registrationData.email}</dd>
-        </div>
-        <div className="flex flex-wrap">
-          <dt className="font-medium w-32 font-lora">Organization:</dt>
-          <dd className="font-lora">{registrationData.organization}</dd>
-        </div>
-        <div className="flex flex-wrap">
-          <dt className="font-medium w-32 font-lora">Ticket Type:</dt>
-          <dd className="font-lora">{registrationData.ticketType} {getTicketPriceText(registrationData.ticketType || "")}</dd>
-        </div>
-      </dl>
-      
-      {isStudentGroup && registrationData.groupSize && (
-        <div className="mt-2 border-t pt-2">
-          <div className="flex flex-wrap">
-            <dt className="font-medium w-32 font-lora">Group Size:</dt>
-            <dd className="font-lora">{registrationData.groupSize} people</dd>
+    <Card className="border border-gray-200 dark:border-gray-700 dark:bg-gray-800">
+      <CardContent className="pt-6">
+        <h3 className="text-lg font-semibold mb-4 dark:text-white">Registration Summary</h3>
+        
+        <div className="space-y-3 text-sm">
+          <div className="flex justify-between">
+            <span className="text-gray-600 dark:text-gray-300">Name:</span>
+            <span className="font-medium dark:text-white">{fullName}</span>
           </div>
-          {totalPrice && (
-            <div className="flex flex-wrap">
-              <dt className="font-medium w-32 font-lora">Total Price:</dt>
-              <dd className="font-lora text-blue-700">{totalPrice}</dd>
+          
+          <div className="flex justify-between">
+            <span className="text-gray-600 dark:text-gray-300">Email:</span>
+            <span className="font-medium dark:text-white">{email}</span>
+          </div>
+          
+          <div className="flex justify-between">
+            <span className="text-gray-600 dark:text-gray-300">Organization:</span>
+            <span className="font-medium dark:text-white">{organization}</span>
+          </div>
+          
+          <div className="flex justify-between">
+            <span className="text-gray-600 dark:text-gray-300">Role:</span>
+            <span className="font-medium dark:text-white">{role}</span>
+          </div>
+          
+          <div className="flex justify-between">
+            <span className="text-gray-600 dark:text-gray-300">Ticket:</span>
+            <span className="font-medium dark:text-white">{getFormattedTicketType()}</span>
+          </div>
+          
+          <div className="flex justify-between border-t pt-2 mt-2 border-gray-200 dark:border-gray-700">
+            <span className="text-gray-600 dark:text-gray-300">Total:</span>
+            <span className="font-bold text-[#274675] dark:text-[#FBB03B]">${totalPrice}.00</span>
+          </div>
+          
+          {specialRequests && (
+            <div className="border-t pt-2 mt-2 border-gray-200 dark:border-gray-700">
+              <span className="text-gray-600 block mb-1 dark:text-gray-300">Special Requests:</span>
+              <p className="text-sm italic dark:text-gray-200">{specialRequests}</p>
             </div>
           )}
         </div>
-      )}
-      
-      {registrationData.specialRequests && (
-        <div className="mt-2 border-t pt-2">
-          <dt className="font-medium font-lora">Special Requests:</dt>
-          <dd className="font-lora mt-1 text-gray-700">{registrationData.specialRequests}</dd>
-        </div>
-      )}
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

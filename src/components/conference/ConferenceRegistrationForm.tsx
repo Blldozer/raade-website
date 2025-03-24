@@ -9,6 +9,15 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+/**
+ * ConferenceRegistrationForm Component
+ * 
+ * Displays the main registration form for the conference:
+ * - Properly supports dark mode with color inversion for mobile
+ * - Handles form state and session management
+ * - Provides smooth transitions between registration and payment steps
+ * - Shows appropriate feedback with toast notifications
+ */
 const ConferenceRegistrationForm = () => {
   const {
     form,
@@ -73,12 +82,12 @@ const ConferenceRegistrationForm = () => {
   };
 
   return (
-    <Card className="shadow-lg border-[#FBB03B]/10">
+    <Card className="shadow-lg border-[#FBB03B]/10 dark:border-[#FBB03B]/20 dark:bg-gray-900">
       <CardHeader>
-        <CardTitle className="text-2xl font-simula">Registration Details</CardTitle>
-        <CardDescription>Please fill out the form below to register for the conference.</CardDescription>
+        <CardTitle className="text-2xl font-simula dark:text-white">Registration Details</CardTitle>
+        <CardDescription className="dark:text-gray-300">Please fill out the form below to register for the conference.</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="dark:text-gray-200">
         <StepIndicator currentStep={showPayment ? 'payment' : 'registration'} />
         
         {!showPayment ? (
@@ -95,7 +104,8 @@ const ConferenceRegistrationForm = () => {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora"
+              className="w-full bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora 
+                dark:bg-[#FBB03B] dark:hover:bg-[#FBB03B]/80 dark:text-white"
             >
               {isSubmitting ? (
                 <>
@@ -117,7 +127,7 @@ const ConferenceRegistrationForm = () => {
           />
         )}
       </CardContent>
-      <CardFooter className="text-sm text-gray-500 border-t pt-4 font-lora">
+      <CardFooter className="text-sm text-gray-500 border-t pt-4 font-lora dark:text-gray-400 dark:border-gray-700">
         Your information will only be used for conference communication purposes.
       </CardFooter>
     </Card>
