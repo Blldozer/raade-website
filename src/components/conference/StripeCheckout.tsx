@@ -103,7 +103,10 @@ const StripeCheckout = ({
       // Prepare sanitized group emails (ensure they're all strings)
       // Fixed: Add proper null checks and type guards
       const sanitizedGroupEmails = groupEmails
-        .filter(Boolean) // Remove nullish values
+        .filter((emailItem): emailItem is string | { value: string } => {
+          // Filter out null and undefined values
+          return emailItem !== null && emailItem !== undefined;
+        })
         .map(emailItem => {
           if (typeof emailItem === 'object' && emailItem !== null) {
             // If it's an object with a value property, extract the value safely
