@@ -34,6 +34,11 @@ const PaymentSection = ({
   onPaymentError,
   onBackClick
 }: PaymentSectionProps) => {
+  // Convert groupEmails from any potential object format to string array
+  const sanitizedGroupEmails = registrationData.groupEmails 
+    ? registrationData.groupEmails.map(email => typeof email === 'string' ? email : String(email.value || ''))
+    : [];
+
   return (
     <div className="space-y-6">
       <RegistrationSummary registrationData={registrationData} />
@@ -43,7 +48,7 @@ const PaymentSection = ({
         email={registrationData.email}
         fullName={registrationData.fullName}
         groupSize={registrationData.groupSize}
-        groupEmails={registrationData.groupEmails}
+        groupEmails={sanitizedGroupEmails}
         organization={registrationData.organization}
         role={registrationData.role}
         specialRequests={registrationData.specialRequests}

@@ -8,7 +8,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import ErrorBoundary from "../ErrorBoundary";
 import GlobalErrorFallback from "./GlobalErrorFallback";
 import TouchDebugger from "../TouchDebugger";
-import ScrollToTop from "./ScrollToTop";
 
 // Initialize the QueryClient with better error handling
 const queryClient = new QueryClient({
@@ -63,18 +62,16 @@ const AppProviders = ({ children }: AppProvidersProps) => {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <ErrorBoundary 
-            fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
-            suppressDevErrors={isDevelopment}
-          >
-            <ScrollToTop />
-            {children}
-          </ErrorBoundary>
+        {/* Moved TooltipProvider inside the Routes component to avoid React context issues */}
+        <Toaster />
+        <Sonner />
+        <ErrorBoundary 
+          fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
+          suppressDevErrors={isDevelopment}
+        >
+          {children}
           {isDevelopment && <TouchDebugger />}
-        </TooltipProvider>
+        </ErrorBoundary>
       </BrowserRouter>
     </QueryClientProvider>
   );

@@ -5,6 +5,7 @@ import PageLoading from "./PageLoading";
 import ErrorBoundary from "../ErrorBoundary";
 import GlobalErrorFallback from "./GlobalErrorFallback";
 import ScrollToTop from "./ScrollToTop";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 // Import main pages
 import Index from "../../pages/Index";
@@ -32,22 +33,24 @@ const AppRoutes = () => {
       suppressDevErrors={isDevelopment}
     >
       <ScrollToTop>
-        <div className="flex-grow">
-          <Suspense fallback={<PageLoading />}>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/studios" element={<InnovationStudios />} />
-              <Route path="/conference" element={<Conference />} />
-              <Route path="/conference/register" element={<ConferenceRegistration />} />
-              <Route path="/conference/success" element={<RegistrationSuccess />} />
-              <Route path="/conference/speakers/:speakerId" element={<SpeakerProfile />} />
-              <Route path="/projects/:projectSlug" element={<ProjectDetail />} />
-              <Route path="/apply/student" element={<StudentApplication />} />
-              <Route path="/apply/partner" element={<PartnerApplication />} />
-            </Routes>
-          </Suspense>
-        </div>
+        <TooltipProvider>
+          <div className="flex-grow">
+            <Suspense fallback={<PageLoading />}>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/studios" element={<InnovationStudios />} />
+                <Route path="/conference" element={<Conference />} />
+                <Route path="/conference/register" element={<ConferenceRegistration />} />
+                <Route path="/conference/success" element={<RegistrationSuccess />} />
+                <Route path="/conference/speakers/:speakerId" element={<SpeakerProfile />} />
+                <Route path="/projects/:projectSlug" element={<ProjectDetail />} />
+                <Route path="/apply/student" element={<StudentApplication />} />
+                <Route path="/apply/partner" element={<PartnerApplication />} />
+              </Routes>
+            </Suspense>
+          </div>
+        </TooltipProvider>
       </ScrollToTop>
     </ErrorBoundary>
   );

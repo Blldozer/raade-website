@@ -16,7 +16,7 @@ interface ScrollToTopProps {
   children: ReactNode;
 }
 
-const ScrollToTop: React.FC<ScrollToTopProps> = ({ children }) => {
+const ScrollToTop = ({ children }: ScrollToTopProps) => {
   const { pathname } = useLocation();
 
   useEffect(() => {
