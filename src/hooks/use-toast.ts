@@ -1,5 +1,5 @@
 
-// This file properly exports the toast functionality from the UI components
+// Properly export the toast functionality for shadcn/ui components
 import {
   Toast,
   ToastTitle,
@@ -8,7 +8,6 @@ import {
   ToastViewport,
   ToastAction,
   ToastClose,
-  // Don't import ToastProps to avoid conflict
 } from "@/components/ui/toast";
 
 import {
