@@ -4,8 +4,6 @@ import { Button } from "@/components/ui/button";
 import StripeCheckout from "./StripeCheckout";
 import { RegistrationFormData } from "./RegistrationFormTypes";
 import RegistrationSummary from "./RegistrationSummary";
-import PaymentConfirmation from "./payment/PaymentConfirmation";
-import { useEmailConfirmation } from "./payment/EmailConfirmationSender";
 
 interface PaymentSectionProps {
   registrationData: RegistrationFormData;
@@ -20,9 +18,8 @@ interface PaymentSectionProps {
  * 
  * Handles the payment process for conference registration:
  * - Displays registration summary
- * - Initializes Stripe payment flow
- * - Sends confirmation email after successful payment
- * - Provides feedback to the user throughout the process
+ * - Initializes Stripe Checkout flow
+ * - Provides back button to return to form
  * 
  * @param registrationData - Form data from the registration form
  * @param isSubmitting - Loading state for the form
@@ -37,30 +34,6 @@ const PaymentSection = ({
   onPaymentError,
   onBackClick
 }: PaymentSectionProps) => {
-  const [paymentComplete, setPaymentComplete] = useState(false);
-  
-  // Handle email confirmation with custom hook
-  const { sendingEmail, sendConfirmationEmail } = useEmailConfirmation(
-    registrationData,
-    onPaymentSuccess
-  );
-  
-  const handlePaymentSuccess = async () => {
-    setPaymentComplete(true);
-    // Send confirmation email
-    sendConfirmationEmail();
-  };
-  
-  if (paymentComplete) {
-    return (
-      <PaymentConfirmation 
-        registrationData={registrationData}
-        sendingEmail={sendingEmail}
-        onSuccess={onPaymentSuccess}
-      />
-    );
-  }
-
   return (
     <div className="space-y-6">
       <RegistrationSummary registrationData={registrationData} />
@@ -69,9 +42,13 @@ const PaymentSection = ({
         ticketType={registrationData.ticketType}
         email={registrationData.email}
         fullName={registrationData.fullName}
-        onSuccess={handlePaymentSuccess}
-        onError={onPaymentError}
         groupSize={registrationData.groupSize}
+        groupEmails={registrationData.groupEmails}
+        organization={registrationData.organization}
+        role={registrationData.role}
+        specialRequests={registrationData.specialRequests}
+        onSuccess={onPaymentSuccess}
+        onError={onPaymentError}
       />
       
       <Button 

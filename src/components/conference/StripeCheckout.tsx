@@ -1,112 +1,140 @@
 
-import { useCallback } from "react";
-import LoadingIndicator from "./payment/LoadingIndicator";
-import ErrorDisplay from "./payment/ErrorDisplay";
-import PaymentContent from "./payment/PaymentContent";
-import PaymentSuccessHandler from "./payment/PaymentSuccessHandler";
-import { usePaymentIntent } from "./payment/hooks/usePaymentIntent";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface StripeCheckoutProps {
   ticketType: string;
   email: string;
   fullName: string;
   groupSize?: number;
+  groupEmails?: string[];
+  organization?: string;
+  role?: string;
+  specialRequests?: string;
   onSuccess: () => void;
   onError: (error: string) => void;
 }
 
 /**
- * StripeCheckout Component
+ * StripeCheckout Component - Stripe Checkout Implementation
  * 
- * Orchestrates the payment flow by:
- * - Creating a payment intent via Supabase Edge Function
- * - Managing different states of the payment process
- * - Providing error handling and retry capabilities
+ * Creates a checkout session using Supabase Edge Function and redirects
+ * to Stripe's hosted checkout page rather than using Stripe Elements.
+ * 
+ * This approach:
+ * - Simplifies implementation and reduces frontend code
+ * - Provides a consistent, optimized checkout experience
+ * - Supports more payment methods out of the box
+ * - Handles mobile responsiveness automatically
  */
-const StripeCheckout = ({ 
-  ticketType, 
+const StripeCheckout = ({
+  ticketType,
   email,
   fullName,
   groupSize,
+  groupEmails = [],
+  organization,
+  role,
+  specialRequests,
   onSuccess,
-  onError 
+  onError
 }: StripeCheckoutProps) => {
-  // Use the payment intent hook for managing intent creation
-  const {
-    clientSecret,
-    isLoading,
-    amount,
-    currency,
-    isGroupRegistration,
-    errorDetails,
-    requestId,
-    handleRetry
-  } = usePaymentIntent({
-    ticketType,
-    email,
-    fullName,
-    groupSize,
-    onSuccess,
-    onError
-  });
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
-  // Handle payment error with retry capability
-  const handlePaymentError = useCallback((error: string) => {
-    // Only forward the error to parent if not already in error state
-    if (!errorDetails) {
-      onError(error);
-    }
-  }, [errorDetails, onError]);
-
-  // Loading state
-  if (isLoading) {
-    return <LoadingIndicator />;
-  }
-
-  // Error state
-  if (errorDetails) {
-    // Include request ID in error if available
-    const errorWithRequestId = requestId 
-      ? `${errorDetails} (Request ID: ${requestId})` 
-      : errorDetails;
+  // Create and redirect to checkout session
+  const handleCheckout = async () => {
+    try {
+      setIsLoading(true);
       
-    return (
-      <ErrorDisplay 
-        title="Payment Error" 
-        details={errorWithRequestId} 
-        onRetry={handleRetry} 
-      />
-    );
-  }
+      // Generate the success and cancel URLs
+      const successUrl = `${window.location.origin}/conference/success?session_id={CHECKOUT_SESSION_ID}`;
+      const cancelUrl = `${window.location.origin}/conference/register`;
+      
+      // Log the checkout attempt
+      console.log("Starting checkout process for:", { ticketType, email, fullName });
+      
+      // Call the Supabase Edge Function to create a checkout session
+      const response = await fetch(
+        "https://dermbucktbegnbkjzobs.supabase.co/functions/v1/create-checkout-session",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ticketType,
+            email,
+            fullName,
+            groupSize,
+            groupEmails,
+            organization,
+            role,
+            specialRequests,
+            successUrl,
+            cancelUrl
+          }),
+        }
+      );
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Checkout error:", errorData);
+        throw new Error(errorData.message || "Failed to create checkout session");
+      }
+      
+      const { url, sessionId } = await response.json();
+      
+      if (!url) {
+        throw new Error("No checkout URL returned");
+      }
+      
+      console.log("Redirecting to Stripe Checkout:", url);
+      
+      // Store the session ID in sessionStorage for post-checkout verification
+      sessionStorage.setItem("checkoutSessionId", sessionId);
+      sessionStorage.setItem("registrationEmail", email);
+      
+      // Redirect to Stripe Checkout
+      window.location.href = url;
+      
+    } catch (error) {
+      console.error("Checkout error:", error);
+      setIsLoading(false);
+      
+      // Show error toast
+      toast({
+        title: "Checkout Failed",
+        description: error.message || "There was an error starting the checkout process. Please try again.",
+        variant: "destructive",
+      });
+      
+      onError(error.message || "Checkout failed");
+    }
+  };
 
-  // Missing client secret state
-  if (!clientSecret) {
-    return (
-      <ErrorDisplay 
-        title="Payment Setup Failed" 
-        details="We couldn't initialize the payment process. Please try again later." 
-        onRetry={handleRetry} 
-      />
-    );
-  }
-
-  // Ready state - show payment form
   return (
-    <PaymentSuccessHandler onSuccess={onSuccess}>
-      {(handleSuccess) => (
-        <PaymentContent 
-          clientSecret={clientSecret}
-          email={email}
-          amount={amount}
-          currency={currency}
-          isGroupRegistration={isGroupRegistration}
-          groupSize={groupSize}
-          requestId={requestId}
-          onSuccess={handleSuccess}
-          onError={handlePaymentError}
-        />
-      )}
-    </PaymentSuccessHandler>
+    <div className="mt-6">
+      <Button
+        onClick={handleCheckout}
+        disabled={isLoading}
+        className="w-full bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora"
+      >
+        {isLoading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Preparing Checkout...
+          </>
+        ) : (
+          <>Proceed to Checkout</>
+        )}
+      </Button>
+      <p className="text-xs text-gray-500 mt-2 text-center">
+        You'll be redirected to Stripe's secure payment page
+      </p>
+    </div>
   );
 };
 
