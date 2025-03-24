@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { registrationSchema, RegistrationFormData } from "../RegistrationFormTypes";
 
 export const useRegistrationForm = () => {
@@ -10,7 +10,6 @@ export const useRegistrationForm = () => {
   const [showPayment, setShowPayment] = useState(false);
   const [registrationData, setRegistrationData] = useState<RegistrationFormData | null>(null);
   const [emailValidated, setEmailValidated] = useState(false);
-  const { toast } = useToast();
 
   // Initialize form with zod schema validation
   const form = useForm<RegistrationFormData>({

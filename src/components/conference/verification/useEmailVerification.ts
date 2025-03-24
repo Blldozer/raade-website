@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 /**
  * Custom hook to handle email verification logic
@@ -29,7 +29,6 @@ export const useEmailVerification = (
   const [isSendingEmail, setIsSendingEmail] = useState<boolean>(false);
   const [sendingAttempts, setSendingAttempts] = useState<number>(0);
   const [sendingError, setSendingError] = useState<string | null>(null);
-  const { toast } = useToast();
 
   // Handle initial email sending
   useEffect(() => {
