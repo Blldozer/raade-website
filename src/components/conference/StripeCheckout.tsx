@@ -30,6 +30,7 @@ interface StripeCheckoutProps {
  * - Better request validation and sanitization
  * - Detailed logging for easier troubleshooting
  * - Proper dark mode support for all devices
+ * - Enhanced session cleanup to prevent conflicts
  */
 const StripeCheckout = ({
   ticketType,
@@ -48,26 +49,41 @@ const StripeCheckout = ({
   const [requestId, setRequestId] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Effect to clear session storage on component mount
+  // Effect to clear session storage on component mount and unmount
   useEffect(() => {
-    // Clear any stale checkout session data from previous attempts
-    if (sessionStorage.getItem("checkoutSessionId")) {
-      console.log("Clearing stale checkout session data");
-      sessionStorage.removeItem("checkoutSessionId");
-      sessionStorage.removeItem("registrationEmail");
-    }
+    // Function to clear stale checkout sessions
+    const clearStaleCheckoutSessions = () => {
+      const sessionId = sessionStorage.getItem("checkoutSessionId");
+      const sessionEmail = sessionStorage.getItem("registrationEmail");
+      
+      // Only clear if the session exists and doesn't match current email (different user)
+      // or if we're starting a new checkout process for the same user
+      if (sessionId && (sessionEmail !== email || window.location.pathname.includes("/register"))) {
+        console.log(`Clearing stale checkout session data (sessionId: ${sessionId.substring(0, 8)}...)`);
+        sessionStorage.removeItem("checkoutSessionId");
+        sessionStorage.removeItem("registrationEmail");
+      }
+    };
+    
+    // Clear on mount
+    clearStaleCheckoutSessions();
     
     // Generate unique request ID for this checkout attempt
     const newRequestId = `${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     setRequestId(newRequestId);
     
+    // Clear on unmount if we're navigating away
     return () => {
-      // Cleanup function to check if we're navigating away
       if (isLoading) {
         console.log("Component unmounting while loading - possible navigation away from checkout");
       }
+      
+      // If navigating away from registration page, also clear session data
+      if (window.location.pathname !== "/conference/register") {
+        clearStaleCheckoutSessions();
+      }
     };
-  }, []);
+  }, [email]);
 
   // Create and redirect to checkout session
   const handleCheckout = async () => {
@@ -79,9 +95,10 @@ const StripeCheckout = ({
         throw new Error("Missing required information. Please complete all fields.");
       }
       
-      // Generate the success and cancel URLs
-      const successUrl = `${window.location.origin}/conference/success?session_id={CHECKOUT_SESSION_ID}`;
-      const cancelUrl = `${window.location.origin}/conference/register`;
+      // Generate the success and cancel URLs with unique identifiers to prevent caching
+      const cacheBuster = `_${Date.now()}`;
+      const successUrl = `${window.location.origin}/conference/success?session_id={CHECKOUT_SESSION_ID}&cb=${cacheBuster}`;
+      const cancelUrl = `${window.location.origin}/conference/register?cb=${cacheBuster}`;
       
       // Log the checkout attempt with more details for debugging
       console.log("Starting checkout process:", { 
@@ -132,7 +149,9 @@ const StripeCheckout = ({
             cancelUrl,
             requestId,
             retryCount,
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            // Add a unique identifier to prevent caching issues
+            uniqueId: `${Date.now()}-${Math.random().toString(36).substring(2, 7)}`
           }
         }
       );
@@ -151,6 +170,10 @@ const StripeCheckout = ({
             description: "Resetting session data and trying again...",
             variant: "default",
           });
+          
+          // Clear any existing session data first
+          sessionStorage.removeItem("checkoutSessionId");
+          sessionStorage.removeItem("registrationEmail");
           
           // Increment retry count and try again if under max retries
           if (retryCount < 2) { // Max 3 attempts (0, 1, 2)

@@ -37,6 +37,7 @@ const ConferenceRegistrationForm = () => {
   useEffect(() => {
     const checkForExistingSession = () => {
       const sessionId = sessionStorage.getItem("checkoutSessionId");
+      const sessionEmail = sessionStorage.getItem("registrationEmail");
       
       // If there's a checkout session ID in storage, clear it when returning to the form
       if (sessionId) {
@@ -75,6 +76,13 @@ const ConferenceRegistrationForm = () => {
   };
 
   const handlePaymentError = (errorMessage: string) => {
+    // Reset form when we get a critical payment error
+    if (errorMessage.includes("Edge Function") || 
+        errorMessage.includes("Payment service")) {
+      resetForm();
+      setShowPayment(false);
+    }
+    
     toast({
       title: "Payment failed",
       description: errorMessage || "There was an error processing your payment. Please try again.",
@@ -125,7 +133,12 @@ const ConferenceRegistrationForm = () => {
             isSubmitting={isSubmitting}
             onPaymentSuccess={handlePaymentSuccess}
             onPaymentError={handlePaymentError}
-            onBackClick={() => setShowPayment(false)}
+            onBackClick={() => {
+              // Clear any session data when going back
+              sessionStorage.removeItem("checkoutSessionId");
+              sessionStorage.removeItem("registrationEmail");
+              setShowPayment(false);
+            }}
           />
         )}
       </CardContent>

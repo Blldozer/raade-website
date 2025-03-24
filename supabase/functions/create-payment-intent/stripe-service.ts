@@ -1,3 +1,4 @@
+
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createTimeout } from "./utils.ts";
 
@@ -6,7 +7,7 @@ export const MAX_RETRIES = 3;
 // Request timeout in milliseconds
 export const REQUEST_TIMEOUT = 15000; // Increased from 10000 to 15000
 
-// Create payment intent with retries
+// Create payment intent with proper error handling and retries
 export async function createPaymentIntentWithRetry(
   stripe: Stripe,
   amount: number,
@@ -19,13 +20,12 @@ export async function createPaymentIntentWithRetry(
   isGroupRegistration: boolean,
   requestId: string
 ) {
-  let paymentIntent = null;
   let retryCount = 0;
   let lastError = null;
   
   console.log(`[${requestId}] Starting payment intent creation for ${email}, amount: ${amount}, ticket: ${ticketType}`);
   
-  while (retryCount < MAX_RETRIES && !paymentIntent) {
+  while (retryCount < MAX_RETRIES) {
     if (retryCount > 0) {
       // Exponential backoff: 500ms, 1000ms, 2000ms
       const backoffTime = Math.pow(2, retryCount - 1) * 500;
@@ -34,12 +34,12 @@ export async function createPaymentIntentWithRetry(
     }
     
     try {
-      // Create a timeout that can be cleared
-      let timeoutId: number | null = null;
-      
       // Create a controller for this specific request that can be aborted
       const controller = new AbortController();
-      const timeoutPromise = new Promise<never>((_, reject) => {
+      let timeoutId = null;
+      
+      // Setup timeout with proper cleanup
+      const timeoutPromise = new Promise((_, reject) => {
         timeoutId = setTimeout(() => {
           console.error(`[${requestId}] Stripe API call attempt ${retryCount + 1} timed out after ${REQUEST_TIMEOUT}ms`);
           controller.abort();
@@ -51,7 +51,7 @@ export async function createPaymentIntentWithRetry(
         console.log(`[${requestId}] Attempting to create payment intent (try ${retryCount + 1}/${MAX_RETRIES})`);
         
         // Use Promise.race with proper cleanup
-        paymentIntent = await Promise.race([
+        const paymentIntent = await Promise.race([
           stripe.paymentIntents.create({
             amount,
             currency,
@@ -64,7 +64,8 @@ export async function createPaymentIntentWithRetry(
               ticketType,
               groupSize: groupSize?.toString() || "1",
               isGroupRegistration: isGroupRegistration.toString(),
-              requestId
+              requestId,
+              attempt: retryCount.toString()
             }
           }, { stripeAccount: undefined }),
           timeoutPromise
@@ -73,15 +74,14 @@ export async function createPaymentIntentWithRetry(
         // If we got here, clear the timeout to prevent memory leaks
         if (timeoutId !== null) {
           clearTimeout(timeoutId);
-          timeoutId = null;
         }
         
         console.log(`[${requestId}] Payment intent created successfully: ${paymentIntent.id}`);
+        return { paymentIntent, lastError: null };
       } catch (error) {
         // Always clean up timeout to prevent memory leaks
         if (timeoutId !== null) {
           clearTimeout(timeoutId);
-          timeoutId = null;
         }
         
         // Re-throw to be handled by outer try/catch
@@ -95,15 +95,11 @@ export async function createPaymentIntentWithRetry(
       // Check if we've exhausted all retries
       if (retryCount >= MAX_RETRIES) {
         console.error(`[${requestId}] All ${MAX_RETRIES} attempts failed`);
+        return { paymentIntent: null, lastError };
       }
     }
   }
   
-  // If we couldn't create a payment intent after all retries, throw the last error
-  if (!paymentIntent) {
-    console.error(`[${requestId}] Failed to create payment intent after ${MAX_RETRIES} attempts`);
-    throw lastError || new Error(`Failed to create payment intent after ${MAX_RETRIES} attempts`);
-  }
-  
-  return paymentIntent;
+  // This should never be reached due to the return in the loop above
+  return { paymentIntent: null, lastError: new Error(`Failed to create payment intent after ${MAX_RETRIES} attempts`) };
 }

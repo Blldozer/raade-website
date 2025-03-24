@@ -16,6 +16,7 @@ import { useNavBackground } from "@/hooks/useNavBackground";
  * - Mobile responsive design 
  * - Uses a dark navbar for proper contrast
  * - Smooth animations for an engaging UI
+ * - Enhanced session cleanup to prevent payment issues
  */
 const ConferenceRegistration = () => {
   const navigate = useNavigate();
@@ -23,9 +24,6 @@ const ConferenceRegistration = () => {
   // Initialize navigation background control
   // Setting to 'dark' to ensure proper navbar styling on this page
   useNavBackground('dark');
-  
-  // Added console.log to debug rendering
-  console.log("Rendering ConferenceRegistration page");
   
   useEffect(() => {
     // Scroll to top when component mounts
@@ -37,6 +35,14 @@ const ConferenceRegistration = () => {
     
     // Add class to handle dark mode properly 
     document.documentElement.classList.add('conference-registration-page');
+    
+    // Clear any stale session data
+    const sessionId = sessionStorage.getItem("checkoutSessionId");
+    if (sessionId && window.location.pathname.includes("/register")) {
+      console.log("Found stale checkout session on registration page, clearing");
+      sessionStorage.removeItem("checkoutSessionId");
+      sessionStorage.removeItem("registrationEmail");
+    }
     
     // Cleanup function to reset attribute when component unmounts
     return () => {
@@ -58,15 +64,12 @@ const ConferenceRegistration = () => {
             Back to Conference
           </button>
           
-          <motion.div initial={{
-          opacity: 0,
-          y: 20
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          duration: 0.6
-        }}>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.6 }}
+            className="dark:text-white"
+          >
             <h1 className="text-4xl font-bold text-raade-navy mb-4 font-simula dark:text-white">Conference Registration</h1>
             <p className="text-lg text-gray-600 mb-8 font-lora dark:text-gray-300">Register for the RAADE African Development Forum 2025, taking place on April 11-12. Early bird registration is now open!</p>
             
