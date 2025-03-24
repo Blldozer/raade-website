@@ -34,9 +34,10 @@ const PaymentSection = ({
   onPaymentError,
   onBackClick
 }: PaymentSectionProps) => {
-  // Convert groupEmails from any potential object format to string array
-  const sanitizedGroupEmails = registrationData.groupEmails 
-    ? registrationData.groupEmails.map(email => typeof email === 'string' ? email : String(email.value || ''))
+  // Ensure groupEmails is always treated as an array of strings
+  const sanitizedGroupEmails = Array.isArray(registrationData.groupEmails) 
+    ? registrationData.groupEmails.map(email => 
+        typeof email === 'string' ? email : String(email.value || ''))
     : [];
 
   return (

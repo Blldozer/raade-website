@@ -2,12 +2,12 @@
 import { ReactNode, useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import ErrorBoundary from "../ErrorBoundary";
 import GlobalErrorFallback from "./GlobalErrorFallback";
 import TouchDebugger from "../TouchDebugger";
+import { ThemeProvider } from "next-themes";
 
 // Initialize the QueryClient with better error handling
 const queryClient = new QueryClient({
@@ -29,6 +29,13 @@ interface AppProvidersProps {
 /**
  * AppProviders component
  * Wraps the application with all necessary providers
+ * 
+ * Provider order matters! React context is accessed from inner components outward.
+ * The hierarchy is structured to ensure dependencies are available when needed:
+ * 1. BrowserRouter - Makes routing available to all components
+ * 2. ThemeProvider - Makes theme available to all components including Toasters
+ * 3. QueryClientProvider - Makes React Query available
+ * 4. Error handling and UI components
  */
 const AppProviders = ({ children }: AppProvidersProps) => {
   useEffect(() => {
@@ -60,20 +67,21 @@ const AppProviders = ({ children }: AppProvidersProps) => {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        {/* Moved TooltipProvider inside the Routes component to avoid React context issues */}
-        <Toaster />
-        <Sonner />
-        <ErrorBoundary 
-          fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
-          suppressDevErrors={isDevelopment}
-        >
-          {children}
-          {isDevelopment && <TouchDebugger />}
-        </ErrorBoundary>
-      </BrowserRouter>
-    </QueryClientProvider>
+    <BrowserRouter>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <QueryClientProvider client={queryClient}>
+          <Toaster />
+          <Sonner />
+          <ErrorBoundary 
+            fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
+            suppressDevErrors={isDevelopment}
+          >
+            {children}
+            {isDevelopment && <TouchDebugger />}
+          </ErrorBoundary>
+        </QueryClientProvider>
+      </ThemeProvider>
+    </BrowserRouter>
   );
 };
 
