@@ -1,6 +1,6 @@
 
 // Import the toast functionality from sonner
-import { toast as sonnerToast } from "sonner";
+import { toast as sonnerToast, type ToastT } from "sonner";
 
 /**
  * Extended toast props interface that includes description property
@@ -28,10 +28,10 @@ export type ToastProps = {
 const toast = (props: ToastProps) => {
   const { title, description, variant } = props;
   
-  // Map our variant to sonner's type
+  // Map our variant to sonner's type - using proper typing
   const type = variant === "destructive" ? "error" : "default";
   
-  // Use sonner's toast function
+  // Use sonner's toast function with correct typing
   return sonnerToast(title as string, {
     description,
     type,
