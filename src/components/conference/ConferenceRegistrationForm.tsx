@@ -13,10 +13,11 @@ import { useToast } from "@/hooks/use-toast";
  * ConferenceRegistrationForm Component
  * 
  * Displays the main registration form for the conference:
- * - Properly supports dark mode with color inversion for mobile
+ * - Properly supports dark mode with enhanced color inversion for mobile
  * - Handles form state and session management
  * - Provides smooth transitions between registration and payment steps
  * - Shows appropriate feedback with toast notifications
+ * - Improved contrast and readability in both light and dark modes
  */
 const ConferenceRegistrationForm = () => {
   const {
@@ -82,12 +83,12 @@ const ConferenceRegistrationForm = () => {
   };
 
   return (
-    <Card className="shadow-lg border-[#FBB03B]/10 dark:border-[#FBB03B]/20 dark:bg-gray-900">
+    <Card className="shadow-lg border-[#FBB03B]/10 dark:border-[#FBB03B]/20 dark:bg-gray-900 transition-colors duration-200">
       <CardHeader>
-        <CardTitle className="text-2xl font-simula dark:text-white">Registration Details</CardTitle>
-        <CardDescription className="dark:text-gray-300">Please fill out the form below to register for the conference.</CardDescription>
+        <CardTitle className="text-2xl font-simula text-gray-900 dark:text-white">Registration Details</CardTitle>
+        <CardDescription className="text-gray-600 dark:text-gray-300">Please fill out the form below to register for the conference.</CardDescription>
       </CardHeader>
-      <CardContent className="dark:text-gray-200">
+      <CardContent className="text-gray-700 dark:text-gray-200">
         <StepIndicator currentStep={showPayment ? 'payment' : 'registration'} />
         
         {!showPayment ? (
@@ -105,7 +106,8 @@ const ConferenceRegistrationForm = () => {
               type="submit"
               disabled={isSubmitting}
               className="w-full bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora 
-                dark:bg-[#FBB03B] dark:hover:bg-[#FBB03B]/80 dark:text-white"
+                dark:bg-[#FBB03B] dark:hover:bg-[#FBB03B]/80 dark:text-white
+                transition-colors duration-300"
             >
               {isSubmitting ? (
                 <>

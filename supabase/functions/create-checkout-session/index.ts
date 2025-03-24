@@ -8,6 +8,28 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Helper function to create standardized response with CORS headers
+function createResponse(data: any, status = 200) {
+  return new Response(
+    JSON.stringify(data),
+    {
+      status,
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    }
+  );
+}
+
+// Helper function to create error responses
+function createErrorResponse(error: string, message = "An error occurred", status = 400, requestId = "unknown") {
+  console.error(`[${requestId}] Error: ${error}, Status: ${status}, Message: ${message}`);
+  return createResponse({ 
+    error, 
+    message,
+    requestId,
+    timestamp: new Date().toISOString()
+  }, status);
+}
+
 // Calculate prices based on ticket type
 function calculatePrice(ticketType: string, groupSize?: number) {
   // Define base prices in dollars
@@ -15,41 +37,47 @@ function calculatePrice(ticketType: string, groupSize?: number) {
   const PROFESSIONAL_PRICE = 60;
   const GROUP_PRICE_PER_PERSON = 30;
   
-  switch (ticketType) {
-    case "student":
-      return {
-        amount: STUDENT_PRICE * 100, // Convert to cents
-        description: "RAADE Conference 2025 - Student Registration",
-        isGroup: false
-      };
-    case "professional":
-      return {
-        amount: PROFESSIONAL_PRICE * 100, // Convert to cents
-        description: "RAADE Conference 2025 - Professional Registration",
-        isGroup: false
-      };
-    case "student-group":
-      if (!groupSize || groupSize < 5) {
-        throw new Error("Group registrations require at least 5 participants");
-      }
-      return {
-        amount: GROUP_PRICE_PER_PERSON * groupSize * 100, // Convert to cents
-        description: `RAADE Conference 2025 - Student Group (${groupSize} attendees)`,
-        isGroup: true,
-        groupSize
-      };
-    default:
-      throw new Error(`Invalid ticket type: ${ticketType}`);
+  try {
+    switch (ticketType) {
+      case "student":
+        return {
+          amount: STUDENT_PRICE * 100, // Convert to cents
+          description: "RAADE Conference 2025 - Student Registration",
+          isGroup: false
+        };
+      case "professional":
+        return {
+          amount: PROFESSIONAL_PRICE * 100, // Convert to cents
+          description: "RAADE Conference 2025 - Professional Registration",
+          isGroup: false
+        };
+      case "student-group":
+        if (!groupSize || groupSize < 5) {
+          throw new Error("Group registrations require at least 5 participants");
+        }
+        return {
+          amount: GROUP_PRICE_PER_PERSON * groupSize * 100, // Convert to cents
+          description: `RAADE Conference 2025 - Student Group (${groupSize} attendees)`,
+          isGroup: true,
+          groupSize
+        };
+      default:
+        throw new Error(`Invalid ticket type: ${ticketType}`);
+    }
+  } catch (error) {
+    console.error("Price calculation error:", error.message);
+    throw error;
   }
 }
 
 // Helper function to sanitize and validate input
-function validateRequestData(requestData: any) {
+function validateRequestData(requestData: any, requestId = "unknown") {
   // Required fields validation
   const requiredFields = ['ticketType', 'email', 'fullName', 'successUrl', 'cancelUrl'];
   const missingFields = requiredFields.filter(field => !requestData[field]);
   
   if (missingFields.length > 0) {
+    console.error(`[${requestId}] Missing required fields: ${missingFields.join(', ')}`);
     return {
       isValid: false,
       error: `Missing required fields: ${missingFields.join(', ')}`
@@ -58,6 +86,7 @@ function validateRequestData(requestData: any) {
   
   // Data type validation
   if (typeof requestData.ticketType !== 'string' || !['student', 'professional', 'student-group'].includes(requestData.ticketType)) {
+    console.error(`[${requestId}] Invalid ticket type: ${requestData.ticketType}`);
     return {
       isValid: false,
       error: "Invalid ticket type. Must be 'student', 'professional', or 'student-group'"
@@ -65,6 +94,7 @@ function validateRequestData(requestData: any) {
   }
   
   if (typeof requestData.email !== 'string' || !requestData.email.includes('@')) {
+    console.error(`[${requestId}] Invalid email format: ${requestData.email}`);
     return {
       isValid: false,
       error: "Invalid email format"
@@ -72,6 +102,7 @@ function validateRequestData(requestData: any) {
   }
   
   if (typeof requestData.fullName !== 'string' || requestData.fullName.length < 2) {
+    console.error(`[${requestId}] Invalid full name: ${requestData.fullName}`);
     return {
       isValid: false,
       error: "Invalid full name"
@@ -80,7 +111,9 @@ function validateRequestData(requestData: any) {
   
   // Group size validation for student-group
   if (requestData.ticketType === 'student-group') {
-    if (!requestData.groupSize || requestData.groupSize < 5) {
+    const groupSize = Number(requestData.groupSize);
+    if (isNaN(groupSize) || groupSize < 5) {
+      console.error(`[${requestId}] Invalid group size: ${requestData.groupSize}`);
       return {
         isValid: false,
         error: "Group registrations require at least 5 participants"
@@ -93,30 +126,36 @@ function validateRequestData(requestData: any) {
 
 // Sanitize group emails
 function sanitizeGroupEmails(emails: any): string[] {
-  if (!Array.isArray(emails)) {
+  try {
+    if (!Array.isArray(emails)) {
+      return [];
+    }
+    
+    return emails
+      .filter((email): email is (string | { value: string }) => {
+        // Filter out null and undefined values
+        return email !== null && email !== undefined;
+      })
+      .map(emailItem => {
+        if (typeof emailItem === 'object' && emailItem.value !== undefined) {
+          // Extract value from object format
+          return emailItem.value;
+        }
+        // Return string directly if it's a string
+        return String(emailItem);
+      })
+      .filter(email => email.length > 0 && typeof email === 'string' && email.includes('@')); // Filter out invalid emails
+  } catch (error) {
+    console.error("Error sanitizing group emails:", error);
     return [];
   }
-  
-  return emails
-    .filter((email): email is (string | { value: string }) => {
-      // Filter out null and undefined values
-      return email !== null && email !== undefined;
-    })
-    .map(emailItem => {
-      if (typeof emailItem === 'object' && emailItem.value !== undefined) {
-        // Extract value from object format
-        return emailItem.value;
-      }
-      // Return string directly if it's a string
-      return String(emailItem);
-    })
-    .filter(email => email.length > 0 && typeof email === 'string' && email.includes('@')); // Filter out invalid emails
 }
 
 serve(async (req) => {
   // Extract request ID from user input or generate a new one
   let requestId;
   let requestData;
+  const startTime = Date.now();
   
   try {
     const body = await req.text();
@@ -126,16 +165,11 @@ serve(async (req) => {
     requestId = crypto.randomUUID();
     console.error(`[${requestId}] Error parsing request body:`, error);
     
-    return new Response(
-      JSON.stringify({ 
-        error: "Invalid request format", 
-        message: "Could not parse request body",
-        requestId
-      }), 
-      { 
-        status: 400, 
-        headers: { ...corsHeaders, "Content-Type": "application/json" } 
-      }
+    return createErrorResponse(
+      "Invalid request format", 
+      "Could not parse request body",
+      400,
+      requestId
     );
   }
   
@@ -152,15 +186,11 @@ serve(async (req) => {
     
     if (!stripeSecretKey) {
       console.error(`[${requestId}] Missing STRIPE_SECRET_KEY environment variable`);
-      return new Response(
-        JSON.stringify({ 
-          error: "Server configuration error", 
-          message: "Stripe API key is not configured" 
-        }), 
-        { 
-          status: 500, 
-          headers: { ...corsHeaders, "Content-Type": "application/json" } 
-        }
+      return createErrorResponse(
+        "Server configuration error", 
+        "Stripe API key is not configured",
+        500,
+        requestId
       );
     }
 
@@ -173,32 +203,32 @@ serve(async (req) => {
         retryCount = requestData.retryCount || 0;
       } catch (error) {
         console.error(`[${requestId}] Failed to parse request body:`, error);
-        return new Response(
-          JSON.stringify({ error: "Invalid request format" }), 
-          { 
-            status: 400, 
-            headers: { ...corsHeaders, "Content-Type": "application/json" } 
-          }
+        return createErrorResponse(
+          "Invalid request format",
+          "Failed to parse request JSON", 
+          400, 
+          requestId
         );
       }
     } else {
       retryCount = requestData.retryCount || 0;
     }
     
+    // Log request details
+    console.log(`[${requestId}] Processing request:`, {
+      ticketType: requestData.ticketType,
+      email: requestData.email,
+      retryCount
+    });
+    
     // Validate request data
-    const validation = validateRequestData(requestData);
+    const validation = validateRequestData(requestData, requestId);
     if (!validation.isValid) {
-      console.error(`[${requestId}] Validation error:`, validation.error);
-      return new Response(
-        JSON.stringify({ 
-          error: "Validation error", 
-          message: validation.error,
-          requestId 
-        }), 
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, "Content-Type": "application/json" } 
-        }
+      return createErrorResponse(
+        "Validation error", 
+        validation.error, 
+        400, 
+        requestId
       );
     }
     
@@ -208,9 +238,9 @@ serve(async (req) => {
       email,
       fullName,
       groupSize,
-      organization,
-      role,
-      specialRequests,
+      organization = "",
+      role = "",
+      specialRequests = "",
       groupEmails = [],
       successUrl,
       cancelUrl
@@ -222,21 +252,38 @@ serve(async (req) => {
     console.log(`[${requestId}] Creating checkout session for ${email}, ticket: ${ticketType}, attempt: ${retryCount + 1}`);
     
     try {
-      // Calculate price information
-      const priceInfo = calculatePrice(ticketType, groupSize);
+      // Calculate price information with error handling
+      let priceInfo;
+      try {
+        priceInfo = calculatePrice(ticketType, parseInt(groupSize));
+      } catch (priceError) {
+        console.error(`[${requestId}] Price calculation error:`, priceError);
+        return createErrorResponse(
+          "Price calculation failed",
+          priceError.message,
+          400,
+          requestId
+        );
+      }
       
-      // Initialize Stripe
+      // Initialize Stripe with explicit timeout and version
       const stripe = new Stripe(stripeSecretKey, {
         apiVersion: "2025-02-24.acacia",
         httpClient: Stripe.createFetchHttpClient(),
+        timeout: 20000, // 20 second timeout
       });
       
       // Create a unique idempotency key to prevent duplicate checkouts
       // If this is a retry, append the retry count to ensure a new key
       const idempotencyKey = `${requestId}-${email}-${ticketType}-${retryCount}`;
       
-      // Create Checkout Session
-      const session = await stripe.checkout.sessions.create({
+      // Use a 15-second timeout promise to prevent function timeouts
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error("Request timeout after 15 seconds")), 15000);
+      });
+      
+      // Create Checkout Session with timeout protection
+      const sessionPromise = stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: [
           {
@@ -270,20 +317,19 @@ serve(async (req) => {
         idempotencyKey // Add idempotency key to prevent duplicates
       });
       
-      console.log(`[${requestId}] Checkout session created: ${session.id}, attempt: ${retryCount + 1}`);
+      // Race the session creation against a timeout
+      const session = await Promise.race([sessionPromise, timeoutPromise]) as Stripe.Checkout.Session;
       
-      // Return the session URL
-      return new Response(
-        JSON.stringify({
-          sessionId: session.id,
-          url: session.url,
-          requestId
-        }), 
-        { 
-          status: 200, 
-          headers: { ...corsHeaders, "Content-Type": "application/json" } 
-        }
-      );
+      const processingTime = Date.now() - startTime;
+      console.log(`[${requestId}] Checkout session created: ${session.id}, processing time: ${processingTime}ms`);
+      
+      // Return the session URL with timing information
+      return createResponse({
+        sessionId: session.id,
+        url: session.url,
+        processingTime,
+        requestId
+      });
       
     } catch (error) {
       console.error(`[${requestId}] Stripe error (attempt ${retryCount + 1}):`, error);
@@ -295,71 +341,48 @@ serve(async (req) => {
         errorMessage.includes("connection") || 
         errorMessage.includes("timeout")
       ) {
-        return new Response(
-          JSON.stringify({ 
-            error: "Network error", 
-            message: "Could not connect to payment service. Please try again.",
-            isRecoverable: true,
-            requestId
-          }), 
-          { 
-            status: 503, // Service Unavailable
-            headers: { ...corsHeaders, "Content-Type": "application/json" } 
-          }
+        return createErrorResponse(
+          "Network error", 
+          "Could not connect to payment service. Please try again.",
+          503, // Service Unavailable
+          requestId
         );
       }
       
-      // Determine if this is a recoverable error
-      const isRecoverable = 
+      // Check for idempotency key conflicts or existing session errors
+      if (
         error.code === 'resource_already_exists' || 
         error.code === 'idempotency_key_in_use' ||
         (typeof error.message === 'string' && (
           error.message.includes('already exists') ||
           error.message.includes('session') ||
           error.message.includes('idempotency')
-        ));
-      
-      // Special handling for recoverable errors
-      if (isRecoverable) {
-        return new Response(
-          JSON.stringify({ 
-            error: "Checkout session conflict", 
-            message: "A previous checkout session exists. Please try again.",
-            isRecoverable: true,
-            requestId
-          }), 
-          { 
-            status: 409, // Conflict status code
-            headers: { ...corsHeaders, "Content-Type": "application/json" } 
-          }
+        ))
+      ) {
+        return createErrorResponse(
+          "Checkout session conflict", 
+          "A previous checkout session exists. Please try again.",
+          409, // Conflict status code
+          requestId
         );
       }
       
-      return new Response(
-        JSON.stringify({ 
-          error: "Payment processing error", 
-          message: errorMessage || "Failed to create checkout session",
-          requestId
-        }), 
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, "Content-Type": "application/json" } 
-        }
+      return createErrorResponse(
+        "Payment processing error", 
+        errorMessage || "Failed to create checkout session",
+        400, 
+        requestId
       );
     }
     
   } catch (error) {
     console.error(`[${requestId}] Unhandled error:`, error);
-    return new Response(
-      JSON.stringify({ 
-        error: "Server error", 
-        message: error.message || "An unexpected error occurred",
-        requestId
-      }), 
-      { 
-        status: 500, 
-        headers: { ...corsHeaders, "Content-Type": "application/json" } 
-      }
+    
+    return createErrorResponse(
+      "Server error", 
+      error.message || "An unexpected error occurred",
+      500, 
+      requestId
     );
   }
 });

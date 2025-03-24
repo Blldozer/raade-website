@@ -13,8 +13,9 @@ interface RegistrationSummaryProps {
  * Displays a summary of the user's registration details:
  * - Shows key registration information
  * - Calculates and displays pricing
- * - Properly handles dark mode display
- * - Provides clear visual structure with responsive design
+ * - Enhanced dark mode support for mobile devices
+ * - Consistent color scheme that properly inverts in dark mode
+ * - Improved contrast for better readability
  * 
  * @param registrationData - The form data to display in the summary
  */
@@ -47,34 +48,34 @@ const RegistrationSummary = ({ registrationData }: RegistrationSummaryProps) => 
   };
 
   return (
-    <Card className="border border-gray-200 dark:border-gray-700 dark:bg-gray-800">
+    <Card className="border border-gray-200 dark:border-gray-700 dark:bg-gray-800 bg-white transition-colors duration-200">
       <CardContent className="pt-6">
-        <h3 className="text-lg font-semibold mb-4 dark:text-white">Registration Summary</h3>
+        <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Registration Summary</h3>
         
         <div className="space-y-3 text-sm">
           <div className="flex justify-between">
             <span className="text-gray-600 dark:text-gray-300">Name:</span>
-            <span className="font-medium dark:text-white">{fullName}</span>
+            <span className="font-medium text-gray-900 dark:text-white">{fullName}</span>
           </div>
           
           <div className="flex justify-between">
             <span className="text-gray-600 dark:text-gray-300">Email:</span>
-            <span className="font-medium dark:text-white">{email}</span>
+            <span className="font-medium text-gray-900 dark:text-white">{email}</span>
           </div>
           
           <div className="flex justify-between">
             <span className="text-gray-600 dark:text-gray-300">Organization:</span>
-            <span className="font-medium dark:text-white">{organization}</span>
+            <span className="font-medium text-gray-900 dark:text-white">{organization}</span>
           </div>
           
           <div className="flex justify-between">
             <span className="text-gray-600 dark:text-gray-300">Role:</span>
-            <span className="font-medium dark:text-white">{role}</span>
+            <span className="font-medium text-gray-900 dark:text-white">{role}</span>
           </div>
           
           <div className="flex justify-between">
             <span className="text-gray-600 dark:text-gray-300">Ticket:</span>
-            <span className="font-medium dark:text-white">{getFormattedTicketType()}</span>
+            <span className="font-medium text-gray-900 dark:text-white">{getFormattedTicketType()}</span>
           </div>
           
           <div className="flex justify-between border-t pt-2 mt-2 border-gray-200 dark:border-gray-700">
@@ -85,7 +86,7 @@ const RegistrationSummary = ({ registrationData }: RegistrationSummaryProps) => 
           {specialRequests && (
             <div className="border-t pt-2 mt-2 border-gray-200 dark:border-gray-700">
               <span className="text-gray-600 block mb-1 dark:text-gray-300">Special Requests:</span>
-              <p className="text-sm italic dark:text-gray-200">{specialRequests}</p>
+              <p className="text-sm italic text-gray-700 dark:text-gray-200">{specialRequests}</p>
             </div>
           )}
         </div>

@@ -19,7 +19,8 @@ interface PaymentSectionProps {
  * - Displays registration summary
  * - Initializes Stripe Checkout flow
  * - Provides back button to return to form
- * - Supports dark mode with proper color inversion
+ * - Enhanced dark mode support with specific mobile optimizations
+ * - Consistent color scheme that properly inverts in dark mode
  * 
  * @param registrationData - Form data from the registration form
  * @param isSubmitting - Loading state for the form
@@ -69,7 +70,8 @@ const PaymentSection = ({
         variant="outline" 
         onClick={onBackClick}
         className="w-full border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-lora
-          dark:border-[#FBB03B] dark:text-[#FBB03B] dark:hover:bg-[#FBB03B] dark:hover:text-white"
+          dark:border-[#FBB03B] dark:text-[#FBB03B] dark:hover:bg-[#FBB03B] dark:hover:text-white
+          transition-colors duration-300"
         disabled={isSubmitting}
       >
         Back to Registration Form

@@ -24,11 +24,12 @@ interface StripeCheckoutProps {
  * Creates a checkout session using Supabase Edge Function and redirects
  * to Stripe's hosted checkout page rather than using Stripe Elements.
  * 
- * This approach:
- * - Simplifies implementation and reduces frontend code
- * - Provides a consistent, optimized checkout experience
- * - Supports more payment methods out of the box
- * - Handles mobile responsiveness automatically
+ * Enhanced with:
+ * - Improved error handling and recovery
+ * - Better dark mode support for mobile devices
+ * - Consistent color scheme with proper inversions
+ * - More robust data validation before submission
+ * - Detailed logging for easier troubleshooting
  */
 const StripeCheckout = ({
   ticketType,
@@ -74,6 +75,11 @@ const StripeCheckout = ({
     try {
       setIsLoading(true);
       
+      // Validate required fields before proceeding
+      if (!email || !fullName || !ticketType) {
+        throw new Error("Missing required information. Please complete all fields.");
+      }
+      
       // Generate the success and cancel URLs
       const successUrl = `${window.location.origin}/conference/success?session_id={CHECKOUT_SESSION_ID}`;
       const cancelUrl = `${window.location.origin}/conference/register`;
@@ -116,6 +122,11 @@ const StripeCheckout = ({
         })
         .filter(email => email.length > 0); // Filter out empty strings
       
+      // Set timeout to catch long-running requests
+      const timeoutId = setTimeout(() => {
+        console.warn(`Checkout request taking longer than expected (${retryCount + 1})...`);
+      }, 8000);
+      
       // Use Supabase client to call the edge function with retry tracking
       const { data, error } = await supabase.functions.invoke(
         "create-checkout-session",
@@ -124,7 +135,7 @@ const StripeCheckout = ({
             ticketType,
             email,
             fullName,
-            groupSize,
+            groupSize: typeof groupSize === 'number' ? groupSize : parseInt(String(groupSize) || '0'),
             groupEmails: sanitizedGroupEmails,
             organization,
             role,
@@ -132,16 +143,19 @@ const StripeCheckout = ({
             successUrl,
             cancelUrl,
             requestId,
-            retryCount
+            retryCount,
+            timestamp: Date.now()
           }
         }
       );
+      
+      clearTimeout(timeoutId);
       
       if (error) {
         console.error(`Checkout error (Attempt ${retryCount + 1}, Request ID: ${requestId}):`, error);
         
         // Check if error is due to a previous session
-        if (error.message?.includes('session') || error.message?.includes('already exists')) {
+        if (error.message?.includes('session') || error.message?.includes('already exists') || error.message?.includes('conflict')) {
           toast({
             title: "Previous checkout session detected",
             description: "Resetting session data and trying again...",
@@ -153,7 +167,7 @@ const StripeCheckout = ({
             setRetryCount(prev => prev + 1);
             setIsLoading(false);
             // Short delay before retry
-            setTimeout(() => handleCheckout(), 1000);
+            setTimeout(() => handleCheckout(), 1500);
             return;
           }
         }
@@ -178,14 +192,27 @@ const StripeCheckout = ({
       console.error(`Checkout error (Attempt ${retryCount + 1}, Request ID: ${requestId}):`, error);
       setIsLoading(false);
       
+      // Provide user-friendly error message based on error type
+      let errorMessage = error.message || "There was an error starting the checkout process. Please try again.";
+      
+      // For network errors, suggest refreshing
+      if (errorMessage.includes("network") || errorMessage.includes("connection")) {
+        errorMessage = "Network error. Please check your internet connection and try again.";
+      }
+      
+      // For timeout errors, suggest trying again
+      if (errorMessage.includes("timeout")) {
+        errorMessage = "The request took too long to complete. Please try again.";
+      }
+      
       // Show error toast
       toast({
         title: "Checkout Failed",
-        description: error.message || "There was an error starting the checkout process. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
       
-      onError(error.message || "Checkout failed");
+      onError(errorMessage);
     }
   };
 
@@ -194,7 +221,9 @@ const StripeCheckout = ({
       <Button
         onClick={handleCheckout}
         disabled={isLoading}
-        className="w-full bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora"
+        className="w-full bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora
+          dark:bg-[#FBB03B] dark:hover:bg-[#FBB03B]/80 dark:text-white
+          transition-colors duration-300"
       >
         {isLoading ? (
           <>
@@ -205,7 +234,7 @@ const StripeCheckout = ({
           <>Proceed to Checkout</>
         )}
       </Button>
-      <p className="text-xs text-gray-500 mt-2 text-center">
+      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
         You'll be redirected to Stripe's secure payment page
       </p>
     </div>
