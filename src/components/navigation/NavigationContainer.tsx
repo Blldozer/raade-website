@@ -1,5 +1,4 @@
 
-import { useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { NavigationProvider } from "./context/NavigationContext";
 import NavigationContent from "./content/NavigationContent";
@@ -27,7 +26,8 @@ const NavigationContainer = ({
   useShortFormLogo = false 
 }: NavigationContainerProps) => {
   // Generate a unique ID for this navigation instance if not provided
-  const localInstanceId = useRef(instanceId || `nav-container-${Math.random().toString(36).substring(2, 9)}`);
+  // Using a string instead of useRef to avoid React context issues
+  const localInstanceId = instanceId || `nav-container-${Math.random().toString(36).substring(2, 9)}`;
   const location = useLocation();
   
   // Check if we're on the conference registration page to ensure dark navbar
@@ -35,21 +35,15 @@ const NavigationContainer = ({
   const isAboutPage = location.pathname === '/about';
   const finalForceDarkMode = isConferenceRegistration ? true : forceDarkMode;
   
-  // Log mounting/unmounting to track duplicate instances
-  useEffect(() => {
-    console.log(`NavigationContainer (${localInstanceId.current}): Mounting on ${location.pathname}`);
+  // Log mounting info
+  console.log(`NavigationContainer (${localInstanceId}): Mounting on ${location.pathname}`);
     
-    // Count navigation elements to detect duplicates
-    const navElements = document.querySelectorAll('nav[data-nav-instance]');
-    if (navElements.length > 1) {
-      console.warn(`Multiple navigation elements detected (${navElements.length}):`, 
-        Array.from(navElements).map(el => el.getAttribute('data-nav-instance')));
-    }
-    
-    return () => {
-      console.log(`NavigationContainer (${localInstanceId.current}): Unmounting from ${location.pathname}`);
-    };
-  }, [location.pathname]);
+  // Count navigation elements to detect duplicates
+  const navElements = document.querySelectorAll('nav[data-nav-instance]');
+  if (navElements.length > 1) {
+    console.warn(`Multiple navigation elements detected (${navElements.length}):`, 
+      Array.from(navElements).map(el => el.getAttribute('data-nav-instance')));
+  }
 
   return (
     <NavigationProvider initialProps={{ 
@@ -57,7 +51,7 @@ const NavigationContainer = ({
       forceDarkMode: finalForceDarkMode, 
       useShortFormLogo 
     }}>
-      <NavigationContent instanceId={localInstanceId.current} />
+      <NavigationContent instanceId={localInstanceId} />
     </NavigationProvider>
   );
 };

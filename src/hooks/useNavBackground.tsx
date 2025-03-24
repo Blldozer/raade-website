@@ -1,8 +1,7 @@
 
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useSectionMarkers } from './navigation/useSectionMarkers';
 import { useSectionPositions } from './navigation/useSectionPositions';
-import { useBackgroundDetection } from './navigation/useBackgroundDetection';
 
 /**
  * Main hook to manage navigation background color based on current scroll position
@@ -13,7 +12,7 @@ import { useBackgroundDetection } from './navigation/useBackgroundDetection';
 export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') => {
   // Generate unique instance ID for this hook usage
   const instanceId = useRef(`nav-bg-${Math.random().toString(36).substring(2, 9)}`);
-  const [currentBackground, setCurrentBackground] = useState(initialBackground);
+  const currentBackgroundRef = useRef(initialBackground);
   
   // Step 1: Mark sections with appropriate data attributes
   const { isMounted } = useSectionMarkers();
@@ -25,7 +24,7 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
   useEffect(() => {
     const detectBackgroundChange = () => {
       try {
-        // Detection logic moved here from useBackgroundDetection to avoid hook inside hook
+        // Simple background detection logic based on scroll position
         const scrollY = window.scrollY;
         let newBackground = initialBackground;
         
@@ -37,8 +36,8 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
         });
         
         // Update if changed
-        if (newBackground !== currentBackground) {
-          setCurrentBackground(newBackground);
+        if (newBackground !== currentBackgroundRef.current) {
+          currentBackgroundRef.current = newBackground;
           document.body.setAttribute('data-nav-background', newBackground);
         }
       } catch (error) {
@@ -55,8 +54,8 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
     return () => {
       window.removeEventListener('scroll', detectBackgroundChange);
     };
-  }, [initialBackground, sectionPositions, currentBackground]);
+  }, [initialBackground, sectionPositions]);
   
   // Return the current background state
-  return currentBackground;
+  return currentBackgroundRef.current;
 };

@@ -1,24 +1,24 @@
 
 import { useEffect, useLayoutEffect } from 'react';
-import { useSectionTransitions } from "./useSectionTransitions";
-import { useResponsive } from "./useResponsive";
 import { useLocation } from 'react-router-dom';
+import { useResponsive } from "./useResponsive";
 import { useNavBackground } from "./useNavBackground";
 
 /**
  * Custom hook to handle Index page initialization and behavior
  * 
  * Manages:
- * - Section transitions
  * - Navigation background settings
  * - Scroll behavior for direct section navigation
  * - Performance optimizations
  */
 export const useIndexPage = () => {
-  // Use our optimized hook for section transitions
-  const { isLowPerformanceDevice } = useSectionTransitions();
+  // Get device information from our responsive hook
   const { isMobile } = useResponsive();
   const location = useLocation();
+  
+  // Initialize device performance state
+  const isLowPerformanceDevice = false;
   
   // Use the hook to manage navbar background colors based on section visibility
   // Initialize with 'light' since the hero section has a dark background

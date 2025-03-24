@@ -1,5 +1,5 @@
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect } from 'react';
 import { useNavBackground } from './useNavBackground';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
@@ -12,11 +12,9 @@ import { registerGsapPlugins } from '@/utils/gsapUtils';
  * Detects device performance and adjusts accordingly
  */
 export const useSectionTransitions = () => {
-  // Initialize state inside the hook function body
-  const [isLowPerformanceDevice, setIsLowPerformanceDevice] = useState(false);
-  const [animationsEnabled, setAnimationsEnabled] = useState(true);
-  const mountedRef = useRef(true);
-  const isInitializedRef = useRef(false);
+  // Move state declarations outside the component to avoid React hook errors
+  let isLowPerformanceDevice = false;
+  let animationsEnabled = true;
   
   // Helper to detect device performance capabilities
   const detectLowPerformanceDevice = () => {
@@ -40,17 +38,17 @@ export const useSectionTransitions = () => {
   useEffect(() => {
     console.log("useSectionTransitions: Initializing");
     
-    // Mark component as mounted
-    mountedRef.current = true;
+    // Create local mutable state
+    let mountedRef = true;
+    let isInitialized = false;
     
     try {
       // Register GSAP plugins centrally
       registerGsapPlugins();
       
       // Detect device performance
-      const isLowPerf = detectLowPerformanceDevice();
-      console.log("Low performance device detected:", isLowPerf);
-      setIsLowPerformanceDevice(isLowPerf);
+      isLowPerformanceDevice = detectLowPerformanceDevice();
+      console.log("Low performance device detected:", isLowPerformanceDevice);
       
       // Set up ScrollTrigger optimization globally
       if (gsap.utils.checkPrefix("ScrollTrigger")) {
@@ -61,15 +59,28 @@ export const useSectionTransitions = () => {
       }
       
       // Mark as initialized
-      isInitializedRef.current = true;
+      isInitialized = true;
     } catch (error) {
       console.error("Error in section transitions initialization:", error);
-      setAnimationsEnabled(false);
+      animationsEnabled = false;
+    }
+    
+    // Always use navigation background updates
+    try {
+      useNavBackground();
+    } catch (error) {
+      console.error("Error in NavBackground:", error);
+    }
+    
+    // If device is low performance, apply minimal animations
+    if (isLowPerformanceDevice) {
+      console.log("Using minimal animations for low-performance device");
+      document.body.classList.add('low-performance-mode');
     }
     
     return () => {
       // Signal component unmount
-      mountedRef.current = false;
+      mountedRef = false;
       console.log("useSectionTransitions: Cleanup");
       
       try {
@@ -84,40 +95,16 @@ export const useSectionTransitions = () => {
           });
           ScrollTrigger.clearMatchMedia();
         }
+        
+        // Remove performance mode class if it was added
+        if (isLowPerformanceDevice) {
+          document.body.classList.remove('low-performance-mode');
+        }
       } catch (error) {
         console.error("Error cleaning up ScrollTrigger:", error);
       }
     };
-  }, []);
-  
-  // Load core animations based on device performance
-  useEffect(() => {
-    // Skip if animations are disabled or not initialized
-    if (!animationsEnabled || !isInitializedRef.current || !mountedRef.current) {
-      return;
-    }
-    
-    // Always use navigation background updates
-    try {
-      useNavBackground();
-    } catch (error) {
-      console.error("Error in NavBackground:", error);
-    }
-    
-    // If device is low performance, apply minimal animations
-    if (isLowPerformanceDevice) {
-      console.log("Using minimal animations for low-performance device");
-      document.body.classList.add('low-performance-mode');
-      
-      return () => {
-        if (mountedRef.current) {
-          document.body.classList.remove('low-performance-mode');
-        }
-      };
-    }
-    
-    // Nothing to clean up for this effect
-  }, [animationsEnabled, isLowPerformanceDevice]);
+  }, []); // Only run once on mount
   
   // Return the state values that might be useful for consumers
   return { isLowPerformanceDevice, animationsEnabled };
