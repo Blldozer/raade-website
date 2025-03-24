@@ -1,71 +1,48 @@
-
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import ImageLoader from "./ImageLoader";
 
 interface TeamMemberImageProps {
   name: string;
   onImageLoad?: () => void;
+  isPriority?: boolean;
 }
 
 /**
  * TeamMemberImage component - Renders the team member image with fallbacks
  * Features:
- * - Skeleton loading state
+ * - Simple, reliable image loading 
  * - Fallback to initials when image fails to load
  * - Optimized for performance and accessibility
- * - Fixed for reliable display on all devices including mobile
+ * - Improved mobile reliability
  */
-const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
-  const [imageError, setImageError] = useState(false);
-  const [retryCount, setRetryCount] = useState(0);
-  // Track image loading state locally
-  const [localImageLoaded, setLocalImageLoaded] = useState(false);
-  // Track if image should show loading state - start hidden so we don't show loading for cached images
-  const [showLoading, setShowLoading] = useState(false);
+const TeamMemberImage = ({ name, onImageLoad, isPriority = false }: TeamMemberImageProps) => {
+  // Use the simplified ImageLoader hook
+  const { imageRef, imageSrc, imageLoaded, imageError } = ImageLoader({
+    name,
+    onImageLoad
+  });
+  
+  // Local loading state for UI feedback
+  const [showLoading, setShowLoading] = useState(true);
+  
+  // Hide loading state after images load or after 1.5 seconds (reduced from 3s for faster perceived loading)
+  useEffect(() => {
+    if (imageLoaded) {
+      setShowLoading(false);
+    } else {
+      const timer = setTimeout(() => {
+        setShowLoading(false);
+      }, 1500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [imageLoaded]);
   
   // Placeholder initials for fallback
   const getInitials = () => {
     const nameParts = name.split(" ");
     return `${nameParts[0]?.[0] || ''}${nameParts[1]?.[0] || ''}`;
   };
-
-  const { imageRef, imageSrc, imageLoaded } = ImageLoader({
-    name,
-    onImageLoad,
-    retryCount,
-    setRetryCount,
-    setImageError,
-    imageError
-  });
-
-  // Effect to coordinate imageLoaded state from ImageLoader with local state
-  useEffect(() => {
-    if (imageLoaded) {
-      console.log(`Image for ${name} marked as loaded from ImageLoader`);
-      setLocalImageLoaded(true);
-      setShowLoading(false);
-    }
-  }, [imageLoaded, name]);
-  
-  // Show loading state after a short delay if image hasn't loaded yet
-  // This prevents flickering for fast/cached images
-  useEffect(() => {
-    if (!localImageLoaded && !imageLoaded) {
-      const timer = setTimeout(() => {
-        setShowLoading(true);
-      }, 150);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [localImageLoaded, imageLoaded]);
-
-  // Debug logging on mount
-  useEffect(() => {
-    console.log(`TeamMemberImage mounted for ${name}`);
-    return () => {
-      console.log(`TeamMemberImage unmounted for ${name}`);
-    };
-  }, [name]);
 
   return (
     <div className="rounded-t-lg overflow-hidden">
@@ -79,14 +56,14 @@ const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
       ) : (
         /* Render image with proper loading states */
         <div className="w-full aspect-[3/4] bg-[#4C504A] relative">
-          {/* Show skeleton loading state */}
-          {showLoading && !localImageLoaded && !imageLoaded && (
+          {/* Show simple loading state */}
+          {showLoading && !imageLoaded && (
             <div className="absolute inset-0 flex items-center justify-center">
               <span className="text-white text-xl">Loading...</span>
             </div>
           )}
           
-          {/* The actual image with proper error and load handling */}
+          {/* The actual image with proper error handling */}
           {imageSrc && (
             <img
               ref={imageRef}
@@ -96,25 +73,20 @@ const TeamMemberImage = ({ name, onImageLoad }: TeamMemberImageProps) => {
               height="auto"
               className="w-full h-full object-cover transition-opacity duration-300"
               style={{ 
-                opacity: (localImageLoaded || imageLoaded) ? 1 : 0,
+                opacity: imageLoaded ? 1 : 0,
                 display: 'block', // Force display block to ensure visibility
                 minHeight: '10rem' // Ensure minimum height even before load
               }}
               onLoad={() => {
                 console.log(`Image for ${name} loaded in DOM`);
-                setLocalImageLoaded(true);
                 setShowLoading(false);
                 onImageLoad?.();
               }}
-              onError={(e) => {
-                console.error(`Error loading image for ${name}:`, e);
-                if (retryCount >= 2) {
-                  console.log(`Setting image error to true for ${name} after max retries`);
-                  setImageError(true);
-                }
+              onError={() => {
+                console.error(`Error loading image for ${name}`);
               }}
-              // Use eager loading for all images to improve loading speed
-              loading="eager"
+              // Use appropriate loading strategy based on priority
+              loading={isPriority ? "eager" : "lazy"}
             />
           )}
         </div>

@@ -1,4 +1,3 @@
-
 import TeamMemberCard from "./team/TeamMemberCard";
 
 interface TeamMemberProps {
@@ -10,6 +9,7 @@ interface TeamMemberProps {
   };
   index: number;
   onImageLoad?: () => void;
+  isPriority?: boolean;
 }
 
 /**
@@ -17,12 +17,13 @@ interface TeamMemberProps {
  * This component has been refactored to use more focused sub-components
  * for better maintainability and organization.
  */
-const TeamMember = ({ member, index, onImageLoad }: TeamMemberProps) => {
+const TeamMember = ({ member, index, onImageLoad, isPriority }: TeamMemberProps) => {
   return (
     <TeamMemberCard
       member={member}
       index={index}
       onImageLoad={onImageLoad}
+      isPriority={isPriority}
     />
   );
 };
