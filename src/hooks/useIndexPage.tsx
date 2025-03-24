@@ -1,9 +1,9 @@
 
 import { useEffect, useLayoutEffect } from 'react';
-import { useSectionTransitions } from "@/hooks/useSectionTransitions";
-import { useResponsive } from "@/hooks/useResponsive";
+import { useSectionTransitions } from "./useSectionTransitions";
+import { useResponsive } from "./useResponsive";
 import { useLocation } from 'react-router-dom';
-import { useNavBackground } from "@/hooks/useNavBackground";
+import { useNavBackground } from "./useNavBackground";
 
 /**
  * Custom hook to handle Index page initialization and behavior
@@ -16,7 +16,7 @@ import { useNavBackground } from "@/hooks/useNavBackground";
  */
 export const useIndexPage = () => {
   // Use our optimized hook for section transitions
-  useSectionTransitions();
+  const { isLowPerformanceDevice } = useSectionTransitions();
   const { isMobile } = useResponsive();
   const location = useLocation();
   
@@ -108,7 +108,7 @@ export const useIndexPage = () => {
     }
   }, [location]);
   
-  return { isMobile };
+  return { isMobile, isLowPerformanceDevice };
 };
 
 export default useIndexPage;

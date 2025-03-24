@@ -5,7 +5,6 @@ import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "sonner";
 import ErrorBoundary from "../ErrorBoundary";
 import GlobalErrorFallback from "./GlobalErrorFallback";
-import TouchDebugger from "../TouchDebugger";
 import { ThemeProvider } from "next-themes";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
@@ -78,7 +77,6 @@ const AppProviders = ({ children }: AppProvidersProps) => {
             >
               {children}
               <Toaster />
-              {isDevelopment && <TouchDebugger />}
             </ErrorBoundary>
           </TooltipProvider>
         </QueryClientProvider>

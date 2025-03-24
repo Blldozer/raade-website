@@ -12,6 +12,7 @@ import { registerGsapPlugins } from '@/utils/gsapUtils';
  * Detects device performance and adjusts accordingly
  */
 export const useSectionTransitions = () => {
+  // Initialize state inside the hook function body
   const [isLowPerformanceDevice, setIsLowPerformanceDevice] = useState(false);
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
   const mountedRef = useRef(true);
@@ -115,11 +116,9 @@ export const useSectionTransitions = () => {
       };
     }
     
-    // Note: We're not calling useOptimizedParallax() directly here anymore
-    // Each section now handles its own animations internally
-    
     // Nothing to clean up for this effect
   }, [animationsEnabled, isLowPerformanceDevice]);
   
-  // Return nothing as this is just setting up global animations
+  // Return the state values that might be useful for consumers
+  return { isLowPerformanceDevice, animationsEnabled };
 };

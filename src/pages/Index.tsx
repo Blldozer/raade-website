@@ -22,7 +22,7 @@ const JoinSection = lazy(() => import(/* webpackChunkName: "join-section" */ "@/
  */
 const Index = () => {
   // Use our custom hook to handle page logic
-  useIndexPage();
+  const { isMobile } = useIndexPage();
   
   console.log("Index component rendering");
   
