@@ -137,12 +137,12 @@ function sanitizeGroupEmails(emails: any): string[] {
         return email !== null && email !== undefined;
       })
       .map(emailItem => {
-        if (typeof emailItem === 'object' && emailItem.value !== undefined) {
+        if (typeof emailItem === 'object' && emailItem !== null && 'value' in emailItem) {
           // Extract value from object format
           return emailItem.value;
         }
         // Return string directly if it's a string
-        return String(emailItem);
+        return String(emailItem || '');
       })
       .filter(email => email.length > 0 && typeof email === 'string' && email.includes('@')); // Filter out invalid emails
   } catch (error) {
@@ -157,28 +157,42 @@ serve(async (req) => {
   let requestData;
   const startTime = Date.now();
   
+  // Handle CORS preflight requests - IMPORTANT FIX
+  if (req.method === "OPTIONS") {
+    return new Response(null, { 
+      headers: corsHeaders 
+    });
+  }
+  
   try {
     const body = await req.text();
-    requestData = JSON.parse(body);
-    requestId = requestData.requestId || crypto.randomUUID();
+    try {
+      requestData = JSON.parse(body);
+      requestId = requestData.requestId || crypto.randomUUID();
+    } catch (parseError) {
+      requestId = crypto.randomUUID();
+      console.error(`[${requestId}] Error parsing request body:`, parseError, "Raw body:", body);
+      
+      return createErrorResponse(
+        "Invalid request format", 
+        "Could not parse request body as JSON",
+        400,
+        requestId
+      );
+    }
   } catch (error) {
     requestId = crypto.randomUUID();
-    console.error(`[${requestId}] Error parsing request body:`, error);
+    console.error(`[${requestId}] Error reading request body:`, error);
     
     return createErrorResponse(
       "Invalid request format", 
-      "Could not parse request body",
+      "Could not read request body",
       400,
       requestId
     );
   }
   
   console.log(`[${requestId}] Request started`);
-  
-  // Handle CORS preflight requests
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
 
   try {
     // Get the Stripe secret key from environment variable
@@ -218,6 +232,7 @@ serve(async (req) => {
     console.log(`[${requestId}] Processing request:`, {
       ticketType: requestData.ticketType,
       email: requestData.email,
+      fullName: requestData.fullName,
       retryCount
     });
     

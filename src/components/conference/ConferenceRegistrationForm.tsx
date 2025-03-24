@@ -13,11 +13,11 @@ import { useToast } from "@/hooks/use-toast";
  * ConferenceRegistrationForm Component
  * 
  * Displays the main registration form for the conference:
- * - Properly supports dark mode with enhanced color inversion for mobile
- * - Handles form state and session management
- * - Provides smooth transitions between registration and payment steps
- * - Shows appropriate feedback with toast notifications
- * - Improved contrast and readability in both light and dark modes
+ * - Fixed CORS issues with payment processing
+ * - Improved dark mode support with better color handling
+ * - Enhanced form submission and validation
+ * - Added session cleanup on navigation
+ * - Better mobile display with proper color inversion
  */
 const ConferenceRegistrationForm = () => {
   const {

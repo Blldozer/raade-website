@@ -13,9 +13,9 @@ interface RegistrationSummaryProps {
  * Displays a summary of the user's registration details:
  * - Shows key registration information
  * - Calculates and displays pricing
- * - Enhanced dark mode support for mobile devices
- * - Consistent color scheme that properly inverts in dark mode
- * - Improved contrast for better readability
+ * - Enhanced dark mode support with better contrast
+ * - Improved color consistency in dark mode for mobile
+ * - Proper text color inversion in dark mode
  * 
  * @param registrationData - The form data to display in the summary
  */

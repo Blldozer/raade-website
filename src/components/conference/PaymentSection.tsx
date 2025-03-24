@@ -17,10 +17,10 @@ interface PaymentSectionProps {
  * 
  * Handles the payment process for conference registration:
  * - Displays registration summary
- * - Initializes Stripe Checkout flow
- * - Provides back button to return to form
- * - Enhanced dark mode support with specific mobile optimizations
- * - Consistent color scheme that properly inverts in dark mode
+ * - Fixed CORS issues with Stripe Checkout
+ * - Improved dark mode support for mobile devices
+ * - Enhanced error handling and recovery
+ * - Consistent colors that properly invert in dark mode
  * 
  * @param registrationData - Form data from the registration form
  * @param isSubmitting - Loading state for the form
@@ -35,8 +35,7 @@ const PaymentSection = ({
   onPaymentError,
   onBackClick
 }: PaymentSectionProps) => {
-  // Ensure groupEmails is always correctly formatted for the StripeCheckout component
-  // Process the raw form data into a clean array of emails
+  // Process raw form data into a clean array of emails for Stripe checkout
   const processedGroupEmails = Array.isArray(registrationData.groupEmails) 
     ? registrationData.groupEmails
         .filter(Boolean) // Remove nullish values

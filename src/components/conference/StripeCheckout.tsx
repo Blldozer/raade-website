@@ -22,14 +22,14 @@ interface StripeCheckoutProps {
  * StripeCheckout Component - Stripe Checkout Implementation
  * 
  * Creates a checkout session using Supabase Edge Function and redirects
- * to Stripe's hosted checkout page rather than using Stripe Elements.
+ * to Stripe's hosted checkout page.
  * 
  * Enhanced with:
- * - Improved error handling and recovery
- * - Better dark mode support for mobile devices
- * - Consistent color scheme with proper inversions
- * - More robust data validation before submission
+ * - Fixed CORS header handling for cross-domain requests
+ * - Improved error handling with specific error messages
+ * - Better request validation and sanitization
  * - Detailed logging for easier troubleshooting
+ * - Proper dark mode support for all devices
  */
 const StripeCheckout = ({
   ticketType,
@@ -49,7 +49,6 @@ const StripeCheckout = ({
   const { toast } = useToast();
 
   // Effect to clear session storage on component mount
-  // This helps prevent stale session data issues when users return
   useEffect(() => {
     // Clear any stale checkout session data from previous attempts
     if (sessionStorage.getItem("checkoutSessionId")) {
@@ -84,27 +83,16 @@ const StripeCheckout = ({
       const successUrl = `${window.location.origin}/conference/success?session_id={CHECKOUT_SESSION_ID}`;
       const cancelUrl = `${window.location.origin}/conference/register`;
       
-      // Log the checkout attempt with more details for group registrations
-      if (ticketType === "student-group") {
-        console.log("Starting group checkout process:", { 
-          ticketType, 
-          email, 
-          fullName, 
-          groupSize,
-          totalEmails: groupEmails.length,
-          groupEmails,
-          requestId,
-          attempt: retryCount + 1
-        });
-      } else {
-        console.log("Starting checkout process for:", { 
-          ticketType, 
-          email, 
-          fullName,
-          requestId,
-          attempt: retryCount + 1 
-        });
-      }
+      // Log the checkout attempt with more details for debugging
+      console.log("Starting checkout process:", { 
+        ticketType, 
+        email, 
+        fullName, 
+        groupSize: typeof groupSize === 'number' ? groupSize : parseInt(String(groupSize) || '0'),
+        totalEmails: groupEmails.length,
+        requestId,
+        attempt: retryCount + 1
+      });
       
       // Process email list to ensure all values are valid
       const sanitizedGroupEmails = groupEmails
@@ -155,7 +143,9 @@ const StripeCheckout = ({
         console.error(`Checkout error (Attempt ${retryCount + 1}, Request ID: ${requestId}):`, error);
         
         // Check if error is due to a previous session
-        if (error.message?.includes('session') || error.message?.includes('already exists') || error.message?.includes('conflict')) {
+        if (error.message?.includes('session') || 
+            error.message?.includes('already exists') || 
+            error.message?.includes('conflict')) {
           toast({
             title: "Previous checkout session detected",
             description: "Resetting session data and trying again...",
