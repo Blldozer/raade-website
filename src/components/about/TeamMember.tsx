@@ -1,4 +1,3 @@
-
 import TeamMemberCard from "./team/TeamMemberCard";
 
 interface TeamMemberProps {

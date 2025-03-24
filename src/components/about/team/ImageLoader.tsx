@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef, RefObject } from "react";
 import { useResponsive } from "../../../hooks/useResponsive"; 
 
@@ -140,7 +139,7 @@ const ImageLoader = ({
       }
     };
     
-    // Set eager loading regardless of device for first 6 images
+    // Set eager loading for first few images
     // This improves initial loading performance significantly
     const eagerLoadingThreshold = 6; // First 6 images load eagerly
     if (imageRef.current) {
