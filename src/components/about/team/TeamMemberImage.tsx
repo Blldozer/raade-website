@@ -11,7 +11,7 @@ interface TeamMemberImageProps {
  * TeamMemberImage component - Renders the team member image with fallbacks
  * Features:
  * - Simple, reliable image loading 
- * - Fallback to initials when image fails to load
+ * - Green block fallback when images fail to load
  * - Optimized for performance and accessibility
  * - Improved mobile reliability
  */
@@ -22,21 +22,22 @@ const TeamMemberImage = ({ name, onImageLoad, isPriority = false }: TeamMemberIm
     onImageLoad
   });
   
-  // Local loading state for UI feedback
-  const [showLoading, setShowLoading] = useState(true);
+  // Ensure we always consider an image loaded after a timeout for mobile
+  const [forceLoaded, setForceLoaded] = useState(false);
   
-  // Hide loading state after images load or after 1.5 seconds (reduced from 3s for faster perceived loading)
+  // Hide loading state after images load or after 1 second
   useEffect(() => {
     if (imageLoaded) {
-      setShowLoading(false);
+      setForceLoaded(true);
     } else {
       const timer = setTimeout(() => {
-        setShowLoading(false);
-      }, 1500);
+        setForceLoaded(true);
+        console.log(`Force loaded image for ${name} after timeout`);
+      }, 1000);
       
       return () => clearTimeout(timer);
     }
-  }, [imageLoaded]);
+  }, [imageLoaded, name]);
   
   // Placeholder initials for fallback
   const getInitials = () => {
@@ -46,18 +47,19 @@ const TeamMemberImage = ({ name, onImageLoad, isPriority = false }: TeamMemberIm
 
   return (
     <div className="rounded-t-lg overflow-hidden">
-      {/* Render fallback if image failed to load */}
+      {/* Render green block if image failed to load */}
       {imageError ? (
-        <div className="w-full aspect-[3/4] bg-[#4C504A] flex items-center justify-center">
+        <div className="w-full aspect-[3/4] bg-green-600 flex items-center justify-center">
           <span className="text-white text-3xl font-bold">
             {getInitials()}
           </span>
+          <span className="absolute bottom-1 right-1 text-xs text-white bg-black bg-opacity-50 px-1 rounded">Debug: Image Failed</span>
         </div>
       ) : (
-        /* Render image with proper loading states */
+        /* Render image with gray background for loading */
         <div className="w-full aspect-[3/4] bg-[#4C504A] relative">
-          {/* Show simple loading state */}
-          {showLoading && !imageLoaded && (
+          {/* Show loading text */}
+          {!forceLoaded && !imageLoaded && (
             <div className="absolute inset-0 flex items-center justify-center">
               <span className="text-white text-xl">Loading...</span>
             </div>
@@ -74,20 +76,25 @@ const TeamMemberImage = ({ name, onImageLoad, isPriority = false }: TeamMemberIm
               className="w-full h-full object-cover transition-opacity duration-300"
               style={{ 
                 opacity: imageLoaded ? 1 : 0,
-                display: 'block', // Force display block to ensure visibility
-                minHeight: '10rem' // Ensure minimum height even before load
+                display: 'block',
+                minHeight: '10rem'
               }}
               onLoad={() => {
                 console.log(`Image for ${name} loaded in DOM`);
-                setShowLoading(false);
                 onImageLoad?.();
               }}
               onError={() => {
                 console.error(`Error loading image for ${name}`);
               }}
-              // Use appropriate loading strategy based on priority
               loading={isPriority ? "eager" : "lazy"}
             />
+          )}
+          
+          {/* Show debug overlay for loading state */}
+          {(!imageLoaded && forceLoaded) && (
+            <div className="absolute bottom-1 right-1 text-xs text-white bg-black bg-opacity-50 px-1 rounded">
+              Debug: Force Shown
+            </div>
           )}
         </div>
       )}

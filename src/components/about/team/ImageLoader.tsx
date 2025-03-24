@@ -6,8 +6,9 @@ import { useResponsive } from "../../../hooks/useResponsive";
  * Features:
  * - Simple image path construction
  * - Basic loading state management
- * - Proper error handling
+ * - Proper error handling with more robust error detection
  * - Support for eager loading of priority images
+ * - Debug mode to help diagnose image loading issues
  */
 interface ImageLoaderProps {
   name: string;
@@ -20,33 +21,52 @@ const ImageLoader = ({ name, onImageLoad }: ImageLoaderProps) => {
   const imageRef = useRef<HTMLImageElement>(null);
   const { isMobile } = useResponsive();
 
-  // Create image path
-  const formattedName = name.split(" ").join("-");
+  // Create image path - log this for debugging
+  const formattedName = name.split(" ").join("-").toLowerCase(); // Make lowercase for consistency
   const imagePath = `/raade-individual-e-board-photos/${formattedName}-raade-website-image.jpg`;
+  
+  // Log the image path for debugging
+  useEffect(() => {
+    console.log(`Attempting to load image from path: ${imagePath}`);
+  }, [imagePath]);
 
   // Effect to preload image
   useEffect(() => {
     // For actual preloading (this will utilize the browser cache)
     const img = new Image();
-    img.src = imagePath;
+    
+    // Add a timestamp to bypass cache for testing
+    const uncachedPath = `${imagePath}?t=${new Date().getTime()}`;
+    img.src = isMobile ? uncachedPath : imagePath; // Bypass cache on mobile for testing
+    
+    // Set a timeout to detect extremely slow loading images (5 seconds)
+    const timeoutTimer = setTimeout(() => {
+      if (!imageLoaded) {
+        console.warn(`Image load timeout for ${name} - treating as error`);
+        setImageError(true);
+      }
+    }, 5000);
     
     img.onload = () => {
-      console.log(`Loaded image for ${name}`);
+      clearTimeout(timeoutTimer);
+      console.log(`✅ Successfully loaded image for ${name}`);
       setImageLoaded(true);
       setImageError(false);
       onImageLoad?.();
     };
     
-    img.onerror = () => {
-      console.log(`Failed to load image for ${name}`);
+    img.onerror = (e) => {
+      clearTimeout(timeoutTimer);
+      console.error(`❌ Failed to load image for ${name}`, e);
       setImageError(true);
     };
     
     return () => {
+      clearTimeout(timeoutTimer);
       img.onload = null;
       img.onerror = null;
     };
-  }, [name, imagePath, onImageLoad]);
+  }, [name, imagePath, onImageLoad, isMobile, imageLoaded]);
 
   return {
     imageRef,
