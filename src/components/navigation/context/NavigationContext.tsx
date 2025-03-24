@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useLayoutEffect, ReactNode } from "react";
+import { useState, useEffect, useLayoutEffect, ReactNode, createContext } from "react";
 import { useLocation } from "react-router-dom";
 import { useResponsive } from "@/hooks/useResponsive";
 import { NavigationContext, NavigationState } from "./NavigationContextDefinition";
@@ -26,8 +26,8 @@ export const NavigationProvider = ({
     useShortFormLogo?: boolean;
   }
 }) => {
-  // Generate unique ID for this provider instance (for debugging)
-  const instanceId = useState(`nav-${Math.random().toString(36).substring(2, 9)}`)[0];
+  // Generate a unique string ID instead of using useState to avoid initialization issues
+  const instanceId = `nav-${Math.random().toString(36).substring(2, 9)}`;
   const location = useLocation();
   const { isMobile, isTablet } = useResponsive();
   

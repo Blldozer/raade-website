@@ -1,5 +1,5 @@
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavBackground } from './useNavBackground';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
@@ -12,9 +12,9 @@ import { registerGsapPlugins } from '@/utils/gsapUtils';
  * Detects device performance and adjusts accordingly
  */
 export const useSectionTransitions = () => {
-  // Move state declarations outside the component to avoid React hook errors
-  let isLowPerformanceDevice = false;
-  let animationsEnabled = true;
+  // Use state hooks to track performance & animation state
+  const [isLowPerformanceDevice, setIsLowPerformanceDevice] = useState(false);
+  const [animationsEnabled, setAnimationsEnabled] = useState(true);
   
   // Helper to detect device performance capabilities
   const detectLowPerformanceDevice = () => {
@@ -38,8 +38,7 @@ export const useSectionTransitions = () => {
   useEffect(() => {
     console.log("useSectionTransitions: Initializing");
     
-    // Create local mutable state
-    let mountedRef = true;
+    // Local variables for tracking state during this effect
     let isInitialized = false;
     
     try {
@@ -47,8 +46,9 @@ export const useSectionTransitions = () => {
       registerGsapPlugins();
       
       // Detect device performance
-      isLowPerformanceDevice = detectLowPerformanceDevice();
-      console.log("Low performance device detected:", isLowPerformanceDevice);
+      const isLowPerfDevice = detectLowPerformanceDevice();
+      setIsLowPerformanceDevice(isLowPerfDevice);
+      console.log("Low performance device detected:", isLowPerfDevice);
       
       // Set up ScrollTrigger optimization globally
       if (gsap.utils.checkPrefix("ScrollTrigger")) {
@@ -62,7 +62,7 @@ export const useSectionTransitions = () => {
       isInitialized = true;
     } catch (error) {
       console.error("Error in section transitions initialization:", error);
-      animationsEnabled = false;
+      setAnimationsEnabled(false);
     }
     
     // Always use navigation background updates
@@ -80,7 +80,6 @@ export const useSectionTransitions = () => {
     
     return () => {
       // Signal component unmount
-      mountedRef = false;
       console.log("useSectionTransitions: Cleanup");
       
       try {

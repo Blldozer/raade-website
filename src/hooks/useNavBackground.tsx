@@ -1,5 +1,5 @@
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSectionMarkers } from './navigation/useSectionMarkers';
 import { useSectionPositions } from './navigation/useSectionPositions';
 
@@ -13,6 +13,7 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
   // Generate unique instance ID for this hook usage
   const instanceId = useRef(`nav-bg-${Math.random().toString(36).substring(2, 9)}`);
   const currentBackgroundRef = useRef(initialBackground);
+  const [currentBackground, setCurrentBackground] = useState(initialBackground);
   
   // Step 1: Mark sections with appropriate data attributes
   const { isMounted } = useSectionMarkers();
@@ -38,6 +39,7 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
         // Update if changed
         if (newBackground !== currentBackgroundRef.current) {
           currentBackgroundRef.current = newBackground;
+          setCurrentBackground(newBackground);
           document.body.setAttribute('data-nav-background', newBackground);
         }
       } catch (error) {
@@ -57,5 +59,5 @@ export const useNavBackground = (initialBackground: 'light' | 'dark' = 'light') 
   }, [initialBackground, sectionPositions]);
   
   // Return the current background state
-  return currentBackgroundRef.current;
+  return currentBackground;
 };
