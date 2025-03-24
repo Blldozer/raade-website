@@ -1,17 +1,23 @@
-
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 
 /**
  * Custom hook to handle section navigation within the About page
- * Manages scrolling to specific sections and tracking the active section
+ * Manages scrolling to specific sections with improved stability
  * 
- * Provides complete section mappings to ensure all sections can be properly navigated to
- * while maintaining the correct scroll behavior and visual indicators
+ * Features:
+ * - Prevents unwanted viewport snap-back
+ * - Uses native browser scrolling for smoother performance
+ * - Respects user scroll position without interference
+ * - Prevents multiple scroll events from competing
  */
 export const useSectionNavigation = () => {
-  const [activeSection, setActiveSection] = useState(0);
+  const [activeSection, setActiveSection] = useState(5); // Start with all sections visible
   const location = useLocation();
+  
+  // Use a ref to track programmatic scrolling
+  const isScrollingProgrammatically = useRef(false);
+  const scrollTimeoutRef = useRef<number | null>(null);
   
   // Function to scroll to a specific section
   const scrollToSection = useCallback((sectionId: string) => {
@@ -27,46 +33,66 @@ export const useSectionNavigation = () => {
       'team': 5       // Team is the 5th section
     };
     
-    // Set the active section to ensure proper scrolling
-    if (sectionMap[sectionId] !== undefined) {
-      setActiveSection(sectionMap[sectionId]);
+    // Find element to scroll to
+    const element = document.getElementById(sectionId);
+    if (element) {
+      // Cancel any pending scroll operation
+      if (scrollTimeoutRef.current !== null) {
+        window.clearTimeout(scrollTimeoutRef.current);
+      }
       
-      // Wait for the section to be rendered
-      setTimeout(() => {
-        const element = document.getElementById(sectionId);
-        if (element) {
-          console.log(`Scrolling to element: #${sectionId}`);
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
-          console.warn(`Element #${sectionId} not found after setting active section`);
+      // Set flag to prevent scroll events from fighting
+      isScrollingProgrammatically.current = true;
+      
+      // Use requestAnimationFrame for smoother scrolling
+      requestAnimationFrame(() => {
+        // Get the element's position
+        const rect = element.getBoundingClientRect();
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const targetY = rect.top + scrollTop;
+        
+        // Perform the scroll
+        window.scrollTo({
+          top: targetY,
+          behavior: 'smooth'
+        });
+        
+        // Update active section
+        if (sectionMap[sectionId] !== undefined) {
+          setActiveSection(sectionMap[sectionId]);
         }
-      }, 500); // Give it time to render
+        
+        // Clear the programmatic scrolling flag after animation completes
+        scrollTimeoutRef.current = window.setTimeout(() => {
+          isScrollingProgrammatically.current = false;
+        }, 1000); // Typical smooth scroll takes ~1s
+      });
     } else {
-      console.warn(`Unknown section ID: ${sectionId}`);
+      console.warn(`Element #${sectionId} not found`);
     }
   }, []);
   
   // Initialize navigation based on URL hash or state
   const initializeNavigation = useCallback(() => {
-    // Handle section loading based on URL hash
+    // Set all sections visible immediately
+    setActiveSection(5);
+    
+    // Handle direct section navigation
     if (location.hash) {
       const sectionId = location.hash.substring(1); // Remove #
-      console.log(`URL contains hash: ${sectionId}`);
-      scrollToSection(sectionId);
+      
+      // Small delay to ensure elements are rendered
+      setTimeout(() => {
+        scrollToSection(sectionId);
+      }, 100);
     }
-    
-    // Handle loading through state
-    if (location.state && location.state.scrollToSection) {
-      const sectionId = location.state.scrollToSection;
-      console.log(`Location state contains scrollToSection: ${sectionId}`);
-      scrollToSection(sectionId);
-    }
-  }, [location.hash, location.state, scrollToSection]);
+  }, [location.hash, scrollToSection]);
 
   return {
     activeSection,
     setActiveSection,
     scrollToSection,
-    initializeNavigation
+    initializeNavigation,
+    isScrollingProgrammatically: isScrollingProgrammatically.current
   };
 };
