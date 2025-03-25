@@ -1,11 +1,14 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 
 // Define CORS headers
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, cache-control, x-requested-with',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Max-Age': '1728000',
+  'Access-Control-Allow-Credentials': 'true',
+  'Vary': 'Origin',
 };
 
 // Helper function to create standardized response with CORS headers
@@ -14,7 +17,14 @@ function createResponse(data: any, status = 200) {
     JSON.stringify(data),
     {
       status,
-      headers: { ...corsHeaders, "Content-Type": "application/json" }
+      headers: { 
+        ...corsHeaders, 
+        "Content-Type": "application/json",
+        // Add cache control headers to prevent browser caching
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+        "Pragma": "no-cache",
+        "Expires": "0"
+      }
     }
   );
 }
