@@ -5,6 +5,7 @@ import TicketTypeSelection from "./registration/TicketTypeSelection";
 import SpecialRequests from "./registration/SpecialRequests";
 import BasicInformationSection from "./registration/BasicInformationSection";
 import GroupRegistrationSection from "./registration/GroupRegistrationSection";
+import ReferralSourceSection from "./registration/ReferralSourceSection";
 import { useGroupSizeReset } from "./registration/useGroupSizeReset";
 
 interface RegistrationFormFieldsProps {
@@ -42,7 +43,7 @@ const RegistrationFormFields = ({
   useGroupSizeReset(watch, setValue);
   
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <BasicInformationSection 
         register={register} 
         errors={errors} 
@@ -60,6 +61,10 @@ const RegistrationFormFields = ({
         watch={watch}
         setValue={setValue}
         control={control}
+      />
+
+      <ReferralSourceSection 
+        register={register} 
       />
 
       <SpecialRequests register={register} />
