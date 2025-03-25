@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
@@ -72,8 +71,33 @@ const StripeCheckout = ({
     const newRequestId = `${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     setRequestId(newRequestId);
     
+    // Set up event listener for browser navigation
+    const handlePageShow = (event) => {
+      if (event.persisted) {
+        // The page is being restored from the back/forward cache
+        console.log("Detected back navigation from Stripe checkout");
+        sessionStorage.removeItem("checkoutSessionId");
+        sessionStorage.removeItem("registrationEmail");
+        
+        // Display a toast to inform the user
+        toast({
+          title: "Session Reset",
+          description: "Your payment session was reset when you returned. You can now select a different ticket type.",
+          variant: "default",
+        });
+        
+        // Reset loading state if it was stuck
+        setIsLoading(false);
+      }
+    };
+    
+    // Listen for pageshow event which fires when navigating back
+    window.addEventListener("pageshow", handlePageShow);
+    
     // Clear on unmount if we're navigating away
     return () => {
+      window.removeEventListener("pageshow", handlePageShow);
+      
       if (isLoading) {
         console.log("Component unmounting while loading - possible navigation away from checkout");
       }
@@ -83,11 +107,15 @@ const StripeCheckout = ({
         clearStaleCheckoutSessions();
       }
     };
-  }, [email]);
+  }, [email, toast]);
 
   // Create and redirect to checkout session
   const handleCheckout = async () => {
     try {
+      // Reset any previous session data first
+      sessionStorage.removeItem("checkoutSessionId");
+      sessionStorage.removeItem("registrationEmail");
+      
       setIsLoading(true);
       
       // Validate required fields before proceeding

@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { usePaymentIntentState } from "./usePaymentIntentState";
 import { usePaymentIntentFlow } from "./usePaymentIntentFlow";
@@ -46,7 +45,9 @@ export const usePaymentIntent = ({
     handleRetry,
     isMountedRef,
     isSuccessCalledRef,
-    activeRequestRef
+    activeRequestRef,
+    // Add reset function to fully clear state
+    resetPaymentState
   } = usePaymentIntentState();
   
   // Use payment intent flow hook
@@ -64,6 +65,19 @@ export const usePaymentIntent = ({
   // Track initialization status
   const [isInitialized, setIsInitialized] = useState(false);
   const initAttemptsRef = useRef(0);
+  const previousTicketTypeRef = useRef(ticketType);
+  
+  // Reset the payment state when ticket type changes
+  useEffect(() => {
+    if (previousTicketTypeRef.current !== ticketType && previousTicketTypeRef.current) {
+      console.log(`Ticket type changed from ${previousTicketTypeRef.current} to ${ticketType}, resetting payment state`);
+      resetPaymentState();
+      setIsInitialized(false);
+    }
+    
+    // Update the ref for the next comparison
+    previousTicketTypeRef.current = ticketType;
+  }, [ticketType, resetPaymentState]);
   
   // Create payment intent when the component loads or retryCount changes
   useEffect(() => {
@@ -85,7 +99,7 @@ export const usePaymentIntent = ({
         initiatePaymentIntent(ticketType, email, fullName, groupSize);
       }, 100);
     }
-  }, [retryCount]); // Minimal dependencies for controlled execution
+  }, [retryCount, ticketType, email, fullName, groupSize, clientSecret, activeRequestRef, isInitialized, initiatePaymentIntent]);
 
   // Listen for tab focus events to auto-retry failed requests
   useEffect(() => {

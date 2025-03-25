@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { PaymentIntentState, PaymentIntentResponse } from "../types";
 
@@ -75,6 +74,30 @@ export const usePaymentIntentState = () => {
     }
   };
   
+  // Completely reset payment state to initial values
+  const resetPaymentState = () => {
+    console.log("Completely resetting payment state");
+    setClientSecret("");
+    setIsLoading(true);
+    setAmount(0);
+    setCurrency("USD");
+    setIsGroupRegistration(false);
+    setErrorDetails(null);
+    setRequestId(null);
+    setRetryCount(0);
+    activeRequestRef.current = false;
+    isSuccessCalledRef.current = false;
+    
+    // Also clear any session storage related to payments
+    try {
+      sessionStorage.removeItem("checkoutSessionId");
+      sessionStorage.removeItem("registrationEmail");
+      sessionStorage.removeItem("paymentIntentId");
+    } catch (e) {
+      console.warn("Failed to clear session storage:", e);
+    }
+  };
+  
   return {
     // State values
     clientSecret,
@@ -92,6 +115,7 @@ export const usePaymentIntentState = () => {
     safeSetErrorDetails,
     updatePaymentState,
     handleRetry,
+    resetPaymentState,
     
     // Refs
     isMountedRef,
