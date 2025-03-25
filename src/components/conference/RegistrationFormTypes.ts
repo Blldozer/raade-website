@@ -17,6 +17,17 @@ export const groupSizeSchema = z.number()
   .max(10, "Group registrations are limited to 10 people")
   .int("Group size must be a whole number");
 
+// Define referral source options
+export const REFERRAL_SOURCES = [
+  "Friends",
+  "University ASA",
+  "LinkedIn",
+  "Instagram",
+  "No Bystanders",
+  "RAADE Outreach Team",
+  "Other"
+] as const;
+
 // Registration schema
 export const registrationSchema = z.object({
   fullName: z.string().min(2, "Full name is required"),
@@ -25,6 +36,7 @@ export const registrationSchema = z.object({
   role: z.string().min(2, "Your role is required"),
   ticketType: z.string().min(1, "Please select a ticket type"),
   specialRequests: z.string().optional(),
+  referralSource: z.string().optional(), // New optional field for referral source
   groupSize: z.number().optional(),
   // Define group emails as an array of objects with a value property
   groupEmails: z.array(

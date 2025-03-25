@@ -266,6 +266,7 @@ serve(async (req) => {
       organization = "",
       role = "",
       specialRequests = "",
+      referralSource = "",
       groupEmails = [],
       successUrl,
       cancelUrl
@@ -335,6 +336,7 @@ serve(async (req) => {
           organization: organization || "",
           role: role || "",
           specialRequests: specialRequests || "",
+          referralSource: referralSource || "",
           groupSize: priceInfo.isGroup ? String(groupSize) : "",
           groupEmails: priceInfo.isGroup ? JSON.stringify(sanitizedGroupEmails) : ""
         },
