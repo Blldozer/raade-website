@@ -28,13 +28,9 @@ const BasicInformationSection = ({
   watch,
   onEmailValidation
 }: BasicInformationSectionProps) => {
-  const watchEmail = watch("email");
-  const watchTicketType = watch("ticketType");
-
   // Use the email validation hook
   const { isCheckingEmail, validationMessage, isValid } = useEmailValidation(
-    watchEmail,
-    watchTicketType,
+    watch,
     onEmailValidation
   );
 
