@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 
@@ -161,10 +162,153 @@ function sanitizeGroupEmails(emails: any): string[] {
   }
 }
 
+// Main function to create a Stripe checkout session
+async function createCheckoutSession(
+  stripeSecretKey: string, 
+  requestData: any, 
+  requestId: string, 
+  retryCount: number = 0
+) {
+  try {
+    // Extract unique session ID to prevent conflicts
+    const sessionUniqueId = requestData.sessionUniqueId || `fallback-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    
+    // Calculate price information
+    let priceInfo;
+    try {
+      priceInfo = calculatePrice(requestData.ticketType, parseInt(String(requestData.groupSize)));
+    } catch (priceError) {
+      console.error(`[${requestId}] Price calculation error:`, priceError);
+      return {
+        success: false,
+        error: "Price calculation failed",
+        message: priceError.message,
+      };
+    }
+    
+    // Initialize Stripe with explicit timeout and version
+    const stripe = new Stripe(stripeSecretKey, {
+      apiVersion: "2022-11-15",
+      httpClient: Stripe.createFetchHttpClient(),
+      timeout: 25000, // 25 second timeout (increased from 20s)
+    });
+    
+    // Create a unique idempotency key to prevent duplicate checkouts
+    // Includes session unique ID to ensure true isolation between requests
+    const idempotencyKey = `${requestId}-${sessionUniqueId}-${requestData.email}-${requestData.ticketType}-${retryCount}`;
+    
+    // Process and sanitize additional metadata
+    const referralSource = requestData.referralSource || "";
+    const sanitizedGroupEmails = sanitizeGroupEmails(requestData.groupEmails || []);
+    
+    // Create request metadata including all important fields
+    const metadata = {
+      ticketType: requestData.ticketType,
+      fullName: requestData.fullName,
+      email: requestData.email,
+      requestId,
+      retryCount: String(retryCount),
+      sessionUniqueId,
+      organization: requestData.organization || "",
+      role: requestData.role || "",
+      specialRequests: requestData.specialRequests || "",
+      referralSource,
+      groupSize: priceInfo.isGroup ? String(requestData.groupSize) : "",
+      groupEmails: priceInfo.isGroup ? JSON.stringify(sanitizedGroupEmails) : ""
+    };
+    
+    console.log(`[${requestId}] Creating checkout session with metadata:`, {
+      ...metadata,
+      // Truncate some fields for logging
+      groupEmails: priceInfo.isGroup ? `[${sanitizedGroupEmails.length} emails]` : "", 
+      specialRequests: requestData.specialRequests ? "[present]" : "",
+    });
+    
+    // Use a timeout promise to prevent edge function timeouts
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error(`Request timeout after 20 seconds (${requestId})`)), 20000);
+    });
+    
+    // Create Checkout Session with timeout protection
+    const sessionPromise = stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: priceInfo.description,
+            },
+            unit_amount: priceInfo.amount,
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: requestData.successUrl,
+      cancel_url: requestData.cancelUrl,
+      customer_email: requestData.email,
+      metadata,
+    }, {
+      idempotencyKey
+    });
+    
+    // Race the session creation against a timeout
+    const session = await Promise.race([sessionPromise, timeoutPromise]) as Stripe.Checkout.Session;
+    
+    return {
+      success: true,
+      sessionId: session.id,
+      url: session.url,
+      processingTime: Date.now() - (requestData.timestamp || Date.now()),
+    };
+    
+  } catch (error) {
+    console.error(`[${requestId}] Stripe error (attempt ${retryCount + 1}):`, error);
+    
+    // Check if this is a network-related error
+    const errorMessage = error.message || "Unknown error";
+    
+    // Categorize the error for better handling
+    if (errorMessage.includes("network") || 
+        errorMessage.includes("connection") || 
+        errorMessage.includes("timeout")) {
+      return {
+        success: false,
+        error: "Network error", 
+        message: "Could not connect to payment service. Please try again.",
+        code: 503, // Service Unavailable
+      };
+    }
+    
+    // Check for idempotency key conflicts or existing session errors
+    if (error.code === 'resource_already_exists' || 
+        error.code === 'idempotency_key_in_use' ||
+        (typeof errorMessage === 'string' && (
+          errorMessage.includes('already exists') ||
+          errorMessage.includes('session') ||
+          errorMessage.includes('idempotency')
+        ))) {
+      return {
+        success: false,
+        error: "Checkout session conflict", 
+        message: "A previous checkout session exists. Please try again.",
+        code: 409, // Conflict status code
+      };
+    }
+    
+    return {
+      success: false,
+      error: "Payment processing error", 
+      message: errorMessage || "Failed to create checkout session",
+      code: 400,
+    };
+  }
+}
+
 serve(async (req) => {
-  // Extract request ID from user input or generate a new one
-  let requestId;
-  let requestData;
+  // Create isolated context for this request with unique ID
+  const requestId = crypto.randomUUID();
   const startTime = Date.now();
   
   // Handle CORS preflight requests - IMPORTANT FIX
@@ -174,37 +318,41 @@ serve(async (req) => {
     });
   }
   
+  // Log request start with tracing ID
+  console.log(`[${requestId}] Request started at ${new Date().toISOString()}`);
+  
   try {
-    const body = await req.text();
+    // Parse request body with error handling
+    let requestData;
     try {
-      requestData = JSON.parse(body);
-      requestId = requestData.requestId || crypto.randomUUID();
-    } catch (parseError) {
-      requestId = crypto.randomUUID();
-      console.error(`[${requestId}] Error parsing request body:`, parseError, "Raw body:", body);
+      const body = await req.text();
+      
+      try {
+        requestData = JSON.parse(body);
+        // Extract retry count from request if present
+        const retryCount = requestData.retryCount || 0;
+        console.log(`[${requestId}] Request parsed successfully, retry count: ${retryCount}`);
+      } catch (parseError) {
+        console.error(`[${requestId}] Error parsing request body:`, parseError, "Raw body:", body);
+        
+        return createErrorResponse(
+          "Invalid request format", 
+          "Could not parse request body as JSON",
+          400,
+          requestId
+        );
+      }
+    } catch (error) {
+      console.error(`[${requestId}] Error reading request body:`, error);
       
       return createErrorResponse(
         "Invalid request format", 
-        "Could not parse request body as JSON",
+        "Could not read request body",
         400,
         requestId
       );
     }
-  } catch (error) {
-    requestId = crypto.randomUUID();
-    console.error(`[${requestId}] Error reading request body:`, error);
-    
-    return createErrorResponse(
-      "Invalid request format", 
-      "Could not read request body",
-      400,
-      requestId
-    );
-  }
-  
-  console.log(`[${requestId}] Request started`);
 
-  try {
     // Get the Stripe secret key from environment variable
     const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
     
@@ -218,34 +366,6 @@ serve(async (req) => {
       );
     }
 
-    // Parse the request body again if it wasn't successfully parsed earlier
-    let retryCount = 0;
-    if (!requestData) {
-      try {
-        const body = await req.text();
-        requestData = JSON.parse(body);
-        retryCount = requestData.retryCount || 0;
-      } catch (error) {
-        console.error(`[${requestId}] Failed to parse request body:`, error);
-        return createErrorResponse(
-          "Invalid request format",
-          "Failed to parse request JSON", 
-          400, 
-          requestId
-        );
-      }
-    } else {
-      retryCount = requestData.retryCount || 0;
-    }
-    
-    // Log request details
-    console.log(`[${requestId}] Processing request:`, {
-      ticketType: requestData.ticketType,
-      email: requestData.email,
-      fullName: requestData.fullName,
-      retryCount
-    });
-    
     // Validate request data
     const validation = validateRequestData(requestData, requestId);
     if (!validation.isValid) {
@@ -257,153 +377,43 @@ serve(async (req) => {
       );
     }
     
-    // Extract validated registration data
-    const { 
-      ticketType, 
-      email,
-      fullName,
-      groupSize,
-      organization = "",
-      role = "",
-      specialRequests = "",
-      referralSource = "",
-      groupEmails = [],
-      successUrl,
-      cancelUrl
-    } = requestData;
+    // Extract retry count
+    const retryCount = requestData.retryCount || 0;
     
-    // Sanitize group emails
-    const sanitizedGroupEmails = sanitizeGroupEmails(groupEmails);
+    // Create checkout session
+    const result = await createCheckoutSession(
+      stripeSecretKey, 
+      requestData, 
+      requestId, 
+      retryCount
+    );
     
-    console.log(`[${requestId}] Creating checkout session for ${email}, ticket: ${ticketType}, attempt: ${retryCount + 1}`);
-    
-    try {
-      // Calculate price information with error handling
-      let priceInfo;
-      try {
-        priceInfo = calculatePrice(ticketType, parseInt(groupSize));
-      } catch (priceError) {
-        console.error(`[${requestId}] Price calculation error:`, priceError);
-        return createErrorResponse(
-          "Price calculation failed",
-          priceError.message,
-          400,
-          requestId
-        );
-      }
-      
-      // Initialize Stripe with explicit timeout and version
-      const stripe = new Stripe(stripeSecretKey, {
-        apiVersion: "2025-02-24.acacia",
-        httpClient: Stripe.createFetchHttpClient(),
-        timeout: 20000, // 20 second timeout
-      });
-      
-      // Create a unique idempotency key to prevent duplicate checkouts
-      // If this is a retry, append the retry count to ensure a new key
-      const idempotencyKey = `${requestId}-${email}-${ticketType}-${retryCount}`;
-      
-      // Use a 15-second timeout promise to prevent function timeouts
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error("Request timeout after 15 seconds")), 15000);
-      });
-      
-      // Create Checkout Session with timeout protection
-      const sessionPromise = stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: [
-          {
-            price_data: {
-              currency: 'usd',
-              product_data: {
-                name: priceInfo.description,
-              },
-              unit_amount: priceInfo.amount,
-            },
-            quantity: 1,
-          },
-        ],
-        mode: 'payment',
-        success_url: successUrl,
-        cancel_url: cancelUrl,
-        customer_email: email,
-        metadata: {
-          ticketType,
-          fullName,
-          email,
-          requestId,
-          retryCount: String(retryCount),
-          organization: organization || "",
-          role: role || "",
-          specialRequests: specialRequests || "",
-          referralSource: referralSource || "",
-          groupSize: priceInfo.isGroup ? String(groupSize) : "",
-          groupEmails: priceInfo.isGroup ? JSON.stringify(sanitizedGroupEmails) : ""
-        },
-      }, {
-        idempotencyKey // Add idempotency key to prevent duplicates
-      });
-      
-      // Race the session creation against a timeout
-      const session = await Promise.race([sessionPromise, timeoutPromise]) as Stripe.Checkout.Session;
-      
-      const processingTime = Date.now() - startTime;
-      console.log(`[${requestId}] Checkout session created: ${session.id}, processing time: ${processingTime}ms`);
-      
-      // Return the session URL with timing information
-      return createResponse({
-        sessionId: session.id,
-        url: session.url,
-        processingTime,
-        requestId
-      });
-      
-    } catch (error) {
-      console.error(`[${requestId}] Stripe error (attempt ${retryCount + 1}):`, error);
-      
-      // Check if this is a network-related error
-      const errorMessage = error.message || "Unknown error";
-      if (
-        errorMessage.includes("network") || 
-        errorMessage.includes("connection") || 
-        errorMessage.includes("timeout")
-      ) {
-        return createErrorResponse(
-          "Network error", 
-          "Could not connect to payment service. Please try again.",
-          503, // Service Unavailable
-          requestId
-        );
-      }
-      
-      // Check for idempotency key conflicts or existing session errors
-      if (
-        error.code === 'resource_already_exists' || 
-        error.code === 'idempotency_key_in_use' ||
-        (typeof error.message === 'string' && (
-          error.message.includes('already exists') ||
-          error.message.includes('session') ||
-          error.message.includes('idempotency')
-        ))
-      ) {
-        return createErrorResponse(
-          "Checkout session conflict", 
-          "A previous checkout session exists. Please try again.",
-          409, // Conflict status code
-          requestId
-        );
-      }
-      
+    // Process the result
+    if (!result.success) {
       return createErrorResponse(
-        "Payment processing error", 
-        errorMessage || "Failed to create checkout session",
-        400, 
+        result.error, 
+        result.message,
+        result.code || 400,
         requestId
       );
     }
     
+    // Calculate and log processing time
+    const processingTime = Date.now() - startTime;
+    console.log(`[${requestId}] Checkout session created successfully in ${processingTime}ms`);
+    
+    // Return the successful result
+    return createResponse({
+      sessionId: result.sessionId,
+      url: result.url,
+      processingTime,
+      requestId
+    });
+    
   } catch (error) {
-    console.error(`[${requestId}] Unhandled error:`, error);
+    // Handle any unexpected errors
+    const processingTime = Date.now() - startTime;
+    console.error(`[${requestId}] Unhandled error after ${processingTime}ms:`, error);
     
     return createErrorResponse(
       "Server error", 

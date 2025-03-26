@@ -64,7 +64,9 @@ const RegistrationFormFields = ({
       />
 
       <ReferralSourceSection 
-        register={register} 
+        register={register}
+        setValue={setValue}
+        watch={watch}
       />
 
       <SpecialRequests register={register} />

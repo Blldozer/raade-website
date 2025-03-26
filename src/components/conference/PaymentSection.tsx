@@ -17,10 +17,9 @@ interface PaymentSectionProps {
  * 
  * Handles the payment process for conference registration:
  * - Displays registration summary
- * - Fixed CORS issues with Stripe Checkout
- * - Improved dark mode support for mobile devices
- * - Enhanced error handling and recovery
- * - Consistent colors that properly invert in dark mode
+ * - Uses our standardized Stripe Checkout flow
+ * - Improved session management for reliability
+ * - Includes referral source in checkout metadata
  * 
  * @param registrationData - Form data from the registration form
  * @param isSubmitting - Loading state for the form
@@ -61,6 +60,7 @@ const PaymentSection = ({
         organization={registrationData.organization}
         role={registrationData.role}
         specialRequests={registrationData.specialRequests}
+        referralSource={registrationData.referralSource}
         onSuccess={onPaymentSuccess}
         onError={onPaymentError}
       />

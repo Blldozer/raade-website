@@ -1,8 +1,15 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { 
+  clearExistingSessionData, 
+  generateUniqueSessionId,
+  saveCheckoutSession,
+  setupNavigationListeners
+} from "./payment/services/sessionManagement";
 
 interface StripeCheckoutProps {
   ticketType: string;
@@ -13,6 +20,7 @@ interface StripeCheckoutProps {
   organization?: string;
   role?: string;
   specialRequests?: string;
+  referralSource?: string;
   onSuccess: () => void;
   onError: (error: string) => void;
 }
@@ -24,12 +32,11 @@ interface StripeCheckoutProps {
  * to Stripe's hosted checkout page.
  * 
  * Enhanced with:
- * - Fixed CORS header handling for cross-domain requests
- * - Improved error handling with specific error messages
- * - Better request validation and sanitization
- * - Detailed logging for easier troubleshooting
- * - Proper dark mode support for all devices
- * - Enhanced session cleanup to prevent conflicts
+ * - Improved session isolation with unique request IDs
+ * - Automatic session cleanup on navigation events
+ * - Better error recovery and retry mechanism
+ * - Conflict detection and resolution
+ * - Event tracking for analytics
  */
 const StripeCheckout = ({
   ticketType,
@@ -40,6 +47,7 @@ const StripeCheckout = ({
   organization,
   role,
   specialRequests,
+  referralSource,
   onSuccess,
   onError
 }: StripeCheckoutProps) => {
@@ -48,73 +56,70 @@ const StripeCheckout = ({
   const [requestId, setRequestId] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Effect to clear session storage on component mount and unmount
+  // Effect to clean up stale sessions and set up navigation listeners
   useEffect(() => {
-    // Function to clear stale checkout sessions
-    const clearStaleCheckoutSessions = () => {
-      const sessionId = sessionStorage.getItem("checkoutSessionId");
-      const sessionEmail = sessionStorage.getItem("registrationEmail");
-      
-      // Only clear if the session exists and doesn't match current email (different user)
-      // or if we're starting a new checkout process for the same user
-      if (sessionId && (sessionEmail !== email || window.location.pathname.includes("/register"))) {
-        console.log(`Clearing stale checkout session data (sessionId: ${sessionId.substring(0, 8)}...)`);
-        sessionStorage.removeItem("checkoutSessionId");
-        sessionStorage.removeItem("registrationEmail");
-      }
-    };
+    // Clear any existing sessions when component mounts
+    clearExistingSessionData();
     
-    // Clear on mount
-    clearStaleCheckoutSessions();
-    
-    // Generate unique request ID for this checkout attempt
-    const newRequestId = `${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    // Generate a unique request ID for this checkout attempt
+    const newRequestId = generateUniqueSessionId();
     setRequestId(newRequestId);
     
-    // Set up event listener for browser navigation
-    const handlePageShow = (event) => {
-      if (event.persisted) {
-        // The page is being restored from the back/forward cache
-        console.log("Detected back navigation from Stripe checkout");
-        sessionStorage.removeItem("checkoutSessionId");
-        sessionStorage.removeItem("registrationEmail");
-        
-        // Display a toast to inform the user
-        toast({
-          title: "Session Reset",
-          description: "Your payment session was reset when you returned. You can now select a different ticket type.",
-          variant: "default",
-        });
-        
-        // Reset loading state if it was stuck
-        setIsLoading(false);
-      }
-    };
+    // Set up listeners for navigation events to clean up sessions
+    const removeListeners = setupNavigationListeners(() => {
+      // This callback runs when back navigation is detected
+      setIsLoading(false);
+      toast({
+        title: "Session Reset",
+        description: "Your payment session was reset when you returned. You can now continue registration.",
+        variant: "default",
+      });
+    });
     
-    // Listen for pageshow event which fires when navigating back
-    window.addEventListener("pageshow", handlePageShow);
-    
-    // Clear on unmount if we're navigating away
+    // Clean up event listeners on component unmount
     return () => {
-      window.removeEventListener("pageshow", handlePageShow);
+      removeListeners();
       
+      // If navigating away while loading, log for debugging
       if (isLoading) {
         console.log("Component unmounting while loading - possible navigation away from checkout");
-      }
-      
-      // If navigating away from registration page, also clear session data
-      if (window.location.pathname !== "/conference/register") {
-        clearStaleCheckoutSessions();
       }
     };
   }, [email, toast]);
 
+  // Function to handle checkout retry after failure
+  const retryCheckout = () => {
+    if (retryCount < 3) { // Max 3 retries
+      // Clear any stale session data
+      clearExistingSessionData();
+      
+      // Generate a new request ID for this retry
+      const newRequestId = generateUniqueSessionId();
+      setRequestId(newRequestId);
+      
+      // Increment retry count
+      setRetryCount(prev => prev + 1);
+      
+      // Show toast notification
+      toast({
+        title: "Retrying checkout",
+        description: "The previous checkout attempt failed. Trying again...",
+        variant: "default",
+      });
+      
+      // Small delay before retry
+      setTimeout(() => handleCheckout(), 1000);
+    } else {
+      // Too many retries, show error
+      onError("Too many failed checkout attempts. Please try again later or contact support.");
+    }
+  };
+
   // Create and redirect to checkout session
   const handleCheckout = async () => {
     try {
-      // Reset any previous session data first
-      sessionStorage.removeItem("checkoutSessionId");
-      sessionStorage.removeItem("registrationEmail");
+      // Reset session data first to ensure clean state
+      clearExistingSessionData();
       
       setIsLoading(true);
       
@@ -123,20 +128,23 @@ const StripeCheckout = ({
         throw new Error("Missing required information. Please complete all fields.");
       }
       
-      // Generate the success and cancel URLs with unique identifiers to prevent caching
+      // Generate unique identifiers for cache busting and request tracking
+      const sessionUniqueId = generateUniqueSessionId();
       const cacheBuster = `_${Date.now()}`;
       const successUrl = `${window.location.origin}/conference/success?session_id={CHECKOUT_SESSION_ID}&cb=${cacheBuster}`;
       const cancelUrl = `${window.location.origin}/conference/register?cb=${cacheBuster}`;
       
-      // Log the checkout attempt with more details for debugging
+      // Log checkout attempt details for debugging
       console.log("Starting checkout process:", { 
         ticketType, 
         email, 
         fullName, 
         groupSize: typeof groupSize === 'number' ? groupSize : parseInt(String(groupSize) || '0'),
+        referralSource,
         totalEmails: groupEmails.length,
         requestId,
-        attempt: retryCount + 1
+        attempt: retryCount + 1,
+        sessionUniqueId
       });
       
       // Process email list to ensure all values are valid
@@ -173,13 +181,14 @@ const StripeCheckout = ({
             organization,
             role,
             specialRequests,
+            referralSource,
             successUrl,
             cancelUrl,
             requestId,
             retryCount,
             timestamp: Date.now(),
-            // Add a unique identifier to prevent caching issues
-            uniqueId: `${Date.now()}-${Math.random().toString(36).substring(2, 7)}`
+            // Add session unique ID to prevent conflicts
+            sessionUniqueId
           }
         }
       );
@@ -189,28 +198,19 @@ const StripeCheckout = ({
       if (error) {
         console.error(`Checkout error (Attempt ${retryCount + 1}, Request ID: ${requestId}):`, error);
         
-        // Check if error is due to a previous session
+        // Check if error is due to a session conflict
         if (error.message?.includes('session') || 
             error.message?.includes('already exists') || 
             error.message?.includes('conflict')) {
           toast({
-            title: "Previous checkout session detected",
+            title: "Session conflict detected",
             description: "Resetting session data and trying again...",
             variant: "default",
           });
           
-          // Clear any existing session data first
-          sessionStorage.removeItem("checkoutSessionId");
-          sessionStorage.removeItem("registrationEmail");
-          
-          // Increment retry count and try again if under max retries
-          if (retryCount < 2) { // Max 3 attempts (0, 1, 2)
-            setRetryCount(prev => prev + 1);
-            setIsLoading(false);
-            // Short delay before retry
-            setTimeout(() => handleCheckout(), 1500);
-            return;
-          }
+          // Auto-retry for session conflicts
+          retryCheckout();
+          return;
         }
         
         throw new Error(error.message || "Failed to create checkout session");
@@ -223,8 +223,7 @@ const StripeCheckout = ({
       console.log(`Redirecting to Stripe Checkout (Attempt ${retryCount + 1}, Request ID: ${requestId}):`, data.url);
       
       // Store the session ID in sessionStorage for post-checkout verification
-      sessionStorage.setItem("checkoutSessionId", data.sessionId);
-      sessionStorage.setItem("registrationEmail", email);
+      saveCheckoutSession(data.sessionId, email);
       
       // Redirect to Stripe Checkout
       window.location.href = data.url;
@@ -239,11 +238,17 @@ const StripeCheckout = ({
       // For network errors, suggest refreshing
       if (errorMessage.includes("network") || errorMessage.includes("connection")) {
         errorMessage = "Network error. Please check your internet connection and try again.";
+        // Auto-retry on network errors
+        setTimeout(() => retryCheckout(), 1500);
+        return;
       }
       
       // For timeout errors, suggest trying again
       if (errorMessage.includes("timeout")) {
-        errorMessage = "The request took too long to complete. Please try again.";
+        errorMessage = "The request took too long to complete. Retrying...";
+        // Auto-retry on timeout
+        setTimeout(() => retryCheckout(), 1500);
+        return;
       }
       
       // Show error toast

@@ -1,131 +1,18 @@
-import { useState, useEffect, useRef } from "react";
-import { usePaymentIntentState } from "./usePaymentIntentState";
-import { usePaymentIntentFlow } from "./usePaymentIntentFlow";
 
-interface UsePaymentIntentProps {
-  ticketType: string;
-  email: string;
-  fullName: string;
-  groupSize?: number;
-  onSuccess: () => void;
-  onError: (error: string) => void;
-}
+// This file is now deprecated as we've standardized on Stripe Checkout Sessions
+// It remains as a placeholder to maintain import compatibility
 
-/**
- * Custom hook for creating and managing payment intents
- * 
- * Handles:
- * - Payment intent creation via Supabase Edge Function
- * - Timeout handling and retry logic
- * - Error management and request deduplication
- * - Loading and error states
- * - Browser tab focus/blur detection for auto-retry
- */
-export const usePaymentIntent = ({
-  ticketType,
-  email,
-  fullName,
-  groupSize,
-  onSuccess,
-  onError
-}: UsePaymentIntentProps) => {
-  // Use state management hook
-  const {
-    clientSecret,
-    isLoading,
-    amount,
-    currency,
-    isGroupRegistration,
-    errorDetails,
-    requestId,
-    retryCount,
-    safeSetLoading,
-    safeSetErrorDetails,
-    updatePaymentState,
-    handleRetry,
-    isMountedRef,
-    isSuccessCalledRef,
-    activeRequestRef,
-    // Add reset function to fully clear state
-    resetPaymentState
-  } = usePaymentIntentState();
+export const usePaymentIntent = () => {
+  console.warn("usePaymentIntent is deprecated - using Stripe Checkout Sessions instead");
   
-  // Use payment intent flow hook
-  const { initiatePaymentIntent } = usePaymentIntentFlow(
-    isMountedRef,
-    activeRequestRef,
-    safeSetLoading,
-    safeSetErrorDetails,
-    updatePaymentState,
-    isSuccessCalledRef,
-    onSuccess,
-    onError
-  );
-
-  // Track initialization status
-  const [isInitialized, setIsInitialized] = useState(false);
-  const initAttemptsRef = useRef(0);
-  const previousTicketTypeRef = useRef(ticketType);
-  
-  // Reset the payment state when ticket type changes
-  useEffect(() => {
-    if (previousTicketTypeRef.current !== ticketType && previousTicketTypeRef.current) {
-      console.log(`Ticket type changed from ${previousTicketTypeRef.current} to ${ticketType}, resetting payment state`);
-      resetPaymentState();
-      setIsInitialized(false);
-    }
-    
-    // Update the ref for the next comparison
-    previousTicketTypeRef.current = ticketType;
-  }, [ticketType, resetPaymentState]);
-  
-  // Create payment intent when the component loads or retryCount changes
-  useEffect(() => {
-    // Only execute if a payment intent doesn't already exist
-    if (!clientSecret && !activeRequestRef.current && !isInitialized) {
-      console.log("Initiating payment intent creation, retryCount:", retryCount);
-      
-      // Mark as initialized to prevent duplicate requests on mount
-      setIsInitialized(true);
-      
-      // Track initialization attempt
-      initAttemptsRef.current += 1;
-      
-      // Create a unique attempt ID
-      const attemptId = `init-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
-      
-      // Initiate the payment intent with short delay to ensure DOM is ready
-      setTimeout(() => {
-        initiatePaymentIntent(ticketType, email, fullName, groupSize);
-      }, 100);
-    }
-  }, [retryCount, ticketType, email, fullName, groupSize, clientSecret, activeRequestRef, isInitialized, initiatePaymentIntent]);
-
-  // Listen for tab focus events to auto-retry failed requests
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible' && errorDetails && !clientSecret) {
-        console.log("Tab became visible with errors present, auto-retrying payment intent");
-        handleRetry();
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [errorDetails, clientSecret, handleRetry]);
-
-  // Return the necessary state and functions
   return {
-    clientSecret,
-    isLoading,
-    amount,
-    currency,
-    isGroupRegistration,
-    errorDetails,
-    requestId,
-    handleRetry
+    clientSecret: "",
+    isLoading: false,
+    amount: 0,
+    currency: "USD",
+    isGroupRegistration: false,
+    errorDetails: "Payment Intents flow is deprecated",
+    requestId: null,
+    handleRetry: () => console.warn("Payment Intents flow is deprecated")
   };
 };

@@ -1,6 +1,6 @@
 
 import React from "react";
-import { UseFormRegister } from "react-hook-form";
+import { UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
 import { RegistrationFormData, REFERRAL_SOURCES } from "../RegistrationFormTypes";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -8,6 +8,8 @@ import { FormItem } from "@/components/ui/form";
 
 interface ReferralSourceSectionProps {
   register: UseFormRegister<RegistrationFormData>;
+  setValue?: UseFormSetValue<RegistrationFormData>;
+  watch?: UseFormWatch<RegistrationFormData>;
 }
 
 /**
@@ -17,8 +19,14 @@ interface ReferralSourceSectionProps {
  * This is an optional field to help with marketing analytics
  * 
  * @param register - React Hook Form register function
+ * @param setValue - Optional React Hook Form setValue function for programmatic updates
+ * @param watch - Optional React Hook Form watch function for monitoring values
  */
-const ReferralSourceSection: React.FC<ReferralSourceSectionProps> = ({ register }) => {
+const ReferralSourceSection: React.FC<ReferralSourceSectionProps> = ({ 
+  register,
+  setValue,
+  watch
+}) => {
   return (
     <div className="space-y-3">
       <div className="text-sm font-medium">How did you hear about the conference? <span className="text-gray-500 text-xs">(optional)</span></div>

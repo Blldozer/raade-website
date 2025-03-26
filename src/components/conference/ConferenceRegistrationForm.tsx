@@ -8,16 +8,16 @@ import { useRegistrationForm } from "./registration/useRegistrationForm";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { clearExistingSessionData, detectBackNavigation } from "./payment/services/sessionManagement";
 
 /**
  * ConferenceRegistrationForm Component
  * 
  * Displays the main registration form for the conference:
- * - Fixed CORS issues with payment processing
- * - Improved dark mode support with better color handling
- * - Enhanced form submission and validation
- * - Added session cleanup on navigation
- * - Better mobile display with proper color inversion
+ * - Now using standardized Stripe Checkout Sessions only
+ * - Enhanced session management and cleanup
+ * - Better error recovery after payment failures
+ * - Improved user experience with clear status messages
  */
 const ConferenceRegistrationForm = () => {
   const {
@@ -33,23 +33,25 @@ const ConferenceRegistrationForm = () => {
 
   const { toast } = useToast();
 
-  // Check for any existing session data on mount - helps with back navigation
+  // Check for back navigation and session cleanup
   useEffect(() => {
     const checkForExistingSession = () => {
-      const sessionId = sessionStorage.getItem("checkoutSessionId");
-      const sessionEmail = sessionStorage.getItem("registrationEmail");
+      // Check if the user navigated back from Stripe
+      const isBackNavigation = detectBackNavigation();
       
-      // If there's a checkout session ID in storage, clear it when returning to the form
-      if (sessionId) {
-        console.log("Found existing checkout session ID, clearing session data");
-        sessionStorage.removeItem("checkoutSessionId");
-        sessionStorage.removeItem("registrationEmail");
+      // Get the checkout session ID from storage
+      const sessionId = sessionStorage.getItem("checkoutSessionId");
+      
+      // If there's a checkout session or we detect back navigation, clean up
+      if (sessionId || isBackNavigation) {
+        console.log("Found existing checkout session or back navigation, cleaning up");
+        clearExistingSessionData();
         
-        // If we're already showing payment, also reset the form
+        // If we're showing payment, reset the form to start fresh
         if (showPayment) {
           toast({
             title: "Session Reset",
-            description: "Your previous checkout session has been cleared.",
+            description: "Your previous checkout session has been cleared. You can try again with a fresh session.",
             variant: "default",
           });
           resetForm();
@@ -57,26 +59,43 @@ const ConferenceRegistrationForm = () => {
       }
     };
     
+    // Run check on mount
     checkForExistingSession();
     
-    // Also listen for storage events in case it changes in another tab
+    // Listen for storage events in case it changes in another tab
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "checkoutSessionId" && !e.newValue) {
         checkForExistingSession();
       }
     };
     
+    // Set up event listeners
     window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, [showPayment]);
+    window.addEventListener("pageshow", (e) => {
+      if (e.persisted) checkForExistingSession();
+    });
+    
+    // Clean up listeners on unmount
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("pageshow", (e) => {
+        if (e.persisted) checkForExistingSession();
+      });
+    };
+  }, [showPayment, resetForm, toast]);
   
   const handlePaymentSuccess = () => {
     form.reset();
     setShowPayment(false);
+    toast({
+      title: "Registration Complete",
+      description: "Your registration and payment were successful! You'll receive a confirmation email shortly.",
+      variant: "default",
+    });
   };
 
   const handlePaymentError = (errorMessage: string) => {
-    // Reset form when we get a critical payment error
+    // If we get a critical error, reset form and go back to registration
     if (errorMessage.includes("Edge Function") || 
         errorMessage.includes("Payment service")) {
       resetForm();
@@ -135,8 +154,7 @@ const ConferenceRegistrationForm = () => {
             onPaymentError={handlePaymentError}
             onBackClick={() => {
               // Clear any session data when going back
-              sessionStorage.removeItem("checkoutSessionId");
-              sessionStorage.removeItem("registrationEmail");
+              clearExistingSessionData();
               setShowPayment(false);
             }}
           />
