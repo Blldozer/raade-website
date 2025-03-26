@@ -13,8 +13,6 @@ export default defineConfig(({ mode }) => ({
     react({
       jsxImportSource: "react",
       plugins: [],
-      // Both jsxRuntime and development are not valid properties for this plugin
-      refresh: false,
     }),
     // Only use componentTagger in development mode
     mode === 'development' &&
