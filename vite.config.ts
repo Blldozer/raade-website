@@ -1,4 +1,3 @@
-
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -21,7 +20,7 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  // Production optimization settings
+  // Optimization settings
   build: {
     // Ensure sourcemaps aren't included in production
     sourcemap: false,
@@ -31,12 +30,21 @@ export default defineConfig(({ mode }) => ({
     manifest: true,
     // Disable HMR explicitly in production build
     hmr: false,
-    // Improve chunk loading strategy
+    // Improve chunk loading strategy - modified for better React compatibility
     rollupOptions: {
       output: {
-        manualChunks: {
-          react: ['react', 'react-dom'],
-          gsap: ['gsap', 'gsap/ScrollTrigger', 'gsap/ScrollToPlugin'],
+        manualChunks: (id) => {
+          // Ensure React and ReactDOM stay in the same chunk
+          if (id.includes('node_modules/react/') || 
+              id.includes('node_modules/react-dom/')) {
+            return 'react-vendor';
+          }
+          // Keep GSAP libraries together
+          if (id.includes('node_modules/gsap/')) {
+            return 'gsap-vendor';
+          }
+          // Let other dependencies be chunked normally
+          return undefined;
         }
       }
     }

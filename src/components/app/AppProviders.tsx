@@ -71,15 +71,14 @@ const AppProviders = ({ children }: AppProvidersProps) => {
     <BrowserRouter>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <QueryClientProvider client={queryClient}>
-          <TooltipProvider>
-            <ErrorBoundary 
-              fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
-              suppressDevErrors={isDevelopment}
-            >
-              {children}
-              <Toaster />
-            </ErrorBoundary>
-          </TooltipProvider>
+          {/* Wrap children directly instead of using TooltipProvider here */}
+          <ErrorBoundary 
+            fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
+            suppressDevErrors={isDevelopment}
+          >
+            {children}
+            <Toaster />
+          </ErrorBoundary>
         </QueryClientProvider>
       </ThemeProvider>
     </BrowserRouter>
