@@ -1,190 +1,117 @@
 
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Loader2 } from "lucide-react";
+import { CheckCircle, AlertCircle, AlertTriangle } from "lucide-react";
+import { clearExistingSessionData } from "./services/sessionManagement";
 
 /**
  * StripeStatusCheck Component
  * 
- * Tests the Stripe Edge Function connection:
- * - Makes a test call to the payment intent endpoint
- * - Displays the status of the connection
- * - Provides error details when connection fails
- * - Includes retry functionality
- * - Shows detailed connection diagnostics
+ * Checks for Stripe checkout sessions or payment intents in URL
+ * and shows appropriate status messages.
+ * 
+ * - Handles redirects from Stripe
+ * - Shows success/failure messages
+ * - Gracefully handles back navigation
  */
 const StripeStatusCheck = () => {
-  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
-  const [errorDetails, setErrorDetails] = useState<string | null>(null);
-  const [isRetrying, setIsRetrying] = useState(false);
-  const [diagnostics, setDiagnostics] = useState<{
-    startTime: number;
-    endTime: number;
-    latency: number;
-    attempts: number;
-  }>({
-    startTime: Date.now(),
-    endTime: 0,
-    latency: 0,
-    attempts: 1
-  });
-  
-  const checkStripeConnection = async (isRetry = false) => {
-    try {
-      if (isRetry) {
-        setIsRetrying(true);
-        setDiagnostics(prev => ({
-          ...prev,
-          startTime: Date.now(),
-          attempts: prev.attempts + 1
-        }));
-      }
-      
-      // Generate a unique request ID for tracking
-      const requestId = `status-check-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
-      console.log(`Starting Stripe connection check [${requestId}]`);
-      
-      // Call the Edge Function with a test payload
-      const startTime = Date.now();
-      const { data, error } = await Promise.race([
-        supabase.functions.invoke("create-payment-intent", {
-          body: {
-            ticketType: "test",
-            email: "test@example.com",
-            fullName: "Test User",
-            checkOnly: true,
-            requestId
-          }
-        }),
-        new Promise<{data: null, error: Error}>((resolve) => {
-          setTimeout(() => {
-            resolve({
-              data: null,
-              error: new Error(`Request timeout after 10 seconds [${requestId}]`)
-            });
-          }, 10000); // 10 second timeout
-        })
-      ]);
-      
-      const endTime = Date.now();
-      const latency = endTime - startTime;
-      
-      setDiagnostics(prev => ({
-        ...prev,
-        endTime,
-        latency
-      }));
-      
-      console.log(`Stripe connection check completed in ${latency}ms [${requestId}]`);
-      
-      if (error) {
-        console.error(`Error checking Stripe connection [${requestId}]:`, error);
-        setStatus("error");
-        setErrorDetails(`${error.message} (Request ID: ${requestId})`);
-        return;
-      }
-      
-      if (!data) {
-        console.error(`No response data from Stripe check [${requestId}]`);
-        setStatus("error");
-        setErrorDetails(`No response from payment service (Request ID: ${requestId})`);
-        return;
-      }
-      
-      if (data.error) {
-        // If the error is about invalid ticket type, that means the Edge Function is working
-        // since it got far enough to validate the input
-        if (data.error.includes("Invalid ticket type")) {
-          console.log(`Stripe connection working (expected validation error) [${requestId}]`);
-          setStatus("success");
-        } else {
-          console.error(`Stripe configuration error [${requestId}]:`, data.error);
-          setStatus("error");
-          setErrorDetails(data.error);
-        }
-      } else if (data.success) {
-        console.log(`Stripe connection successful [${requestId}]`);
-        setStatus("success");
-      } else {
-        setStatus("error");
-        setErrorDetails("Unknown response from payment service");
-      }
-    } catch (err) {
-      console.error("Exception checking Stripe connection:", err);
-      setStatus("error");
-      setErrorDetails(err instanceof Error ? err.message : "Unknown error");
-    } finally {
-      setIsRetrying(false);
-    }
-  };
-  
+  const [status, setStatus] = useState<"success" | "error" | "warning" | "none">("none");
+  const [message, setMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const location = useLocation();
+
   useEffect(() => {
-    checkStripeConnection();
-  }, []);
-  
-  const handleRetry = () => {
-    setStatus("loading");
-    setErrorDetails(null);
-    checkStripeConnection(true);
-  };
-  
-  if (status === "loading") {
-    return (
-      <Alert className="bg-gray-100 border-gray-200">
-        <div className="flex items-center space-x-2">
-          <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
-          <AlertTitle className="text-gray-700">
-            {isRetrying 
-              ? `Retrying Stripe Connection (Attempt ${diagnostics.attempts})...` 
-              : "Testing Stripe Connection..."}
-          </AlertTitle>
-        </div>
-      </Alert>
-    );
+    const checkStripeStatus = async () => {
+      // Parse query parameters from URL
+      const params = new URLSearchParams(location.search);
+      const sessionId = params.get("session_id");
+      const paymentIntent = params.get("payment_intent");
+      const paymentStatus = params.get("redirect_status");
+      
+      // If no Stripe-related parameters, return early
+      if (!sessionId && !paymentIntent) {
+        return;
+      }
+      
+      setIsLoading(true);
+      
+      try {
+        if (sessionId) {
+          // This is a redirect from a Checkout Session
+          if (sessionStorage.getItem("checkoutSessionId") === sessionId) {
+            // Session ID matches what we expected
+            setStatus("success");
+            setMessage("Your payment was successfully processed. You'll receive a confirmation email shortly.");
+            
+            // Clear the stored session data now that it's confirmed
+            clearExistingSessionData();
+          } else {
+            console.log("Session ID mismatch:", {
+              expected: sessionStorage.getItem("checkoutSessionId"),
+              received: sessionId
+            });
+            
+            // Could be a reused link or old/invalid session
+            setStatus("warning");
+            setMessage("We detected a previous payment session. If you've already completed payment, please disregard.");
+            
+            // Clear any stored session data to prevent conflicts
+            clearExistingSessionData();
+          }
+        } else if (paymentIntent && paymentStatus) {
+          // This is a redirect from a Payment Element
+          if (paymentStatus === "succeeded") {
+            setStatus("success");
+            setMessage("Your payment was successfully processed. You'll receive a confirmation email shortly.");
+          } else if (paymentStatus === "processing") {
+            setStatus("warning");
+            setMessage("Your payment is processing. We'll send you a confirmation email once it's complete.");
+          } else {
+            setStatus("error");
+            setMessage("Your payment could not be processed. Please try again or contact support.");
+          }
+          
+          // Clear any stored session data to prevent conflicts
+          clearExistingSessionData();
+        }
+      } catch (error) {
+        console.error("Error checking Stripe status:", error);
+        setStatus("error");
+        setMessage("There was an error verifying your payment status. Please contact support if needed.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    checkStripeStatus();
+  }, [location.search]);
+
+  // If no status to show, return null
+  if (status === "none" || !message) {
+    return null;
   }
-  
-  if (status === "success") {
-    return (
-      <Alert className="bg-green-50 border-green-200">
-        <div className="flex items-center space-x-2">
-          <CheckCircle2 className="h-4 w-4 text-green-500" />
-          <AlertTitle className="text-green-700">Stripe Integration Ready</AlertTitle>
-        </div>
-        <AlertDescription className="text-green-600 mt-1 text-sm">
-          Payment system is properly configured and ready to process payments.
-          {diagnostics.latency > 0 && (
-            <span className="block text-xs text-green-500 mt-1">
-              Connection latency: {diagnostics.latency}ms
-            </span>
-          )}
-        </AlertDescription>
-      </Alert>
-    );
-  }
-  
+
   return (
-    <Alert variant="destructive">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Stripe Integration Error</AlertTitle>
-        </div>
-        <button 
-          onClick={handleRetry}
-          className="px-2 py-1 bg-white border border-red-300 rounded-md text-xs text-red-700 hover:bg-red-50"
-          disabled={isRetrying}
-        >
-          {isRetrying ? "Retrying..." : "Retry"}
-        </button>
-      </div>
-      <AlertDescription className="mt-1">
-        {errorDetails || "There was an error connecting to the payment service."}
-        {diagnostics.latency > 0 && (
-          <span className="block text-xs opacity-75 mt-1">
-            Request time: {diagnostics.latency}ms | Attempts: {diagnostics.attempts}
-          </span>
-        )}
+    <Alert variant={status === "success" ? "default" : status === "warning" ? "warning" : "destructive"} 
+      className={`mb-6 ${status === "success" ? "bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-700" : ""}`}>
+      {isLoading ? (
+        <Loader2 className="h-4 w-4 animate-spin" />
+      ) : status === "success" ? (
+        <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+      ) : status === "warning" ? (
+        <AlertTriangle className="h-4 w-4" />
+      ) : (
+        <AlertCircle className="h-4 w-4" />
+      )}
+      <AlertTitle className={status === "success" ? "text-green-800 dark:text-green-300" : ""}>
+        {status === "success" ? "Payment Successful" : 
+         status === "warning" ? "Payment Status" : 
+         "Payment Issue"}
+      </AlertTitle>
+      <AlertDescription className={status === "success" ? "text-green-700 dark:text-green-400" : ""}>
+        {message}
       </AlertDescription>
     </Alert>
   );
