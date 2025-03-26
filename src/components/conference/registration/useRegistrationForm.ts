@@ -27,6 +27,9 @@ export const useRegistrationForm = () => {
     mode: "onChange", // Enable real-time validation
   });
 
+  // Watch ticket type for dependency tracking
+  const watchTicketType = form.watch("ticketType");
+
   const handleEmailValidation = async (result: { isValid: boolean; message?: string }) => {
     setEmailValidated(result.isValid);
     return result.isValid;
@@ -84,6 +87,7 @@ export const useRegistrationForm = () => {
     showPayment,
     registrationData,
     emailValidated,
+    watchTicketType,
     handleEmailValidation,
     handleInitialSubmit,
     setShowPayment,

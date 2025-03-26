@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -54,6 +54,7 @@ const StripeCheckout = ({
   const [isLoading, setIsLoading] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [requestId, setRequestId] = useState<string | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
   const { toast } = useToast();
 
   // Effect to clean up stale sessions and set up navigation listeners
@@ -69,6 +70,13 @@ const StripeCheckout = ({
     const removeListeners = setupNavigationListeners(() => {
       // This callback runs when back navigation is detected
       setIsLoading(false);
+      
+      // Abort any in-flight requests
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+        abortControllerRef.current = null;
+      }
+      
       toast({
         title: "Session Reset",
         description: "Your payment session was reset when you returned. You can now continue registration.",
@@ -80,12 +88,14 @@ const StripeCheckout = ({
     return () => {
       removeListeners();
       
-      // If navigating away while loading, log for debugging
-      if (isLoading) {
-        console.log("Component unmounting while loading - possible navigation away from checkout");
+      // If navigating away while loading, abort any pending requests
+      if (isLoading && abortControllerRef.current) {
+        abortControllerRef.current.abort();
+        abortControllerRef.current = null;
+        console.log("Aborting checkout request due to component unmount");
       }
     };
-  }, [email, toast]);
+  }, [email, toast, isLoading]);
 
   // Function to handle checkout retry after failure
   const retryCheckout = () => {
@@ -117,6 +127,14 @@ const StripeCheckout = ({
 
   // Create and redirect to checkout session
   const handleCheckout = async () => {
+    // Cancel any existing checkout requests
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    
+    // Create a new abort controller for this request
+    abortControllerRef.current = new AbortController();
+    
     try {
       // Reset session data first to ensure clean state
       clearExistingSessionData();
@@ -134,34 +152,43 @@ const StripeCheckout = ({
       const successUrl = `${window.location.origin}/conference/success?session_id={CHECKOUT_SESSION_ID}&cb=${cacheBuster}`;
       const cancelUrl = `${window.location.origin}/conference/register?cb=${cacheBuster}`;
       
+      // Create a deep copy of the request body to avoid reactive issues
+      const requestBody = {
+        ticketType,
+        email,
+        fullName,
+        groupSize: typeof groupSize === 'number' ? groupSize : parseInt(String(groupSize) || '0'),
+        groupEmails: Array.isArray(groupEmails) ? 
+          [...groupEmails].filter(Boolean).map(email => {
+            if (typeof email === 'object' && email !== null && 'value' in email) {
+              return email.value;
+            }
+            return String(email || '');
+          }) : [],
+        organization: organization || "",
+        role: role || "",
+        specialRequests: specialRequests || "",
+        referralSource: referralSource || "",
+        successUrl,
+        cancelUrl,
+        requestId,
+        retryCount,
+        timestamp: Date.now(),
+        sessionUniqueId
+      };
+      
       // Log checkout attempt details for debugging
       console.log("Starting checkout process:", { 
         ticketType, 
         email, 
         fullName, 
-        groupSize: typeof groupSize === 'number' ? groupSize : parseInt(String(groupSize) || '0'),
+        groupSize: requestBody.groupSize,
         referralSource,
-        totalEmails: groupEmails.length,
+        totalEmails: requestBody.groupEmails.length,
         requestId,
         attempt: retryCount + 1,
         sessionUniqueId
       });
-      
-      // Process email list to ensure all values are valid
-      const sanitizedGroupEmails = groupEmails
-        .filter((email): email is (string | { value: string }) => {
-          // Filter out null and undefined values
-          return email !== null && email !== undefined;
-        })
-        .map(emailItem => {
-          if (typeof emailItem === 'object' && emailItem.value !== undefined) {
-            // Extract value from object format
-            return emailItem.value;
-          }
-          // Return string directly
-          return String(emailItem);
-        })
-        .filter(email => email.length > 0); // Filter out empty strings
       
       // Set timeout to catch long-running requests
       const timeoutId = setTimeout(() => {
@@ -172,24 +199,8 @@ const StripeCheckout = ({
       const { data, error } = await supabase.functions.invoke(
         "create-checkout-session",
         {
-          body: {
-            ticketType,
-            email,
-            fullName,
-            groupSize: typeof groupSize === 'number' ? groupSize : parseInt(String(groupSize) || '0'),
-            groupEmails: sanitizedGroupEmails,
-            organization,
-            role,
-            specialRequests,
-            referralSource,
-            successUrl,
-            cancelUrl,
-            requestId,
-            retryCount,
-            timestamp: Date.now(),
-            // Add session unique ID to prevent conflicts
-            sessionUniqueId
-          }
+          body: requestBody,
+          signal: abortControllerRef.current.signal
         }
       );
       
@@ -234,6 +245,12 @@ const StripeCheckout = ({
       
       // Provide user-friendly error message based on error type
       let errorMessage = error.message || "There was an error starting the checkout process. Please try again.";
+      
+      // Check if the error was due to abort
+      if (error.name === 'AbortError') {
+        console.log("Checkout request was aborted");
+        return;
+      }
       
       // For network errors, suggest refreshing
       if (errorMessage.includes("network") || errorMessage.includes("connection")) {

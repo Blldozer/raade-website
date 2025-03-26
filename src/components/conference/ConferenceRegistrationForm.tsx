@@ -8,7 +8,7 @@ import { useRegistrationForm } from "./registration/useRegistrationForm";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { clearExistingSessionData, detectBackNavigation } from "./payment/services/sessionManagement";
+import { clearExistingSessionData, detectBackNavigation, getSessionDiagnostics } from "./payment/services/sessionManagement";
 
 /**
  * ConferenceRegistrationForm Component
@@ -28,10 +28,20 @@ const ConferenceRegistrationForm = () => {
     handleEmailValidation,
     handleInitialSubmit,
     setShowPayment,
-    resetForm
+    resetForm,
+    watchTicketType
   } = useRegistrationForm();
 
   const { toast } = useToast();
+
+  // When ticket type changes, ensure any checkout sessions are cleared
+  useEffect(() => {
+    // This watches for ticket type changes and cleans up any stale sessions
+    if (sessionStorage.getItem("checkoutSessionId")) {
+      console.log("Ticket type changed or form mounted, cleaning checkout session");
+      clearExistingSessionData();
+    }
+  }, [watchTicketType]);
 
   // Check for back navigation and session cleanup
   useEffect(() => {
@@ -41,6 +51,9 @@ const ConferenceRegistrationForm = () => {
       
       // Get the checkout session ID from storage
       const sessionId = sessionStorage.getItem("checkoutSessionId");
+      
+      // Log diagnostics for debugging
+      console.log("Registration form mounted, session state:", getSessionDiagnostics());
       
       // If there's a checkout session or we detect back navigation, clean up
       if (sessionId || isBackNavigation) {
@@ -95,11 +108,27 @@ const ConferenceRegistrationForm = () => {
   };
 
   const handlePaymentError = (errorMessage: string) => {
+    // Log error details for debugging
+    console.error("Payment error:", errorMessage);
+    
     // If we get a critical error, reset form and go back to registration
     if (errorMessage.includes("Edge Function") || 
-        errorMessage.includes("Payment service")) {
+        errorMessage.includes("Payment service") ||
+        errorMessage.includes("Bad Request") ||
+        errorMessage.includes("No response")) {
+      // Clear any session data
+      clearExistingSessionData();
+      
+      console.log("Critical payment error, resetting form");
       resetForm();
       setShowPayment(false);
+      
+      toast({
+        title: "Payment system error",
+        description: "We're experiencing technical difficulties with our payment system. Please try again in a few moments.",
+        variant: "destructive",
+      });
+      return;
     }
     
     toast({

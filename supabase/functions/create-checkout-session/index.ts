@@ -325,7 +325,31 @@ serve(async (req) => {
     // Parse request body with error handling
     let requestData;
     try {
+      // Get content type and check if it's empty
+      const contentType = req.headers.get('content-type');
+      
+      if (!contentType || !contentType.includes('application/json')) {
+        console.error(`[${requestId}] Invalid content type: ${contentType}`);
+        return createErrorResponse(
+          "Invalid content type", 
+          "Request must have Content-Type: application/json",
+          400,
+          requestId
+        );
+      }
+      
+      // Check for request body
       const body = await req.text();
+      
+      if (!body || body.trim() === '') {
+        console.error(`[${requestId}] Empty request body`);
+        return createErrorResponse(
+          "Empty request", 
+          "Request body cannot be empty",
+          400,
+          requestId
+        );
+      }
       
       try {
         requestData = JSON.parse(body);
