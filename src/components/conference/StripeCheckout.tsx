@@ -196,11 +196,12 @@ const StripeCheckout = ({
       }, 8000);
       
       // Use Supabase client to call the edge function with retry tracking
+      // Remove the signal property as it's not supported in the type definition
       const { data, error } = await supabase.functions.invoke(
         "create-checkout-session",
         {
-          body: requestBody,
-          signal: abortControllerRef.current.signal
+          body: requestBody
+          // We removed the signal property here as it's causing the TypeScript error
         }
       );
       

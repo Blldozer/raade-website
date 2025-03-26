@@ -1,4 +1,3 @@
-
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -13,20 +12,13 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react({
       jsxImportSource: "react",
-      // Explicitly set React runtime and disable auto-refresh during development
-      // to prevent hooks initialization issues
+      // SWC options for React
       plugins: [],
-      swcOptions: {
-        jsc: {
-          transform: {
-            react: {
-              runtime: "automatic",
-              development: mode === "development",
-              refresh: false
-            }
-          }
-        }
-      }
+      // We need to use the proper format for React plugin options
+      // without the nested swcOptions property
+      jsxRuntime: "automatic",
+      development: mode === "development",
+      refresh: false,
     }),
     // Only use componentTagger in development mode
     mode === 'development' &&
