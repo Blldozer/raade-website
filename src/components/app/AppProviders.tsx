@@ -38,9 +38,10 @@ interface AppProvidersProps {
  * 5. Error handling and UI components
  */
 const AppProviders = ({ children }: AppProvidersProps) => {
+  // Log that we've mounted the component
+  console.log("AppProviders: Component mounted");
+  
   useEffect(() => {
-    console.log("AppProviders: Component mounted");
-    
     // Log environment information
     console.log("App: Window dimensions", {
       width: window.innerWidth,
