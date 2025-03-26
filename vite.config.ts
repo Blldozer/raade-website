@@ -12,10 +12,7 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react({
       jsxImportSource: "react",
-      // SWC options for React
       plugins: [],
-      // We need to use the proper format for React plugin options
-      // without the nested swcOptions property
       jsxRuntime: "automatic",
       development: mode === "development",
       refresh: false,

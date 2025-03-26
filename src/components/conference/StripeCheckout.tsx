@@ -195,13 +195,11 @@ const StripeCheckout = ({
         console.warn(`Checkout request taking longer than expected (${retryCount + 1})...`);
       }, 8000);
       
-      // Use Supabase client to call the edge function with retry tracking
-      // Remove the signal property as it's not supported in the type definition
+      // Use Supabase client to call the edge function
       const { data, error } = await supabase.functions.invoke(
         "create-checkout-session",
         {
           body: requestBody
-          // We removed the signal property here as it's causing the TypeScript error
         }
       );
       
