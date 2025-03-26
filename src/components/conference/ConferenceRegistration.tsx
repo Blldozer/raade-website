@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Star, ExternalLink, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { TICKET_TYPES, getTicketPrice } from "./RegistrationFormTypes";
+import { TICKET_TYPES_ENUM, getTicketPrice } from "./RegistrationFormTypes";
 
 /**
  * ConferenceRegistration Component
@@ -17,9 +17,9 @@ const ConferenceRegistration = () => {
   const navigate = useNavigate();
   
   // Get current prices from our centralized pricing data
-  const studentPrice = getTicketPrice(TICKET_TYPES.STUDENT);
-  const professionalPrice = getTicketPrice(TICKET_TYPES.PROFESSIONAL);
-  const groupPrice = getTicketPrice(TICKET_TYPES.STUDENT_GROUP);
+  const studentPrice = getTicketPrice(TICKET_TYPES_ENUM.STUDENT);
+  const professionalPrice = getTicketPrice(TICKET_TYPES_ENUM.PROFESSIONAL);
+  const groupPrice = getTicketPrice(TICKET_TYPES_ENUM.STUDENT_GROUP);
   
   const handleRegistration = () => {
     navigate("/conference/register");

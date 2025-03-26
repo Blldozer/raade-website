@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/hooks/use-toast";
-import { registrationSchema, RegistrationFormData } from "../RegistrationFormTypes";
+import { registrationFormSchema, RegistrationFormData, TICKET_TYPES_ENUM } from "../RegistrationFormTypes";
 
 export const useRegistrationForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -13,9 +13,9 @@ export const useRegistrationForm = () => {
 
   // Initialize form with zod schema validation
   const form = useForm<RegistrationFormData>({
-    resolver: zodResolver(registrationSchema),
+    resolver: zodResolver(registrationFormSchema),
     defaultValues: {
-      ticketType: "",
+      ticketType: TICKET_TYPES_ENUM.STUDENT,
       fullName: "",
       email: "",
       organization: "",
@@ -66,7 +66,7 @@ export const useRegistrationForm = () => {
     setShowPayment(false);
     setRegistrationData(null);
     form.reset({
-      ticketType: "",
+      ticketType: TICKET_TYPES_ENUM.STUDENT,
       fullName: "",
       email: "",
       organization: "",

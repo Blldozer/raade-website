@@ -11,7 +11,7 @@ import {
 import {
   RegistrationFormData,
   getTicketPriceText,
-  TICKET_TYPES
+  TICKET_TYPES_ENUM
 } from "../RegistrationFormTypes";
 
 /**
@@ -42,23 +42,23 @@ const TicketTypeSelection = ({
     <div>
       <Label htmlFor="ticketType">Ticket Type</Label>
       <Select 
-        onValueChange={(value) => setValue("ticketType", value)}
+        onValueChange={(value: typeof TICKET_TYPES_ENUM[keyof typeof TICKET_TYPES_ENUM]) => setValue("ticketType", value)}
         value={watchTicketType}
       >
         <SelectTrigger id="ticketType" name="ticketType">
           <SelectValue placeholder="Select ticket type" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value={TICKET_TYPES.STUDENT}>Student {getTicketPriceText(TICKET_TYPES.STUDENT)}</SelectItem>
-          <SelectItem value={TICKET_TYPES.PROFESSIONAL}>Professional {getTicketPriceText(TICKET_TYPES.PROFESSIONAL)}</SelectItem>
-          <SelectItem value={TICKET_TYPES.STUDENT_GROUP}>Student Group {getTicketPriceText(TICKET_TYPES.STUDENT_GROUP)}</SelectItem>
+          <SelectItem value={TICKET_TYPES_ENUM.STUDENT}>Student {getTicketPriceText(TICKET_TYPES_ENUM.STUDENT)}</SelectItem>
+          <SelectItem value={TICKET_TYPES_ENUM.PROFESSIONAL}>Professional {getTicketPriceText(TICKET_TYPES_ENUM.PROFESSIONAL)}</SelectItem>
+          <SelectItem value={TICKET_TYPES_ENUM.STUDENT_GROUP}>Student Group {getTicketPriceText(TICKET_TYPES_ENUM.STUDENT_GROUP)}</SelectItem>
         </SelectContent>
       </Select>
       {errors.ticketType && (
         <p className="text-red-500 text-sm mt-1">{errors.ticketType.message}</p>
       )}
       
-      {watchTicketType === TICKET_TYPES.STUDENT && (
+      {watchTicketType === TICKET_TYPES_ENUM.STUDENT && (
         <p className="text-gray-600 text-sm mt-1">
           Student tickets require a valid .edu email address.
         </p>

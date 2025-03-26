@@ -1,6 +1,6 @@
 
 import { Control, UseFormSetValue, UseFormWatch } from "react-hook-form";
-import { RegistrationFormData, TICKET_TYPES } from "../RegistrationFormTypes";
+import { RegistrationFormData, TICKET_TYPES_ENUM } from "../RegistrationFormTypes";
 import GroupRegistration from "./GroupRegistration";
 
 interface GroupRegistrationSectionProps {
@@ -25,7 +25,7 @@ const GroupRegistrationSection = ({
   control
 }: GroupRegistrationSectionProps) => {
   const watchTicketType = watch("ticketType");
-  const isStudentGroup = watchTicketType === TICKET_TYPES.STUDENT_GROUP;
+  const isStudentGroup = watchTicketType === TICKET_TYPES_ENUM.STUDENT_GROUP;
 
   if (!isStudentGroup) {
     return null;

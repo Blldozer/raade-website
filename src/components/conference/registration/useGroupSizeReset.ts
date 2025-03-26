@@ -1,7 +1,7 @@
 
 import { useEffect } from "react";
 import { UseFormSetValue, UseFormWatch } from "react-hook-form";
-import { RegistrationFormData, TICKET_TYPES } from "../RegistrationFormTypes";
+import { RegistrationFormData, TICKET_TYPES_ENUM } from "../RegistrationFormTypes";
 
 /**
  * Custom hook to manage group size reset logic
@@ -17,7 +17,7 @@ export const useGroupSizeReset = (
   setValue: UseFormSetValue<RegistrationFormData>
 ) => {
   const watchTicketType = watch("ticketType");
-  const isStudentGroup = watchTicketType === TICKET_TYPES.STUDENT_GROUP;
+  const isStudentGroup = watchTicketType === TICKET_TYPES_ENUM.STUDENT_GROUP;
   
   useEffect(() => {
     // Reset group size when ticket type changes
