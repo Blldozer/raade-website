@@ -67,13 +67,13 @@ export const defaultFormValues: RegistrationFormData = {
 export const getTicketPrice = (ticketType: typeof TICKET_TYPES[number]): number => {
   switch (ticketType) {
     case TICKET_TYPES_ENUM.STUDENT:
-      return 50;
+      return 35; // Updated to match payment function pricing
     case TICKET_TYPES_ENUM.PROFESSIONAL:
-      return 100;
+      return 60; // Updated to match payment function pricing
     case TICKET_TYPES_ENUM.STUDENT_GROUP:
       return 30; // Per person in group
     default:
-      return 50; // Default to student price
+      return 35; // Default to student price
   }
 };
 
