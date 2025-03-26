@@ -1,5 +1,4 @@
 
-import { useEffect } from "react";
 import AppProviders from "./components/app/AppProviders";
 import AppRoutes from "./components/app/AppRoutes";
 import Footer from "./components/Footer";
@@ -18,18 +17,10 @@ const App = () => {
   // Add console logging to help debug startup issues
   console.log("App: Rendering");
   
-  useEffect(() => {
-    console.log("App: Component mounted");
-    
-    return () => {
-      console.log("App: Component unmounting");
-    };
-  }, []);
-  
   return (
     <AppProviders>
       <div className="min-h-screen flex flex-col">
-        {/* Use TooltipProvider here instead of in AppProviders */}
+        {/* Use TooltipProvider here for proper React context access */}
         <TooltipProvider>
           <AppRoutes />
           <Footer />

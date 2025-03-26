@@ -1,12 +1,11 @@
 
-import { ReactNode, useEffect } from "react";
+import { ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "sonner";
 import ErrorBoundary from "../ErrorBoundary";
 import GlobalErrorFallback from "./GlobalErrorFallback";
 import { ThemeProvider } from "next-themes";
-import { TooltipProvider } from "@/components/ui/tooltip";
 
 // Initialize the QueryClient with better error handling
 const queryClient = new QueryClient({
@@ -34,15 +33,15 @@ interface AppProvidersProps {
  * 1. BrowserRouter - Makes routing available to all components
  * 2. ThemeProvider - Makes theme available to all components including Toasters
  * 3. QueryClientProvider - Makes React Query available
- * 4. TooltipProvider - Provides tooltip context
- * 5. Error handling and UI components
+ * 4. Error handling and UI components
  */
 const AppProviders = ({ children }: AppProvidersProps) => {
   // Log that we've mounted the component
   console.log("AppProviders: Component mounted");
   
-  useEffect(() => {
-    // Log environment information
+  // We removed useEffect that was causing the error and using simple console log
+  // Logging environment information for debugging without useEffect
+  if (typeof window !== 'undefined') {
     console.log("App: Window dimensions", {
       width: window.innerWidth,
       height: window.innerHeight,
@@ -61,17 +60,12 @@ const AppProviders = ({ children }: AppProvidersProps) => {
         originalConsoleError(...args);
       };
     }
-    
-    return () => {
-      console.log("AppProviders: Component unmounting");
-    };
-  }, []);
+  }
 
   return (
     <BrowserRouter>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <QueryClientProvider client={queryClient}>
-          {/* Wrap children directly instead of using TooltipProvider here */}
           <ErrorBoundary 
             fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
             suppressDevErrors={isDevelopment}
