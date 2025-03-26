@@ -1,3 +1,4 @@
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -13,7 +14,7 @@ export default defineConfig(({ mode }) => ({
     react({
       jsxImportSource: "react",
       plugins: [],
-      jsxRuntime: "automatic",
+      // Removed jsxRuntime as it's not a valid property
       development: mode === "development",
       refresh: false,
     }),
