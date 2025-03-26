@@ -13,11 +13,19 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react({
       jsxImportSource: "react",
-      // Ensure React hooks are properly tracked
-      babel: {
-        plugins: [
-          ["@babel/plugin-transform-react-jsx", { runtime: "automatic" }],
-        ],
+      // Explicitly set React runtime and disable auto-refresh during development
+      // to prevent hooks initialization issues
+      plugins: [],
+      swcOptions: {
+        jsc: {
+          transform: {
+            react: {
+              runtime: "automatic",
+              development: mode === "development",
+              refresh: false
+            }
+          }
+        }
       }
     }),
     // Only use componentTagger in development mode
@@ -46,7 +54,8 @@ export default defineConfig(({ mode }) => ({
           // Ensure React and ReactDOM stay in the same chunk
           if (id.includes('node_modules/react/') || 
               id.includes('node_modules/react-dom/') || 
-              id.includes('node_modules/scheduler/')) {
+              id.includes('node_modules/scheduler/') ||
+              id.includes('node_modules/use-sync-external-store/')) {
             return 'react-vendor';
           }
           // Keep GSAP libraries together
