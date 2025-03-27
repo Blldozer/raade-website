@@ -16,7 +16,7 @@ export const useDeviceDetection = () => {
   const isMobile = useIsMobile();
   
   // Helper functions for determining breakpoint and device type
-  function getBreakpoint(width: number) {
+  function getBreakpoint(width: number): 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' {
     if (width < 640) return 'xs';
     if (width < 768) return 'sm';
     if (width < 1024) return 'md';
@@ -32,20 +32,32 @@ export const useDeviceDetection = () => {
     return 'large-desktop';
   }
   
+  // Define the state type to match all possible values
+  type DeviceState = {
+    isTablet: boolean;
+    isDesktop: boolean;
+    isLargeDesktop: boolean;
+    width: number;
+    height: number;
+    orientation: 'landscape' | 'portrait';
+    breakpoint: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+    deviceType: DeviceType;
+  };
+  
   // Safe default state for SSR
-  const defaultState = {
+  const defaultState: DeviceState = {
     isTablet: false,
     isDesktop: true,
     isLargeDesktop: false,
     width: 1024,
     height: 768,
-    orientation: 'landscape' as const,
-    breakpoint: 'lg' as const,
-    deviceType: 'desktop' as DeviceType
+    orientation: 'landscape',
+    breakpoint: 'lg',
+    deviceType: 'desktop'
   };
   
   // Initialize state with safe defaults
-  const [state, setState] = useState(defaultState);
+  const [state, setState] = useState<DeviceState>(defaultState);
 
   // Effect to update device info - only runs in browser
   useEffect(() => {
