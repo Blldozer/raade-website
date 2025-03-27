@@ -52,7 +52,7 @@ const NavTimerDisplay = ({
 
   if (timeLeft.expired) {
     return (
-      <div className={cn("font-alegreyasans font-bold", colors.accent, className)}>
+      <div className={cn("font-montserrat font-bold", colors.accent, className)}>
         Live Now!
       </div>
     );
@@ -72,7 +72,7 @@ const NavTimerDisplay = ({
     >
       {/* Timer display that shows dropdown on hover */}
       <div 
-        className={cn("flex items-center space-x-1 font-alegreyasans cursor-pointer")}
+        className={cn("flex items-center space-x-1 font-montserrat cursor-pointer")}
       >
         <span className={cn("mr-1 font-bold", colors.text)}>Conference:</span>
         <div className="flex items-baseline">
@@ -98,35 +98,36 @@ const NavTimerDisplay = ({
       {isExpanded && (
         <div 
           className={cn(
-            "absolute right-0 mt-2 p-3 rounded-lg shadow-lg z-50 min-w-[200px]",
+            "absolute right-0 mt-2 p-4 rounded-lg shadow-lg z-50 min-w-[240px] border border-gray-200",
             dropdownBg
           )}
         >
-          <h3 className={cn("text-center font-semibold mb-2", dropdownText)}>
+          <h3 className={cn("text-center font-montserrat font-semibold mb-3", dropdownText)}>
             RAADE Conference 2025
           </h3>
-          <div className="grid grid-cols-4 gap-2 text-center">
-            <div>
-              <div className={cn("text-xl font-bold", colors.accent)}>{timeLeft.days}</div>
-              <div className={cn("text-xs", dropdownText)}>Days</div>
+          <div className="grid grid-cols-4 gap-3 text-center">
+            <div className="flex flex-col items-center">
+              <div className={cn("text-xl font-bold font-montserrat", colors.accent)}>{timeLeft.days}</div>
+              <div className={cn("text-xs font-medium", dropdownText)}>Days</div>
             </div>
-            <div>
-              <div className={cn("text-xl font-bold", colors.accent)}>{formatTimeUnit(timeLeft.hours)}</div>
-              <div className={cn("text-xs", dropdownText)}>Hours</div>
+            <div className="flex flex-col items-center">
+              <div className={cn("text-xl font-bold font-montserrat", colors.accent)}>{formatTimeUnit(timeLeft.hours)}</div>
+              <div className={cn("text-xs font-medium", dropdownText)}>Hours</div>
             </div>
-            <div>
-              <div className={cn("text-xl font-bold", colors.accent)}>{formatTimeUnit(timeLeft.minutes)}</div>
-              <div className={cn("text-xs", dropdownText)}>Mins</div>
+            <div className="flex flex-col items-center">
+              <div className={cn("text-xl font-bold font-montserrat", colors.accent)}>{formatTimeUnit(timeLeft.minutes)}</div>
+              <div className={cn("text-xs font-medium", dropdownText)}>Mins</div>
             </div>
-            <div>
-              <div className={cn("text-xl font-bold", colors.accent)}>{formatTimeUnit(timeLeft.seconds)}</div>
-              <div className={cn("text-xs", dropdownText)}>Secs</div>
+            <div className="flex flex-col items-center">
+              <div className={cn("text-xl font-bold font-montserrat", colors.accent)}>{formatTimeUnit(timeLeft.seconds)}</div>
+              <div className={cn("text-xs font-medium", dropdownText)}>Secs</div>
             </div>
           </div>
-          <div className="mt-3 text-center">
+          <div className="mt-4 text-center">
+            <div className="text-xs mb-2 font-medium opacity-80">April 11-12, 2025</div>
             <a 
               href="/conference/register" 
-              className="inline-block px-4 py-1 bg-[#FBB03B] hover:bg-[#FF9848] text-white rounded-md text-sm font-semibold transition-colors"
+              className="inline-block px-4 py-1.5 bg-raade-yellow-orange hover:bg-raade-gold-middle text-white rounded-md text-sm font-semibold transition-colors"
             >
               Register Now
             </a>

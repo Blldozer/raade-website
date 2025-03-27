@@ -100,9 +100,9 @@ const CountdownTimer = ({
     customColorScheme.accent = accentColor;
     customColorScheme.iconColor = accentColor;
   } else {
-    // Use bright orange by default for better visibility
-    customColorScheme.accent = "text-[#FF9848]";
-    customColorScheme.iconColor = "text-[#FF9848]";
+    // Use RAADE's yellow-orange by default for better visibility and brand consistency
+    customColorScheme.accent = "text-raade-yellow-orange";
+    customColorScheme.iconColor = "text-raade-yellow-orange";
   }
   
   if (textColor) {
@@ -120,6 +120,9 @@ const CountdownTimer = ({
   
   // Ensure background is transparent
   colors.background = "bg-transparent";
+  
+  // Set dropdown styling
+  colors.dropdownBg = "bg-white/95";
 
   // Render the NavTimerDisplay with hover dropdown
   return (
