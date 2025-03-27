@@ -33,6 +33,29 @@ const SectionWrapper = ({
   className,
   children 
 }: SectionWrapperProps) => {
+  // Verify React is available before trying to use hooks
+  if (typeof React !== 'object' || typeof React.useRef !== 'function') {
+    console.error(`SectionWrapper (${id}): React context unavailable`);
+    
+    // Return minimal fallback that won't crash
+    return (
+      <section 
+        className={cn("relative w-full min-h-screen", className)}
+        id={id} 
+        data-section
+        data-background={background}
+        style={backgroundColor ? { backgroundColor } : undefined}
+      >
+        <div className="h-screen flex items-center justify-center p-6">
+          <div className="max-w-md text-center">
+            <h3 className="text-xl font-bold mb-2">Section temporarily unavailable</h3>
+            <p>Please refresh the page to reload.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+  
   try {
     // Create ref only if we're in a valid React context
     const sectionRef = React.useRef<HTMLElement>(null);
