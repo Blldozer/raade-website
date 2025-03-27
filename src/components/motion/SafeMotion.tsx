@@ -61,8 +61,9 @@ const initSafeMotion = (): SafeMotionComponentsType => {
     
     for (const key in motionObj) {
       if (Object.prototype.hasOwnProperty.call(motionObj, key)) {
-        if (typeof (motionObj as any)[key] === 'function' || typeof (motionObj as any)[key] === 'object') {
-          safeMotion[key as keyof typeof framerMotion] = createSafeComponent((motionObj as any)[key]);
+        const value = (motionObj as any)[key];
+        if (typeof value === 'function' || typeof value === 'object') {
+          safeMotion[key as keyof typeof framerMotion] = createSafeComponent(value);
         }
       }
     }
