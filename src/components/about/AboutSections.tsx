@@ -1,5 +1,5 @@
 
-import React, { Suspense, lazy, useEffect } from 'react';
+import React, { Suspense, lazy } from 'react';
 import SectionFallback from './SectionFallback';
 
 // Lazy load heavier components to improve initial page load time
@@ -25,7 +25,7 @@ interface AboutSectionsProps {
  */
 const AboutSections = ({ activeSection, pageInitialized }: AboutSectionsProps) => {
   // Log state for debugging
-  useEffect(() => {
+  React.useEffect(() => {
     console.log("[SECTIONS DEBUG] AboutSections render - activeSection:", activeSection, "pageInitialized:", pageInitialized);
   }, [activeSection, pageInitialized]);
   
