@@ -1,6 +1,5 @@
 
 import { useState, useEffect, useRef } from 'react';
-import { useSpring } from '@react-spring/web';
 
 /**
  * Custom hook for animating the text in the hero section
@@ -20,7 +19,8 @@ export const useAnimatedText = () => {
       orgNameRef: null,
       containerRef: null,
       lineWidth: "0%",
-      lineOpacity: 0
+      lineOpacity: 0,
+      isAnimated: false
     };
   }
 
@@ -33,33 +33,11 @@ export const useAnimatedText = () => {
   const [isAnimated, setIsAnimated] = useState(false);
   const [shouldAnimate, setShouldAnimate] = useState(false);
   
-  // Add safe check for useSpring
-  let springs = { width: "0%", opacity: 0 };
+  // Use CSS transitions instead of react-spring
+  // This simplifies our dependencies and avoids React context issues
+  const lineWidth = shouldAnimate ? "100%" : "0%";
+  const lineOpacity = shouldAnimate ? 1 : 0;
   
-  try {
-    // Only try to use useSpring if it's available and working
-    springs = useSpring({
-      from: { width: "0%", opacity: 0 },
-      to: { 
-        width: shouldAnimate ? "100%" : "0%", 
-        opacity: shouldAnimate ? 1 : 0 
-      },
-      config: { tension: 120, friction: 14 },
-      delay: 400,
-    });
-  } catch (error) {
-    console.error("useAnimatedText: Error using animation spring, using static values", error);
-  }
-  
-  // Extract animation values with fallbacks
-  const lineWidth = typeof springs.width === 'object' ? 
-    (springs.width.to ? "100%" : "0%") : 
-    springs.width;
-    
-  const lineOpacity = typeof springs.opacity === 'object' ? 
-    (springs.opacity.to ? 1 : 0) : 
-    springs.opacity;
-
   // Trigger animation on mount
   useEffect(() => {
     try {

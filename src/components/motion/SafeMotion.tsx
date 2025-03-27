@@ -53,9 +53,14 @@ const initSafeMotion = (): SafeMotionComponent => {
   
   // Only attempt to initialize if framer-motion is available
   if (typeof framerMotion === 'object' && framerMotion !== null) {
-    for (const key in framerMotion) {
-      if (typeof framerMotion[key] === 'function' || typeof framerMotion[key] === 'object') {
-        safeMotion[key] = createSafeComponent(framerMotion[key]);
+    // TypeScript safety: Check that framerMotion is not null before accessing keys
+    const motionObj = framerMotion as object;
+    
+    for (const key in motionObj) {
+      if (Object.prototype.hasOwnProperty.call(motionObj, key)) {
+        if (typeof (motionObj as any)[key] === 'function' || typeof (motionObj as any)[key] === 'object') {
+          safeMotion[key as keyof typeof framerMotion] = createSafeComponent((motionObj as any)[key]);
+        }
       }
     }
   }

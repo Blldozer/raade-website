@@ -46,23 +46,6 @@ function ensureFontsLoaded() {
       (document as Document).documentElement.classList.add('fonts-error');
       (document as Document).documentElement.classList.remove('fonts-loading');
       startApp();
-      
-      // Try to cache fonts dynamically through the service worker
-      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-        console.log("Requesting service worker to cache fonts");
-        navigator.serviceWorker.controller.postMessage({
-          type: 'CACHE_FONT',
-          url: '/fonts/Amadine.woff'
-        });
-        navigator.serviceWorker.controller.postMessage({
-          type: 'CACHE_FONT',
-          url: '/fonts/Simula_Book_ImfTVa3.woff'
-        });
-        navigator.serviceWorker.controller.postMessage({
-          type: 'CACHE_FONT',
-          url: '/fonts/Simula_BookItalic_651eMqB.woff'
-        });
-      }
     });
   } else {
     // Fallback for browsers without document.fonts API
@@ -79,7 +62,6 @@ function startApp() {
     console.log("Application startup: Beginning initialization");
     
     // CRITICAL: Set React global flag to indicate React is initializing
-    // This helps components detect if React hooks are available
     if (typeof window !== 'undefined') {
       window.__REACT_HOOK_INITIALIZATION_STARTED = true;
     }
@@ -124,54 +106,10 @@ function startApp() {
         if (typeof window !== 'undefined') {
           window.__REACT_CONTEXT_ERROR = true;
         }
-        
-        // Insert friendly error message
-        document.body.innerHTML = `
-          <div style="
-            color: #721c24;
-            background-color: #f8d7da;
-            border: 1px solid #f5c6cb;
-            padding: 20px;
-            margin: 20px;
-            border-radius: 5px;
-            font-family: system-ui, sans-serif;
-          ">
-            <h2 style="margin-top: 0;">React Context Error</h2>
-            <p>The application encountered an issue with React hooks or context.</p>
-            <p style="font-size: 0.8em; color: #666;">Error details: ${message}</p>
-            <button onclick="window.location.reload()" style="
-              background-color: #dc3545;
-              color: white;
-              border: none;
-              padding: 8px 16px;
-              border-radius: 4px;
-              cursor: pointer;
-              margin-top: 10px;
-            ">Reload Page</button>
-          </div>
-        `;
       }
       
       return false; // Let the default handler run as well
     };
-    
-    // Add unhandled promise rejection handler
-    window.addEventListener('unhandledrejection', event => {
-      console.error("Unhandled promise rejection:", event.reason);
-    });
-    
-    // Handle errors from external resources
-    document.addEventListener('error', (event) => {
-      const target = event.target as HTMLElement;
-      if (target.tagName === 'SCRIPT' || target.tagName === 'LINK') {
-        // Correctly handle different element types
-        const resourceUrl = target.tagName === 'SCRIPT' 
-          ? (target as HTMLScriptElement).src 
-          : (target as HTMLLinkElement).href;
-          
-        console.error(`Error loading resource: ${resourceUrl}`);
-      }
-    }, true); // Use capture phase
     
     // CRITICAL: Set React global flag to true BEFORE rendering
     // This is crucial for preventing the "Cannot read properties of null (reading 'useContext')" error

@@ -70,6 +70,9 @@ const AnimatedText = () => {
 const RenderAnimatedLine = ({ 
   lineWidth, 
   lineOpacity 
+}: {
+  lineWidth: string;
+  lineOpacity: number;
 }) => {
   try {
     return (
@@ -80,6 +83,7 @@ const RenderAnimatedLine = ({
         }}
         className="absolute -bottom-4 left-0 h-1 bg-raade-gold-start"
         aria-hidden="true"
+        transition={{ duration: 0.8, delay: 0.4 }}
       />
     );
   } catch (error) {
