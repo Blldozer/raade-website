@@ -1,3 +1,4 @@
+
 // This is the right code for the hamburger implementation
 import React from "react";
 import MobileNavButton from "./MobileNavButton";
@@ -19,6 +20,7 @@ interface MobileNavProps {
  * - Delegates rendering to specialized components
  * - Ensures consistent behavior across all pages
  * - Properly handles navigation context
+ * - Enhanced with React context error handling
  * 
  * @param isScrolled - Whether the page has been scrolled
  * @param isHeroPage - Whether this is displayed on a hero section
@@ -29,30 +31,58 @@ const MobileNav = ({
   isHeroPage = false, 
   forceDarkMode = false 
 }: MobileNavProps) => {
-  // Use the mobile navigation hook to manage state
-  const { isOpen, toggleMenu, closeMenu } = useMobileNav();
-  
-  // Use the navigation context to get styling info
-  const { state } = useNavigation();
-  
-  // Determine the actual style to use based on background
-  const useDarkMode = state.isLightBackground;
+  try {
+    // Use the mobile navigation hook to manage state
+    const { isOpen, toggleMenu, closeMenu } = useMobileNav();
+    
+    // Try to get navigation context (might fail in some cases)
+    let useDarkMode = false;
+    
+    try {
+      // Use the navigation context to get styling info
+      const { state } = useNavigation();
+      useDarkMode = state.isLightBackground;
+    } catch (error) {
+      // Fallback if navigation context isn't available
+      console.warn("MobileNav: Navigation context unavailable, using fallback styling");
+      useDarkMode = forceDarkMode;
+    }
 
-  return (
-    <div className="block md:hidden">
-      {/* Hamburger Menu Button */}
-      <MobileNavButton 
-        onClick={toggleMenu} 
-        forceDarkMode={useDarkMode} 
-      />
+    return (
+      <div className="block md:hidden">
+        {/* Hamburger Menu Button */}
+        <MobileNavButton 
+          onClick={toggleMenu} 
+          forceDarkMode={useDarkMode} 
+        />
 
-      {/* Full Screen Menu Overlay */}
-      <MobileMenuOverlay 
-        isOpen={isOpen} 
-        onClose={closeMenu} 
-      />
-    </div>
-  );
+        {/* Full Screen Menu Overlay */}
+        <MobileMenuOverlay 
+          isOpen={isOpen} 
+          onClose={closeMenu} 
+        />
+      </div>
+    );
+  } catch (error) {
+    // Fallback for when React context is missing
+    console.warn("MobileNav: React context unavailable, providing minimal fallback");
+    
+    // Minimal non-functional fallback that won't crash
+    return (
+      <div className="block md:hidden">
+        <button 
+          className="p-2 rounded-full transition-colors text-gray-700"
+          aria-label="Menu (unavailable)"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    );
+  }
 };
 
 export default MobileNav;

@@ -5,7 +5,7 @@ import { NavigationContext } from "./NavigationContextDefinition";
 /**
  * Custom hook to use the navigation context
  * Provides type-safe access to navigation state and actions
- * Enhanced with better error handling
+ * Enhanced with better error handling for missing React context
  */
 export const useNavigation = () => {
   try {
