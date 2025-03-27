@@ -6,6 +6,8 @@ import './index.css'
 
 // IMPORTANT: Set React initialization flag to true immediately
 if (typeof window !== 'undefined') {
+  // Make sure React global is available
+  window.React = window.React || React;
   window.__REACT_INITIALIZED = true;
   console.log("Setting initial React initialization flag to true");
   
@@ -32,6 +34,12 @@ if (typeof window !== 'undefined') {
 function startApp() {
   try {
     console.log("Application startup: Beginning initialization");
+    
+    // Ensure React is defined in window before proceeding
+    if (typeof window !== 'undefined' && !window.React) {
+      window.React = React;
+      console.log("Explicitly setting window.React");
+    }
     
     // Get the root element with improved error handling
     const rootElement = document.getElementById("root");
@@ -108,5 +116,19 @@ function startApp() {
   }
 }
 
+// Define React globally on window to ensure it's available immediately
+if (typeof window !== 'undefined') {
+  window.React = React;
+}
+
 // Start the application immediately
 startApp();
+
+// Add type definition for window global properties
+declare global {
+  interface Window {
+    React: typeof React;
+    __REACT_INITIALIZED?: boolean;
+    __REACT_CONTEXT_ERROR?: boolean;
+  }
+}

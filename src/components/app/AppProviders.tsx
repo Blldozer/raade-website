@@ -43,62 +43,76 @@ interface AppProvidersProps {
  * Enhanced with React context initialization check and error recovery
  */
 const AppProviders = ({ children }: AppProvidersProps) => {
+  // Safety check - ensure we're in a browser environment before using hooks
+  if (typeof window === 'undefined') {
+    console.warn("AppProviders: Not in browser environment, skipping initialization");
+    return <>{children}</>;
+  }
+
   // Set initialization flag immediately on component mount
   // This is crucial for preventing React context errors
-  if (typeof window !== 'undefined') {
-    window.__REACT_INITIALIZED = true;
-  }
+  window.__REACT_INITIALIZED = true;
   
-  // Additional effect for logging and cleanup
-  useEffect(() => {
-    console.log("AppProviders: React context initialized and ready");
-    
-    // Attempt to recover from React context errors
-    if (window.__REACT_CONTEXT_ERROR) {
-      console.log("AppProviders: Detected previous context error, attempting recovery");
-      window.__REACT_CONTEXT_ERROR = false;
-    }
-    
-    return () => {
-      // Clean up when unmounting
-      if (typeof window !== 'undefined') {
-        console.log("AppProviders: Cleaning up before unmounting");
+  try {
+    // Safe to use useEffect here after the safety checks
+    useEffect(() => {
+      console.log("AppProviders: React context initialized and ready");
+      
+      // Attempt to recover from React context errors
+      if (window.__REACT_CONTEXT_ERROR) {
+        console.log("AppProviders: Detected previous context error, attempting recovery");
+        window.__REACT_CONTEXT_ERROR = false;
       }
-    };
-  }, []);
-  
-  // Simple log for debugging initialization
-  console.log("AppProviders: Component mounted");
-  
-  // Use multiple nested ErrorBoundaries for better error isolation
-  return (
-    <ErrorBoundary 
-      fallback={<div className="p-4 text-red-500">Root error occurred. Please refresh the page.</div>}
-    >
-      <BrowserRouter>
-        <ErrorBoundary 
-          fallback={<div className="p-4 text-red-500">Router error occurred. Please refresh the page.</div>}
-        >
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <QueryClientProvider client={queryClient}>
-              <ErrorBoundary 
-                fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
-                suppressDevErrors={isDevelopment}
-              >
-                {/* TooltipProvider moved inside ErrorBoundary but before ScrollToTop */}
-                <TooltipProvider>
-                  <ScrollToTop>
-                    {children}
-                  </ScrollToTop>
-                </TooltipProvider>
-                <Toaster />
-              </ErrorBoundary>
-            </QueryClientProvider>
-          </ThemeProvider>
-        </ErrorBoundary>
-      </BrowserRouter>
-    </ErrorBoundary>
-  );
+      
+      return () => {
+        // Clean up when unmounting
+        if (typeof window !== 'undefined') {
+          console.log("AppProviders: Cleaning up before unmounting");
+        }
+      };
+    }, []);
+    
+    // Simple log for debugging initialization
+    console.log("AppProviders: Component mounted");
+    
+    // Use multiple nested ErrorBoundaries for better error isolation
+    return (
+      <ErrorBoundary 
+        fallback={<div className="p-4 text-red-500">Root error occurred. Please refresh the page.</div>}
+      >
+        <BrowserRouter>
+          <ErrorBoundary 
+            fallback={<div className="p-4 text-red-500">Router error occurred. Please refresh the page.</div>}
+          >
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+              <QueryClientProvider client={queryClient}>
+                <ErrorBoundary 
+                  fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
+                  suppressDevErrors={isDevelopment}
+                >
+                  {/* TooltipProvider moved inside ErrorBoundary but before ScrollToTop */}
+                  <TooltipProvider>
+                    <ScrollToTop>
+                      {children}
+                    </ScrollToTop>
+                  </TooltipProvider>
+                  <Toaster />
+                </ErrorBoundary>
+              </QueryClientProvider>
+            </ThemeProvider>
+          </ErrorBoundary>
+        </BrowserRouter>
+      </ErrorBoundary>
+    );
+  } catch (error) {
+    // Fallback rendering if any error occurs during hook initialization
+    console.error("AppProviders: Critical error during initialization:", error);
+    return (
+      <div className="p-4 text-red-500">
+        Application initialization error. Please refresh the page.
+      </div>
+    );
+  }
 };
 
 export default AppProviders;
