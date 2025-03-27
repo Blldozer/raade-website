@@ -43,7 +43,7 @@ const StudioOverview = () => {
                 of people cannot access essential products and services, then creating 
                 innovative solutions to make them accessible.
               </p>
-              <p className="font-normal text-gray-700">
+              <p>
                 Rather than simply improving existing offerings for those already served, 
                 we design pathways that reach those previously excluded from markets 
                 entirely — transforming "non-consumers" into consumers.
@@ -53,7 +53,7 @@ const StudioOverview = () => {
                 more people while creating economic opportunity. When done right, these 
                 solutions scale organically, reaching far beyond initial implementations.
               </p>
-              <p>
+              <p className="text-gray-700">
               To bring this vision to life, we've developed a structured, three-phase innovation process that unfolds throughout the school year. 
               We begin with Immersion & Discovery, where our teams deeply understand the problem context through 
               ethnographic research and stakeholder interviews, uncovering hidden insights that reveal true needs. 
