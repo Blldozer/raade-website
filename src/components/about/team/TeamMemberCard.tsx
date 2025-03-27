@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { motion } from "@/components/motion/SafeMotion"; // Use our safe wrapper
+import { motion } from "framer-motion"; // Using direct framer-motion import
 import TeamMemberImage from "./TeamMemberImage";
 import TeamMemberInfo from "./TeamMemberInfo";
 

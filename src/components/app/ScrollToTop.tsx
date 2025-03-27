@@ -20,9 +20,7 @@ interface ScrollToTopProps {
 
 const ScrollToTop = ({ children }: ScrollToTopProps) => {
   // First check if we can safely access React context
-  if (typeof React === 'undefined' || 
-      !React || 
-      typeof window === 'undefined' || 
+  if (typeof window === 'undefined' || 
       !window.__REACT_INITIALIZED) {
     console.warn("ScrollToTop: React context not fully initialized, rendering children without scroll functionality");
     return <>{children}</>;

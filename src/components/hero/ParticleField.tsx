@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { motion, AnimatePresence, isMotionAvailable } from '../motion/SafeMotion'; // Use our safe wrapper
+import { motion, AnimatePresence } from 'framer-motion'; // Using direct framer-motion import
 
 const symbols = ['◆', '●', '■', '▲', '○', '□', '△'];
 
@@ -21,9 +21,10 @@ interface Particle {
  * - Graceful fallback when animations can't be used
  */
 const ParticleField = () => {
-  // Verify React and motion availability
-  if (typeof React !== 'object' || !isMotionAvailable()) {
-    console.warn("ParticleField: React or motion unavailable, skipping render");
+  // Check for React initialization
+  const isReactInitialized = typeof window !== 'undefined' && window.__REACT_INITIALIZED === true;
+  if (!isReactInitialized) {
+    console.warn("ParticleField: React not properly initialized, skipping render");
     return null; // Return nothing since this is a purely decorative component
   }
 

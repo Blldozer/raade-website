@@ -1,7 +1,7 @@
 
 import React, { memo } from 'react';
 import { useAnimatedText } from './hooks/useAnimatedText';
-import { motion } from '../motion/SafeMotion'; // Use our safe wrapper
+import { motion } from 'framer-motion'; // Using direct framer-motion import
 
 /**
  * AnimatedText Component
