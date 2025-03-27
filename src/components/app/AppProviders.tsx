@@ -69,10 +69,16 @@ const AppProviders = ({ children }: AppProvidersProps) => {
   }
   
   // Set initialization flag immediately on component mount
-  // This is crucial for preventing React context errors
-  window.__REACT_INITIALIZED = true;
+  if (typeof window !== 'undefined') {
+    window.__REACT_INITIALIZED = true;
+  }
   
   try {
+    // Make sure React is available globally
+    if (typeof window !== 'undefined' && !window.React && typeof React !== 'undefined') {
+      window.React = React;
+    }
+    
     // Safe to use useEffect here after the safety checks
     useEffect(() => {
       console.log("AppProviders: React context initialized and ready");

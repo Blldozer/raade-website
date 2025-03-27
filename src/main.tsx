@@ -4,26 +4,26 @@ import React from 'react'  // Explicitly import React
 import App from './App.tsx'
 import './index.css'
 
-// Define React globally immediately
+// Immediately initialize React globally and set initialization flags
+// This MUST be at the very top of the file to ensure React is available
+// before any other imports or code execution
 if (typeof window !== 'undefined') {
+  // Set React globally to ensure it's available before any component rendering
   window.React = React;
-}
-
-// IMPORTANT: Set React initialization flag to true immediately
-if (typeof window !== 'undefined') {
-  window.__REACT_INITIALIZED = true;
-  console.log("Setting initial React initialization flag to true");
+  console.log("Main.tsx: Setting React globally immediately");
   
-  // Add global error tracking for React context issues
+  // Initialize React context flags
+  window.__REACT_INITIALIZED = true;
   window.__REACT_CONTEXT_ERROR = false;
   
-  // Add global error handler specifically for React context errors
+  // Add early initialization hook to detect React context errors
   window.addEventListener('error', (event) => {
     if (event.error && 
         (event.error.toString().includes('useState') || 
          event.error.toString().includes('useContext') || 
+         event.error.toString().includes('useRef') ||
          event.error.toString().includes('React hook'))) {
-      console.error("React hook/context error detected:", event.error);
+      console.error("React hook error detected:", event.error);
       window.__REACT_CONTEXT_ERROR = true;
     }
   });
@@ -38,7 +38,7 @@ function startApp() {
   try {
     console.log("Application startup: Beginning initialization");
     
-    // Ensure React is defined in window before proceeding
+    // Double-check React is set in window before proceeding
     if (typeof window !== 'undefined' && !window.React) {
       window.React = React;
       console.log("Explicitly setting window.React");
@@ -121,6 +121,3 @@ function startApp() {
 
 // Start the application immediately
 startApp();
-
-// NOTE: We deliberately don't include Window interface declarations here
-// All global type declarations are centralized in types/global.d.ts
