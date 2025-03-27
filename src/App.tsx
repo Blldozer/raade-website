@@ -20,12 +20,10 @@ const App = () => {
   
   return (
     <AppProviders>
-      <div className="min-h-screen flex flex-col">
-        <ScrollToTop>
-          <AppRoutes />
-          <Footer />
-        </ScrollToTop>
-      </div>
+      <ScrollToTop>
+        <AppRoutes />
+        <Footer />
+      </ScrollToTop>
     </AppProviders>
   );
 };

@@ -28,12 +28,6 @@ const Navigation = ({
   
   // Log mounting/unmounting to track duplicate instances
   useEffect(() => {
-    // Check if we've already mounted navigation for this page
-    if (mounted) {
-      console.warn(`Navigation (${uniqueId}): Already mounted on ${location.pathname}, skipping duplicate render`);
-      return;
-    }
-    
     console.log(`Navigation (${uniqueId}): Mounting with props:`, 
       { isHeroPage, forceDarkMode, useShortFormLogo, path: location.pathname });
     
@@ -44,7 +38,7 @@ const Navigation = ({
       console.log(`Navigation (${uniqueId}): Unmounting from ${location.pathname}`);
       setMounted(false);
     };
-  }, [isHeroPage, forceDarkMode, useShortFormLogo, location.pathname, mounted, uniqueId]);
+  }, [isHeroPage, forceDarkMode, useShortFormLogo, location.pathname, uniqueId]);
   
   return (
     <NavigationContainer

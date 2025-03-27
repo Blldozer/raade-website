@@ -46,9 +46,6 @@ const NavigationWrapper = () => {
       useShortFormLogo: isApplicationPage
     });
     
-    return () => {
-      console.log(`NavigationWrapper (${uniqueId}): Cleaning up props for ${pathname}`);
-    };
   }, [location.pathname, uniqueId]);
   
   // Return a single Navigation component with appropriate props

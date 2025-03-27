@@ -41,7 +41,6 @@ const AppProviders = ({ children }: AppProvidersProps) => {
   // Log that we've mounted the component
   console.log("AppProviders: Component mounted");
   
-  // Important: Using explicit render tree structure with no hooks outside of React components
   return (
     <BrowserRouter>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
