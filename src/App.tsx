@@ -2,7 +2,6 @@
 import AppProviders from "./components/app/AppProviders";
 import AppRoutes from "./components/app/AppRoutes";
 import Footer from "./components/Footer";
-import ScrollToTop from "./components/app/ScrollToTop";
 
 /**
  * App Component - Main application container
@@ -11,7 +10,6 @@ import ScrollToTop from "./components/app/ScrollToTop";
  * - All providers consolidated in AppProviders
  * - Routes centralized in AppRoutes
  * - Navigation handled within AppRoutes component
- * - ScrollToTop component properly placed within router context
  * - Simplified structure for better maintainability
  */
 const App = () => {
@@ -20,10 +18,8 @@ const App = () => {
   
   return (
     <AppProviders>
-      <ScrollToTop>
-        <AppRoutes />
-        <Footer />
-      </ScrollToTop>
+      <AppRoutes />
+      <Footer />
     </AppProviders>
   );
 };

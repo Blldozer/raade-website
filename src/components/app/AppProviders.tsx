@@ -7,6 +7,7 @@ import ErrorBoundary from "../ErrorBoundary";
 import GlobalErrorFallback from "./GlobalErrorFallback";
 import { ThemeProvider } from "next-themes";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import ScrollToTop from "./ScrollToTop";
 
 // Initialize the QueryClient with better error handling
 const queryClient = new QueryClient({
@@ -32,10 +33,11 @@ interface AppProvidersProps {
  * Provider order matters! React context is accessed from inner components outward.
  * The hierarchy is structured to ensure dependencies are available when needed:
  * 1. BrowserRouter - Makes routing available to all components
- * 2. ThemeProvider - Makes theme available to all components including Toasters
- * 3. QueryClientProvider - Makes React Query available
- * 4. ErrorBoundary - Provides error protection for all child components
- * 5. TooltipProvider - Makes tooltip context available to all components
+ * 2. ScrollToTop - Manages scroll position when routes change (must be inside Router)
+ * 3. ThemeProvider - Makes theme available to all components including Toasters
+ * 4. QueryClientProvider - Makes React Query available
+ * 5. ErrorBoundary - Provides error protection for all child components
+ * 6. TooltipProvider - Makes tooltip context available to all components
  */
 const AppProviders = ({ children }: AppProvidersProps) => {
   // Simple log for debugging initialization
@@ -43,20 +45,22 @@ const AppProviders = ({ children }: AppProvidersProps) => {
   
   return (
     <BrowserRouter>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <QueryClientProvider client={queryClient}>
-          <ErrorBoundary 
-            fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
-            suppressDevErrors={isDevelopment}
-          >
-            {/* TooltipProvider moved inside ErrorBoundary but before children */}
-            <TooltipProvider>
-              {children}
-            </TooltipProvider>
-            <Toaster />
-          </ErrorBoundary>
-        </QueryClientProvider>
-      </ThemeProvider>
+      <ScrollToTop>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <QueryClientProvider client={queryClient}>
+            <ErrorBoundary 
+              fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
+              suppressDevErrors={isDevelopment}
+            >
+              {/* TooltipProvider moved inside ErrorBoundary but before children */}
+              <TooltipProvider>
+                {children}
+              </TooltipProvider>
+              <Toaster />
+            </ErrorBoundary>
+          </QueryClientProvider>
+        </ThemeProvider>
+      </ScrollToTop>
     </BrowserRouter>
   );
 };
