@@ -13,15 +13,13 @@ const MOBILE_BREAKPOINT = 768
  * - Resilient to React context issues with safe initialization
  */
 export function useIsMobile() {
-  // Check if we're in a browser environment and React is properly initialized
+  // Check if we're in a browser environment
   const isBrowser = typeof window !== 'undefined';
-  const isReactInitialized = typeof React !== 'undefined' && React !== null;
   
-  // Initialize with a safe default for SSR or React context issues
-  // Using direct object assignment instead of useState if React context might be missing
+  // Initialize with a safe default for SSR
   const [isMobile, setIsMobile] = useState(false);
 
-  // Only run effect if we're in a browser environment and React is initialized
+  // Only run effect if we're in a browser environment
   useEffect(() => {
     // Double check we're in a browser environment
     if (!isBrowser) return;

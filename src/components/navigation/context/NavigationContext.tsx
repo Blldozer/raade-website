@@ -27,9 +27,6 @@ export const NavigationProvider = ({
     useShortFormLogo?: boolean;
   }
 }) => {
-  // Check if we're in a safe React context environment
-  const isReactSafe = typeof React !== 'undefined' && React !== null;
-  
   // Generate a unique string ID for component instance tracking
   const instanceId = `nav-${Math.random().toString(36).substring(2, 9)}`;
   

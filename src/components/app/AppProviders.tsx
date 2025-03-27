@@ -56,28 +56,32 @@ const AppProviders = ({ children }: AppProvidersProps) => {
   console.log("AppProviders: Component mounted");
   
   return (
-    <BrowserRouter>
-      <ErrorBoundary 
-        fallback={<div className="p-4 text-red-500">Router error occurred. Please refresh the page.</div>}
-      >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <QueryClientProvider client={queryClient}>
-            <ErrorBoundary 
-              fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
-              suppressDevErrors={isDevelopment}
-            >
-              {/* TooltipProvider moved inside ErrorBoundary but before ScrollToTop */}
-              <TooltipProvider>
-                <ScrollToTop>
-                  {children}
-                </ScrollToTop>
-              </TooltipProvider>
-              <Toaster />
-            </ErrorBoundary>
-          </QueryClientProvider>
-        </ThemeProvider>
-      </ErrorBoundary>
-    </BrowserRouter>
+    <ErrorBoundary 
+      fallback={<div className="p-4 text-red-500">Root error occurred. Please refresh the page.</div>}
+    >
+      <BrowserRouter>
+        <ErrorBoundary 
+          fallback={<div className="p-4 text-red-500">Router error occurred. Please refresh the page.</div>}
+        >
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <QueryClientProvider client={queryClient}>
+              <ErrorBoundary 
+                fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
+                suppressDevErrors={isDevelopment}
+              >
+                {/* TooltipProvider moved inside ErrorBoundary but before ScrollToTop */}
+                <TooltipProvider>
+                  <ScrollToTop>
+                    {children}
+                  </ScrollToTop>
+                </TooltipProvider>
+                <Toaster />
+              </ErrorBoundary>
+            </QueryClientProvider>
+          </ThemeProvider>
+        </ErrorBoundary>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 };
 

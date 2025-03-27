@@ -13,13 +13,10 @@ import { usePerformanceDetection } from "./responsive/usePerformanceDetection";
  * - Accessibility preferences
  * 
  * Enhanced with better error handling and SSR safety
- * Includes React context safety checks
  */
 export const useResponsive = () => {
   // Check if we're in a safe environment for React hooks
-  const isSafeEnvironment = typeof window !== 'undefined' && 
-                            typeof React !== 'undefined' && 
-                            React !== null;
+  const isSafeEnvironment = typeof window !== 'undefined';
                             
   try {
     // Use the device detection hook to get device information
