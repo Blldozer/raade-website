@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import ErrorBoundary from "../ErrorBoundary";
 import GlobalErrorFallback from "./GlobalErrorFallback";
 import { ThemeProvider } from "next-themes";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 // Initialize the QueryClient with better error handling
 const queryClient = new QueryClient({
@@ -33,7 +34,8 @@ interface AppProvidersProps {
  * 1. BrowserRouter - Makes routing available to all components
  * 2. ThemeProvider - Makes theme available to all components including Toasters
  * 3. QueryClientProvider - Makes React Query available
- * 4. Error handling and UI components
+ * 4. TooltipProvider - Makes tooltip context available to all components
+ * 5. Error handling and UI components
  */
 const AppProviders = ({ children }: AppProvidersProps) => {
   // Log that we've mounted the component
@@ -65,13 +67,15 @@ const AppProviders = ({ children }: AppProvidersProps) => {
     <BrowserRouter>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <QueryClientProvider client={queryClient}>
-          <ErrorBoundary 
-            fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
-            suppressDevErrors={isDevelopment}
-          >
-            {children}
-            <Toaster />
-          </ErrorBoundary>
+          <TooltipProvider>
+            <ErrorBoundary 
+              fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
+              suppressDevErrors={isDevelopment}
+            >
+              {children}
+              <Toaster />
+            </ErrorBoundary>
+          </TooltipProvider>
         </QueryClientProvider>
       </ThemeProvider>
     </BrowserRouter>

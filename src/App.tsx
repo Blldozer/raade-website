@@ -2,7 +2,6 @@
 import AppProviders from "./components/app/AppProviders";
 import AppRoutes from "./components/app/AppRoutes";
 import Footer from "./components/Footer";
-import { TooltipProvider } from "@/components/ui/tooltip";
 
 /**
  * App Component - Main application container
@@ -20,11 +19,8 @@ const App = () => {
   return (
     <AppProviders>
       <div className="min-h-screen flex flex-col">
-        {/* Use TooltipProvider here for proper React context access */}
-        <TooltipProvider>
-          <AppRoutes />
-          <Footer />
-        </TooltipProvider>
+        <AppRoutes />
+        <Footer />
       </div>
     </AppProviders>
   );
