@@ -7,11 +7,11 @@ import './index.css'
 // IMPORTANT: Set React initialization flag to true immediately
 if (typeof window !== 'undefined') {
   // Make sure React global is available
-  window.React = window.React || React;
+  window.React = React;
   window.__REACT_INITIALIZED = true;
   console.log("Setting initial React initialization flag to true");
   
-  // Also set up global error tracking for React context issues
+  // Add global error tracking for React context issues
   window.__REACT_CONTEXT_ERROR = false;
   
   // Add global error handler specifically for React context errors
