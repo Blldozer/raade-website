@@ -6,20 +6,29 @@ import { motion as framerMotion, AnimatePresence as FramerAnimatePresence } from
  * SafeMotion - A wrapper around framer-motion components that safely checks
  * React initialization state before rendering motion components
  * 
- * This prevents "Cannot read properties of null (reading 'useContext')" errors
- * when framer-motion tries to use React Context before React is fully initialized
+ * Enhanced with better type safety and more robust initialization checks
  */
+
+// Get React from window if available as a fallback
+const getReact = () => {
+  if (typeof window !== 'undefined') {
+    return (window as any).__REACT_GLOBAL_REFERENCE || window.React || React;
+  }
+  return React;
+};
 
 // Check if we can safely use framer-motion
 const canUseMotion = () => {
   try {
+    const React = getReact();
+    
     // Verify React is properly initialized
     if (typeof React !== 'object' || React === null) {
       return false;
     }
 
     // Verify window and initialization flag exists
-    if (typeof window === 'undefined' || !window.__REACT_INITIALIZED) {
+    if (typeof window === 'undefined' || !(window as any).__REACT_INITIALIZED) {
       return false;
     }
 
@@ -90,3 +99,13 @@ export const AnimatePresence = SafeAnimatePresence;
 
 // Export a utility to check if motion is available
 export const isMotionAvailable = canUseMotion;
+
+// Add proper typing for the global window object
+declare global {
+  interface Window {
+    __REACT_INITIALIZED?: boolean;
+    __REACT_CONTEXT_ERROR?: boolean;
+    __REACT_GLOBAL_REFERENCE?: typeof React;
+    React?: typeof React;
+  }
+}

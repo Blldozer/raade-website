@@ -4,12 +4,6 @@ import React from 'react'  // Explicitly import React
 import App from './App.tsx'
 import './index.css'
 
-// IMPORTANT: Set React initialization flag to false initially
-if (typeof window !== 'undefined') {
-  window.__REACT_INITIALIZED = false;
-  console.log("Setting initial React initialization flag");
-}
-
 /**
  * Main entry point with improved initialization safety
  * - Sets proper initialization flags for React
@@ -18,6 +12,15 @@ if (typeof window !== 'undefined') {
 function startApp() {
   try {
     console.log("Application startup: Beginning initialization");
+    
+    // CRITICAL: Set React global flag to true BEFORE requiring any components
+    if (typeof window !== 'undefined') {
+      window.__REACT_INITIALIZED = true;
+      console.log("React initialization flag set to true before loading App");
+      
+      // Create a global React reference for emergency situations
+      window.__REACT_GLOBAL_REFERENCE = React;
+    }
     
     // Get the root element with improved error handling
     const rootElement = document.getElementById("root");
@@ -51,18 +54,12 @@ function startApp() {
                     message.toString().includes('useContext') || 
                     message.toString().includes('useRef') ||
                     message.toString().includes('useEffect'))) {
-        console.error("React hook error detected. This might be a React context initialization issue.");
+        console.error("React hook error detected. Attempting recovery.");
+        window.__REACT_CONTEXT_ERROR = true;
       }
       
       return false; // Let the default handler run as well
     };
-    
-    // CRITICAL: Set React global flag to true BEFORE rendering
-    // This is crucial for preventing the "Cannot read properties of null (reading 'useContext')" error
-    if (typeof window !== 'undefined') {
-      window.__REACT_INITIALIZED = true;
-      console.log("React initialization flag set to true before rendering");
-    }
     
     // Create root with explicit ReactDOM API approach
     const root = createRoot(rootElement);
