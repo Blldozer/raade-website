@@ -1,114 +1,34 @@
 
-import { useEffect, useLayoutEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { useResponsive } from "./useResponsive";
-import { useNavBackground } from "./useNavBackground";
+import { useEffect } from 'react';
+import { useResponsive } from './useResponsive';
 
 /**
- * Custom hook to handle Index page initialization and behavior
- * 
- * Manages:
- * - Navigation background settings
- * - Scroll behavior for direct section navigation
- * - Performance optimizations
+ * Custom hook for Index page functionality
+ * Centralizes initialization of page-specific state and effects
  */
 export const useIndexPage = () => {
-  // Get device information from our responsive hook
-  const { isMobile } = useResponsive();
-  const location = useLocation();
+  const { isMobile, isTablet } = useResponsive();
   
-  // Initialize device performance state
-  const [isLowPerformanceDevice] = useState(false);
-  
-  // Use the hook to manage navbar background colors based on section visibility
-  // Initialize with 'light' since the hero section has a dark background
-  useNavBackground('light');
-  
-  // Set initial background state before any scroll happens
-  useLayoutEffect(() => {
-    try {
-      // Force light navbar for index page hero section
-      document.body.setAttribute('data-nav-background', 'light');
-      
-      // Log initialization for debugging purposes
-      console.log("Index page initialized, nav background set to light");
-    } catch (error) {
-      console.error("Error in Index layout effect:", error);
-    }
+  // Set up the document on first render
+  useEffect(() => {
+    // Set the title
+    document.title = 'RAADE - Rice Association for African Development';
+    
+    // Initialize the body
+    document.body.setAttribute('data-page', 'index');
+    document.body.classList.add('index-page');
+    
+    // Clean up when unmounting
+    return () => {
+      document.body.removeAttribute('data-page');
+      document.body.classList.remove('index-page');
+    };
   }, []);
   
-  useEffect(() => {
-    try {
-      console.log("Index page mount effect running");
-      
-      // Add passive:true to touch events for better scroll performance
-      const options = {
-        passive: true
-      };
-      
-      const noopHandler = () => {};
-      
-      document.addEventListener('touchstart', noopHandler, options);
-      document.addEventListener('touchmove', noopHandler, options);
-      
-      // Set performance hint for the browser
-      if ('contentVisibilityAutoStateChange' in document.documentElement.style) {
-        document.documentElement.style.contentVisibility = 'auto';
-      }
-      
-      // Log for debugging
-      console.log("Index page event listeners attached");
-      
-      return () => {
-        document.removeEventListener('touchstart', noopHandler);
-        document.removeEventListener('touchmove', noopHandler);
-        document.body.removeAttribute('data-nav-background');
-        console.log("Index page cleanup completed");
-      };
-    } catch (error) {
-      console.error("Error in Index effect:", error);
-    }
-  }, []);
-  
-  // Handle scrolling to the join section when navigating from another page
-  useEffect(() => {
-    try {
-      console.log("Index scroll effect running with location:", location);
-      
-      const handleScrollToJoin = () => {
-        // Small delay to ensure the section is rendered
-        const timer = setTimeout(() => {
-          const joinSection = document.getElementById('join');
-          if (joinSection) {
-            console.log("Index page: Scrolling to join section");
-            joinSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          } else {
-            console.warn("Index page: Join section element not found");
-          }
-        }, 500);
-        
-        return timer;
-      };
-      
-      // Check location state for scroll target
-      if (location.state && location.state.scrollToJoin) {
-        console.log("Index page: scrollToJoin state detected");
-        const timer = handleScrollToJoin();
-        return () => clearTimeout(timer);
-      }
-      
-      // Check if URL has #join hash
-      if (window.location.hash === '#join') {
-        console.log("Index page: #join hash detected in URL");
-        const timer = handleScrollToJoin();
-        return () => clearTimeout(timer);
-      }
-    } catch (error) {
-      console.error("Error in scroll effect:", error);
-    }
-  }, [location]);
-  
-  return { isMobile, isLowPerformanceDevice };
+  return {
+    isMobile,
+    isTablet
+  };
 };
 
 export default useIndexPage;

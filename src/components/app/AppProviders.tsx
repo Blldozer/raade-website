@@ -1,11 +1,13 @@
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "sonner";
 import ErrorBoundary from "../ErrorBoundary";
 import GlobalErrorFallback from "./GlobalErrorFallback";
 import { ThemeProvider } from "next-themes";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import ScrollToTop from "./ScrollToTop";
 
 // Initialize the QueryClient with better error handling
 const queryClient = new QueryClient({
@@ -31,51 +33,71 @@ interface AppProvidersProps {
  * Provider order matters! React context is accessed from inner components outward.
  * The hierarchy is structured to ensure dependencies are available when needed:
  * 1. BrowserRouter - Makes routing available to all components
- * 2. ThemeProvider - Makes theme available to all components including Toasters
- * 3. QueryClientProvider - Makes React Query available
- * 4. Error handling and UI components
+ * 2. ErrorBoundary - First layer of protection for router-related errors
+ * 3. ThemeProvider - Makes theme available to all components including Toasters
+ * 4. QueryClientProvider - Makes React Query available
+ * 5. Inner ErrorBoundary - Provides error protection for all app components
+ * 6. TooltipProvider - Makes tooltip context available to all components
+ * 7. ScrollToTop - Manages scroll position when routes change
+ * 
+ * Enhanced with React context initialization check and error recovery
  */
 const AppProviders = ({ children }: AppProvidersProps) => {
-  // Log that we've mounted the component
+  // Set initialization flag immediately on component mount
+  // This is crucial for preventing React context errors
+  if (typeof window !== 'undefined') {
+    window.__REACT_INITIALIZED = true;
+  }
+  
+  // Additional effect for logging and cleanup
+  useEffect(() => {
+    console.log("AppProviders: React context initialized and ready");
+    
+    // Attempt to recover from React context errors
+    if (window.__REACT_CONTEXT_ERROR) {
+      console.log("AppProviders: Detected previous context error, attempting recovery");
+      window.__REACT_CONTEXT_ERROR = false;
+    }
+    
+    return () => {
+      // Clean up when unmounting
+      if (typeof window !== 'undefined') {
+        console.log("AppProviders: Cleaning up before unmounting");
+      }
+    };
+  }, []);
+  
+  // Simple log for debugging initialization
   console.log("AppProviders: Component mounted");
   
-  // We removed useEffect that was causing the error and using simple console log
-  // Logging environment information for debugging without useEffect
-  if (typeof window !== 'undefined') {
-    console.log("App: Window dimensions", {
-      width: window.innerWidth,
-      height: window.innerHeight,
-      pixelRatio: window.devicePixelRatio
-    });
-    
-    // Disable React's console errors in production
-    if (process.env.NODE_ENV === 'production') {
-      const originalConsoleError = console.error;
-      console.error = (...args) => {
-        // Filter out React-specific development errors in production
-        const errorMessage = args[0]?.toString() || '';
-        if (errorMessage.includes('React will try to recreate this component tree')) {
-          return;
-        }
-        originalConsoleError(...args);
-      };
-    }
-  }
-
+  // Use multiple nested ErrorBoundaries for better error isolation
   return (
-    <BrowserRouter>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <QueryClientProvider client={queryClient}>
-          <ErrorBoundary 
-            fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
-            suppressDevErrors={isDevelopment}
-          >
-            {children}
-            <Toaster />
-          </ErrorBoundary>
-        </QueryClientProvider>
-      </ThemeProvider>
-    </BrowserRouter>
+    <ErrorBoundary 
+      fallback={<div className="p-4 text-red-500">Root error occurred. Please refresh the page.</div>}
+    >
+      <BrowserRouter>
+        <ErrorBoundary 
+          fallback={<div className="p-4 text-red-500">Router error occurred. Please refresh the page.</div>}
+        >
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <QueryClientProvider client={queryClient}>
+              <ErrorBoundary 
+                fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
+                suppressDevErrors={isDevelopment}
+              >
+                {/* TooltipProvider moved inside ErrorBoundary but before ScrollToTop */}
+                <TooltipProvider>
+                  <ScrollToTop>
+                    {children}
+                  </ScrollToTop>
+                </TooltipProvider>
+                <Toaster />
+              </ErrorBoundary>
+            </QueryClientProvider>
+          </ThemeProvider>
+        </ErrorBoundary>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 };
 

@@ -11,13 +11,14 @@ export type DeviceType = "mobile" | "tablet" | "desktop" | "large-desktop";
  * - Estimates performance level based on device type and screen resolution
  * - Adjusts animations and effects based on performance level
  * - Provides fallbacks for low-performance devices
- * - Updates when device parameters change
+ * - Enhanced with proper SSR handling
  */
 export const usePerformanceDetection = (
   deviceType: DeviceType,
   screenWidth: number,
   screenHeight: number
 ) => {
+  // Safe default for SSR and initial render
   const [performanceLevel, setPerformanceLevel] = useState<"high" | "medium" | "low">("medium");
 
   // Detect performance level based on device type and screen resolution

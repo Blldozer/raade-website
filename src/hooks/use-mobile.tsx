@@ -7,29 +7,29 @@ const MOBILE_BREAKPOINT = 768
  * Custom hook to detect mobile devices
  * 
  * Features:
- * - Provides immediate initial value based on window.innerWidth
- * - Updates reactively when window size changes
+ * - Provides reactive state based on window size changes
  * - Uses matchMedia for better browser compatibility
- * - Handles SSR scenarios where window is undefined
+ * - Enhanced with proper SSR handling
+ * - Resilient to React context issues with safe initialization
  */
 export function useIsMobile() {
-  // Start with a definite value based on current window width if available
-  const getInitialState = () => {
-    if (typeof window === 'undefined') return false;
-    return window.innerWidth < MOBILE_BREAKPOINT;
-  };
+  // Check if we're in a browser environment
+  const isBrowser = typeof window !== 'undefined';
   
-  const [isMobile, setIsMobile] = useState(getInitialState());
+  // Initialize with a safe default for SSR
+  const [isMobile, setIsMobile] = useState(false);
 
+  // Only run effect if we're in a browser environment
   useEffect(() => {
-    // Ensure we're in a browser environment
-    if (typeof window === 'undefined') return;
+    // Double check we're in a browser environment
+    if (!isBrowser) return;
     
     // Create the media query list
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
     
     // Define the change handler
     const handleChange = () => {
+      // Protect against calls after component unmount
       setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     };
     
@@ -41,7 +41,7 @@ export function useIsMobile() {
       mql.addListener(handleChange);
     }
     
-    // Set the initial value explicitly again to ensure consistency
+    // Set the initial value explicitly
     setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     
     // Cleanup on unmount
@@ -53,7 +53,7 @@ export function useIsMobile() {
         mql.removeListener(handleChange);
       }
     };
-  }, []);
+  }, [isBrowser]);
 
   return isMobile;
 }

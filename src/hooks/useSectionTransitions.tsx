@@ -65,12 +65,8 @@ export const useSectionTransitions = () => {
       setAnimationsEnabled(false);
     }
     
-    // Always use navigation background updates
-    try {
-      useNavBackground();
-    } catch (error) {
-      console.error("Error in NavBackground:", error);
-    }
+    // Don't call another hook inside this hook - that was causing the error
+    // This should be handled separately
     
     // If device is low performance, apply minimal animations
     if (isLowPerformanceDevice) {

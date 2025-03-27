@@ -1,114 +1,92 @@
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export interface IntersectionDetectionOptions {
-  /**
-   * The CSS selector for target sections to observe
-   * @default 'section, .section, [data-section]'
-   */
-  sectionSelector?: string;
-  
-  /**
-   * Threshold for the Intersection Observer
-   * @default 0.6
-   */
   threshold?: number;
-  
-  /**
-   * Root margin for the Intersection Observer
-   * @default '0px'
-   */
   rootMargin?: string;
-  
-  /**
-   * Elements to exclude from observation
-   * @default []
-   */
   excludeSections?: string[];
 }
 
 /**
- * Custom hook to detect which sections are currently in the viewport
- * using Intersection Observer API
- * 
- * @param options - Configuration options for the intersection observer
- * @returns Object containing the current section and intersection handler
+ * Hook to detect which sections are currently in the viewport
+ * Enhanced with proper SSR handling
  */
-export const useIntersectionDetection = ({
-  sectionSelector = 'section, .section, [data-section]',
-  threshold = 0.6,
-  rootMargin = '0px',
-  excludeSections = []
-}: IntersectionDetectionOptions = {}) => {
-  // Track the current section
+export const useIntersectionDetection = (options: IntersectionDetectionOptions = {}) => {
   const [currentSection, setCurrentSection] = useState<Element | null>(null);
+  const [currentSectionId, setCurrentSectionId] = useState<string | null>(null);
   
-  // Store sections that are currently intersecting with their intersection ratios
-  const intersectingSections = useRef<Map<Element, number>>(new Map());
+  // Store observer in a ref to avoid recreation on each render
+  const observerRef = useRef<IntersectionObserver | null>(null);
   
-  // Handle intersections detected by the observer
-  const handleIntersection = useCallback((entries: IntersectionObserverEntry[]) => {
-    entries.forEach(entry => {
-      // Skip excluded sections
-      if (excludeSections.some(selector => entry.target.matches(selector))) {
-        return;
-      }
-      
-      if (entry.isIntersecting) {
-        // Store the section with its intersection ratio
-        intersectingSections.current.set(entry.target, entry.intersectionRatio);
-      } else {
-        // Remove the section if it's no longer intersecting
-        intersectingSections.current.delete(entry.target);
-      }
-    });
-    
-    // Find the section with the highest intersection ratio
-    let highestRatio = 0;
-    let topSection: Element | null = null;
-    
-    intersectingSections.current.forEach((ratio, section) => {
-      if (ratio > highestRatio) {
-        highestRatio = ratio;
-        topSection = section;
-      }
-    });
-    
-    // Update the current section if it changed
-    if (topSection !== currentSection) {
-      setCurrentSection(topSection);
-    }
-  }, [currentSection, excludeSections]);
+  // Default options
+  const threshold = options.threshold || 0.5;
+  const rootMargin = options.rootMargin || '0px';
+  const excludeSections = options.excludeSections || [];
   
-  // Initialize the intersection observer when the component mounts
   useEffect(() => {
-    const observer = new IntersectionObserver(handleIntersection, {
-      threshold,
-      rootMargin
+    // Skip in SSR/non-browser environment
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    
+    // Create the intersection observer
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        // Sort entries by their intersection ratio, highest first
+        const sortedEntries = [...entries].sort(
+          (a, b) => b.intersectionRatio - a.intersectionRatio
+        );
+        
+        // Find the first entry that is intersecting above the threshold
+        const highestVisibleEntry = sortedEntries.find(
+          (entry) => entry.isIntersecting && entry.intersectionRatio >= threshold
+        );
+        
+        if (highestVisibleEntry) {
+          setCurrentSection(highestVisibleEntry.target);
+          setCurrentSectionId(
+            highestVisibleEntry.target.id || 
+            // Use a data attribute as fallback
+            highestVisibleEntry.target.getAttribute('data-section-id') || 
+            null
+          );
+        }
+      },
+      { threshold, rootMargin }
+    );
+    
+    // Select all section elements
+    const sections = document.querySelectorAll('section, [data-section]');
+    
+    // Filter out excluded sections
+    const validSections = Array.from(sections).filter(section => {
+      // Check if this section matches any exclude pattern
+      return !excludeSections.some(excludePattern => {
+        if (excludePattern.startsWith('.')) {
+          // Class selector
+          return section.classList.contains(excludePattern.substring(1));
+        } else if (excludePattern.startsWith('#')) {
+          // ID selector
+          return section.id === excludePattern.substring(1);
+        } else {
+          // Tag name or other selector
+          return section.tagName.toLowerCase() === excludePattern.toLowerCase();
+        }
+      });
     });
     
-    // Select all sections to observe
-    const sections = document.querySelectorAll(sectionSelector);
-    
-    // Start observing each section
-    sections.forEach(section => {
-      // Skip excluded sections
-      if (excludeSections.some(selector => section.matches(selector))) {
-        return;
+    // Observe all valid sections
+    validSections.forEach(section => {
+      if (observerRef.current) {
+        observerRef.current.observe(section);
       }
-      
-      observer.observe(section);
     });
     
-    // Cleanup function to disconnect the observer
+    // Cleanup function
     return () => {
-      observer.disconnect();
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
     };
-  }, [handleIntersection, sectionSelector, threshold, rootMargin, excludeSections]);
+  }, [threshold, rootMargin, excludeSections]);
   
-  // Return the current section element
-  return {
-    currentSection,
-    currentSectionId: currentSection?.id || null
-  };
+  return { currentSection, currentSectionId };
 };

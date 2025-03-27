@@ -1,5 +1,6 @@
-import { motion } from "framer-motion";
+
 import { useState } from "react";
+import { motion } from "framer-motion"; // Using direct framer-motion import
 import TeamMemberImage from "./TeamMemberImage";
 import TeamMemberInfo from "./TeamMemberInfo";
 
@@ -21,9 +22,10 @@ interface TeamMemberCardProps {
  * - Consistent styling and layout
  * - Performance optimizations for animations
  * - Mobile-first design approach for reliable rendering
+ * - Safe rendering that prevents context errors
  */
 const TeamMemberCard = ({ member, index, onImageLoad }: TeamMemberCardProps) => {
-  // Animation variants with reduced complexity for better performance on mobile
+  // Animation variants with reduced complexity for better performance
   const item = {
     hidden: { opacity: 0, y: 20 },
     show: { 

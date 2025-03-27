@@ -2,6 +2,7 @@
 import { useLocation } from "react-router-dom";
 import { NavigationProvider } from "./context/NavigationContext";
 import NavigationContent from "./content/NavigationContent";
+import ErrorBoundary from "../ErrorBoundary";
 
 interface NavigationContainerProps {
   instanceId?: string;
@@ -28,32 +29,45 @@ const NavigationContainer = ({
   // Generate a unique ID for this navigation instance if not provided
   // Using a string instead of useRef to avoid React context issues
   const localInstanceId = instanceId || `nav-container-${Math.random().toString(36).substring(2, 9)}`;
-  const location = useLocation();
   
-  // Check if we're on the conference registration page to ensure dark navbar
-  const isConferenceRegistration = location.pathname === '/conference/register';
-  const isAboutPage = location.pathname === '/about';
-  const finalForceDarkMode = isConferenceRegistration ? true : forceDarkMode;
-  
-  // Log mounting info
-  console.log(`NavigationContainer (${localInstanceId}): Mounting on ${location.pathname}`);
+  let locationPath = '/';
+  // Try to get location info, but don't crash if it fails
+  try {
+    const location = useLocation();
+    locationPath = location.pathname;
     
-  // Count navigation elements to detect duplicates
-  const navElements = document.querySelectorAll('nav[data-nav-instance]');
-  if (navElements.length > 1) {
-    console.warn(`Multiple navigation elements detected (${navElements.length}):`, 
-      Array.from(navElements).map(el => el.getAttribute('data-nav-instance')));
-  }
+    // Check if we're on the conference registration page to ensure dark navbar
+    const isConferenceRegistration = locationPath === '/conference/register';
+    const isAboutPage = locationPath === '/about';
+    const finalForceDarkMode = isConferenceRegistration ? true : forceDarkMode;
+    
+    // Log mounting info
+    console.log(`NavigationContainer (${localInstanceId}): Mounting on ${locationPath}`);
 
-  return (
-    <NavigationProvider initialProps={{ 
-      isHeroPage, 
-      forceDarkMode: finalForceDarkMode, 
-      useShortFormLogo 
-    }}>
-      <NavigationContent instanceId={localInstanceId} />
-    </NavigationProvider>
-  );
+    return (
+      <ErrorBoundary fallback={
+        <div className="fixed top-0 w-full z-50 bg-gray-100 p-4">
+          <span className="font-bold">Navigation Error</span>
+        </div>
+      }>
+        <NavigationProvider initialProps={{ 
+          isHeroPage, 
+          forceDarkMode: finalForceDarkMode, 
+          useShortFormLogo 
+        }}>
+          <NavigationContent instanceId={localInstanceId} />
+        </NavigationProvider>
+      </ErrorBoundary>
+    );
+  } catch (error) {
+    console.error(`NavigationContainer (${localInstanceId}): Router error`, error);
+    // Provide a minimal fallback navigation
+    return (
+      <div className="fixed top-0 w-full z-50 bg-gray-100 p-4">
+        <span className="font-bold">RAADE</span>
+      </div>
+    );
+  }
 };
 
 export default NavigationContainer;

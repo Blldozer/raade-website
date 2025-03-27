@@ -1,109 +1,65 @@
 
-import { useEffect, useRef, useState } from 'react';
-import { useScroll, useTransform } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
 
 /**
- * A lightweight text typing effect implementation that handles special characters properly
+ * Custom hook for animating the text in the hero section
  * 
- * @param text - The text to be displayed character by character
- * @param speed - The speed of typing in milliseconds
- * @returns Object containing the display text and completion status
- */
-const useTypingEffect = (text: string, speed: number = 80) => {
-  const [displayText, setDisplayText] = useState('');
-  const [isComplete, setIsComplete] = useState(false);
-  
-  useEffect(() => {
-    // Check if user prefers reduced motion
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    
-    if (prefersReducedMotion) {
-      // Skip animation if user prefers reduced motion
-      setDisplayText(text);
-      setIsComplete(true);
-      return;
-    }
-    
-    let i = 0;
-    const timer = setInterval(() => {
-      if (i < text.length) {
-        // Use slice instead of concatenation to handle special characters better
-        setDisplayText(text.slice(0, i + 1));
-        i++;
-      } else {
-        clearInterval(timer);
-        setIsComplete(true);
-      }
-    }, speed);
-    
-    return () => clearInterval(timer);
-  }, [text, speed]);
-  
-  return { displayText, isComplete };
-};
-
-/**
- * Hook that manages animated text transitions and scroll-based animations
- * Used in the hero section to create engaging text effects
+ * Features:
+ * - Safe initialization that works even when React context isn't fully available
+ * - Graceful handling of animation failures with fallback to static content
+ * - Performance optimizations for mobile devices
+ * - Support for screen readers and accessibility
  */
 export const useAnimatedText = () => {
-  const text2Ref = useRef<HTMLDivElement>(null);
-  const orgNameRef = useRef<HTMLHeadingElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  // Create refs for DOM elements
+  const text2Ref = useRef(null);
+  const orgNameRef = useRef(null);
+  const containerRef = useRef(null);
   
-  // Use native scrolling for better performance
-  const { scrollY } = useScroll({
-    // Use default options for better TypeScript compatibility
-  });
+  // Store animation state
+  const [isAnimated, setIsAnimated] = useState(false);
+  const [shouldAnimate, setShouldAnimate] = useState(false);
   
-  // Transform values based on scroll position
-  const lineWidth = useTransform(scrollY, [0, 200], ["0%", "100%"]);
-  const lineOpacity = useTransform(scrollY, [0, 200], [0, 1]);
+  // Use CSS transitions instead of react-spring
+  // This simplifies our dependencies and avoids React context issues
+  const lineWidth = shouldAnimate ? "100%" : "0%";
+  const lineOpacity = shouldAnimate ? 1 : 0;
   
-  // Ensure we're using the full "We're" text
-  const animatedText = "We're building it today.";
-  console.log("AnimatedText content:", animatedText); // For debugging
-  
-  // Use our custom lightweight typing effect
-  const { displayText, isComplete } = useTypingEffect(animatedText, 80);
-  
+  // Trigger animation on mount
   useEffect(() => {
-    // Apply text content when typing is complete
-    if (text2Ref.current) {
-      text2Ref.current.textContent = displayText;
-      console.log("Updated text content:", displayText); // For debugging
-    }
-    
-    // Simple shake animation when typing completes
-    if (isComplete && orgNameRef.current) {
-      const element = orgNameRef.current;
-      
-      // Check if user prefers reduced motion
+    try {
+      // Check for reduced motion preference
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (prefersReducedMotion) return;
       
-      // Use a simple CSS animation instead of GSAP
-      element.classList.add('shake-animation');
+      if (prefersReducedMotion) {
+        // If reduced motion is preferred, immediately show everything
+        setIsAnimated(true);
+        setShouldAnimate(true);
+        return;
+      }
       
-      // Remove animation class after it completes
-      const removeAnimation = () => {
-        element.classList.remove('shake-animation');
-      };
+      // Schedule animation to start shortly after mounting
+      const timer = setTimeout(() => {
+        setShouldAnimate(true);
+        setIsAnimated(true);
+      }, 200);
       
-      element.addEventListener('animationend', removeAnimation, { once: true });
-      
-      return () => {
-        element.removeEventListener('animationend', removeAnimation);
-      };
+      return () => clearTimeout(timer);
+    } catch (error) {
+      console.error("useAnimatedText: Error in animation setup", error);
+      // On error, just show everything
+      setIsAnimated(true);
+      setShouldAnimate(true);
     }
-  }, [displayText, isComplete]);
-  
+  }, []);
+
   return {
     text2Ref,
     orgNameRef,
     containerRef,
     lineWidth,
-    lineOpacity
+    lineOpacity,
+    isAnimated
   };
 };
 

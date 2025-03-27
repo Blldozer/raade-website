@@ -11,21 +11,52 @@ import { usePerformanceDetection } from "./responsive/usePerformanceDetection";
  * - Input capabilities (touch, pointer, hover)
  * - Performance estimation
  * - Accessibility preferences
+ * 
+ * Enhanced with better error handling and SSR safety
  */
 export const useResponsive = () => {
-  const deviceInfo = useDeviceDetection();
-  const inputCapabilities = useInputCapabilities();
-  const { performanceLevel } = usePerformanceDetection(
-    deviceInfo.deviceType,
-    deviceInfo.width,
-    deviceInfo.height
-  );
+  // Check if we're in a safe environment for React hooks
+  const isSafeEnvironment = typeof window !== 'undefined';
+                            
+  try {
+    // Use the device detection hook to get device information
+    const deviceInfo = useDeviceDetection();
+    
+    // Get input capabilities
+    const inputCapabilities = useInputCapabilities();
+    
+    // Get performance level based on device type
+    const { performanceLevel } = usePerformanceDetection(
+      deviceInfo.deviceType,
+      deviceInfo.width,
+      deviceInfo.height
+    );
 
-  return {
-    ...deviceInfo,
-    ...inputCapabilities,
-    performanceLevel
-  };
+    // Combine and return all responsive information
+    return {
+      ...deviceInfo,
+      ...inputCapabilities,
+      performanceLevel
+    };
+  } catch (error) {
+    // If any hooks fail, return safe default values
+    console.error("Error in useResponsive hook:", error);
+    return {
+      isMobile: false,
+      isTablet: false,
+      isDesktop: true,
+      isLargeDesktop: false,
+      width: 1024,
+      height: 768,
+      orientation: 'landscape' as const,
+      breakpoint: 'lg' as const,
+      deviceType: 'desktop' as const,
+      hasTouch: false,
+      hasPointer: true,
+      hasHover: true,
+      performanceLevel: 'high' as const
+    };
+  }
 };
 
 // Default export for backward compatibility

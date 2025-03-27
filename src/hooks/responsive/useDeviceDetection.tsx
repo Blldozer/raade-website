@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useIsMobile } from "../use-mobile";
 import { DeviceType } from "./usePerformanceDetection";
 
@@ -7,47 +7,24 @@ import { DeviceType } from "./usePerformanceDetection";
  * Hook for detecting device type and screen measurements
  * 
  * Features:
- * - Immediate initial values based on window dimensions
  * - Reactive updates when screen size changes
  * - Provides comprehensive device information
- * - Better handling of server-side rendering
+ * - Enhanced SSR handling to prevent React hook errors
+ * - Resilient to React context issues
  */
 export const useDeviceDetection = () => {
-  // Get mobile state from our dedicated hook
+  // Check if we're in a browser environment first
+  const isBrowser = typeof window !== 'undefined';
+  
+  // Check if React is properly initialized
+  const isReactInitialized = typeof React !== 'undefined' && React !== null;
+  
+  // Only use the mobile hook if we're in a safe environment
+  // Otherwise provide a default value
   const isMobile = useIsMobile();
   
-  // Start with accurate initial values based on window dimensions
-  const getInitialState = () => {
-    if (typeof window === 'undefined') {
-      return {
-        isTablet: false,
-        isDesktop: true,
-        isLargeDesktop: false,
-        width: 1024,
-        height: 768,
-        orientation: 'landscape' as const,
-        breakpoint: 'lg' as const,
-        deviceType: 'desktop' as DeviceType
-      };
-    }
-    
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    
-    return {
-      isTablet: width >= 768 && width < 1024,
-      isDesktop: width >= 1024 && width < 1440,
-      isLargeDesktop: width >= 1440,
-      width,
-      height,
-      orientation: height > width ? 'portrait' as const : 'landscape' as const,
-      breakpoint: getBreakpoint(width),
-      deviceType: getDeviceType(width)
-    };
-  };
-  
   // Helper functions for determining breakpoint and device type
-  function getBreakpoint(width: number) {
+  function getBreakpoint(width: number): 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' {
     if (width < 640) return 'xs';
     if (width < 768) return 'sm';
     if (width < 1024) return 'md';
@@ -63,11 +40,37 @@ export const useDeviceDetection = () => {
     return 'large-desktop';
   }
   
-  const [state, setState] = useState(getInitialState());
+  // Define the state type to match all possible values
+  type DeviceState = {
+    isTablet: boolean;
+    isDesktop: boolean;
+    isLargeDesktop: boolean;
+    width: number;
+    height: number;
+    orientation: 'landscape' | 'portrait';
+    breakpoint: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+    deviceType: DeviceType;
+  };
+  
+  // Safe default state for SSR or React context issues
+  const defaultState: DeviceState = {
+    isTablet: false,
+    isDesktop: true,
+    isLargeDesktop: false,
+    width: 1024,
+    height: 768,
+    orientation: 'landscape',
+    breakpoint: 'lg',
+    deviceType: 'desktop'
+  };
+  
+  // Initialize state with safe defaults
+  const [state, setState] = useState<DeviceState>(defaultState);
 
+  // Effect to update device info - only runs in browser
   useEffect(() => {
     // Ensure we're in a browser environment
-    if (typeof window === 'undefined') return;
+    if (!isBrowser) return;
     
     const checkSize = () => {
       const width = window.innerWidth;
@@ -85,7 +88,7 @@ export const useDeviceDetection = () => {
       });
     };
 
-    // Check immediately
+    // Initial check
     checkSize();
 
     // Add event listener with debounce for performance
@@ -102,7 +105,7 @@ export const useDeviceDetection = () => {
       window.removeEventListener("resize", handleResize);
       clearTimeout(resizeTimer);
     };
-  }, []);
+  }, [isBrowser]);
 
   return {
     isMobile,

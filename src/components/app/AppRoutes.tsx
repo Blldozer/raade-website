@@ -4,10 +4,9 @@ import { Suspense, lazy } from "react";
 import PageLoading from "./PageLoading";
 import ErrorBoundary from "../ErrorBoundary";
 import GlobalErrorFallback from "./GlobalErrorFallback";
-import ScrollToTop from "./ScrollToTop";
 import NavigationWrapper from "./NavigationWrapper";
 
-// Import main pages
+// Import main pages directly to avoid lazy loading issues
 import Index from "../../pages/Index";
 import InnovationStudios from "../../pages/InnovationStudios";
 import Conference from "../../pages/Conference";
@@ -28,13 +27,14 @@ const AppRoutes = () => {
   const isDevelopment = process.env.NODE_ENV === 'development';
 
   return (
-    <ErrorBoundary 
-      fallback={<GlobalErrorFallback error={new Error("Content failed to render")} />}
-      suppressDevErrors={isDevelopment}
-    >
-      <ScrollToTop>
-        {/* NavigationWrapper inside proper context */}
-        <NavigationWrapper />
+    <>
+      {/* NavigationWrapper inside proper context */}
+      <NavigationWrapper />
+      
+      <ErrorBoundary 
+        fallback={<GlobalErrorFallback error={new Error("Content failed to render")} />}
+        suppressDevErrors={isDevelopment}
+      >
         <div className="flex-grow">
           <Suspense fallback={<PageLoading />}>
             <Routes>
@@ -51,8 +51,8 @@ const AppRoutes = () => {
             </Routes>
           </Suspense>
         </div>
-      </ScrollToTop>
-    </ErrorBoundary>
+      </ErrorBoundary>
+    </>
   );
 };
 
