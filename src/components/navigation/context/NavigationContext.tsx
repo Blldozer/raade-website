@@ -29,6 +29,8 @@ export const NavigationProvider = ({
   // Generate a unique string ID for component instance tracking
   const instanceId = `nav-${Math.random().toString(36).substring(2, 9)}`;
   const location = useLocation();
+  
+  // Use responsive hook safely (it has SSR protection internally now)
   const { isMobile, isTablet } = useResponsive();
   
   // Core navigation state
@@ -80,6 +82,9 @@ export const NavigationProvider = ({
   // Handle scroll events to update visibility and scroll state
   // Use a named function for the event listener to ensure proper cleanup
   useEffect(() => {
+    // Ensure we're in a browser environment
+    if (typeof window === 'undefined') return;
+    
     const handleScroll = () => {
       if (!isMounted) return;
       
@@ -105,7 +110,13 @@ export const NavigationProvider = ({
   }, [instanceId, isMounted]);
   
   // Set initial background for specific pages with layout effect
-  useLayoutEffect(() => {
+  // Use useEffect as a fallback for SSR
+  const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+  
+  useIsomorphicLayoutEffect(() => {
+    // Ensure we're in a browser environment
+    if (typeof document === 'undefined') return;
+    
     const isIndexPage = location.pathname === "/" || location.pathname === "";
     
     if (isIndexPage || isHeroPage) {
@@ -119,8 +130,8 @@ export const NavigationProvider = ({
     }
     
     return () => {
-      // Only clean up if this specific instance set the attribute
-      if ((isIndexPage || isHeroPage) && isMounted) {
+      // Only clean up if this specific instance set the attribute and we're still in browser
+      if ((isIndexPage || isHeroPage) && isMounted && typeof document !== 'undefined') {
         document.body.removeAttribute('data-nav-background');
         console.log(`NavigationContext (${instanceId}): Cleaned up nav background attribute`);
       }

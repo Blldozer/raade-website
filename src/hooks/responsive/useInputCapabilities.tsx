@@ -9,15 +9,22 @@ import { useState, useEffect } from "react";
  * - Hover capabilities
  * - Touch support
  * - Motion preferences
+ * 
+ * Enhanced with proper SSR checks to prevent "Cannot read properties of null" errors
  */
 export const useInputCapabilities = () => {
+  // Initialize with safe default values
   const [hasPrecisePointer, setHasPrecisePointer] = useState(true);
   const [hasHoverCapability, setHasHoverCapability] = useState(true);
   const [hasCoarsePointer, setHasCoarsePointer] = useState(false);
   const [touchCapability, setTouchCapability] = useState<'none' | 'limited' | 'full'>('none');
   const [preferReducedMotion, setPreferReducedMotion] = useState(false);
 
+  // Only run this effect in the browser environment
   useEffect(() => {
+    // Ensure we're in a browser environment
+    if (typeof window === 'undefined') return;
+    
     // Check for pointer capabilities
     if (window.matchMedia) {
       // Check if the device has hover capability

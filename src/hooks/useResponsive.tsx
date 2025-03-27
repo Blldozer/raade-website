@@ -11,6 +11,8 @@ import { usePerformanceDetection } from "./responsive/usePerformanceDetection";
  * - Input capabilities (touch, pointer, hover)
  * - Performance estimation
  * - Accessibility preferences
+ * 
+ * Enhanced with better error handling and SSR safety
  */
 export const useResponsive = () => {
   // Use the device detection hook to get device information

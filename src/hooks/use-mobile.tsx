@@ -9,14 +9,11 @@ const MOBILE_BREAKPOINT = 768
  * Features:
  * - Provides reactive state based on window size changes
  * - Uses matchMedia for better browser compatibility
- * - Safely handles SSR scenarios where window is undefined
+ * - Enhanced with proper SSR handling
  */
 export function useIsMobile() {
-  // Only initialize state inside the component function
-  const [isMobile, setIsMobile] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    return window.innerWidth < MOBILE_BREAKPOINT;
-  });
+  // Initialize with a safe default for SSR
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     // Ensure we're in a browser environment
@@ -38,7 +35,7 @@ export function useIsMobile() {
       mql.addListener(handleChange);
     }
     
-    // Set the initial value explicitly again to ensure consistency
+    // Set the initial value explicitly
     setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     
     // Cleanup on unmount

@@ -1,53 +1,34 @@
 
-import { useState, useCallback, useEffect } from 'react';
-import { isLightColor, getElementBackgroundColor } from '@/utils/colorUtils';
+import { useState, useEffect } from 'react';
+import { getElementBackgroundColor, isLightColor } from '@/utils/colorUtils';
 
 /**
- * Hook to analyze the background color of a section element
- * 
- * @param section - The DOM element to analyze
- * @returns Whether the background is light colored
+ * Hook to analyze the background color of the current section
+ * Enhanced with proper SSR handling
  */
-export const useBackgroundAnalysis = (section: Element | null) => {
-  const [isLightBackground, setIsLightBackground] = useState(false);
+export const useBackgroundAnalysis = (currentSection: Element | null) => {
+  const [isLightBackground, setIsLightBackground] = useState(true);
   
-  // Analyze the background color of the current section
-  const analyzeSectionBackground = useCallback((element: Element | null) => {
-    if (!element) return;
+  useEffect(() => {
+    // Skip in SSR environment
+    if (typeof window === 'undefined') return;
     
-    // Default to dark background if we can't determine the color
-    let lightBackground = false;
+    // No section to analyze
+    if (!currentSection) return;
     
     try {
-      // First check if section has explicit data-background attribute
-      const backgroundAttr = element.getAttribute('data-background');
+      // Get the computed background color
+      const bgColor = getElementBackgroundColor(currentSection as HTMLElement);
       
-      if (backgroundAttr === 'light') {
-        lightBackground = true;
-      } else if (backgroundAttr === 'dark') {
-        lightBackground = false;
-      } else {
-        // If no explicit attribute, analyze the actual background color
-        const backgroundColor = getElementBackgroundColor(element as HTMLElement);
-        lightBackground = isLightColor(backgroundColor);
-      }
-      
-      // Update the state based on our analysis
-      setIsLightBackground(lightBackground);
-      
-      // For debugging
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`Section ${element.id || 'unnamed'} background: ${lightBackground ? 'light' : 'dark'}`);
-      }
+      // Determine if it's a light color
+      const isLight = isLightColor(bgColor);
+      setIsLightBackground(isLight);
     } catch (error) {
-      console.error('Error analyzing section background:', error);
+      // Fallback to default (light background) in case of errors
+      console.error('Error analyzing background:', error);
+      setIsLightBackground(true);
     }
-  }, []);
-  
-  // Run analysis whenever the section changes
-  useEffect(() => {
-    analyzeSectionBackground(section);
-  }, [section, analyzeSectionBackground]);
+  }, [currentSection]);
   
   return { isLightBackground };
 };

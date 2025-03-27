@@ -9,7 +9,7 @@ import { DeviceType } from "./usePerformanceDetection";
  * Features:
  * - Reactive updates when screen size changes
  * - Provides comprehensive device information
- * - Better handling of server-side rendering
+ * - Enhanced SSR handling to prevent React hook errors
  */
 export const useDeviceDetection = () => {
   // Get mobile state from our dedicated hook
@@ -32,36 +32,22 @@ export const useDeviceDetection = () => {
     return 'large-desktop';
   }
   
-  // Get initial state within the component function
-  const [state, setState] = useState(() => {
-    if (typeof window === 'undefined') {
-      return {
-        isTablet: false,
-        isDesktop: true,
-        isLargeDesktop: false,
-        width: 1024,
-        height: 768,
-        orientation: 'landscape' as const,
-        breakpoint: 'lg' as const,
-        deviceType: 'desktop' as DeviceType
-      };
-    }
-    
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    
-    return {
-      isTablet: width >= 768 && width < 1024,
-      isDesktop: width >= 1024 && width < 1440,
-      isLargeDesktop: width >= 1440,
-      width,
-      height,
-      orientation: height > width ? 'portrait' as const : 'landscape' as const,
-      breakpoint: getBreakpoint(width),
-      deviceType: getDeviceType(width)
-    };
-  });
+  // Safe default state for SSR
+  const defaultState = {
+    isTablet: false,
+    isDesktop: true,
+    isLargeDesktop: false,
+    width: 1024,
+    height: 768,
+    orientation: 'landscape' as const,
+    breakpoint: 'lg' as const,
+    deviceType: 'desktop' as DeviceType
+  };
+  
+  // Initialize state with safe defaults
+  const [state, setState] = useState(defaultState);
 
+  // Effect to update device info - only runs in browser
   useEffect(() => {
     // Ensure we're in a browser environment
     if (typeof window === 'undefined') return;
@@ -82,7 +68,7 @@ export const useDeviceDetection = () => {
       });
     };
 
-    // Check immediately
+    // Initial check
     checkSize();
 
     // Add event listener with debounce for performance
