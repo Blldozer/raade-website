@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useCountdown } from "./countdown/useCountdown";
@@ -36,25 +35,31 @@ const CountdownTimer = ({
   textColor
 }: CountdownTimerProps) => {
   // Safe router context access with fallback
-  let locationPath = '/';
-  let isDarkBackground = false;
+  const [locationPath, setLocationPath] = useState('/');
+  const [isDarkBackground, setIsDarkBackground] = useState(false);
+  const [scrollPastHero, setScrollPastHero] = useState(false);
   
-  try {
-    const location = useLocation();
-    locationPath = location.pathname;
-    
-    // Get initial background check based on current route
-    isDarkBackground = !hasLightBackground(locationPath);
-  } catch (error) {
-    // If router context is not available, use safe defaults
-    console.log("CountdownTimer: Router context not available, using defaults");
-  }
+  // Initialize router-related state safely
+  useEffect(() => {
+    try {
+      const location = useLocation();
+      setLocationPath(location.pathname);
+      
+      // Get initial background check based on current route
+      setIsDarkBackground(!hasLightBackground(location.pathname));
+    } catch (error) {
+      // If router context is not available, use safe defaults
+      console.log("CountdownTimer: Router context not available, using defaults");
+    }
+  }, []);
   
   // Use the provided targetDate or fall back to the default
   // Using a clearer date format with explicit year, month, day
-  const CONFERENCE_DATE = targetDate ? new Date(targetDate) : new Date('2025-04-11T09:00:00');
+  const CONFERENCE_DATE = useMemo(() => {
+    return targetDate ? new Date(targetDate) : new Date('2025-04-11T09:00:00');
+  }, [targetDate]);
   
-  // Add debugging for the target date
+  // Add debugging for the target date (only once on mount)
   useEffect(() => {
     console.log("CountdownTimer initialized with:", {
       providedDate: targetDate,
@@ -62,19 +67,21 @@ const CountdownTimer = ({
       currentDate: new Date().toISOString(),
       timeDifference: CONFERENCE_DATE.getTime() - new Date().getTime()
     });
-  }, [targetDate, CONFERENCE_DATE]);
-  
-  const [scrollPastHero, setScrollPastHero] = useState(false);
+  }, []);
   
   // Get time left using custom hook
   const timeLeft = useCountdown(CONFERENCE_DATE);
   
+  // Memoize the scroll handler to prevent recreation on each render
+  const handleScroll = useCallback(() => {
+    const isPastHero = isScrollPastHero();
+    if (scrollPastHero !== isPastHero) {
+      setScrollPastHero(isPastHero);
+    }
+  }, [scrollPastHero]);
+  
   // Add scroll event listener to detect when user has scrolled past hero section
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollPastHero(isScrollPastHero());
-    };
-
     // Check if we're in a browser environment
     if (typeof window !== 'undefined') {
       window.addEventListener('scroll', handleScroll);
@@ -84,48 +91,59 @@ const CountdownTimer = ({
         window.removeEventListener('scroll', handleScroll);
       };
     }
-  }, []);
-
-  // If we're on index, about, or innovation studios page and have scrolled past hero,
-  // we should use light color scheme (for dark text) as background is likely white
-  const effectiveDarkBackground = scrollPastHero && 
-    (locationPath === '/' || 
-     locationPath === '/about' || 
-     locationPath === '/studios') 
-    ? false : isDarkBackground;
+  }, [handleScroll]);
   
-  // Create a custom color scheme if specific colors are provided
-  const customColorScheme: ColorScheme = {};
+  // Calculate effective dark background state once per relevant state change
+  const effectiveDarkBackground = useMemo(() => {
+    return scrollPastHero && 
+      (locationPath === '/' || 
+       locationPath === '/about' || 
+       locationPath === '/studios') 
+      ? false : isDarkBackground;
+  }, [scrollPastHero, locationPath, isDarkBackground]);
   
-  if (accentColor) {
-    customColorScheme.accent = accentColor;
-    customColorScheme.iconColor = accentColor;
-  } else {
-    // Use RAADE's yellow-orange by default for better visibility and brand consistency
-    customColorScheme.accent = "text-raade-yellow-orange";
-    customColorScheme.iconColor = "text-raade-yellow-orange";
-  }
+  // Create custom color scheme - memoized to prevent unnecessary recalculations
+  const customColorScheme = useMemo(() => {
+    const scheme: ColorScheme = {};
+    
+    if (accentColor) {
+      scheme.accent = accentColor;
+      scheme.iconColor = accentColor;
+    } else {
+      // Use RAADE's yellow-orange by default for better visibility and brand consistency
+      scheme.accent = "text-raade-yellow-orange";
+      scheme.iconColor = "text-raade-yellow-orange";
+    }
+    
+    if (textColor) {
+      scheme.text = textColor;
+      scheme.dropdownText = textColor;
+    }
+    
+    return scheme;
+  }, [accentColor, textColor]);
   
-  if (textColor) {
-    customColorScheme.text = textColor;
-    customColorScheme.dropdownText = textColor;
-  }
-  
-  // If we have custom colors, merge with the provided colorScheme
-  const finalColorScheme = 
-    Object.keys(customColorScheme).length > 0 && typeof colorScheme === 'object'
+  // Calculate final color scheme - memoized to prevent unnecessary recalculations
+  const finalColorScheme = useMemo(() => {
+    return Object.keys(customColorScheme).length > 0 && typeof colorScheme === 'object'
       ? { ...colorScheme, ...customColorScheme }
       : (Object.keys(customColorScheme).length > 0 ? customColorScheme : colorScheme);
+  }, [colorScheme, customColorScheme]);
   
-  const colors = getColorClasses(finalColorScheme, effectiveDarkBackground);
+  // Calculate final colors - memoized to prevent unnecessary recalculations
+  const colors = useMemo(() => {
+    const baseColors = getColorClasses(finalColorScheme, effectiveDarkBackground);
+    
+    // Ensure background is transparent
+    baseColors.background = "bg-transparent";
+    
+    // Set dropdown styling - override with RAADE gold gradient
+    baseColors.dropdownBg = "bg-gradient-to-br from-raade-gold-start via-raade-gold-middle to-raade-gold-end";
+    baseColors.dropdownText = "text-white";
+    
+    return baseColors;
+  }, [finalColorScheme, effectiveDarkBackground]);
   
-  // Ensure background is transparent
-  colors.background = "bg-transparent";
-  
-  // Set dropdown styling - override with RAADE gold gradient
-  colors.dropdownBg = "bg-gradient-to-br from-raade-gold-start via-raade-gold-middle to-raade-gold-end";
-  colors.dropdownText = "text-white";
-
   // Render the NavTimerDisplay with hover dropdown
   return (
     <NavTimerDisplay 

@@ -1,16 +1,17 @@
-
-import React, { useEffect, useRef, memo } from 'react';
+import React, { useEffect, useRef, memo, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useAnimation } from 'framer-motion';
 import { useCountdown } from '../../countdown/useCountdown';
 import { formatTimeUnit } from '../../countdown/timerUtils';
 
 const EnhancedCountdown = () => {
+  // Memoize the target date to avoid recreating it on every render
+  const targetDate = useMemo(() => new Date('2025-04-11T09:00:00'), []);
+  
   // Get the time remaining until the conference
-  const targetDate = new Date('2025-04-11T09:00:00');
   const timeLeft = useCountdown(targetDate);
   
-  // Debug target date
+  // Debug target date - only runs once on mount
   useEffect(() => {
     console.log("EnhancedCountdown: Target date set to", {
       target: targetDate.toISOString(),
