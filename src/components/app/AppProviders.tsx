@@ -49,6 +49,25 @@ const AppProviders = ({ children }: AppProvidersProps) => {
     return <>{children}</>;
   }
 
+  // Safety check - ensure React and hooks are available
+  if (typeof React !== 'object' || React === null || typeof React.useEffect !== 'function') {
+    console.error("AppProviders: React or React.useEffect not available");
+    
+    // Return minimal app structure with error message
+    return (
+      <div className="p-4 bg-red-100 text-red-800 rounded m-4">
+        <h2 className="text-xl font-bold mb-2">React Initialization Error</h2>
+        <p>The application failed to initialize properly. Please try refreshing the page.</p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+        >
+          Refresh Page
+        </button>
+      </div>
+    );
+  }
+  
   // Set initialization flag immediately on component mount
   // This is crucial for preventing React context errors
   window.__REACT_INITIALIZED = true;

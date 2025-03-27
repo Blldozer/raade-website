@@ -4,10 +4,13 @@ import React from 'react'  // Explicitly import React
 import App from './App.tsx'
 import './index.css'
 
+// Define React globally immediately
+if (typeof window !== 'undefined') {
+  window.React = React;
+}
+
 // IMPORTANT: Set React initialization flag to true immediately
 if (typeof window !== 'undefined') {
-  // Make sure React global is available
-  window.React = React;
   window.__REACT_INITIALIZED = true;
   console.log("Setting initial React initialization flag to true");
   
@@ -114,11 +117,6 @@ function startApp() {
       </div>
     `;
   }
-}
-
-// Define React globally on window to ensure it's available immediately
-if (typeof window !== 'undefined') {
-  window.React = React;
 }
 
 // Start the application immediately

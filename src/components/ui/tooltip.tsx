@@ -22,6 +22,12 @@ const TooltipProvider: React.FC<React.ComponentProps<typeof TooltipPrimitive.Pro
     return <>{children}</>;
   }
 
+  // Additional safety check for useState
+  if (typeof React.useState !== 'function') {
+    console.warn("TooltipProvider: React.useState not available");
+    return <>{children}</>;
+  }
+
   try {
     return (
       <TooltipPrimitive.Provider {...props}>
