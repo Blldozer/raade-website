@@ -11,19 +11,6 @@ import { useState, useEffect, useRef } from 'react';
  * - Support for screen readers and accessibility
  */
 export const useAnimatedText = () => {
-  // Check if React is properly initialized
-  if (!window.__REACT_INITIALIZED || typeof useRef !== 'function') {
-    console.warn("useAnimatedText: React not fully initialized, returning empty refs");
-    return {
-      text2Ref: null,
-      orgNameRef: null,
-      containerRef: null,
-      lineWidth: "0%",
-      lineOpacity: 0,
-      isAnimated: false
-    };
-  }
-
   // Create refs for DOM elements
   const text2Ref = useRef(null);
   const orgNameRef = useRef(null);

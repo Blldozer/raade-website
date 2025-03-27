@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -7,68 +8,24 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>RAADE - Rice Association for African Development</title>
     <meta name="description" content="Rice Association for African Development - Empowering innovation across the African continent through student-led Innovation Studios and global connections" />
-    <meta name="author" content="RAADE" />
-    <meta property="og:title" content="RAADE - Rice Association for African Development" />
-    <meta property="og:description" content="Student-led organization driving innovation and development across Africa" />
-    <meta property="og:image" content="/raade-og-image.png" />
     
-    <!-- Comprehensive Favicon configuration -->
+    <!-- Favicon configuration -->
     <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" sizes="any" />
     <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
-    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
-    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
-    <link rel="shortcut icon" href="/favicon/favicon.ico" />
-    <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png" sizes="180x180" />
-    <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#FFFFFF" />
-    <link rel="manifest" href="/manifest.json">
-    <meta name="msapplication-TileColor" content="#FFFFFF" />
-    <meta name="theme-color" content="#ffffff" />
-    <meta name="apple-mobile-web-app-title" content="RAADE">
     
-    <!-- Schema.org markup for Google Search -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "Rice Association for African Development",
-      "alternateName": "RAADE",
-      "url": "https://rice-raade.com",
-      "logo": "https://rice-raade.com/logo.png",
-      "sameAs": [
-        "https://www.linkedin.com/company/raade",
-        "https://www.instagram.com/raade_rice"
-      ],
-      "description": "Empowering innovation across the African continent through student-led Innovation Studios and global connections."
-    }
-    </script>
-    
-    <!-- Preload critical resources -->
-    <link rel="preload" href="/fonts/Amadine.woff" as="font" type="font/woff" crossorigin />
-    <link rel="preload" href="/fonts/Simula_Book_ImfTVa3.woff" as="font" type="font/woff" crossorigin />
-    <link rel="preload" href="https://cdn.gpteng.co/gptengineer.js" as="script" crossorigin />
+    <!-- Preload critical resources but with safer syntax -->
+    <link rel="preload" href="/fonts/Amadine.woff" as="font" type="font/woff" crossorigin="anonymous" />
+    <link rel="preload" href="/fonts/Simula_Book_ImfTVa3.woff" as="font" type="font/woff" crossorigin="anonymous" />
     
     <!-- Preconnect to external domains -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://cdn.gpteng.co" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="anonymous" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
     
-    <!-- Preemptively load fonts with better performance attributes -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hammersmith+One&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Zilla+Slab:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Zilla+Slab+Highlight:wght@400;700&family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=Taviraj:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Alegreya+Sans:ital,wght@0,100;0,300;0,400;0,500;0,700;0,800;0,900;1,100;1,300;1,400;1,500;1,700;1,800;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Lora:ital,wght@0,400..700;1,400..700&display=swap" media="print" onload="this.media='all'; this.onload=null;">
+    <!-- Simplified Google Fonts loading -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Zilla+Slab+Highlight:wght@400;700&family=Alegreya+Sans:wght@400;500;700&display=swap" />
     
-    <!-- Fallback in case JS is disabled -->
-    <noscript>
-      <link href="https://fonts.googleapis.com/css2?family=Hammersmith+One&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Zilla+Slab:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Zilla+Slab+Highlight:wght@400;700&family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=Taviraj:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Alegreya+Sans:ital,wght@0,100;0,300;0,400;0,500;0,700;0,800;0,900;1,100;1,300;1,400;1,500;1,700;1,800;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
-    </noscript>
-    
-    <!-- Font display swap for local fonts to prevent FOUT and FOIT issues -->
+    <!-- Simplified font loading with better font-display settings -->
     <style>
-      /* Font loading indicator styles */
-      html.fonts-loading {
-        /* Invisible text during loading */
-        color: transparent;
-      }
-      
-      /* Apply font-display: swap to ensure text remains visible during font loading */
       @font-face {
         font-family: 'Amadine';
         src: url('/fonts/Amadine.woff') format('woff');
@@ -84,153 +41,16 @@
         font-style: normal;
         font-display: swap;
       }
-
-      @font-face {
-        font-family: 'Simula Book Italic';
-        src: url('/fonts/Simula_BookItalic_651eMqB.woff') format('woff');
-        font-weight: normal;
-        font-style: italic;
-        font-display: swap;
-      }
       
       /* Add fallback font stacks to prevent layout shifts */
       body {
         font-family: 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
       }
-      
-      /* Font error state - ensure content is visible even if custom fonts fail */
-      html.fonts-error body, 
-      html.fonts-timeout body,
-      html.no-font-api body {
-        /* Explicitly use system fonts if custom fonts fail */
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif !important;
-      }
     </style>
-    
-    <link rel="manifest" href="/manifest.json">
   </head>
   <body>
     <div id="root"></div>
-    <!-- Include a fallback for the GPT Engineer script -->
-    <script>
-      // Error handler for the GPT Engineer script
-      window.addEventListener('error', function(event) {
-        if (event.target && (event.target.src || event.target.href)) {
-          const resource = event.target.src || event.target.href;
-          if (resource && resource.includes('cdn.gpteng.co/gptengineer.js')) {
-            console.warn('GPT Engineer script failed to load - using fallback');
-            
-            // Create a minimal fallback script
-            const fallbackScript = document.createElement('script');
-            fallbackScript.innerHTML = `
-              console.log("GPT Engineer script fallback loaded");
-              // Minimal implementation to prevent errors
-              window.__GPT_ENG_SELECT = function() { 
-                console.log("Select functionality unavailable - reload to try again");
-              };
-            `;
-            document.body.appendChild(fallbackScript);
-          }
-        }
-      }, true); // Use capture phase
-    </script>
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module" onerror="console.error('Failed to load GPT Engineer script')"></script>
+    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
-    <script>
-      // Load and cache critical resources
-      function cacheResources() {
-        // Only run if service worker is active
-        if (!('serviceWorker' in navigator) || !navigator.serviceWorker.controller) return;
-        
-        // Critical resources to cache
-        const criticalResources = [
-          'https://cdn.gpteng.co/gptengineer.js',
-          'https://fonts.googleapis.com/css2?family=Hammersmith+One&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap'
-        ];
-        
-        // Send messages to service worker to cache these resources
-        criticalResources.forEach(url => {
-          navigator.serviceWorker.controller.postMessage({
-            type: 'CACHE_EXTERNAL',
-            url: url
-          });
-        });
-      }
-      
-      // Improved service worker registration with version checking
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-          // Register the service worker
-          navigator.serviceWorker.register('/sw.js')
-            .then(function(registration) {
-              console.log('ServiceWorker registration successful with scope: ', registration.scope);
-              
-              // Cache resources once service worker is active
-              if (navigator.serviceWorker.controller) {
-                cacheResources();
-              } else {
-                // Wait for the service worker to be activated
-                navigator.serviceWorker.addEventListener('controllerchange', cacheResources);
-              }
-              
-              // Check for updates without forcing refresh
-              registration.addEventListener('updatefound', () => {
-                // A new service worker is installing
-                const newWorker = registration.installing;
-                
-                newWorker.addEventListener('statechange', () => {
-                  // The new service worker has been installed
-                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    // New content is available; create a custom non-intrusive notification
-                    const updateNotification = document.createElement('div');
-                    updateNotification.className = 'update-toast';
-                    updateNotification.innerHTML = `
-                      <div style="position:fixed; bottom:20px; right:20px; background:#274675; color:white; padding:12px 20px; border-radius:4px; box-shadow:0 4px 12px rgba(0,0,0,0.15); z-index:9999; display:flex; align-items:center; justify-content:space-between; max-width:300px;">
-                        <span>New version available</span>
-                        <button onclick="window.location.reload()" style="background:white; color:#274675; border:none; padding:4px 8px; margin-left:10px; border-radius:4px; cursor:pointer; font-weight:bold;">Update</button>
-                      </div>
-                    `;
-                    document.body.appendChild(updateNotification);
-                  }
-                });
-              });
-            })
-            .catch(function(err) {
-              console.log('ServiceWorker registration failed: ', err);
-            });
-        });
-      }
-      
-      // Font loading optimization with better error handling
-      if ('fonts' in document) {
-        document.fonts.ready
-          .then(function() {
-            console.log('All fonts loaded and ready for use');
-            document.documentElement.classList.add('fonts-loaded');
-            document.documentElement.classList.remove('fonts-loading');
-          })
-          .catch(function(err) {
-            console.error('Font loading error:', err);
-            document.documentElement.classList.add('fonts-error');
-            document.documentElement.classList.remove('fonts-loading');
-          });
-      }
-      
-      // Global error recovery handler
-      window.addEventListener('error', function(event) {
-        console.error('Global error caught:', event.error || event.message);
-        
-        // For critical errors that happen early
-        if (document.body && !document.getElementById('root')?.childNodes.length) {
-          console.warn('Possible critical error during initialization, trying recovery');
-          // Wait a bit then try reloading
-          setTimeout(() => {
-            if (!document.getElementById('root')?.childNodes.length) {
-              window.location.reload();
-            }
-          }, 5000);
-        }
-      });
-    </script>
   </body>
 </html>

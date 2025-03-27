@@ -7,64 +7,17 @@ import './index.css'
 // IMPORTANT: Set React initialization flag to false initially
 if (typeof window !== 'undefined') {
   window.__REACT_INITIALIZED = false;
-  window.__REACT_CONTEXT_ERROR = false;
-  console.log("Setting initial React initialization flags");
+  console.log("Setting initial React initialization flag");
 }
 
 /**
  * Main entry point with improved initialization safety
- * - Ensures fonts are loaded before attempting to render
  * - Sets proper initialization flags for React
  * - Adds comprehensive error handling
  */
-function ensureFontsLoaded() {
-  console.log("Starting font loading process");
-  
-  // Add a class to the document to indicate initial loading state
-  (document as Document).documentElement.classList.add('fonts-loading');
-  
-  // Check if the document.fonts API is available
-  if ('fonts' in document) {
-    // Create a timeout to ensure the app renders even if fonts take too long
-    const fontTimeout = setTimeout(() => {
-      console.log("Font loading timeout reached, continuing with fallbacks");
-      (document as Document).documentElement.classList.add('fonts-timeout');
-      (document as Document).documentElement.classList.remove('fonts-loading');
-      startApp();
-    }, 3000); // 3 second timeout for font loading
-    
-    // Try to load fonts properly
-    document.fonts.ready.then(() => {
-      clearTimeout(fontTimeout);
-      console.log("All fonts loaded successfully");
-      (document as Document).documentElement.classList.add('fonts-loaded');
-      (document as Document).documentElement.classList.remove('fonts-loading');
-      startApp();
-    }).catch(err => {
-      clearTimeout(fontTimeout);
-      console.error("Error loading fonts:", err);
-      (document as Document).documentElement.classList.add('fonts-error');
-      (document as Document).documentElement.classList.remove('fonts-loading');
-      startApp();
-    });
-  } else {
-    // Fallback for browsers without document.fonts API
-    console.log("Font loading API not available, proceeding with fallbacks");
-    (document as Document).documentElement.classList.add('no-font-api');
-    (document as Document).documentElement.classList.remove('fonts-loading');
-    startApp();
-  }
-}
-
-// Function to start the application with improved safety
 function startApp() {
   try {
     console.log("Application startup: Beginning initialization");
-    
-    // CRITICAL: Set React global flag to indicate React is initializing
-    if (typeof window !== 'undefined') {
-      window.__REACT_HOOK_INITIALIZATION_STARTED = true;
-    }
     
     // Get the root element with improved error handling
     const rootElement = document.getElementById("root");
@@ -89,8 +42,6 @@ function startApp() {
       return; // Exit early if no root element
     } 
 
-    console.log("Application startup: Root element found, creating React root");
-
     // Add global error handler
     window.onerror = (message, source, lineno, colno, error) => {
       console.error("Global error caught:", message, error);
@@ -101,11 +52,6 @@ function startApp() {
                     message.toString().includes('useRef') ||
                     message.toString().includes('useEffect'))) {
         console.error("React hook error detected. This might be a React context initialization issue.");
-        
-        // Set a global flag to indicate React is not properly initialized
-        if (typeof window !== 'undefined') {
-          window.__REACT_CONTEXT_ERROR = true;
-        }
       }
       
       return false; // Let the default handler run as well
@@ -123,12 +69,6 @@ function startApp() {
     
     // Render WITHOUT StrictMode to prevent double renders causing issues with framer-motion
     root.render(<App />);
-    
-    // Mark React hooks as fully initialized after successful render
-    if (typeof window !== 'undefined') {
-      window.__REACT_HOOK_INITIALIZATION_COMPLETED = true;
-      console.log("React hook initialization completed flag set to true");
-    }
     
     console.log("Application startup: React rendering completed");
   } catch (error) {
@@ -160,5 +100,5 @@ function startApp() {
   }
 }
 
-// Start by checking font loading state
-ensureFontsLoaded();
+// Start the application immediately
+startApp();
