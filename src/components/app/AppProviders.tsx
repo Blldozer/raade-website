@@ -75,8 +75,10 @@ const AppProviders = ({ children }: AppProvidersProps) => {
   
   try {
     // Make sure React is available globally
-    if (typeof window !== 'undefined' && !window.React && typeof React !== 'undefined') {
-      window.React = React;
+    if (typeof window !== 'undefined' && !window.React) {
+      // Import React dynamically when needed instead of referencing the global React
+      const reactModule = require('react');
+      window.React = reactModule;
     }
     
     // Safe to use useEffect here after the safety checks
