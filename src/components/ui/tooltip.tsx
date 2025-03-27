@@ -9,12 +9,20 @@ import { cn } from "@/lib/utils"
  * 
  * This component has been customized to ensure proper React context operation
  * and prevent "Cannot read properties of null (reading 'useState')" errors.
- * 
- * The TooltipProvider component is meant to be used in AppProviders to
- * ensure proper context initialization.
+ * The wrapper component prevents Provider issues by explicitly creating a React.FC.
  */
 
-const TooltipProvider = TooltipPrimitive.Provider
+// Create a proper React functional component to ensure hooks work correctly
+const TooltipProvider: React.FC<React.ComponentProps<typeof TooltipPrimitive.Provider>> = ({ 
+  children,
+  ...props
+}) => {
+  return (
+    <TooltipPrimitive.Provider {...props}>
+      {children}
+    </TooltipPrimitive.Provider>
+  );
+};
 
 const Tooltip = TooltipPrimitive.Root
 

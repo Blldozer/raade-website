@@ -34,26 +34,27 @@ interface AppProvidersProps {
  * 1. BrowserRouter - Makes routing available to all components
  * 2. ThemeProvider - Makes theme available to all components including Toasters
  * 3. QueryClientProvider - Makes React Query available
- * 4. TooltipProvider - Makes tooltip context available to all components
- * 5. Error handling and UI components
+ * 4. ErrorBoundary - Provides error protection for all child components
+ * 5. TooltipProvider - Makes tooltip context available to all components
  */
 const AppProviders = ({ children }: AppProvidersProps) => {
-  // We don't use React hooks outside components anymore - let's use a simple log
+  // Simple log for debugging initialization
   console.log("AppProviders: Component mounted");
   
   return (
     <BrowserRouter>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <QueryClientProvider client={queryClient}>
-          <TooltipProvider>
-            <ErrorBoundary 
-              fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
-              suppressDevErrors={isDevelopment}
-            >
+          <ErrorBoundary 
+            fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
+            suppressDevErrors={isDevelopment}
+          >
+            {/* TooltipProvider moved inside ErrorBoundary but before children */}
+            <TooltipProvider>
               {children}
-              <Toaster />
-            </ErrorBoundary>
-          </TooltipProvider>
+            </TooltipProvider>
+            <Toaster />
+          </ErrorBoundary>
         </QueryClientProvider>
       </ThemeProvider>
     </BrowserRouter>
