@@ -21,9 +21,10 @@ interface CountdownTimerProps {
  * Features:
  * - Handles countdown expiration gracefully
  * - Adapts display based on whether the event has passed
- * - Supports navbar display with dropdown functionality
+ * - Supports navbar display with hover dropdown functionality
  * - Auto-detects appropriate color scheme based on background
  * - Enhanced with router context safety checks
+ * - Uses transparent background for seamless navigation integration
  */
 const CountdownTimer = ({
   targetDate,
@@ -116,8 +117,11 @@ const CountdownTimer = ({
       : (Object.keys(customColorScheme).length > 0 ? customColorScheme : colorScheme);
   
   const colors = getColorClasses(finalColorScheme, effectiveDarkBackground);
+  
+  // Ensure background is transparent
+  colors.background = "bg-transparent";
 
-  // Render the NavTimerDisplay (now with dropdown functionality)
+  // Render the NavTimerDisplay with hover dropdown
   return (
     <NavTimerDisplay 
       timeLeft={timeLeft} 

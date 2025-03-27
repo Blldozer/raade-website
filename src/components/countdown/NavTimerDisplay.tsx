@@ -24,8 +24,9 @@ interface NavTimerDisplayProps {
  * Features:
  * - Minimalist design suitable for navigation headers
  * - Responsive layout that works in limited space
- * - Dropdown with detailed conference information
+ * - Hover-triggered dropdown with detailed conference information
  * - Shows days, hours, minutes until the conference
+ * - Uses transparent background for better integration with navigation
  */
 const NavTimerDisplay = ({ 
   timeLeft,
@@ -34,11 +35,6 @@ const NavTimerDisplay = ({
 }: NavTimerDisplayProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  
-  // Toggle dropdown visibility
-  const toggleExpanded = () => {
-    setIsExpanded(prev => !prev);
-  };
   
   // Handle clicks outside to close dropdown
   useEffect(() => {
@@ -62,8 +58,7 @@ const NavTimerDisplay = ({
     );
   }
 
-  // Background and dropdown colors with defaults
-  const bgColor = colors.background || "bg-transparent";
+  // Set dropdown colors with defaults
   const dropdownBg = colors.dropdownBg || "bg-white/95";
   const dropdownText = colors.dropdownText || colors.text;
   const iconColor = colors.iconColor || colors.accent;
@@ -72,11 +67,12 @@ const NavTimerDisplay = ({
     <div
       ref={dropdownRef}
       className={cn("relative", className)}
+      onMouseEnter={() => setIsExpanded(true)}
+      onMouseLeave={() => setIsExpanded(false)}
     >
-      {/* Timer display that toggles dropdown */}
+      {/* Timer display that shows dropdown on hover */}
       <div 
-        className={cn("flex items-center space-x-1 font-alegreyasans cursor-pointer", bgColor)}
-        onClick={toggleExpanded}
+        className={cn("flex items-center space-x-1 font-alegreyasans cursor-pointer")}
       >
         <span className={cn("mr-1 font-bold", colors.text)}>Conference:</span>
         <div className="flex items-baseline">
