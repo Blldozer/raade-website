@@ -6,29 +6,20 @@ import { motion as framerMotion, AnimatePresence as FramerAnimatePresence } from
  * SafeMotion - A wrapper around framer-motion components that safely checks
  * React initialization state before rendering motion components
  * 
- * Enhanced with better type safety and more robust initialization checks
+ * This prevents "Cannot read properties of null (reading 'useContext')" errors
+ * when framer-motion tries to use React Context before React is fully initialized
  */
-
-// Get React from window if available as a fallback
-const getReact = () => {
-  if (typeof window !== 'undefined') {
-    return (window as any).__REACT_GLOBAL_REFERENCE || window.React || React;
-  }
-  return React;
-};
 
 // Check if we can safely use framer-motion
 const canUseMotion = () => {
   try {
-    const React = getReact();
-    
     // Verify React is properly initialized
     if (typeof React !== 'object' || React === null) {
       return false;
     }
 
     // Verify window and initialization flag exists
-    if (typeof window === 'undefined' || !(window as any).__REACT_INITIALIZED) {
+    if (typeof window === 'undefined' || !window.__REACT_INITIALIZED) {
       return false;
     }
 
@@ -47,25 +38,24 @@ const canUseMotion = () => {
 // Create safe versions of all motion components
 const initSafeMotion = () => {
   try {
-    const safeMotion: Record<string, any> = {};
+    const safeMotion = {};
     
     // Only attempt to initialize if framer-motion is available
     if (typeof framerMotion === 'object' && framerMotion !== null) {
       // TypeScript safety: Check that framerMotion is not null before accessing keys
-      const motionObj = framerMotion as Record<string, any>;
+      const motionObj = framerMotion as object;
       
       for (const key in motionObj) {
         if (Object.prototype.hasOwnProperty.call(motionObj, key)) {
-          const Component = motionObj[key];
-          if (typeof Component === 'function' || typeof Component === 'object') {
-            // Use proper typing for the forwardRef
-            safeMotion[key] = React.forwardRef((props: any, ref: React.Ref<any>) => {
+          const value = (motionObj as any)[key];
+          if (typeof value === 'function' || typeof value === 'object') {
+            (safeMotion as any)[key] = React.forwardRef((props: any, ref: React.Ref<any>) => {
               if (!canUseMotion()) {
-                // Fall back to regular div/span/a when motion can't be used safely
+                // Fall back to regular div/span when motion can't be used safely
                 const El = props.href ? 'a' : 'div';
-                return React.createElement(El, { ...props, ref, animate: undefined, transition: undefined });
+                return <El ref={ref} {...props} animate={undefined} transition={undefined} />;
               }
-              return React.createElement(Component, { ...props, ref });
+              return <value ref={ref} {...props} />;
             });
           }
         }
@@ -99,6 +89,3 @@ export const AnimatePresence = SafeAnimatePresence;
 
 // Export a utility to check if motion is available
 export const isMotionAvailable = canUseMotion;
-
-// We're removing the duplicate interface declaration since it's already defined in global.d.ts
-// This was causing the type conflict
