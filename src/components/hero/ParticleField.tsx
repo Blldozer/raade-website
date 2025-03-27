@@ -1,6 +1,6 @@
 
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useState, useCallback } from 'react';
+import { motion, AnimatePresence, isMotionAvailable } from '../motion/SafeMotion'; // Use our safe wrapper
 
 const symbols = ['◆', '●', '■', '▲', '○', '□', '△'];
 
@@ -11,10 +11,19 @@ interface Particle {
   isPopped: boolean;
 }
 
+/**
+ * ParticleField Component
+ * 
+ * Creates interactive particle effects in the hero section with:
+ * - Safely rendered animations using error-resistant motion components
+ * - Responsive behavior for all device sizes
+ * - Performance optimizations for mobile
+ * - Graceful fallback when animations can't be used
+ */
 const ParticleField = () => {
-  // Verify React and framer-motion availability
-  if (typeof useEffect !== 'function' || typeof motion !== 'function' || typeof AnimatePresence !== 'function') {
-    console.warn("ParticleField: React hooks or framer-motion unavailable");
+  // Verify React and motion availability
+  if (typeof React !== 'object' || !isMotionAvailable()) {
+    console.warn("ParticleField: React or motion unavailable, skipping render");
     return null; // Return nothing since this is a purely decorative component
   }
 

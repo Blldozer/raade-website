@@ -40,7 +40,7 @@ interface AppProvidersProps {
  * 6. TooltipProvider - Makes tooltip context available to all components
  * 7. ScrollToTop - Manages scroll position when routes change
  * 
- * Enhanced with React context initialization check
+ * Enhanced with React context initialization check and error recovery
  */
 const AppProviders = ({ children }: AppProvidersProps) => {
   // Global initialization check
@@ -50,11 +50,18 @@ const AppProviders = ({ children }: AppProvidersProps) => {
       window.__REACT_INITIALIZED = true;
       console.log("AppProviders: React context initialized and ready");
     }
+    
+    // Attempt to recover from React context errors
+    if (window.__REACT_CONTEXT_ERROR) {
+      console.log("AppProviders: Detected previous context error, attempting recovery");
+      window.__REACT_CONTEXT_ERROR = false;
+    }
   }, []);
   
   // Simple log for debugging initialization
   console.log("AppProviders: Component mounted");
   
+  // Use multiple nested ErrorBoundaries for better error isolation
   return (
     <ErrorBoundary 
       fallback={<div className="p-4 text-red-500">Root error occurred. Please refresh the page.</div>}

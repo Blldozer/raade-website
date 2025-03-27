@@ -1,7 +1,7 @@
 
 import React, { memo } from 'react';
-import { motion, MotionValue } from 'framer-motion';
 import { useAnimatedText } from './hooks/useAnimatedText';
+import { motion } from '../motion/SafeMotion'; // Use our safe wrapper
 
 /**
  * AnimatedText Component
@@ -10,14 +10,12 @@ import { useAnimatedText } from './hooks/useAnimatedText';
  * - Fluid typography that scales consistently across all devices
  * - Improved responsive design for mobile (including Android)
  * - Animation effects with proper fallbacks for accessibility
+ * - Enhanced error handling to prevent React context errors
  */
 const AnimatedText = () => {
   // Check if we're in a React context environment by testing window flag
   const isReactInitialized = typeof window !== 'undefined' && 
     window.__REACT_INITIALIZED === true;
-  
-  // Check if framer motion is available before using it
-  const isFramerMotionAvailable = typeof motion === 'function';
   
   // If React isn't properly initialized, render a static version right away
   if (!isReactInitialized) {
@@ -58,14 +56,7 @@ const AnimatedText = () => {
             </div>
           </h2>
           
-          {isFramerMotionAvailable ? (
-            <RenderAnimatedLine lineWidth={lineWidth} lineOpacity={lineOpacity} />
-          ) : (
-            <div 
-              className="absolute -bottom-4 left-0 h-1 bg-raade-gold-start w-full"
-              aria-hidden="true"
-            />
-          )}
+          <RenderAnimatedLine lineWidth={lineWidth} lineOpacity={lineOpacity} />
         </div>
       </div>
     );
@@ -79,9 +70,6 @@ const AnimatedText = () => {
 const RenderAnimatedLine = ({ 
   lineWidth, 
   lineOpacity 
-}: { 
-  lineWidth: string | MotionValue<string>;
-  lineOpacity: number | MotionValue<number>;
 }) => {
   try {
     return (
