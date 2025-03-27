@@ -1,5 +1,5 @@
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "sonner";
@@ -39,8 +39,7 @@ const AppProviders = ({ children }: AppProvidersProps) => {
   // Log that we've mounted the component
   console.log("AppProviders: Component mounted");
   
-  // We removed useEffect that was causing the error and using simple console log
-  // Logging environment information for debugging without useEffect
+  // Log environment information without useEffect to avoid the error
   if (typeof window !== 'undefined') {
     console.log("App: Window dimensions", {
       width: window.innerWidth,
