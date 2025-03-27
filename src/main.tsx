@@ -96,6 +96,43 @@ function startApp() {
       // Add global error handler
       window.onerror = (message, source, lineno, colno, error) => {
         console.error("Global error caught:", message, error);
+        
+        // Check for React context errors specifically
+        if (message && (message.toString().includes('useState') || 
+                        message.toString().includes('useContext') || 
+                        message.toString().includes('useEffect'))) {
+          console.error("React hook error detected. This might be a React context initialization issue.");
+          
+          // Set a global flag to indicate React is not properly initialized
+          (window as any).__REACT_CONTEXT_ERROR = true;
+          
+          // Insert friendly error message
+          document.body.innerHTML = `
+            <div style="
+              color: #721c24;
+              background-color: #f8d7da;
+              border: 1px solid #f5c6cb;
+              padding: 20px;
+              margin: 20px;
+              border-radius: 5px;
+              font-family: system-ui, sans-serif;
+            ">
+              <h2 style="margin-top: 0;">React Context Error</h2>
+              <p>The application encountered an issue with React hooks or context.</p>
+              <p style="font-size: 0.8em; color: #666;">Error details: ${message}</p>
+              <button onclick="window.location.reload()" style="
+                background-color: #dc3545;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+                cursor: pointer;
+                margin-top: 10px;
+              ">Reload Page</button>
+            </div>
+          `;
+        }
+        
         return false; // Let the default handler run as well
       };
       
@@ -202,10 +239,12 @@ function startApp() {
 // Define window.__REACT_INITIALIZED as a global property
 interface WindowWithReactInitialized extends Window {
   __REACT_INITIALIZED?: boolean;
+  __REACT_CONTEXT_ERROR?: boolean;
 }
 declare global {
   interface Window {
     __REACT_INITIALIZED?: boolean;
+    __REACT_CONTEXT_ERROR?: boolean;
   }
 }
 

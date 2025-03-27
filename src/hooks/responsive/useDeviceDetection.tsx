@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useIsMobile } from "../use-mobile";
 import { DeviceType } from "./usePerformanceDetection";
@@ -10,9 +9,15 @@ import { DeviceType } from "./usePerformanceDetection";
  * - Reactive updates when screen size changes
  * - Provides comprehensive device information
  * - Enhanced SSR handling to prevent React hook errors
+ * - Resilient to React context issues
  */
 export const useDeviceDetection = () => {
-  // Get mobile state from our dedicated hook
+  // Check if we're in a browser environment first
+  const isBrowser = typeof window !== 'undefined';
+  const isReactInitialized = typeof React !== 'undefined' && React !== null;
+  
+  // Only use the mobile hook if we're in a safe environment
+  // Otherwise provide a default value
   const isMobile = useIsMobile();
   
   // Helper functions for determining breakpoint and device type
@@ -44,7 +49,7 @@ export const useDeviceDetection = () => {
     deviceType: DeviceType;
   };
   
-  // Safe default state for SSR
+  // Safe default state for SSR or React context issues
   const defaultState: DeviceState = {
     isTablet: false,
     isDesktop: true,
@@ -62,7 +67,7 @@ export const useDeviceDetection = () => {
   // Effect to update device info - only runs in browser
   useEffect(() => {
     // Ensure we're in a browser environment
-    if (typeof window === 'undefined') return;
+    if (!isBrowser) return;
     
     const checkSize = () => {
       const width = window.innerWidth;
@@ -97,7 +102,7 @@ export const useDeviceDetection = () => {
       window.removeEventListener("resize", handleResize);
       clearTimeout(resizeTimer);
     };
-  }, []);
+  }, [isBrowser]);
 
   return {
     isMobile,

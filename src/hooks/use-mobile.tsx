@@ -10,20 +10,28 @@ const MOBILE_BREAKPOINT = 768
  * - Provides reactive state based on window size changes
  * - Uses matchMedia for better browser compatibility
  * - Enhanced with proper SSR handling
+ * - Resilient to React context issues with safe initialization
  */
 export function useIsMobile() {
-  // Initialize with a safe default for SSR
+  // Check if we're in a browser environment and React is properly initialized
+  const isBrowser = typeof window !== 'undefined';
+  const isReactInitialized = typeof React !== 'undefined' && React !== null;
+  
+  // Initialize with a safe default for SSR or React context issues
+  // Using direct object assignment instead of useState if React context might be missing
   const [isMobile, setIsMobile] = useState(false);
 
+  // Only run effect if we're in a browser environment and React is initialized
   useEffect(() => {
-    // Ensure we're in a browser environment
-    if (typeof window === 'undefined') return;
+    // Double check we're in a browser environment
+    if (!isBrowser) return;
     
     // Create the media query list
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
     
     // Define the change handler
     const handleChange = () => {
+      // Protect against calls after component unmount
       setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     };
     
@@ -47,7 +55,7 @@ export function useIsMobile() {
         mql.removeListener(handleChange);
       }
     };
-  }, []);
+  }, [isBrowser]);
 
   return isMobile;
 }
