@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import CountUp from "react-countup";
 
@@ -44,7 +43,7 @@ const Impact = () => {
         }} transition={{
           duration: 0.6
         }} className="w-full lg:w-[61%] mt-8 lg:mt-0">
-            <p className="text-xl font-lora text-gray-700 leading-relaxed text-center">
+            <p className="text-xl font-lora text-black leading-relaxed text-center">
               We've come a long way, in a few short months, but we are only just getting started
             </p>
           </motion.div>
@@ -143,7 +142,7 @@ const Impact = () => {
         }} transition={{
           delay: 0.8
         }} className="w-full lg:w-[61%]">
-            <p className="text-xl font-lora text-gray-700 leading-relaxed">
+            <p className="text-xl font-lora text-black leading-relaxed">
               These are milestones in our journey to transform 
               how development happens. Each number represents real people, real solutions, 
               and real impact.

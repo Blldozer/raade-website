@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { Users, Scale, Shapes } from "lucide-react";
 
@@ -37,7 +36,7 @@ const Approach = () => {
           >
             <Users className="w-20 h-20 text-raade-navy mb-8" />
             <h3 className="text-3xl font-simula mb-6">Human-Centered Design</h3>
-            <p className="text-xl text-gray-700 leading-relaxed font-lora">
+            <p className="text-xl text-black leading-relaxed font-lora">
               We start with people, not problems. Every solution begins with deep 
               understanding of the human experience, ensuring our innovations serve 
               real needs and create meaningful change.
@@ -62,7 +61,7 @@ const Approach = () => {
           >
             <Shapes className="w-20 h-20 text-raade-navy mb-8" />
             <h3 className="text-3xl font-simula mb-6">Co-Creation</h3>
-            <p className="text-xl text-gray-700 leading-relaxed font-lora">
+            <p className="text-xl text-black leading-relaxed font-lora">
               We bring together the innovative spirit of Rice students with the deep 
               contextual knowledge of our African partners. This collaboration creates 
               solutions that are both innovative and implementable.
@@ -81,7 +80,7 @@ const Approach = () => {
           >
             <Scale className="w-20 h-20 text-raade-navy mb-8" />
             <h3 className="text-3xl font-simula mb-6">Scalable Impact</h3>
-            <p className="text-xl text-gray-700 leading-relaxed font-lora">
+            <p className="text-xl text-black leading-relaxed font-lora">
               We design every solution with scale in mind. Our goal isn't just to 
               solve individual challenges, but to create templates for change that 
               can transform communities across Africa.

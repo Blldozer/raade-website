@@ -44,7 +44,7 @@ const Team = () => {
       <section id="team" className="about-content-section py-24 bg-white" data-background="light">
         <div className="max-w-[1600px] mx-auto px-6 md:px-12">
           <h2 className="text-4xl font-simula mb-6">Meet the team</h2>
-          <p className="text-xl font-lora text-gray-700">
+          <p className="text-xl font-lora text-black">
             We're having trouble loading our team information. 
             Please try refreshing the page.
           </p>
@@ -80,7 +80,7 @@ const Team = () => {
             transition={{ duration: 0.6 }} 
             className="w-full lg:w-[61%] mt-8 lg:mt-0"
           >
-            <p className="text-xl font-lora text-gray-700 leading-relaxed">
+            <p className="text-xl font-lora text-black leading-relaxed">
               Meet the visionaries who refused to wait for change. Driven by deep conviction and extraordinary determination, our team transforms challenges into opportunities through sheer force of will. We're not just talking about African development - we're dedicating our minds, hearts, and hands to making it happen, one breakthrough solution at a time.
             </p>
           </motion.div>
