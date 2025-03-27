@@ -37,7 +37,7 @@ const StudioOverview = () => {
         }} transition={{
           duration: 0.6
         }} className="w-full lg:w-[61%]">
-            <div className="space-y-8 text-xl leading-relaxed font-lora text-black max-w-[800px]">
+            <div className="space-y-8 text-xl leading-relaxed font-lora text-gray-700 max-w-[800px]">
               <p>
                 At RAADE, we focus on a powerful concept: identifying areas where millions 
                 of people cannot access essential products and services, then creating 
