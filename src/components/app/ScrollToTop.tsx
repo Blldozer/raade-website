@@ -19,12 +19,15 @@ interface ScrollToTopProps {
 }
 
 const ScrollToTop = ({ children }: ScrollToTopProps) => {
-  // Safe router context check - will help with debugging
-  const isRouterAvailable = typeof window !== 'undefined' && 
-    window.location && 
-    document && 
-    document.querySelector('[data-reactroot]');
-  
+  // First check if we can safely access React context
+  if (typeof React === 'undefined' || 
+      !React || 
+      typeof window === 'undefined' || 
+      !window.__REACT_INITIALIZED) {
+    console.warn("ScrollToTop: React context not fully initialized, rendering children without scroll functionality");
+    return <>{children}</>;
+  }
+
   try {
     // Get current location from React Router - will throw if no router context
     const { pathname } = useLocation();
@@ -50,10 +53,6 @@ const ScrollToTop = ({ children }: ScrollToTopProps) => {
   } catch (error) {
     // If we hit an error during hook usage, log it and return children anyway
     console.error("ScrollToTop: Error using router hooks - is this component inside a Router?", error);
-    
-    if (!isRouterAvailable) {
-      console.warn("ScrollToTop: Router context not detected. Make sure this component is used inside BrowserRouter.");
-    }
     
     // Render children even if ScrollToTop functionality fails
     return <>{children}</>;

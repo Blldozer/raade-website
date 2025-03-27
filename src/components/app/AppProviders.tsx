@@ -43,19 +43,28 @@ interface AppProvidersProps {
  * Enhanced with React context initialization check and error recovery
  */
 const AppProviders = ({ children }: AppProvidersProps) => {
-  // Global initialization check
+  // Set initialization flag immediately on component mount
+  // This is crucial for preventing React context errors
+  if (typeof window !== 'undefined') {
+    window.__REACT_INITIALIZED = true;
+  }
+  
+  // Additional effect for logging and cleanup
   useEffect(() => {
-    // Explicitly set a global flag to indicate React is initialized
-    if (typeof window !== 'undefined') {
-      window.__REACT_INITIALIZED = true;
-      console.log("AppProviders: React context initialized and ready");
-    }
+    console.log("AppProviders: React context initialized and ready");
     
     // Attempt to recover from React context errors
     if (window.__REACT_CONTEXT_ERROR) {
       console.log("AppProviders: Detected previous context error, attempting recovery");
       window.__REACT_CONTEXT_ERROR = false;
     }
+    
+    return () => {
+      // Clean up when unmounting
+      if (typeof window !== 'undefined') {
+        console.log("AppProviders: Cleaning up before unmounting");
+      }
+    };
   }, []);
   
   // Simple log for debugging initialization

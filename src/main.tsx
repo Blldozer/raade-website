@@ -4,10 +4,24 @@ import React from 'react'  // Explicitly import React
 import App from './App.tsx'
 import './index.css'
 
-// IMPORTANT: Set React initialization flag to false initially
+// IMPORTANT: Set React initialization flag to true immediately
 if (typeof window !== 'undefined') {
-  window.__REACT_INITIALIZED = false;
-  console.log("Setting initial React initialization flag");
+  window.__REACT_INITIALIZED = true;
+  console.log("Setting initial React initialization flag to true");
+  
+  // Also set up global error tracking for React context issues
+  window.__REACT_CONTEXT_ERROR = false;
+  
+  // Add global error handler specifically for React context errors
+  window.addEventListener('error', (event) => {
+    if (event.error && 
+        (event.error.toString().includes('useState') || 
+         event.error.toString().includes('useContext') || 
+         event.error.toString().includes('React hook'))) {
+      console.error("React hook/context error detected:", event.error);
+      window.__REACT_CONTEXT_ERROR = true;
+    }
+  });
 }
 
 /**
@@ -52,17 +66,11 @@ function startApp() {
                     message.toString().includes('useRef') ||
                     message.toString().includes('useEffect'))) {
         console.error("React hook error detected. This might be a React context initialization issue.");
+        window.__REACT_CONTEXT_ERROR = true;
       }
       
       return false; // Let the default handler run as well
     };
-    
-    // CRITICAL: Set React global flag to true BEFORE rendering
-    // This is crucial for preventing the "Cannot read properties of null (reading 'useContext')" error
-    if (typeof window !== 'undefined') {
-      window.__REACT_INITIALIZED = true;
-      console.log("React initialization flag set to true before rendering");
-    }
     
     // Create root with explicit ReactDOM API approach
     const root = createRoot(rootElement);
