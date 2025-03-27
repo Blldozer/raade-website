@@ -52,14 +52,14 @@ const SimpleStripeCheckout = ({
   // Process emails to handle array of objects or strings
   const processedGroupEmails = Array.isArray(groupEmails) 
     ? groupEmails
-        .filter(Boolean)
+        .filter(Boolean) // Remove nullish values
         .map(email => {
           if (typeof email === 'object' && email !== null && 'value' in email) {
             return typeof email.value === 'string' ? email.value : '';
           }
           return String(email || '');
         })
-        .filter(email => email.length > 0)
+        .filter(email => email.length > 0) // Remove empty strings
     : [];
 
   // Fetch payment amount when component mounts
@@ -161,6 +161,7 @@ const SimpleStripeCheckout = ({
         variant: "default",
       });
       
+      // Call the success callback
       onSuccess();
     } catch (error) {
       console.error("Payment error:", error);

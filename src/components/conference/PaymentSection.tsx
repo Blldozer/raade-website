@@ -5,6 +5,7 @@ import { RegistrationFormData } from "./RegistrationFormTypes";
 import RegistrationSummary from "./RegistrationSummary";
 import { useState } from "react";
 import SuccessfulPayment from "./payment/SuccessfulPayment";
+import PaymentConfirmation from "./payment/PaymentConfirmation";
 
 interface PaymentSectionProps {
   registrationData: RegistrationFormData;
@@ -56,16 +57,11 @@ const PaymentSection = ({
     setPaymentComplete(true);
   };
 
-  const handleContinue = () => {
-    // Call the original success callback after user sees confirmation
-    onPaymentSuccess();
-  };
-
   if (paymentComplete) {
     return (
       <SuccessfulPayment 
         registrationData={registrationData}
-        onContinue={handleContinue}
+        onContinue={onPaymentSuccess}
       />
     );
   }
