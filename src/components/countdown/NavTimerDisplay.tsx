@@ -59,8 +59,8 @@ const NavTimerDisplay = ({
   }
 
   // Set dropdown colors with defaults
-  const dropdownBg = colors.dropdownBg || "bg-white/95";
-  const dropdownText = colors.dropdownText || colors.text;
+  const dropdownBg = colors.dropdownBg || "bg-raade-gold-middle";
+  const dropdownText = colors.dropdownText || "text-white";
   const iconColor = colors.iconColor || colors.accent;
 
   return (
@@ -98,36 +98,36 @@ const NavTimerDisplay = ({
       {isExpanded && (
         <div 
           className={cn(
-            "absolute right-0 mt-2 p-4 rounded-lg shadow-lg z-50 min-w-[240px] border border-gray-200",
-            dropdownBg
+            "absolute right-0 mt-2 p-4 rounded-lg shadow-lg z-50 min-w-[240px] border border-raade-gold-end/20",
+            "bg-gradient-to-br from-raade-gold-start via-raade-gold-middle to-raade-gold-end"
           )}
         >
-          <h3 className={cn("text-center font-montserrat font-semibold mb-3", dropdownText)}>
+          <h3 className={cn("text-center font-montserrat font-semibold mb-3 text-white")}>
             RAADE Conference 2025
           </h3>
           <div className="grid grid-cols-4 gap-3 text-center">
             <div className="flex flex-col items-center">
-              <div className={cn("text-xl font-bold font-montserrat", colors.accent)}>{timeLeft.days}</div>
-              <div className={cn("text-xs font-medium", dropdownText)}>Days</div>
+              <div className={cn("text-xl font-bold font-montserrat text-white")}>{timeLeft.days}</div>
+              <div className={cn("text-xs font-medium text-white/90")}>Days</div>
             </div>
             <div className="flex flex-col items-center">
-              <div className={cn("text-xl font-bold font-montserrat", colors.accent)}>{formatTimeUnit(timeLeft.hours)}</div>
-              <div className={cn("text-xs font-medium", dropdownText)}>Hours</div>
+              <div className={cn("text-xl font-bold font-montserrat text-white")}>{formatTimeUnit(timeLeft.hours)}</div>
+              <div className={cn("text-xs font-medium text-white/90")}>Hours</div>
             </div>
             <div className="flex flex-col items-center">
-              <div className={cn("text-xl font-bold font-montserrat", colors.accent)}>{formatTimeUnit(timeLeft.minutes)}</div>
-              <div className={cn("text-xs font-medium", dropdownText)}>Mins</div>
+              <div className={cn("text-xl font-bold font-montserrat text-white")}>{formatTimeUnit(timeLeft.minutes)}</div>
+              <div className={cn("text-xs font-medium text-white/90")}>Mins</div>
             </div>
             <div className="flex flex-col items-center">
-              <div className={cn("text-xl font-bold font-montserrat", colors.accent)}>{formatTimeUnit(timeLeft.seconds)}</div>
-              <div className={cn("text-xs font-medium", dropdownText)}>Secs</div>
+              <div className={cn("text-xl font-bold font-montserrat text-white")}>{formatTimeUnit(timeLeft.seconds)}</div>
+              <div className={cn("text-xs font-medium text-white/90")}>Secs</div>
             </div>
           </div>
           <div className="mt-4 text-center">
-            <div className="text-xs mb-2 font-medium opacity-80">April 11-12, 2025</div>
+            <div className="text-xs mb-2 font-medium text-white/80">April 11-12, 2025</div>
             <a 
               href="/conference/register" 
-              className="inline-block px-4 py-1.5 bg-raade-yellow-orange hover:bg-raade-gold-middle text-white rounded-md text-sm font-semibold transition-colors"
+              className="inline-block px-4 py-1.5 bg-raade-navy hover:bg-raade-Thunder text-white rounded-md text-sm font-semibold transition-colors"
             >
               Register Now
             </a>

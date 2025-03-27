@@ -121,8 +121,9 @@ const CountdownTimer = ({
   // Ensure background is transparent
   colors.background = "bg-transparent";
   
-  // Set dropdown styling
-  colors.dropdownBg = "bg-white/95";
+  // Set dropdown styling - override with RAADE gold gradient
+  colors.dropdownBg = "bg-gradient-to-br from-raade-gold-start via-raade-gold-middle to-raade-gold-end";
+  colors.dropdownText = "text-white";
 
   // Render the NavTimerDisplay with hover dropdown
   return (
