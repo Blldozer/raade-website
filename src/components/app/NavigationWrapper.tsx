@@ -8,48 +8,59 @@ import { useEffect, useState } from "react";
  * Ensures only ONE instance of Navigation exists across the application
  * Sets proper navigation props based on current route
  * Enhanced to prevent duplicate navigation instances
+ * Enhanced with better error handling for router context issues
  * 
  * NOTE: Must be used inside a Router context
  */
 const NavigationWrapper = () => {
-  const location = useLocation();
-  const [navProps, setNavProps] = useState({
+  // Safe default props
+  const defaultNavProps = {
     forceDarkMode: false,
     isHeroPage: false,
     useShortFormLogo: false
-  });
+  };
   
   // Create an instance ID to track this wrapper
   const instanceId = `nav-wrapper-${Math.random().toString(36).substring(2, 9)}`;
   
-  // Set page-specific navigation properties once on mount/route change
-  useEffect(() => {
-    const pathname = location.pathname;
-    console.log(`NavigationWrapper (${instanceId}): Setting props for ${pathname}`);
+  try {
+    const location = useLocation();
+    const [navProps, setNavProps] = useState(defaultNavProps);
     
-    // Determine page-specific props
-    const isAboutPage = pathname === '/about';
-    const isProjectDetailPage = pathname.startsWith('/projects/');
-    const isApplicationPage = pathname === "/apply/student" || pathname === "/apply/partner";
-    const isConferencePage = pathname === "/conference";
-    const isStudioPage = pathname.includes('/studios');
-    
-    // Set navigation properties based on current route
-    setNavProps({
-      // Force dark mode on project detail pages and about page
-      forceDarkMode: isProjectDetailPage || isAboutPage,
+    // Set page-specific navigation properties once on mount/route change
+    useEffect(() => {
+      const pathname = location.pathname;
+      console.log(`NavigationWrapper (${instanceId}): Setting props for ${pathname}`);
       
-      // All these pages have hero sections that need special navigation styling
-      isHeroPage: isAboutPage || isConferencePage || isStudioPage || pathname === '/studios',
+      // Determine page-specific props
+      const isAboutPage = pathname === '/about';
+      const isProjectDetailPage = pathname.startsWith('/projects/');
+      const isApplicationPage = pathname === "/apply/student" || pathname === "/apply/partner";
+      const isConferencePage = pathname === "/conference";
+      const isStudioPage = pathname.includes('/studios');
       
-      // Use short form logo where appropriate
-      useShortFormLogo: isApplicationPage
-    });
+      // Set navigation properties based on current route
+      setNavProps({
+        // Force dark mode on project detail pages and about page
+        forceDarkMode: isProjectDetailPage || isAboutPage,
+        
+        // All these pages have hero sections that need special navigation styling
+        isHeroPage: isAboutPage || isConferencePage || isStudioPage || pathname === '/studios',
+        
+        // Use short form logo where appropriate
+        useShortFormLogo: isApplicationPage
+      });
+      
+    }, [location.pathname, instanceId]);
     
-  }, [location.pathname, instanceId]);
-  
-  // Return a single Navigation component with appropriate props
-  return <Navigation {...navProps} />;
+    // Return a single Navigation component with appropriate props
+    return <Navigation {...navProps} />;
+  } catch (error) {
+    console.error(`NavigationWrapper (${instanceId}): Error with router context`, error);
+    
+    // Fallback to default props if router context fails
+    return <Navigation {...defaultNavProps} />;
+  }
 };
 
 export default NavigationWrapper;
