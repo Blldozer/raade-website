@@ -78,7 +78,7 @@ const HeroContent = () => {
         <div className="space-y-[clamp(1rem,2vw,2rem)] max-w-[min(90%,1200px)] mx-auto pointer-events-auto">
           <AnimatedText />
 
-          <p className="text-[length:var(--fluid-body)] text-white/90 max-w-[min(100%,800px)] font-amadine content-fade-in">
+          <p className="text-[length:var(--fluid-body)] text-white/90 max-w-[min(100%,800px)] font-alegreyasans content-fade-in">
             The future of Africa isn't a distant dream - it's being built today, by innovators and changemakers
             like you. Join a community of students and partners creating sustainable solutions through market-driven innovation.
           </p>

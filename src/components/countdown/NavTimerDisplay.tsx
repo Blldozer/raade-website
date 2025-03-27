@@ -1,4 +1,3 @@
-
 import { cn } from "@/lib/utils";
 import { TimeLeft } from "./types";
 import { formatTimeUnit } from "./timerUtils";
@@ -48,7 +47,7 @@ const NavTimerDisplay = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isExpanded]);
+  }, [isExpanded, dropdownRef]);
 
   if (timeLeft.expired) {
     return (

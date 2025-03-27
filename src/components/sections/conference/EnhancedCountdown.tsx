@@ -40,7 +40,7 @@ const EnhancedCountdown = () => {
       
       prevSeconds.current = timeLeft.seconds;
     }
-  }, [timeLeft.seconds, secondsControls]);
+  }, [timeLeft.seconds, secondsControls, prevSeconds]);
 
   // Memoize the time digits to prevent unnecessary re-renders
   const TimeDigit = memo(({ value, label }: { value: number | string, label: string }) => (

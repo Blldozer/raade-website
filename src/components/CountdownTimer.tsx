@@ -78,7 +78,7 @@ const CountdownTimer = ({
     if (scrollPastHero !== isPastHero) {
       setScrollPastHero(isPastHero);
     }
-  }, [scrollPastHero]);
+  }, [scrollPastHero, isScrollPastHero]);
   
   // Add scroll event listener to detect when user has scrolled past hero section
   useEffect(() => {
