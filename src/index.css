@@ -199,6 +199,63 @@
     font-weight: 400; /* Ensure regular weight (400) instead of bold or black */
   }
 
+  /* Inter font for modern UI elements */
+  .font-inter {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+  }
+
+  /* Weight variants for Inter font */
+  .font-inter-thin {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 100;
+    font-style: normal;
+  }
+
+  .font-inter-light {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
+  }
+
+  .font-inter-regular {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  .font-inter-medium {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+  }
+
+  .font-inter-semibold {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
+  }
+
+  .font-inter-bold {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: normal;
+  }
+
+  .font-inter-black {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 900;
+    font-style: normal;
+  }
+
   /* Fallback classes for each font when fonts fail to load */
   .fonts-timeout .font-amadine, 
   .fonts-error .font-amadine,
@@ -234,6 +291,61 @@
   .fonts-error .font-lora,
   .no-font-api .font-lora {
     font-family: 'Georgia', serif;
+  }
+
+  .fonts-timeout .font-inter, 
+  .fonts-error .font-inter,
+  .no-font-api .font-inter {
+    font-family: system-ui, sans-serif;
+  }
+
+  .fonts-timeout .font-inter-thin, 
+  .fonts-error .font-inter-thin,
+  .no-font-api .font-inter-thin {
+    font-family: system-ui, sans-serif;
+    font-weight: 100;
+  }
+
+  .fonts-timeout .font-inter-light, 
+  .fonts-error .font-inter-light,
+  .no-font-api .font-inter-light {
+    font-family: system-ui, sans-serif;
+    font-weight: 300;
+  }
+
+  .fonts-timeout .font-inter-regular, 
+  .fonts-error .font-inter-regular,
+  .no-font-api .font-inter-regular {
+    font-family: system-ui, sans-serif;
+    font-weight: 400;
+  }
+
+  .fonts-timeout .font-inter-medium, 
+  .fonts-error .font-inter-medium,
+  .no-font-api .font-inter-medium {
+    font-family: system-ui, sans-serif;
+    font-weight: 500;
+  }
+
+  .fonts-timeout .font-inter-semibold, 
+  .fonts-error .font-inter-semibold,
+  .no-font-api .font-inter-semibold {
+    font-family: system-ui, sans-serif;
+    font-weight: 600;
+  }
+
+  .fonts-timeout .font-inter-bold, 
+  .fonts-error .font-inter-bold,
+  .no-font-api .font-inter-bold {
+    font-family: system-ui, sans-serif;
+    font-weight: 700;
+  }
+
+  .fonts-timeout .font-inter-black, 
+  .fonts-error .font-inter-black,
+  .no-font-api .font-inter-black {
+    font-family: system-ui, sans-serif;
+    font-weight: 900;
   }
 
   /* Improve focus styles for accessibility */
