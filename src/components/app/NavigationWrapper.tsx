@@ -30,7 +30,7 @@ const NavigationWrapper = () => {
     // Determine page-specific props
     const isAboutPage = pathname === '/about';
     const isProjectDetailPage = pathname.startsWith('/projects/');
-    const isApplicationPage = pathname === "/studios/apply" || pathname === "/studios/partner";
+    const isApplicationPage = pathname === "/apply/student" || pathname === "/apply/partner";
     const isConferencePage = pathname === "/conference";
     const isStudioPage = pathname.includes('/studios');
     
@@ -49,7 +49,7 @@ const NavigationWrapper = () => {
     return () => {
       console.log(`NavigationWrapper (${uniqueId}): Cleaning up props for ${pathname}`);
     };
-  }, [location.pathname]);
+  }, [location.pathname, uniqueId]);
   
   // Return a single Navigation component with appropriate props
   return <Navigation {...navProps} />;
