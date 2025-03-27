@@ -100,12 +100,5 @@ export const AnimatePresence = SafeAnimatePresence;
 // Export a utility to check if motion is available
 export const isMotionAvailable = canUseMotion;
 
-// Add proper typing for the global window object
-declare global {
-  interface Window {
-    __REACT_INITIALIZED?: boolean;
-    __REACT_CONTEXT_ERROR?: boolean;
-    __REACT_GLOBAL_REFERENCE?: typeof React;
-    React?: typeof React;
-  }
-}
+// We're removing the duplicate interface declaration since it's already defined in global.d.ts
+// This was causing the type conflict
