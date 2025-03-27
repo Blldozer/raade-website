@@ -49,9 +49,9 @@ const AppProviders = ({ children }: AppProvidersProps) => {
     return <>{children}</>;
   }
 
-  // Safety check - ensure React and hooks are available
-  if (typeof React !== 'object' || React === null || typeof React.useEffect !== 'function') {
-    console.error("AppProviders: React or React.useEffect not available");
+  // Safety check - ensure React hooks are available
+  if (typeof useEffect !== 'function') {
+    console.error("AppProviders: React hooks not available");
     
     // Return minimal app structure with error message
     return (
