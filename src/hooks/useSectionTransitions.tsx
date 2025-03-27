@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavBackground } from './useNavBackground';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';

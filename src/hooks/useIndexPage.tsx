@@ -1,5 +1,5 @@
 
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useResponsive } from './useResponsive';
 import { useSectionTransitions } from './useSectionTransitions';
 import { useSafeHook } from '@/utils/reactContextError';
