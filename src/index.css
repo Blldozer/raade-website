@@ -196,6 +196,7 @@
 
   .font-lora {
     font-family: 'Lora', 'Georgia', serif;
+    font-weight: 400; /* Ensure regular weight (400) instead of bold or black */
   }
 
   /* Fallback classes for each font when fonts fail to load */

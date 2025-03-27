@@ -1,4 +1,3 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { Calendar, MapPin } from "lucide-react";
@@ -40,7 +39,7 @@ const HeroContent = () => {
             transition={{ duration: 0.8, delay: 0.6 }}
             className="h-1 bg-[#FBB03B] mt-2 mb-5"
           />
-          <p className="text-2xl font-simula text-white mt-2">
+          <p className="text-2xl font-simula text-white mt-2 font-medium">
             Building Pathways to the Future
           </p>
         </div>
@@ -48,15 +47,15 @@ const HeroContent = () => {
         <div className="space-y-4 pt-2">
           <div className="flex items-center">
             <Calendar className="mr-3 h-6 w-6 text-[#FBB03B]" />
-            <p className="text-white font-lora font-medium text-lg">April 11-12, 2025</p>
+            <p className="text-white font-lora text-lg font-medium">April 11-12, 2025</p>
           </div>
           <div className="flex items-center">
             <MapPin className="mr-3 h-6 w-6 text-[#FBB03B]" />
-            <p className="text-white font-lora font-medium text-lg">Rice University, Houston, TX</p>
+            <p className="text-white font-lora text-lg font-medium">Rice University, Houston, TX</p>
           </div>
         </div>
 
-        <p className="text-lg text-white/90 max-w-lg font-lora">
+        <p className="text-lg text-white/90 max-w-lg font-lora font-medium">
           The RAADE Conference brings together innovative minds to discuss sustainable 
           solutions for Africa's development. With a spotlight on student-led innovation,
           this conference is the foremost platform for changemakers passionate about 

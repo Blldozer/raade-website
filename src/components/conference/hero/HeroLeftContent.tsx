@@ -63,7 +63,7 @@ const HeroLeftContent = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.7 }}
-            className="text-[clamp(1.25rem,5vw,2rem)] font-simula text-white mt-6"
+            className="text-[clamp(1.25rem,5vw,2rem)] font-simula font-medium text-white mt-6"
           >
             Building Pathways to the Future
           </motion.p>
@@ -113,7 +113,7 @@ const HeroLeftContent = () => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 1 }}
-          className="text-[clamp(1rem,4vw,1.125rem)] text-white/90 max-w-2xl mx-auto font-lora mt-6"
+          className="text-[clamp(1rem,4vw,1.125rem)] font-medium text-white/90 max-w-2xl mx-auto font-lora mt-6"
         >
           The RAADE Forum brings together innovative minds to discuss sustainable 
           solutions for Africa's development. With a spotlight on student-led innovation,

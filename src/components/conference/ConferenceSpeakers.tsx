@@ -1,4 +1,3 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { ExternalLink } from "lucide-react";
@@ -44,7 +43,7 @@ const ConferenceSpeakers = () => {
                   
                   <Link 
                     to={`/conference/speakers/${speaker.id}`} 
-                    className="mt-4 text-raade-navy hover:text-[#FBB03B] transition-colors flex items-center text-sm font-medium"
+                    className="mt-4 text-raade-navy hover:text-[#FBB03B] transition-colors flex items-center text-sm font-lora"
                   >
                     <span>Full profile</span>
                     <ExternalLink className="ml-1 h-3 w-3" />
