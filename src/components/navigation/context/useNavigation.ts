@@ -8,6 +8,13 @@ import { NavigationContext } from "./NavigationContextDefinition";
  * Enhanced with better error handling for missing React context
  */
 export const useNavigation = () => {
+  // Check if React is properly initialized 
+  if (typeof useContext !== 'function') {
+    console.error("useNavigation: React hooks unavailable");
+    // Return fallback
+    return getFallbackNavigationContext();
+  }
+  
   try {
     const context = useContext(NavigationContext);
     if (context === undefined) {
@@ -17,23 +24,33 @@ export const useNavigation = () => {
   } catch (error) {
     // Return a fallback context if the real one can't be accessed
     console.error("Error accessing navigation context:", error);
-    // Return a stub implementation that won't crash the app
-    return {
-      state: {
-        isScrolled: false,
-        isPastHero: false,
-        isVisible: true,
-        isDarkBackground: false,
-        isMobile: false,
-        isTablet: false,
-        isHeroPage: false,
-        useShortFormLogo: false,
-        currentSection: null,
-        currentSectionId: null,
-        isLightBackground: true,
-        forceDarkMode: false
-      },
-      setIsDarkBackground: () => {}
-    };
+    return getFallbackNavigationContext();
   }
 };
+
+/**
+ * Provides a fallback navigation context when the React context system isn't available
+ * This prevents the app from crashing due to missing context.
+ */
+function getFallbackNavigationContext() {
+  return {
+    state: {
+      isScrolled: false,
+      isPastHero: false,
+      isVisible: true,
+      isDarkBackground: false,
+      isMobile: false,
+      isTablet: false,
+      isHeroPage: false,
+      useShortFormLogo: false,
+      currentSection: null,
+      currentSectionId: null,
+      isLightBackground: true,
+      forceDarkMode: false
+    },
+    setIsDarkBackground: () => {}
+  };
+}
+
+// Export default for more flexible usage
+export default useNavigation;

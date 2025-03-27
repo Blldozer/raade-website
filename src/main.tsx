@@ -70,6 +70,10 @@ function startApp() {
   try {
     console.log("Application startup: Beginning initialization");
     
+    // CRITICAL: Set React global flag to indicate React is initializing
+    // This helps components detect if React hooks are available
+    (window as any).__REACT_HOOK_INITIALIZATION_STARTED = true;
+    
     // Get the root element with improved error handling
     const rootElement = document.getElementById("root");
 
@@ -100,6 +104,7 @@ function startApp() {
         // Check for React context errors specifically
         if (message && (message.toString().includes('useState') || 
                         message.toString().includes('useContext') || 
+                        message.toString().includes('useRef') ||
                         message.toString().includes('useEffect'))) {
           console.error("React hook error detected. This might be a React context initialization issue.");
           
@@ -178,9 +183,14 @@ function startApp() {
           </StrictMode>
         );
         
+        // Mark React hooks as fully initialized after successful render
+        (window as any).__REACT_HOOK_INITIALIZATION_COMPLETED = true;
+        
         console.log("Application startup: React rendering completed");
       } catch (renderError) {
         console.error("Critical React rendering error:", renderError);
+        (window as any).__REACT_RENDER_ERROR = true;
+        
         rootElement.innerHTML = `
           <div style="
             color: #721c24;
@@ -240,11 +250,17 @@ function startApp() {
 interface WindowWithReactInitialized extends Window {
   __REACT_INITIALIZED?: boolean;
   __REACT_CONTEXT_ERROR?: boolean;
+  __REACT_HOOK_INITIALIZATION_STARTED?: boolean;
+  __REACT_HOOK_INITIALIZATION_COMPLETED?: boolean;
+  __REACT_RENDER_ERROR?: boolean;
 }
 declare global {
   interface Window {
     __REACT_INITIALIZED?: boolean;
     __REACT_CONTEXT_ERROR?: boolean;
+    __REACT_HOOK_INITIALIZATION_STARTED?: boolean;
+    __REACT_HOOK_INITIALIZATION_COMPLETED?: boolean;
+    __REACT_RENDER_ERROR?: boolean;
   }
 }
 

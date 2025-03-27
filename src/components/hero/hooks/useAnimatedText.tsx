@@ -10,6 +10,12 @@ import { useScroll, useTransform } from 'framer-motion';
  * @returns Object containing the display text and completion status
  */
 const useTypingEffect = (text: string, speed: number = 80) => {
+  // Check if React hooks are available
+  if (typeof useState !== 'function' || typeof useEffect !== 'function') {
+    console.warn("useTypingEffect: React hooks unavailable");
+    return { displayText: text, isComplete: true };
+  }
+  
   const [displayText, setDisplayText] = useState('');
   const [isComplete, setIsComplete] = useState(false);
   
@@ -47,22 +53,48 @@ const useTypingEffect = (text: string, speed: number = 80) => {
  * Used in the hero section to create engaging text effects
  */
 export const useAnimatedText = () => {
+  // Check if React hooks are available
+  if (typeof useRef !== 'function' || typeof useEffect !== 'function') {
+    console.warn("useAnimatedText: React hooks unavailable");
+    return {
+      text2Ref: { current: null },
+      orgNameRef: { current: null },
+      containerRef: { current: null },
+      lineWidth: "100%",
+      lineOpacity: 1
+    };
+  }
+  
+  // Check if framer-motion is available
+  const isFramerMotionAvailable = typeof useScroll === 'function' && typeof useTransform === 'function';
+  
   const text2Ref = useRef<HTMLDivElement>(null);
   const orgNameRef = useRef<HTMLHeadingElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // Use native scrolling for better performance
-  const { scrollY } = useScroll({
-    // Use default options for better TypeScript compatibility
-  });
+  // Create default values in case framer-motion fails
+  let lineWidth = "0%";
+  let lineOpacity = 0;
   
-  // Transform values based on scroll position
-  const lineWidth = useTransform(scrollY, [0, 200], ["0%", "100%"]);
-  const lineOpacity = useTransform(scrollY, [0, 200], [0, 1]);
+  // Only use framer-motion if it's available
+  if (isFramerMotionAvailable) {
+    try {
+      // Use native scrolling for better performance
+      const { scrollY } = useScroll();
+      
+      // Transform values based on scroll position
+      lineWidth = useTransform(scrollY, [0, 200], ["0%", "100%"]);
+      lineOpacity = useTransform(scrollY, [0, 200], [0, 1]);
+    } catch (error) {
+      console.error("useAnimatedText: Error with framer-motion hooks", error);
+      // Fall back to static values
+      lineWidth = "100%";
+      lineOpacity = 1;
+    }
+  }
   
   // Ensure we're using the full "We're" text
   const animatedText = "We're building it today.";
-  console.log("AnimatedText content:", animatedText); // For debugging
   
   // Use our custom lightweight typing effect
   const { displayText, isComplete } = useTypingEffect(animatedText, 80);
@@ -71,7 +103,6 @@ export const useAnimatedText = () => {
     // Apply text content when typing is complete
     if (text2Ref.current) {
       text2Ref.current.textContent = displayText;
-      console.log("Updated text content:", displayText); // For debugging
     }
     
     // Simple shake animation when typing completes
