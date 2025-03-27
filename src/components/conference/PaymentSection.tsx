@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import StripeCheckout from "./StripeCheckout";
+import SimpleStripeProvider from "./payment/direct/SimpleStripeProvider";
 import { RegistrationFormData } from "./RegistrationFormTypes";
 import RegistrationSummary from "./RegistrationSummary";
 
@@ -17,9 +17,8 @@ interface PaymentSectionProps {
  * 
  * Handles the payment process for conference registration:
  * - Displays registration summary
- * - Uses our standardized Stripe Checkout flow
- * - Improved session management for reliability
- * - Includes referral source in checkout metadata
+ * - Uses our simplified direct Stripe integration
+ * - Provides consistent back button functionality
  * 
  * @param registrationData - Form data from the registration form
  * @param isSubmitting - Loading state for the form
@@ -34,7 +33,7 @@ const PaymentSection = ({
   onPaymentError,
   onBackClick
 }: PaymentSectionProps) => {
-  // Process raw form data into a clean array of emails for Stripe checkout
+  // Process raw form data into a clean array of emails
   const processedGroupEmails = Array.isArray(registrationData.groupEmails) 
     ? registrationData.groupEmails
         .filter(Boolean) // Remove nullish values
@@ -51,7 +50,7 @@ const PaymentSection = ({
     <div className="space-y-6">
       <RegistrationSummary registrationData={registrationData} />
       
-      <StripeCheckout 
+      <SimpleStripeProvider 
         ticketType={registrationData.ticketType}
         email={registrationData.email}
         fullName={registrationData.fullName}
