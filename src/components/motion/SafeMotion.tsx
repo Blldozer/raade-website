@@ -30,9 +30,12 @@ const canUseMotion = () => {
   return true;
 };
 
+// Define type for the motion components
+type MotionComponent = React.ForwardRefExoticComponent<any>;
+
 // Create safe versions of all motion components
-type SafeMotionComponent = {
-  [K in keyof typeof framerMotion]: React.ForwardRefExoticComponent<any>;
+type SafeMotionComponentsType = {
+  [K in keyof typeof framerMotion]?: MotionComponent;
 };
 
 // Create proxied components that check for safety before rendering
@@ -48,8 +51,8 @@ const createSafeComponent = (Component: any) => {
 };
 
 // Create the safe motion object with all components
-const initSafeMotion = (): SafeMotionComponent => {
-  const safeMotion: Partial<SafeMotionComponent> = {};
+const initSafeMotion = (): SafeMotionComponentsType => {
+  const safeMotion: SafeMotionComponentsType = {};
   
   // Only attempt to initialize if framer-motion is available
   if (typeof framerMotion === 'object' && framerMotion !== null) {
@@ -65,7 +68,7 @@ const initSafeMotion = (): SafeMotionComponent => {
     }
   }
   
-  return safeMotion as SafeMotionComponent;
+  return safeMotion;
 };
 
 // Safely create AnimatePresence wrapper
