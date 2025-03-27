@@ -1,3 +1,4 @@
+
 import { cn } from "@/lib/utils";
 import NavLogo from "../NavLogo";
 import DesktopNav from "../DesktopNav";
@@ -5,7 +6,7 @@ import MobileNav from "../mobile/MobileNav";
 import CountdownTimer from "@/components/CountdownTimer";
 import { useNavigation } from "../context/useNavigation";
 import { useLocation } from "react-router-dom";
-import { useRef, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavBackgroundStyle } from "@/hooks/navigation/useNavBackgroundStyle";
 
 interface NavigationContentProps {
@@ -92,26 +93,8 @@ const NavigationContent = ({ instanceId = 'nav-default' }: NavigationContentProp
     isStudioPage
   ]);
 
-  // Get element ref to check for duplicates
-  const navRef = useRef<HTMLElement>(null);
-  
-  // Check for duplicate navigations in the document
-  useEffect(() => {
-    // Wait for DOM to be ready
-    setTimeout(() => {
-      if (navRef.current) {
-        const allNavs = document.querySelectorAll('nav[data-nav-instance]');
-        if (allNavs.length > 1) {
-          console.warn(`[Navigation] Found ${allNavs.length} navigation bars:`, 
-            Array.from(allNavs).map(nav => nav.getAttribute('data-nav-instance')));
-        }
-      }
-    }, 100);
-  }, []);
-
   return (
     <nav 
-      ref={navRef}
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${backgroundClass}`}
       data-is-scrolled={isScrolled ? "true" : "false"}
       data-light-background={isLightBackground ? "true" : "false"}

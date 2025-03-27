@@ -17,7 +17,7 @@ export const useIndexPage = () => {
   const { isMobile } = useResponsive();
   const location = useLocation();
   
-  // Initialize device performance state
+  // Initialize device performance state - but don't use the problematic hook directly
   const [isLowPerformanceDevice] = useState(false);
   
   // Use the hook to manage navbar background colors based on section visibility

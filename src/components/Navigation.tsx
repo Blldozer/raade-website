@@ -37,10 +37,6 @@ const Navigation = ({
     console.log(`Navigation (${uniqueId}): Mounting with props:`, 
       { isHeroPage, forceDarkMode, useShortFormLogo, path: location.pathname });
     
-    // Track existing navigation elements to prevent duplicates
-    const existingNavs = document.querySelectorAll('nav[data-nav-instance]');
-    console.log(`Navigation found ${existingNavs.length} existing nav elements`);
-    
     // Set mounted flag to true
     setMounted(true);
     

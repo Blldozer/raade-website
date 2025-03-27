@@ -37,13 +37,6 @@ const NavigationContainer = ({
   
   // Log mounting info
   console.log(`NavigationContainer (${localInstanceId}): Mounting on ${location.pathname}`);
-    
-  // Count navigation elements to detect duplicates
-  const navElements = document.querySelectorAll('nav[data-nav-instance]');
-  if (navElements.length > 1) {
-    console.warn(`Multiple navigation elements detected (${navElements.length}):`, 
-      Array.from(navElements).map(el => el.getAttribute('data-nav-instance')));
-  }
 
   return (
     <NavigationProvider initialProps={{ 
