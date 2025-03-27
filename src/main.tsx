@@ -125,6 +125,7 @@ if (typeof window !== 'undefined') {
 startApp();
 
 // Add type definition for window global properties
+// This is now the single source of truth for window property types
 declare global {
   interface Window {
     React: typeof React;
