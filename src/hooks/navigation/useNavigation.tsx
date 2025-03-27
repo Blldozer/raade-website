@@ -108,11 +108,7 @@ export const useNavigation = () => {
       handleNavigation: (href: string) => {
         console.warn("useNavigation: Using fallback navigation to", href);
         // Simple fallback that uses window.location
-        if (href.startsWith('/')) {
-          window.location.href = href;
-        } else {
-          window.location.href = `/${href}`;
-        }
+        window.location.href = href;
       }
     };
   }

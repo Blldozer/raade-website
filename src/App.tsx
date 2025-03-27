@@ -18,8 +18,10 @@ const App = () => {
   
   return (
     <AppProviders>
-      <AppRoutes />
-      <Footer />
+      <div className="flex flex-col min-h-screen">
+        <AppRoutes />
+        <Footer />
+      </div>
     </AppProviders>
   );
 };

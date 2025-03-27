@@ -1,5 +1,4 @@
 
-import { useEffect, useState } from "react";
 import NavigationContainer from "./navigation/NavigationContainer";
 import { useLocation } from "react-router-dom";
 
@@ -23,31 +22,34 @@ const Navigation = ({
 }: NavigationProps) => {
   // Generate a unique ID for this navigation instance
   const uniqueId = `nav-main-${Math.random().toString(36).substring(2, 9)}`;
-  const location = useLocation();
-  const [mounted, setMounted] = useState(false);
   
-  // Log mounting/unmounting to track duplicate instances
-  useEffect(() => {
-    console.log(`Navigation (${uniqueId}): Mounting with props:`, 
+  try {
+    const location = useLocation();
+    
+    console.log(`Navigation (${uniqueId}): Rendering with props:`, 
       { isHeroPage, forceDarkMode, useShortFormLogo, path: location.pathname });
     
-    // Set mounted flag to true
-    setMounted(true);
+    return (
+      <NavigationContainer
+        instanceId={uniqueId}
+        isHeroPage={isHeroPage}
+        forceDarkMode={forceDarkMode}
+        useShortFormLogo={useShortFormLogo}
+      />
+    );
+  } catch (error) {
+    console.warn(`Navigation (${uniqueId}): Router context error, using basic container`);
     
-    return () => {
-      console.log(`Navigation (${uniqueId}): Unmounting from ${location.pathname}`);
-      setMounted(false);
-    };
-  }, [isHeroPage, forceDarkMode, useShortFormLogo, location.pathname, uniqueId]);
-  
-  return (
-    <NavigationContainer
-      instanceId={uniqueId}
-      isHeroPage={isHeroPage}
-      forceDarkMode={forceDarkMode}
-      useShortFormLogo={useShortFormLogo}
-    />
-  );
+    // Fallback when router context isn't available
+    return (
+      <NavigationContainer
+        instanceId={uniqueId}
+        isHeroPage={isHeroPage}
+        forceDarkMode={forceDarkMode}
+        useShortFormLogo={useShortFormLogo}
+      />
+    );
+  }
 };
 
 export default Navigation;

@@ -1,7 +1,7 @@
 
 import { useLocation } from "react-router-dom";
 import Navigation from "../Navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 /**
  * NavigationWrapper component
@@ -20,17 +20,17 @@ const NavigationWrapper = () => {
     useShortFormLogo: false
   };
   
-  // Create an instance ID to track this wrapper
-  const instanceId = `nav-wrapper-${Math.random().toString(36).substring(2, 9)}`;
+  // Create a stable instance ID
+  const instanceIdRef = useRef(`nav-wrapper-${Math.random().toString(36).substring(2, 9)}`);
+  const [navProps, setNavProps] = useState(defaultNavProps);
   
   try {
     const location = useLocation();
-    const [navProps, setNavProps] = useState(defaultNavProps);
     
-    // Set page-specific navigation properties once on mount/route change
+    // Set page-specific navigation properties only when the pathname changes
     useEffect(() => {
       const pathname = location.pathname;
-      console.log(`NavigationWrapper (${instanceId}): Setting props for ${pathname}`);
+      console.log(`NavigationWrapper (${instanceIdRef.current}): Setting props for ${pathname}`);
       
       // Determine page-specific props
       const isAboutPage = pathname === '/about';
@@ -51,12 +51,12 @@ const NavigationWrapper = () => {
         useShortFormLogo: isApplicationPage
       });
       
-    }, [location.pathname, instanceId]);
+    }, [location.pathname]); // Only depend on pathname, not the entire location object
     
     // Return a single Navigation component with appropriate props
     return <Navigation {...navProps} />;
   } catch (error) {
-    console.error(`NavigationWrapper (${instanceId}): Error with router context`, error);
+    console.error(`NavigationWrapper (${instanceIdRef.current}): Error with router context`, error);
     
     // Fallback to default props if router context fails
     return <Navigation {...defaultNavProps} />;
