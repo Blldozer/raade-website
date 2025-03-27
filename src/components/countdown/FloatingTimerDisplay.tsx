@@ -1,26 +1,34 @@
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Clock, X, ChevronDown, AlertCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { TimeLeft } from "./useCountdown";
+import { formatTimeUnit } from "./timerUtils";
 import { cn } from "@/lib/utils";
-import TimerDigits from "./TimerDigits";
-import { ColorScheme } from "./timerUtils";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 interface FloatingTimerDisplayProps {
-  timeLeft: {
-    days: number;
-    hours: number;
-    minutes: number;
-    seconds: number;
-    expired?: boolean;
-  };
+  timeLeft: TimeLeft;
   isExpanded: boolean;
   toggleExpanded: () => void;
   className?: string;
-  colors: ColorScheme;
+  colors: {
+    text: string;
+    accent: string;
+    background: string;
+    dropdownText: string;
+    dropdownBg: string;
+    iconColor: string;
+  };
 }
 
+/**
+ * FloatingTimerDisplay Component - Expandable floating countdown
+ * 
+ * Features:
+ * - Collapsible interface that expands on click
+ * - Animated transitions for smooth user experience
+ * - Proper cleanup of timers to prevent memory leaks
+ * - Hardware acceleration for animations
+ */
 const FloatingTimerDisplay = ({
   timeLeft,
   isExpanded,
@@ -28,116 +36,107 @@ const FloatingTimerDisplay = ({
   className,
   colors
 }: FloatingTimerDisplayProps) => {
-  const [isMounted, setIsMounted] = useState(false);
-  const isExpired = timeLeft.expired;
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(true);
   
-  // Delay mounting to avoid flash on initial page load
+  // Effect to handle clicks outside the timer
   useEffect(() => {
-    const timer = setTimeout(() => setIsMounted(true), 1000);
-    return () => clearTimeout(timer);
-  }, []);
+    // Skip this effect in SSR
+    if (typeof window === 'undefined') return;
+    
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node) && isExpanded) {
+        toggleExpanded();
+      }
+    };
+    
+    document.addEventListener("mousedown", handleClickOutside);
+    
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isExpanded, toggleExpanded]);
+  
+  // Conditionally hide the timer (e.g., when target date has passed)
+  useEffect(() => {
+    setIsVisible(!timeLeft.expired);
+  }, [timeLeft.expired]);
 
-  if (!isMounted) return null;
+  if (!isVisible) {
+    return null;
+  }
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 20 }}
-        transition={{ duration: 0.3 }}
-        className={cn(
-          "fixed bottom-4 right-4 z-40",
-          className
-        )}
+    <div
+      ref={dropdownRef}
+      className={cn(
+        "fixed bottom-4 right-4 md:bottom-8 md:right-8 z-40 transition-all duration-300 overflow-hidden rounded-lg shadow-lg",
+        colors.background,
+        className
+      )}
+      style={{
+        transform: "translateZ(0)", // Hardware acceleration
+        willChange: "transform, opacity, height"
+      }}
+    >
+      {/* Collapsed state display */}
+      <div 
+        className="p-2 cursor-pointer flex items-center gap-2"
+        onClick={toggleExpanded}
       >
+        <div className={cn("font-bold text-sm", colors.text)}>
+          Conference in:
+        </div>
+        <div className={cn("font-bold", colors.accent)}>
+          {timeLeft.days}d {formatTimeUnit(timeLeft.hours)}h {formatTimeUnit(timeLeft.minutes)}m
+        </div>
         {isExpanded ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className={cn(
-              "rounded-lg shadow-lg border p-4 w-64",
-              colors.dropdownBg || "bg-white dark:bg-gray-800",
-              colors.dropdownBorder || "border-gray-200 dark:border-gray-700"
-            )}
-          >
-            <div className="flex justify-between items-center mb-2">
-              <div className="flex items-center">
-                {isExpired ? (
-                  <AlertCircle size={18} className={colors.accent || "text-amber-500"} />
-                ) : (
-                  <Clock size={18} className={colors.accent || "text-amber-500"} />
-                )}
-                <span className={cn("ml-2 font-semibold", colors.highlight || "text-gray-900 dark:text-white")}>
-                  {isExpired ? "Conference Live!" : "Conference Countdown"}
-                </span>
-              </div>
-              <button
-                onClick={toggleExpanded}
-                className={cn(
-                  "p-1 rounded-full transition-colors",
-                  colors.hoverBg || "hover:bg-gray-100 dark:hover:bg-gray-700"
-                )}
-              >
-                <X size={14} className={colors.text || "text-gray-500 dark:text-gray-400"} />
-              </button>
-            </div>
-            
-            {isExpired ? (
-              <div className={cn("text-center py-2", colors.dropdownText || "text-gray-600 dark:text-gray-300")}>
-                <p className="text-sm font-medium">The RAADE Conference is happening now!</p>
-                <p className="text-xs mt-1 mb-2">April 11-12, 2025</p>
-              </div>
-            ) : (
-              <TimerDigits
-                days={timeLeft.days}
-                hours={timeLeft.hours}
-                minutes={timeLeft.minutes}
-                seconds={timeLeft.seconds}
-                colorClasses={{
-                  accent: colors.accent,
-                  dropdownText: colors.dropdownText
-                }}
-                size="md"
-              />
-            )}
-            
-            <div className="mt-3 text-center">
-              <Link
-                to={isExpired ? "/conference" : "/conference/register"}
-                className={cn(
-                  "block w-full py-2 px-4 text-sm font-medium text-white rounded-md bg-amber-500 hover:bg-amber-600 transition-colors"
-                )}
-              >
-                {isExpired ? "View Live Schedule" : "Register Now"}
-              </Link>
-            </div>
-          </motion.div>
+          <ChevronDown className={cn("h-4 w-4", colors.iconColor)} />
         ) : (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            onClick={toggleExpanded}
-            className={cn(
-              "flex items-center space-x-2 rounded-full py-2 px-4 shadow-lg",
-              colors.dropdownBg || "bg-white dark:bg-gray-800"
-            )}
-          >
-            {isExpired ? (
-              <AlertCircle size={16} className={colors.accent || "text-amber-500"} />
-            ) : (
-              <Clock size={16} className={colors.accent || "text-amber-500"} />
-            )}
-            <span className={cn("text-sm font-medium", colors.text || "text-gray-900 dark:text-white")}>
-              {isExpired ? "Conference Live!" : `${timeLeft.days}d:${timeLeft.hours}h left`}
-            </span>
-            <ChevronDown size={14} className={colors.text || "text-gray-500 dark:text-gray-400"} />
-          </motion.button>
+          <ChevronUp className={cn("h-4 w-4", colors.iconColor)} />
         )}
-      </motion.div>
-    </AnimatePresence>
+      </div>
+      
+      {/* Expanded state dropdown */}
+      {isExpanded && (
+        <div 
+          className={cn(
+            "p-3 border-t border-gray-200/20",
+            colors.dropdownBg
+          )}
+        >
+          <h3 className={cn("text-center font-semibold mb-2", colors.dropdownText)}>
+            RAADE Conference 2025
+          </h3>
+          <div className="grid grid-cols-4 gap-2 text-center">
+            <div>
+              <div className={cn("text-xl font-bold", colors.accent)}>{timeLeft.days}</div>
+              <div className={cn("text-xs", colors.dropdownText)}>Days</div>
+            </div>
+            <div>
+              <div className={cn("text-xl font-bold", colors.accent)}>{formatTimeUnit(timeLeft.hours)}</div>
+              <div className={cn("text-xs", colors.dropdownText)}>Hours</div>
+            </div>
+            <div>
+              <div className={cn("text-xl font-bold", colors.accent)}>{formatTimeUnit(timeLeft.minutes)}</div>
+              <div className={cn("text-xs", colors.dropdownText)}>Mins</div>
+            </div>
+            <div>
+              <div className={cn("text-xl font-bold", colors.accent)}>{formatTimeUnit(timeLeft.seconds)}</div>
+              <div className={cn("text-xs", colors.dropdownText)}>Secs</div>
+            </div>
+          </div>
+          <div className="mt-3 text-center">
+            <a 
+              href="/conference/register" 
+              className="inline-block px-4 py-1 bg-[#FBB03B] hover:bg-[#FF9848] text-white rounded-md text-sm font-semibold transition-colors"
+            >
+              Register Now
+            </a>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

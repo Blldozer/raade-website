@@ -24,6 +24,7 @@ interface CountdownTimerProps {
  * - Adapts display based on whether the event has passed
  * - Supports both navbar and floating display variants
  * - Auto-detects appropriate color scheme based on background
+ * - Enhanced with router context safety checks
  */
 const CountdownTimer = ({
   targetDate,
@@ -33,7 +34,20 @@ const CountdownTimer = ({
   accentColor,
   textColor
 }: CountdownTimerProps) => {
-  const location = useLocation();
+  // Safe router context access with fallback
+  let locationPath = '/';
+  let isDarkBackground = false;
+  
+  try {
+    const location = useLocation();
+    locationPath = location.pathname;
+    
+    // Get initial background check based on current route
+    isDarkBackground = !hasLightBackground(locationPath);
+  } catch (error) {
+    // If router context is not available, use safe defaults
+    console.log("CountdownTimer: Router context not available, using defaults");
+  }
   
   // Use the provided targetDate or fall back to the default
   // Using a clearer date format with explicit year, month, day
@@ -61,28 +75,28 @@ const CountdownTimer = ({
       setScrollPastHero(isScrollPastHero());
     };
 
-    window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Check initial scroll position
-    
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    // Check if we're in a browser environment
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', handleScroll);
+      handleScroll(); // Check initial scroll position
+      
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+      };
+    }
   }, []);
 
   const toggleExpanded = () => {
     setIsExpanded(!isExpanded);
   };
 
-  // Get initial background check based on current route
-  const initialIsDarkBackground = !hasLightBackground(location.pathname);
-  
   // If we're on index, about, or innovation studios page and have scrolled past hero,
   // we should use light color scheme (for dark text) as background is likely white
-  const isDarkBackground = scrollPastHero && 
-    (location.pathname === '/' || 
-     location.pathname === '/about' || 
-     location.pathname === '/studios') 
-    ? false : initialIsDarkBackground;
+  const effectiveDarkBackground = scrollPastHero && 
+    (locationPath === '/' || 
+     locationPath === '/about' || 
+     locationPath === '/studios') 
+    ? false : isDarkBackground;
   
   // Create a custom color scheme if specific colors are provided
   const customColorScheme: ColorScheme = {};
@@ -107,7 +121,7 @@ const CountdownTimer = ({
       ? { ...colorScheme, ...customColorScheme }
       : (Object.keys(customColorScheme).length > 0 ? customColorScheme : colorScheme);
   
-  const colors = getColorClasses(finalColorScheme, isDarkBackground);
+  const colors = getColorClasses(finalColorScheme, effectiveDarkBackground);
 
   // Render appropriate timer display based on variant
   if (variant === "nav") {
