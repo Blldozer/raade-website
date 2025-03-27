@@ -18,7 +18,7 @@ export const useIndexPage = () => {
   const location = useLocation();
   
   // Initialize device performance state - but don't use the problematic hook directly
-  const [isLowPerformanceDevice] = useState(false);
+  const [isLowPerformanceDevice, setIsLowPerformanceDevice] = useState(false);
   
   // Use the hook to manage navbar background colors based on section visibility
   // Initialize with 'light' since the hero section has a dark background
