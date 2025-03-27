@@ -1,5 +1,5 @@
 
-import { useEffect } from 'react';
+import { useEffect, RefObject } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 
@@ -19,10 +19,10 @@ if (typeof gsap === 'object' && gsap.registerPlugin && typeof ScrollTrigger === 
  * 
  * @param videoRef - Reference to the video element
  */
-export const useHeroAnimation = (videoRef: React.RefObject<HTMLVideoElement>) => {
-  // Verify React is available before trying to use hooks
-  if (typeof React !== 'object' || typeof React.useEffect !== 'function') {
-    console.warn("useHeroAnimation: React context unavailable");
+export const useHeroAnimation = (videoRef: RefObject<HTMLVideoElement>) => {
+  // Verify React hooks are available in a safer way
+  if (typeof useEffect !== 'function') {
+    console.warn("useHeroAnimation: React hooks unavailable");
     return; // Exit early without trying to use hooks
   }
   

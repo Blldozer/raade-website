@@ -1,5 +1,5 @@
 
-import { useEffect } from 'react';
+import { useEffect, RefObject } from 'react';
 import gsap from 'gsap';
 
 /**
@@ -13,10 +13,10 @@ import gsap from 'gsap';
  * 
  * @param contentRef - Reference to the content element to animate
  */
-export const useContentAnimation = (contentRef: React.RefObject<HTMLDivElement>) => {
-  // Verify React is available before trying to use hooks
-  if (typeof React !== 'object' || typeof React.useEffect !== 'function') {
-    console.warn("useContentAnimation: React context unavailable");
+export const useContentAnimation = (contentRef: RefObject<HTMLDivElement>) => {
+  // Verify React hooks are available in a safer way
+  if (typeof useEffect !== 'function') {
+    console.warn("useContentAnimation: React hooks unavailable");
     return; // Exit early without trying to use hooks
   }
   

@@ -26,7 +26,7 @@ if (typeof gsap === 'object' && gsap.registerPlugin) {
  */
 const Hero = () => {
   // CRITICAL: Check if we're running in a valid React context before trying to use hooks
-  if (typeof React !== 'object' || typeof React.useRef !== 'function') {
+  if (typeof React !== 'object' || typeof useRef !== 'function') {
     console.error("Hero component: React context unavailable, rendering fallback");
     
     // Return minimal fallback that won't crash
@@ -43,7 +43,7 @@ const Hero = () => {
   }
   
   // Wrapper function for safely using hooks with error handling
-  const safelyUseHook = (hookFn, ...args) => {
+  const safelyUseHook = (hookFn: Function, ...args: any[]) => {
     try {
       return hookFn(...args);
     } catch (error) {

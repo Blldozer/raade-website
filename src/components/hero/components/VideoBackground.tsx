@@ -18,9 +18,9 @@ interface VideoBackgroundProps {
 const VideoBackground = ({ videoLoaded, setVideoLoaded }: VideoBackgroundProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   
-  // Verify React is available before trying to use hooks
-  if (typeof React !== 'object' || typeof React.useEffect !== 'function') {
-    console.warn("VideoBackground: React context unavailable");
+  // Verify React hooks are available
+  if (typeof useEffect !== 'function' || typeof useRef !== 'function') {
+    console.warn("VideoBackground: React hooks unavailable");
     
     // Return a static fallback instead of video
     return (
