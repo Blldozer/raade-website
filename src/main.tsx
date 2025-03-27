@@ -8,18 +8,26 @@ import './index.css'
  * Main entry point with improved initialization safety
  * - Sets proper initialization flags for React
  * - Adds comprehensive error handling
+ * - Ensures React global reference is available before any component renders
  */
 function startApp() {
   try {
     console.log("Application startup: Beginning initialization");
     
-    // CRITICAL: Set React global flag to true BEFORE requiring any components
+    // CRITICAL: Set React global flag and reference BEFORE requiring any components
     if (typeof window !== 'undefined') {
+      // Set initialization flag
       window.__REACT_INITIALIZED = true;
       console.log("React initialization flag set to true before loading App");
       
       // Create a global React reference for emergency situations
       window.__REACT_GLOBAL_REFERENCE = React;
+      console.log("React global reference set");
+      
+      // Export useState, useEffect, etc. to window.React for emergency access
+      if (!window.React) {
+        window.React = React;
+      }
     }
     
     // Get the root element with improved error handling

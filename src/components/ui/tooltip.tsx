@@ -1,22 +1,42 @@
 
 import * as React from "react"
 import * as TooltipPrimitive from "@radix-ui/react-tooltip"
+import { createSafeHooks } from "@/utils/reactContextSafety"
 
 import { cn } from "@/lib/utils"
 
 /**
  * Tooltip components using Radix UI
  * 
- * This component has been customized to ensure proper React context operation
- * and prevent "Cannot read properties of null (reading 'useState')" errors.
- * The wrapper component prevents Provider issues by explicitly creating a React.FC.
+ * This component has been enhanced with safe hooks usage to prevent
+ * "Cannot read properties of null (reading 'useState')" errors.
+ * 
+ * The component now uses our createSafeHooks utility to ensure React context is available
+ * before attempting to use hooks.
  */
+
+// Get safe versions of React hooks
+const { useState, useEffect } = createSafeHooks();
 
 // Create a proper React functional component to ensure hooks work correctly
 const TooltipProvider: React.FC<React.ComponentProps<typeof TooltipPrimitive.Provider>> = ({ 
   children,
   ...props
 }) => {
+  // Safe version of React.useState
+  const [mounted, setMounted] = useState(false);
+  
+  // Safe version of React.useEffect
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+  
+  // Only render the provider if we can safely use React hooks
+  if (!mounted && typeof window !== 'undefined' && !(window as any).__REACT_INITIALIZED) {
+    return <>{children}</>; // Return children without the provider if not mounted
+  }
+  
   return (
     <TooltipPrimitive.Provider {...props}>
       {children}

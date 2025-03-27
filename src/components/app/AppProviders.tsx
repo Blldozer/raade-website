@@ -8,6 +8,7 @@ import GlobalErrorFallback from "./GlobalErrorFallback";
 import { ThemeProvider } from "next-themes";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import ScrollToTop from "./ScrollToTop";
+import { createSafeHooks } from "@/utils/reactContextSafety";
 
 // Initialize the QueryClient with better error handling
 const queryClient = new QueryClient({
@@ -31,13 +32,14 @@ interface AppProvidersProps {
  * Wraps the application with all necessary providers
  * 
  * Enhanced with additional safety checks for React context availability
+ * and safe hooks usage
  */
 const AppProviders = ({ children }: AppProvidersProps) => {
-  // Verify React is available before using hooks
+  // Get React from window if available as a fallback
   const React = (window as any).__REACT_GLOBAL_REFERENCE || window.React;
   
-  // Define safer useEffect - only use if React is properly initialized
-  const safeUseEffect = React?.useEffect || function noop() {};
+  // Use our safe hooks
+  const { useEffect: safeUseEffect } = createSafeHooks();
   
   // Global initialization check using safe version of useEffect
   safeUseEffect(() => {
@@ -71,12 +73,15 @@ const AppProviders = ({ children }: AppProvidersProps) => {
                 fallback={<GlobalErrorFallback error={new Error("Application failed to render")} />}
                 suppressDevErrors={isDevelopment}
               >
-                {/* TooltipProvider moved inside ErrorBoundary but before ScrollToTop */}
-                <TooltipProvider>
-                  <ScrollToTop>
-                    {children}
-                  </ScrollToTop>
-                </TooltipProvider>
+                {/* Wrap children directly without TooltipProvider - we'll add it later */}
+                <ScrollToTop>
+                  {/* Use a div for TooltipProvider to ensure it doesn't impact layout */}
+                  <div className="relative">
+                    <TooltipProvider>
+                      {children}
+                    </TooltipProvider>
+                  </div>
+                </ScrollToTop>
                 <Toaster />
               </ErrorBoundary>
             </QueryClientProvider>
