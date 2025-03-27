@@ -41,28 +41,6 @@ const AppProviders = ({ children }: AppProvidersProps) => {
   // Log that we've mounted the component
   console.log("AppProviders: Component mounted");
   
-  // Log environment information without useEffect to avoid the error
-  if (typeof window !== 'undefined') {
-    console.log("App: Window dimensions", {
-      width: window.innerWidth,
-      height: window.innerHeight,
-      pixelRatio: window.devicePixelRatio
-    });
-    
-    // Disable React's console errors in production
-    if (process.env.NODE_ENV === 'production') {
-      const originalConsoleError = console.error;
-      console.error = (...args) => {
-        // Filter out React-specific development errors in production
-        const errorMessage = args[0]?.toString() || '';
-        if (errorMessage.includes('React will try to recreate this component tree')) {
-          return;
-        }
-        originalConsoleError(...args);
-      };
-    }
-  }
-
   // Important: Using explicit render tree structure with no hooks outside of React components
   return (
     <BrowserRouter>

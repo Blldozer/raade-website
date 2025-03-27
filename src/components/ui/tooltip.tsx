@@ -14,10 +14,7 @@ import { cn } from "@/lib/utils"
  * ensure proper context initialization.
  */
 
-// Use the Provider directly rather than re-exporting it
-const TooltipProvider = ({ children, ...props }: TooltipPrimitive.TooltipProviderProps) => {
-  return <TooltipPrimitive.Provider {...props}>{children}</TooltipPrimitive.Provider>;
-};
+const TooltipProvider = TooltipPrimitive.Provider
 
 const Tooltip = TooltipPrimitive.Root
 

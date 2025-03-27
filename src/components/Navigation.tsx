@@ -1,5 +1,5 @@
 
-import { useRef, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import NavigationContainer from "./navigation/NavigationContainer";
 import { useLocation } from "react-router-dom";
 
@@ -48,7 +48,7 @@ const Navigation = ({
       console.log(`Navigation (${uniqueId}): Unmounting from ${location.pathname}`);
       setMounted(false);
     };
-  }, [isHeroPage, forceDarkMode, useShortFormLogo, location.pathname, mounted]);
+  }, [isHeroPage, forceDarkMode, useShortFormLogo, location.pathname, mounted, uniqueId]);
   
   return (
     <NavigationContainer
