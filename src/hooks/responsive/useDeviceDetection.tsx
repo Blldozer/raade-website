@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+
+import React, { useState, useEffect } from "react";
 import { useIsMobile } from "../use-mobile";
 import { DeviceType } from "./usePerformanceDetection";
 
@@ -14,6 +15,8 @@ import { DeviceType } from "./usePerformanceDetection";
 export const useDeviceDetection = () => {
   // Check if we're in a browser environment first
   const isBrowser = typeof window !== 'undefined';
+  
+  // Check if React is properly initialized
   const isReactInitialized = typeof React !== 'undefined' && React !== null;
   
   // Only use the mobile hook if we're in a safe environment
