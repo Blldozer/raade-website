@@ -4,13 +4,12 @@ import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useCountdown } from "./countdown/useCountdown";
 import NavTimerDisplay from "./countdown/NavTimerDisplay";
-import FloatingTimerDisplay from "./countdown/FloatingTimerDisplay";
 import { getColorClasses, hasLightBackground, ColorScheme, isScrollPastHero } from "./countdown/timerUtils";
 
 interface CountdownTimerProps {
   targetDate?: string;
   className?: string;
-  variant?: "nav" | "floating";
+  variant?: "nav";
   colorScheme?: 'light' | 'dark' | 'auto' | ColorScheme;
   accentColor?: string;
   textColor?: string;
@@ -22,14 +21,14 @@ interface CountdownTimerProps {
  * Features:
  * - Handles countdown expiration gracefully
  * - Adapts display based on whether the event has passed
- * - Supports both navbar and floating display variants
+ * - Supports navbar display with dropdown functionality
  * - Auto-detects appropriate color scheme based on background
  * - Enhanced with router context safety checks
  */
 const CountdownTimer = ({
   targetDate,
   className,
-  variant = "floating",
+  variant = "nav",
   colorScheme = "auto",
   accentColor,
   textColor
@@ -63,7 +62,6 @@ const CountdownTimer = ({
     });
   }, [targetDate, CONFERENCE_DATE]);
   
-  const [isExpanded, setIsExpanded] = useState(false);
   const [scrollPastHero, setScrollPastHero] = useState(false);
   
   // Get time left using custom hook
@@ -85,10 +83,6 @@ const CountdownTimer = ({
       };
     }
   }, []);
-
-  const toggleExpanded = () => {
-    setIsExpanded(!isExpanded);
-  };
 
   // If we're on index, about, or innovation studios page and have scrolled past hero,
   // we should use light color scheme (for dark text) as background is likely white
@@ -123,22 +117,12 @@ const CountdownTimer = ({
   
   const colors = getColorClasses(finalColorScheme, effectiveDarkBackground);
 
-  // Render appropriate timer display based on variant
-  if (variant === "nav") {
-    return <NavTimerDisplay 
-      timeLeft={timeLeft} 
-      colors={colors} 
-    />;
-  }
-
-  // Default to floating display
+  // Render the NavTimerDisplay (now with dropdown functionality)
   return (
-    <FloatingTimerDisplay
-      timeLeft={timeLeft}
-      isExpanded={isExpanded}
-      toggleExpanded={toggleExpanded}
-      className={className}
+    <NavTimerDisplay 
+      timeLeft={timeLeft} 
       colors={colors}
+      className={className}
     />
   );
 };
