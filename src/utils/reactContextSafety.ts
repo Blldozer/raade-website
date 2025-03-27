@@ -50,7 +50,7 @@ export const createSafeHooks = () => {
       useRef: <T>(initialValue: T) => ({ current: initialValue }),
       useCallback: <T extends Function>(callback: T, deps?: any[]) => callback,
       useMemo: <T>(factory: () => T, deps?: any[]) => factory(),
-      useContext: <T>(context: React.Context<T>) => {} as T
+      useContext: <T>(context: any) => ({} as T)
     };
   }
   
