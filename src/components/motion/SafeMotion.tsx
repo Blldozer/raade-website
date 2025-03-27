@@ -35,7 +35,7 @@ type MotionComponent = React.ForwardRefExoticComponent<any>;
 
 // Create safe versions of all motion components
 type SafeMotionComponentsType = {
-  [K in keyof typeof framerMotion]?: MotionComponent;
+  [K in keyof typeof framerMotion]?: typeof framerMotion[K];
 };
 
 // Create proxied components that check for safety before rendering
@@ -63,7 +63,7 @@ const initSafeMotion = (): SafeMotionComponentsType => {
       if (Object.prototype.hasOwnProperty.call(motionObj, key)) {
         const value = (motionObj as any)[key];
         if (typeof value === 'function' || typeof value === 'object') {
-          safeMotion[key as keyof typeof framerMotion] = createSafeComponent(value);
+          (safeMotion as any)[key] = createSafeComponent(value);
         }
       }
     }
