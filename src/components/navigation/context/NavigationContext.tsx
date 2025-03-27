@@ -26,7 +26,7 @@ export const NavigationProvider = ({
     useShortFormLogo?: boolean;
   }
 }) => {
-  // Generate a unique string ID instead of using useState to avoid initialization issues
+  // Generate a unique string ID for component instance tracking
   const instanceId = `nav-${Math.random().toString(36).substring(2, 9)}`;
   const location = useLocation();
   const { isMobile, isTablet } = useResponsive();
@@ -36,7 +36,7 @@ export const NavigationProvider = ({
   const [isPastHero, setIsPastHero] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isDarkBackground, setIsDarkBackground] = useState(
-    !(initialProps.forceDarkMode === true)
+    initialProps.forceDarkMode !== true
   );
   
   // Track if this component is still mounted

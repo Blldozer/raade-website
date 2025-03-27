@@ -20,12 +20,12 @@ const NavigationWrapper = () => {
   });
   
   // Create an instance ID to track this wrapper
-  const uniqueId = `nav-wrapper-${Math.random().toString(36).substring(2, 9)}`;
+  const instanceId = `nav-wrapper-${Math.random().toString(36).substring(2, 9)}`;
   
   // Set page-specific navigation properties once on mount/route change
   useEffect(() => {
     const pathname = location.pathname;
-    console.log(`NavigationWrapper (${uniqueId}): Setting props for ${pathname}`);
+    console.log(`NavigationWrapper (${instanceId}): Setting props for ${pathname}`);
     
     // Determine page-specific props
     const isAboutPage = pathname === '/about';
@@ -46,7 +46,7 @@ const NavigationWrapper = () => {
       useShortFormLogo: isApplicationPage
     });
     
-  }, [location.pathname, uniqueId]);
+  }, [location.pathname, instanceId]);
   
   // Return a single Navigation component with appropriate props
   return <Navigation {...navProps} />;
