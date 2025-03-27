@@ -1,6 +1,6 @@
 
 import React, { memo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, MotionValue } from 'framer-motion';
 import { useAnimatedText } from './hooks/useAnimatedText';
 
 /**

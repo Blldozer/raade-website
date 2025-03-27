@@ -1,6 +1,6 @@
 
 import { useEffect, useRef, useState } from 'react';
-import { useScroll, useTransform } from 'framer-motion';
+import { useScroll, useTransform, MotionValue } from 'framer-motion';
 
 /**
  * A lightweight text typing effect implementation that handles special characters properly
@@ -72,9 +72,9 @@ export const useAnimatedText = () => {
   const orgNameRef = useRef<HTMLHeadingElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // Create default values in case framer-motion fails
-  let lineWidth = "0%";
-  let lineOpacity = 0;
+  // Declare variable types correctly to match MotionValue return types
+  let lineWidth: string | MotionValue<string> = "0%";
+  let lineOpacity: number | MotionValue<number> = 0;
   
   // Only use framer-motion if it's available
   if (isFramerMotionAvailable) {
