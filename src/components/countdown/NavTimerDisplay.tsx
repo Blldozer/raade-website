@@ -52,7 +52,7 @@ const NavTimerDisplay = ({
 
   if (timeLeft.expired) {
     return (
-      <div className={cn("font-montserrat font-bold", colors.accent, className)}>
+      <div className={cn("font-alegreyasans font-bold", colors.accent, className)}>
         Live Now!
       </div>
     );
@@ -72,7 +72,7 @@ const NavTimerDisplay = ({
     >
       {/* Timer display that shows dropdown on hover */}
       <div 
-        className={cn("flex items-center space-x-1 font-montserrat cursor-pointer")}
+        className={cn("flex items-center space-x-1 font-alegreyasans cursor-pointer")}
       >
         <span className={cn("mr-1 font-bold", colors.text)}>Conference:</span>
         <div className="flex items-baseline">
@@ -102,24 +102,24 @@ const NavTimerDisplay = ({
             "bg-gradient-to-br from-raade-gold-start via-raade-gold-middle to-raade-gold-end"
           )}
         >
-          <h3 className={cn("text-center font-montserrat font-semibold mb-3 text-white")}>
+          <h3 className={cn("text-center font-alegreyasans font-semibold mb-3 text-white")}>
             RAADE Conference 2025
           </h3>
           <div className="grid grid-cols-4 gap-3 text-center">
             <div className="flex flex-col items-center">
-              <div className={cn("text-xl font-bold font-montserrat text-white")}>{timeLeft.days}</div>
+              <div className={cn("text-xl font-bold font-alegreyasans text-white")}>{timeLeft.days}</div>
               <div className={cn("text-xs font-medium text-white/90")}>Days</div>
             </div>
             <div className="flex flex-col items-center">
-              <div className={cn("text-xl font-bold font-montserrat text-white")}>{formatTimeUnit(timeLeft.hours)}</div>
+              <div className={cn("text-xl font-bold font-alegreyasans text-white")}>{formatTimeUnit(timeLeft.hours)}</div>
               <div className={cn("text-xs font-medium text-white/90")}>Hours</div>
             </div>
             <div className="flex flex-col items-center">
-              <div className={cn("text-xl font-bold font-montserrat text-white")}>{formatTimeUnit(timeLeft.minutes)}</div>
+              <div className={cn("text-xl font-bold font-alegreyasans text-white")}>{formatTimeUnit(timeLeft.minutes)}</div>
               <div className={cn("text-xs font-medium text-white/90")}>Mins</div>
             </div>
             <div className="flex flex-col items-center">
-              <div className={cn("text-xl font-bold font-montserrat text-white")}>{formatTimeUnit(timeLeft.seconds)}</div>
+              <div className={cn("text-xl font-bold font-alegreyasans text-white")}>{formatTimeUnit(timeLeft.seconds)}</div>
               <div className={cn("text-xs font-medium text-white/90")}>Secs</div>
             </div>
           </div>
@@ -127,7 +127,7 @@ const NavTimerDisplay = ({
             <div className="text-xs mb-2 font-medium text-white/80">April 11-12, 2025</div>
             <a 
               href="/conference/register" 
-              className="inline-block px-4 py-1.5 bg-raade-navy hover:bg-raade-Thunder text-white rounded-md text-sm font-semibold transition-colors"
+              className="inline-block px-4 py-1.5 bg-raade-navy hover:bg-raade-Thunder text-white rounded-md text-sm font-semibold transition-colors font-alegreyasans"
             >
               Register Now
             </a>

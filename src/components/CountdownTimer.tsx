@@ -25,6 +25,7 @@ interface CountdownTimerProps {
  * - Auto-detects appropriate color scheme based on background
  * - Enhanced with router context safety checks
  * - Uses transparent background for seamless navigation integration
+ * - Uses Alegreya Sans font for RAADE brand consistency
  */
 const CountdownTimer = ({
   targetDate,
