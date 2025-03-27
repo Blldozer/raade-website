@@ -14,7 +14,7 @@ import { useAnimatedText } from './hooks/useAnimatedText';
 const AnimatedText = () => {
   // Check if we're in a React context environment by testing window flag
   const isReactInitialized = typeof window !== 'undefined' && 
-    (window as any).__REACT_INITIALIZED === true;
+    window.__REACT_INITIALIZED === true;
   
   // Check if framer motion is available before using it
   const isFramerMotionAvailable = typeof motion === 'function';

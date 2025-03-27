@@ -1,7 +1,14 @@
+
 import { createRoot } from 'react-dom/client'
 import { StrictMode } from 'react'
 import App from './App.tsx'
 import './index.css'
+
+// Set React initialization flag right at the start
+if (typeof window !== 'undefined') {
+  window.__REACT_INITIALIZED = false;
+  window.__REACT_CONTEXT_ERROR = false;
+}
 
 // Function to ensure fonts are properly loaded and fallbacks are in place
 function ensureFontsLoaded() {
@@ -15,7 +22,6 @@ function ensureFontsLoaded() {
     // Create a timeout to ensure the app renders even if fonts take too long
     const fontTimeout = setTimeout(() => {
       console.log("Font loading timeout reached, continuing with fallbacks");
-      // Explicitly cast document to Document to ensure TypeScript recognizes documentElement
       (document as Document).documentElement.classList.add('fonts-timeout');
       (document as Document).documentElement.classList.remove('fonts-loading');
       startApp();
@@ -25,14 +31,12 @@ function ensureFontsLoaded() {
     document.fonts.ready.then(() => {
       clearTimeout(fontTimeout);
       console.log("All fonts loaded successfully");
-      // Explicitly cast document to Document
       (document as Document).documentElement.classList.add('fonts-loaded');
       (document as Document).documentElement.classList.remove('fonts-loading');
       startApp();
     }).catch(err => {
       clearTimeout(fontTimeout);
       console.error("Error loading fonts:", err);
-      // Explicitly cast document to Document
       (document as Document).documentElement.classList.add('fonts-error');
       (document as Document).documentElement.classList.remove('fonts-loading');
       startApp();
@@ -57,7 +61,6 @@ function ensureFontsLoaded() {
   } else {
     // Fallback for browsers without document.fonts API
     console.log("Font loading API not available, proceeding with fallbacks");
-    // Explicitly cast document to Document
     (document as Document).documentElement.classList.add('no-font-api');
     (document as Document).documentElement.classList.remove('fonts-loading');
     startApp();
@@ -71,8 +74,9 @@ function startApp() {
     
     // CRITICAL: Set React global flag to indicate React is initializing
     // This helps components detect if React hooks are available
-    (window as any).__REACT_HOOK_INITIALIZATION_STARTED = true;
-    (window as any).__REACT_INITIALIZED = true;
+    if (typeof window !== 'undefined') {
+      window.__REACT_HOOK_INITIALIZATION_STARTED = true;
+    }
     
     // Get the root element with improved error handling
     const rootElement = document.getElementById("root");
@@ -109,7 +113,9 @@ function startApp() {
           console.error("React hook error detected. This might be a React context initialization issue.");
           
           // Set a global flag to indicate React is not properly initialized
-          (window as any).__REACT_CONTEXT_ERROR = true;
+          if (typeof window !== 'undefined') {
+            window.__REACT_CONTEXT_ERROR = true;
+          }
           
           // Insert friendly error message
           document.body.innerHTML = `
@@ -156,30 +162,24 @@ function startApp() {
             : (target as HTMLLinkElement).href;
             
           console.error(`Error loading resource: ${resourceUrl}`);
-          
-          // Try to load it through the service worker cache
-          if ('serviceWorker' in navigator && navigator.serviceWorker.controller && resourceUrl) {
-            console.log("Requesting service worker to cache external resource:", resourceUrl);
-            navigator.serviceWorker.controller.postMessage({
-              type: 'CACHE_EXTERNAL',
-              url: resourceUrl
-            });
-          }
         }
       }, true); // Use capture phase
+      
+      // CRITICAL: Set React global flag to true BEFORE rendering
+      if (typeof window !== 'undefined') {
+        window.__REACT_INITIALIZED = true;
+      }
       
       // Create root with explicit ReactDOM API approach
       const root = createRoot(rootElement);
       
-      // Use StrictMode with caution - it can trigger duplicate mounting
-      root.render(
-        <StrictMode>
-          <App />
-        </StrictMode>
-      );
+      // Disable StrictMode for now to prevent double renders causing issues with framer-motion
+      root.render(<App />);
       
       // Mark React hooks as fully initialized after successful render
-      (window as any).__REACT_HOOK_INITIALIZATION_COMPLETED = true;
+      if (typeof window !== 'undefined') {
+        window.__REACT_HOOK_INITIALIZATION_COMPLETED = true;
+      }
       
       console.log("Application startup: React rendering completed");
     }
@@ -209,24 +209,6 @@ function startApp() {
         ">Reload Page</button>
       </div>
     `;
-  }
-}
-
-// Define window.__REACT_INITIALIZED as a global property
-interface WindowWithReactInitialized extends Window {
-  __REACT_INITIALIZED?: boolean;
-  __REACT_CONTEXT_ERROR?: boolean;
-  __REACT_HOOK_INITIALIZATION_STARTED?: boolean;
-  __REACT_HOOK_INITIALIZATION_COMPLETED?: boolean;
-  __REACT_RENDER_ERROR?: boolean;
-}
-declare global {
-  interface Window {
-    __REACT_INITIALIZED?: boolean;
-    __REACT_CONTEXT_ERROR?: boolean;
-    __REACT_HOOK_INITIALIZATION_STARTED?: boolean;
-    __REACT_HOOK_INITIALIZATION_COMPLETED?: boolean;
-    __REACT_RENDER_ERROR?: boolean;
   }
 }
 

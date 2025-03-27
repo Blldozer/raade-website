@@ -47,7 +47,7 @@ const AppProviders = ({ children }: AppProvidersProps) => {
   useEffect(() => {
     // Explicitly set a global flag to indicate React is initialized
     if (typeof window !== 'undefined') {
-      (window as any).__REACT_INITIALIZED = true;
+      window.__REACT_INITIALIZED = true;
       console.log("AppProviders: React context initialized and ready");
     }
   }, []);

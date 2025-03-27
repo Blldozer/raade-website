@@ -55,7 +55,7 @@ const useTypingEffect = (text: string, speed: number = 80) => {
 export const useAnimatedText = () => {
   // Check if we're in a React context environment
   const isReactInitialized = typeof window !== 'undefined' && 
-    (window as any).__REACT_INITIALIZED === true;
+    window.__REACT_INITIALIZED === true;
     
   // If React isn't properly initialized, return safe defaults
   if (!isReactInitialized) {

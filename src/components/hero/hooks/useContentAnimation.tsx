@@ -14,67 +14,107 @@ import gsap from 'gsap';
  * @param contentRef - Reference to the content element to animate
  */
 export const useContentAnimation = (contentRef: RefObject<HTMLDivElement>) => {
-  // Verify React hooks are available in a safer way
+  // Check if we're in a React context environment
+  const isReactInitialized = typeof window !== 'undefined' && 
+    window.__REACT_INITIALIZED === true;
+    
+  // If React isn't properly initialized, return early
+  if (!isReactInitialized) {
+    console.warn("useContentAnimation: React not fully initialized");
+    return;
+  }
+
+  // Verify React hooks are available
   if (typeof useEffect !== 'function') {
     console.warn("useContentAnimation: React hooks unavailable");
-    return; // Exit early without trying to use hooks
+    return;
   }
   
   useEffect(() => {
-    // Safety check for contentRef and gsap availability
-    if (!contentRef?.current || typeof gsap !== 'object') return;
+    // Check if GSAP is available
+    if (typeof gsap !== 'object' || !gsap.to) {
+      console.warn("useContentAnimation: GSAP not available");
+      return;
+    }
+    
+    // Check if contentRef is valid
+    if (!contentRef.current) {
+      console.warn("useContentAnimation: Content ref not available");
+      return;
+    }
+    
+    // Check if user prefers reduced motion
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      // Skip animations for users who prefer reduced motion
+      console.log("useContentAnimation: Skipping animations due to reduced motion preference");
+      return;
+    }
     
     try {
-      // Check if user prefers reduced motion
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      // Get all headings and paragraphs
+      const container = contentRef.current;
+      const headings = container.querySelectorAll('h1, h2, h3');
+      const paragraphs = container.querySelectorAll('p');
+      const buttons = container.querySelectorAll('.btn, button');
       
-      // Use CSS animation for better performance when possible
-      if (contentRef.current) {
-        if (prefersReducedMotion) {
-          // Skip animation for users who prefer reduced motion
-          contentRef.current.style.opacity = '1';
-          contentRef.current.style.transform = 'none';
-        } else {
-          // Add class for CSS-based animation instead of GSAP
-          contentRef.current.classList.add('content-fade-in');
-          return;
+      // Set will-change for better performance
+      [...headings, ...paragraphs, ...buttons].forEach(el => {
+        if (el instanceof HTMLElement) {
+          el.style.willChange = 'opacity, transform';
         }
+      });
+      
+      // Create a timeline for the animations
+      const tl = gsap.timeline({ defaults: { duration: 0.8, ease: 'power2.out' } });
+      
+      // Animate headings
+      if (headings.length) {
+        tl.fromTo(
+          headings,
+          { y: 30, opacity: 0 },
+          { y: 0, opacity: 1, stagger: 0.2 }
+        );
       }
       
-      // Fall back to GSAP only if needed for browsers that don't support our CSS animation
-      // and if GSAP is properly loaded
-      if (typeof gsap.timeline === 'function') {
-        const tl = gsap.timeline({
-          onStart: () => {
-            if (contentRef.current) {
-              // Add will-change hint before animation starts
-              contentRef.current.style.willChange = 'opacity, transform';
-            }
-          },
-          onComplete: () => {
-            if (contentRef.current) {
-              // Remove will-change after animation completes to free up resources
-              contentRef.current.style.willChange = 'auto';
-            }
+      // Animate paragraphs
+      if (paragraphs.length) {
+        tl.fromTo(
+          paragraphs,
+          { y: 20, opacity: 0 },
+          { y: 0, opacity: 1, stagger: 0.1 },
+          '-=0.4'
+        );
+      }
+      
+      // Animate buttons
+      if (buttons.length) {
+        tl.fromTo(
+          buttons,
+          { y: 10, opacity: 0 },
+          { y: 0, opacity: 1, stagger: 0.1 },
+          '-=0.2'
+        );
+      }
+      
+      // Clean up will-change after animation completes
+      tl.call(() => {
+        [...headings, ...paragraphs, ...buttons].forEach(el => {
+          if (el instanceof HTMLElement) {
+            el.style.willChange = 'auto';
           }
         });
-        
-        tl.fromTo(contentRef.current,
-          { opacity: 0, y: 30 },
-          { opacity: 1, y: 0, duration: 0.6, ease: "power2.out", force3D: true }
-        );
-        
-        return () => {
-          tl.kill();
-        };
-      }
-    } catch (error) {
-      console.error("useContentAnimation: Error during animation setup", error);
+      });
       
-      // Ensure content is visible even if animation fails
-      if (contentRef.current) {
-        contentRef.current.style.opacity = '1';
-      }
+      // Return cleanup function
+      return () => {
+        if (tl && typeof tl.kill === 'function') {
+          tl.kill();
+        }
+      };
+    } catch (error) {
+      console.error("useContentAnimation: Error in animation setup", error);
+      // Don't rethrow - just let the component render without animations
     }
   }, [contentRef]);
 };
