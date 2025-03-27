@@ -1,5 +1,6 @@
 
-// This is the right code for the hamburger implementation
+// This is the fixed code for the hamburger implementation with proper React context handling
+
 import React from "react";
 import navConfig from "../navConfig";
 import { useMobileMenuScroll } from "@/hooks/navigation/useMobileMenuScroll";
@@ -28,6 +29,14 @@ interface MobileMenuOverlayProps {
  * @param onClose - Callback to close the menu
  */
 const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
+  // Verify React is available
+  if (typeof React !== 'object') {
+    console.warn("MobileMenuOverlay: React object unavailable");
+    return null;
+  }
+
+  if (!isOpen) return null;
+  
   try {
     // Try to get navigation context
     // If this fails, we'll use a fallback
@@ -52,8 +61,6 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
     } catch (error) {
       console.warn("MobileMenuOverlay: Error with scroll locking", error);
     }
-
-    if (!isOpen) return null;
     
     return (
       <motion.div 
@@ -99,8 +106,35 @@ const MobileMenuOverlay = ({ isOpen, onClose }: MobileMenuOverlayProps) => {
     // Fallback when React context is missing
     console.error("MobileMenuOverlay: React context error", error);
     
-    // Return null to prevent rendering and crashing when there's a context error
-    return null;
+    // Simple fallback overlay that won't crash
+    return (
+      <div 
+        className="fixed top-0 left-0 w-screen h-screen z-[9999] bg-white flex flex-col"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%'
+        }}
+      >
+        <div className="p-4 border-b flex justify-between items-center">
+          <span className="font-bold">RAADE</span>
+          <button 
+            onClick={onClose}
+            className="p-2 rounded-full"
+            aria-label="Close menu"
+          >
+            ✕
+          </button>
+        </div>
+        <div className="p-4 flex-1">
+          <p className="text-center py-8">
+            Navigation temporarily unavailable. Please refresh the page.
+          </p>
+        </div>
+      </div>
+    );
   }
 };
 

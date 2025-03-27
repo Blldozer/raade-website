@@ -1,6 +1,7 @@
 
-// This is the right code for the hamburger implementation
-import { useEffect, useRef } from 'react';
+// This is the fixed code for the hamburger implementation with proper React context handling
+
+import React from 'react';
 
 /**
  * Custom hook to manage scroll behavior when mobile menu is open
@@ -15,11 +16,17 @@ import { useEffect, useRef } from 'react';
  * @returns - Object containing the content reference for the scrollable area
  */
 export const useMobileMenuScroll = (isOpen: boolean) => {
+  // Verify React is available before continuing
+  if (typeof React !== 'object' || typeof React.useRef !== 'function') {
+    console.warn("useMobileMenuScroll: React API unavailable, providing fallback");
+    return { contentRef: { current: null } };
+  }
+
   try {
     // Create a ref for the scrollable content area
-    const contentRef = useRef<HTMLDivElement>(null);
+    const contentRef = React.useRef<HTMLDivElement>(null);
     
-    useEffect(() => {
+    React.useEffect(() => {
       // Store the current scroll position at the time the effect runs
       const scrollPosition = window.scrollY;
       

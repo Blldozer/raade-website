@@ -1,5 +1,6 @@
 
-// This is the right code for the hamburger implementation
+// This is the fixed code for the hamburger implementation with proper React context handling
+
 import React from "react";
 import MobileNavButton from "./MobileNavButton";
 import MobileMenuOverlay from "./MobileMenuOverlay";
@@ -31,9 +32,29 @@ const MobileNav = ({
   isHeroPage = false, 
   forceDarkMode = false 
 }: MobileNavProps) => {
+  // Verify React is available
+  if (typeof React !== 'object') {
+    console.warn("MobileNav: React object unavailable");
+    return null;
+  }
+
   try {
     // Use the mobile navigation hook to manage state
-    const { isOpen, toggleMenu, closeMenu } = useMobileNav();
+    const mobileNavHook = useMobileNav();
+    
+    // If the hook returned null or invalid data, return minimal fallback
+    if (!mobileNavHook || typeof mobileNavHook !== 'object') {
+      console.warn("MobileNav: Mobile navigation hook unavailable");
+      return (
+        <div className="block md:hidden">
+          <button className="p-2 rounded-full transition-colors text-gray-700" aria-label="Menu button (unavailable)">
+            <span>☰</span>
+          </button>
+        </div>
+      );
+    }
+    
+    const { isOpen, toggleMenu, closeMenu } = mobileNavHook;
     
     // Try to get navigation context (might fail in some cases)
     let useDarkMode = false;
@@ -57,10 +78,12 @@ const MobileNav = ({
         />
 
         {/* Full Screen Menu Overlay */}
-        <MobileMenuOverlay 
-          isOpen={isOpen} 
-          onClose={closeMenu} 
-        />
+        {isOpen && (
+          <MobileMenuOverlay 
+            isOpen={isOpen} 
+            onClose={closeMenu} 
+          />
+        )}
       </div>
     );
   } catch (error) {
