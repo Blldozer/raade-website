@@ -14,7 +14,6 @@ export function calculatePaymentAmount(
   const STUDENT_PRICE = 3500; // $35.00
   const PROFESSIONAL_PRICE = 6000; // $60.00
   const GROUP_PRICE_PER_PERSON = 3000; // $30.00 per person
-  const TEST_PRICE = 100; // $1.00 for testing
   
   // Determine price based on ticket type
   switch (ticketType) {
@@ -45,13 +44,6 @@ export function calculatePaymentAmount(
         amount: totalAmount,
         description: `RAADE Conference 2025 - Student Group Registration (${groupSize} attendees)`,
         isGroupRegistration: true
-      };
-    
-    case "test":
-      return {
-        amount: TEST_PRICE,
-        description: "RAADE Conference 2025 - Test Ticket ($1)",
-        isGroupRegistration: false
       };
     
     default:

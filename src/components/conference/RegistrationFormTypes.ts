@@ -2,14 +2,13 @@
 import { z } from "zod";
 
 // Define the allowed ticket types
-export const TICKET_TYPES = ["student", "professional", "student-group", "test"] as const;
+export const TICKET_TYPES = ["student", "professional", "student-group"] as const;
 
 // Define constants for easier reference (to avoid string literals)
 export const TICKET_TYPES_ENUM = {
   STUDENT: "student",
   PROFESSIONAL: "professional",
-  STUDENT_GROUP: "student-group",
-  TEST: "test"
+  STUDENT_GROUP: "student-group"
 } as const;
 
 // Define the allowed referral sources
@@ -73,8 +72,6 @@ export const getTicketPrice = (ticketType: typeof TICKET_TYPES[number]): number 
       return 60; // Updated to match payment function pricing
     case TICKET_TYPES_ENUM.STUDENT_GROUP:
       return 30; // Per person in group
-    case TICKET_TYPES_ENUM.TEST:
-      return 1; // $1 test ticket
     default:
       return 35; // Default to student price
   }

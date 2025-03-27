@@ -3,7 +3,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star, ExternalLink, ChevronRight, Beaker } from "lucide-react";
+import { Star, ExternalLink, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { TICKET_TYPES_ENUM, getTicketPrice } from "./RegistrationFormTypes";
 
@@ -20,7 +20,6 @@ const ConferenceRegistration = () => {
   const studentPrice = getTicketPrice(TICKET_TYPES_ENUM.STUDENT);
   const professionalPrice = getTicketPrice(TICKET_TYPES_ENUM.PROFESSIONAL);
   const groupPrice = getTicketPrice(TICKET_TYPES_ENUM.STUDENT_GROUP);
-  const testPrice = getTicketPrice(TICKET_TYPES_ENUM.TEST);
   
   const handleRegistration = () => {
     navigate("/conference/register");
@@ -143,21 +142,6 @@ const ConferenceRegistration = () => {
           </p>
           <Button variant="outline" className="border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-lora group" onClick={handleRegistration}>
             Register Group
-            <ChevronRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-          </Button>
-        </div>
-        
-        {/* Test Ticket Option */}
-        <div className="bg-gray-100 p-8 rounded-xl border-2 border-dashed border-gray-300 mb-8">
-          <div className="flex items-center mb-4">
-            <Beaker className="h-6 w-6 text-raade-navy mr-2" />
-            <h3 className="text-xl font-bold text-raade-navy font-simula">Test Ticket</h3>
-          </div>
-          <p className="text-gray-600 mb-4 font-lora">
-            Want to test the payment system? Use our ${testPrice} test ticket.
-          </p>
-          <Button variant="outline" className="border-raade-navy text-raade-navy hover:bg-raade-navy hover:text-white font-lora group" onClick={handleRegistration}>
-            Use Test Ticket
             <ChevronRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
           </Button>
         </div>
