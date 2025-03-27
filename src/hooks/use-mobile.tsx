@@ -7,19 +7,16 @@ const MOBILE_BREAKPOINT = 768
  * Custom hook to detect mobile devices
  * 
  * Features:
- * - Provides immediate initial value based on window.innerWidth
- * - Updates reactively when window size changes
+ * - Provides reactive state based on window size changes
  * - Uses matchMedia for better browser compatibility
- * - Handles SSR scenarios where window is undefined
+ * - Safely handles SSR scenarios where window is undefined
  */
 export function useIsMobile() {
-  // Start with a definite value based on current window width if available
-  const getInitialState = () => {
+  // Only initialize state inside the component function
+  const [isMobile, setIsMobile] = useState(() => {
     if (typeof window === 'undefined') return false;
     return window.innerWidth < MOBILE_BREAKPOINT;
-  };
-  
-  const [isMobile, setIsMobile] = useState(getInitialState());
+  });
 
   useEffect(() => {
     // Ensure we're in a browser environment

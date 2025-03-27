@@ -1,5 +1,4 @@
 
-import { useState } from 'react';
 import { useIntersectionDetection, IntersectionDetectionOptions } from './section-awareness/useIntersectionDetection';
 import { useBackgroundAnalysis } from './section-awareness/useBackgroundAnalysis';
 import { useScrollDirection } from './section-awareness/useScrollDirection';

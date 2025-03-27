@@ -7,7 +7,6 @@ import { DeviceType } from "./usePerformanceDetection";
  * Hook for detecting device type and screen measurements
  * 
  * Features:
- * - Immediate initial values based on window dimensions
  * - Reactive updates when screen size changes
  * - Provides comprehensive device information
  * - Better handling of server-side rendering
@@ -16,8 +15,25 @@ export const useDeviceDetection = () => {
   // Get mobile state from our dedicated hook
   const isMobile = useIsMobile();
   
-  // Start with accurate initial values based on window dimensions
-  const getInitialState = () => {
+  // Helper functions for determining breakpoint and device type
+  function getBreakpoint(width: number) {
+    if (width < 640) return 'xs';
+    if (width < 768) return 'sm';
+    if (width < 1024) return 'md';
+    if (width < 1280) return 'lg';
+    if (width < 1440) return 'xl';
+    return '2xl';
+  }
+  
+  function getDeviceType(width: number): DeviceType {
+    if (width < 768) return 'mobile';
+    if (width < 1024) return 'tablet';
+    if (width < 1440) return 'desktop';
+    return 'large-desktop';
+  }
+  
+  // Get initial state within the component function
+  const [state, setState] = useState(() => {
     if (typeof window === 'undefined') {
       return {
         isTablet: false,
@@ -44,26 +60,7 @@ export const useDeviceDetection = () => {
       breakpoint: getBreakpoint(width),
       deviceType: getDeviceType(width)
     };
-  };
-  
-  // Helper functions for determining breakpoint and device type
-  function getBreakpoint(width: number) {
-    if (width < 640) return 'xs';
-    if (width < 768) return 'sm';
-    if (width < 1024) return 'md';
-    if (width < 1280) return 'lg';
-    if (width < 1440) return 'xl';
-    return '2xl';
-  }
-  
-  function getDeviceType(width: number): DeviceType {
-    if (width < 768) return 'mobile';
-    if (width < 1024) return 'tablet';
-    if (width < 1440) return 'desktop';
-    return 'large-desktop';
-  }
-  
-  const [state, setState] = useState(getInitialState());
+  });
 
   useEffect(() => {
     // Ensure we're in a browser environment

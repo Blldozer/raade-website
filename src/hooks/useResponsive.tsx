@@ -13,14 +13,20 @@ import { usePerformanceDetection } from "./responsive/usePerformanceDetection";
  * - Accessibility preferences
  */
 export const useResponsive = () => {
+  // Use the device detection hook to get device information
   const deviceInfo = useDeviceDetection();
+  
+  // Get input capabilities
   const inputCapabilities = useInputCapabilities();
+  
+  // Get performance level based on device type
   const { performanceLevel } = usePerformanceDetection(
     deviceInfo.deviceType,
     deviceInfo.width,
     deviceInfo.height
   );
 
+  // Combine and return all responsive information
   return {
     ...deviceInfo,
     ...inputCapabilities,
