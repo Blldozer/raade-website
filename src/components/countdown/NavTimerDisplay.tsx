@@ -1,6 +1,6 @@
 
 import { cn } from "@/lib/utils";
-import { TimeLeft } from "./useCountdown";
+import { TimeLeft } from "./types";
 import { formatTimeUnit } from "./timerUtils";
 
 interface NavTimerDisplayProps {

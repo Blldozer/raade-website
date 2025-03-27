@@ -1,5 +1,5 @@
 
-import { TimeLeft } from './useCountdown';
+import { TimeLeft } from './types';
 
 export interface ColorScheme {
   text?: string;

@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from "react";
-import { TimeLeft } from "./useCountdown";
+import { TimeLeft } from "./types";
 import { formatTimeUnit } from "./timerUtils";
 import { cn } from "@/lib/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";

@@ -1,5 +1,10 @@
+
 import { useState, useEffect, useRef } from "react";
 import { calculateTimeLeft } from "./timerUtils";
+import { TimeLeft } from "./types";
+
+// Re-export the TimeLeft type
+export type { TimeLeft };
 
 /**
  * Custom hook for countdown timer
