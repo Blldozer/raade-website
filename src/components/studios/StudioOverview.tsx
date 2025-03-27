@@ -48,7 +48,7 @@ const StudioOverview = () => {
                 we design pathways that reach those previously excluded from markets 
                 entirely — transforming "non-consumers" into consumers.
               </p>
-              <p>
+              <p className="text-gray-700">
                 This approach creates sustainable impact by building new markets that serve 
                 more people while creating economic opportunity. When done right, these 
                 solutions scale organically, reaching far beyond initial implementations.
