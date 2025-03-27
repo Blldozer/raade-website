@@ -1,6 +1,8 @@
 
 // Extend the Window interface to include our custom properties
+// This is the single source of truth for all global window properties
 interface Window {
+  React: any;
   __REACT_INITIALIZED: boolean;
   __REACT_CONTEXT_ERROR: boolean;
   __REACT_HOOK_INITIALIZATION_STARTED?: boolean;

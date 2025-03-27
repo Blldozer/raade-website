@@ -39,9 +39,4 @@ export function useSafeHook<T>(hookFn: () => T, fallbackValue: T): T {
   }
 }
 
-// Add proper typing for the global window object
-declare global {
-  interface Window {
-    __REACT_INITIALIZED?: boolean;
-  }
-}
+// NOTE: Window interface declarations are centralized in types/global.d.ts
