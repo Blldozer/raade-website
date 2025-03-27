@@ -38,24 +38,25 @@ const canUseMotion = () => {
 // Create safe versions of all motion components
 const initSafeMotion = () => {
   try {
-    const safeMotion = {};
+    const safeMotion: Record<string, any> = {};
     
     // Only attempt to initialize if framer-motion is available
     if (typeof framerMotion === 'object' && framerMotion !== null) {
       // TypeScript safety: Check that framerMotion is not null before accessing keys
-      const motionObj = framerMotion as object;
+      const motionObj = framerMotion as Record<string, any>;
       
       for (const key in motionObj) {
         if (Object.prototype.hasOwnProperty.call(motionObj, key)) {
-          const value = (motionObj as any)[key];
-          if (typeof value === 'function' || typeof value === 'object') {
-            (safeMotion as any)[key] = React.forwardRef((props: any, ref: React.Ref<any>) => {
+          const Component = motionObj[key];
+          if (typeof Component === 'function' || typeof Component === 'object') {
+            // Use proper typing for the forwardRef
+            safeMotion[key] = React.forwardRef((props: any, ref: React.Ref<any>) => {
               if (!canUseMotion()) {
-                // Fall back to regular div/span when motion can't be used safely
+                // Fall back to regular div/span/a when motion can't be used safely
                 const El = props.href ? 'a' : 'div';
-                return <El ref={ref} {...props} animate={undefined} transition={undefined} />;
+                return React.createElement(El, { ...props, ref, animate: undefined, transition: undefined });
               }
-              return <value ref={ref} {...props} />;
+              return React.createElement(Component, { ...props, ref });
             });
           }
         }

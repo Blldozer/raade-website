@@ -145,9 +145,9 @@ const ParticleField = () => {
             >
               {particle.symbol}
               {hoveredId === particle.id && (
-                <div className="absolute left-1/2 -translate-x-1/2 whitespace-nowrap bottom-full mb-2 px-2 py-1 text-xs bg-black/75 text-white rounded opacity-100 pointer-events-none">
+                <motion.div className="absolute left-1/2 -translate-x-1/2 whitespace-nowrap bottom-full mb-2 px-2 py-1 text-xs bg-black/75 text-white rounded opacity-100 pointer-events-none">
                   Click me!
-                </div>
+                </motion.div>
               )}
               
               {particle.isPopped && (
