@@ -38,7 +38,7 @@ interface AppProvidersProps {
  * 5. Error handling and UI components
  */
 const AppProviders = ({ children }: AppProvidersProps) => {
-  // Log that we've mounted the component
+  // We don't use React hooks outside components anymore - let's use a simple log
   console.log("AppProviders: Component mounted");
   
   return (

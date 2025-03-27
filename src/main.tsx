@@ -1,4 +1,3 @@
-
 import { createRoot } from 'react-dom/client'
 import { StrictMode } from 'react'
 import App from './App.tsx'
@@ -92,7 +91,7 @@ function startApp() {
       `;
     } else {
       console.log("Application startup: Root element found, creating React root");
-      
+
       // Add global error handler
       window.onerror = (message, source, lineno, colno, error) => {
         console.error("Global error caught:", message, error);
@@ -126,49 +125,17 @@ function startApp() {
         }
       }, true); // Use capture phase
       
-      // Cache external resources we know we need
-      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-        console.log("Pre-caching critical external resources");
-        navigator.serviceWorker.controller.postMessage({
-          type: 'CACHE_EXTERNAL',
-          url: 'https://cdn.gpteng.co/gptengineer.js'
-        });
-        navigator.serviceWorker.controller.postMessage({
-          type: 'CACHE_EXTERNAL',
-          url: 'https://fonts.googleapis.com/css2?family=Hammersmith+One&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Zilla+Slab:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Zilla+Slab+Highlight:wght@400;700&family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=Taviraj:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Alegreya+Sans:ital,wght@0,100;0,300;0,400;0,500;0,700;0,800;0,900;1,100;1,300;1,400;1,500;1,700;1,800;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Lora:ital,wght@0,400..700;1,400..700&display=swap'
-        });
-      }
-      
-      // Create root and render app with error handling
-      try {
-        // Mark React as initialized globally to help with lazy loading components
-        window.__REACT_INITIALIZED = true;
+      // Define window.__REACT_INITIALIZED property for React initialization tracking
+      window.__REACT_INITIALIZED = true;
         
-        const root = createRoot(rootElement);
-        root.render(
-          <StrictMode>
-            <App />
-          </StrictMode>
-        );
-        console.log("Application startup: React rendering completed");
-      } catch (error) {
-        console.error("Fatal error: Failed to render the application", error);
-        rootElement.innerHTML = `
-          <div style="
-            color: #721c24;
-            background-color: #f8d7da;
-            border: 1px solid #f5c6cb;
-            padding: 20px;
-            margin: 20px;
-            border-radius: 5px;
-            font-family: system-ui, sans-serif;
-          ">
-            <h2 style="margin-top: 0;">Application Error</h2>
-            <p>Failed to load application. Please try refreshing the page.</p>
-            <p style="font-size: 0.8em; color: #666;">Error details: ${error instanceof Error ? error.message : String(error)}</p>
-          </div>
-        `;
-      }
+      // Create root with explicit ReactDOM API approach
+      const root = createRoot(rootElement);
+      root.render(
+        <StrictMode>
+          <App />
+        </StrictMode>
+      );
+      console.log("Application startup: React rendering completed");
     }
   } catch (error) {
     console.error("Fatal error during application initialization:", error);
