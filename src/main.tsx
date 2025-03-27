@@ -1,4 +1,3 @@
-
 import { createRoot } from 'react-dom/client'
 import { StrictMode } from 'react'
 import App from './App.tsx'
@@ -65,7 +64,7 @@ function ensureFontsLoaded() {
   }
 }
 
-// Main function to start the application
+// Function to start the application
 function startApp() {
   try {
     console.log("Application startup: Beginning initialization");
@@ -73,6 +72,7 @@ function startApp() {
     // CRITICAL: Set React global flag to indicate React is initializing
     // This helps components detect if React hooks are available
     (window as any).__REACT_HOOK_INITIALIZATION_STARTED = true;
+    (window as any).__REACT_INITIALIZED = true;
     
     // Get the root element with improved error handling
     const rootElement = document.getElementById("root");
@@ -168,54 +168,20 @@ function startApp() {
         }
       }, true); // Use capture phase
       
-      // Mark React as initialized globally before rendering
-      (window as any).__REACT_INITIALIZED = true;
+      // Create root with explicit ReactDOM API approach
+      const root = createRoot(rootElement);
       
-      // Use a try-catch block specifically for the React render process
-      try {
-        // Create root with explicit ReactDOM API approach
-        const root = createRoot(rootElement);
-        
-        // Use StrictMode with caution - it can trigger duplicate mounting
-        root.render(
-          <StrictMode>
-            <App />
-          </StrictMode>
-        );
-        
-        // Mark React hooks as fully initialized after successful render
-        (window as any).__REACT_HOOK_INITIALIZATION_COMPLETED = true;
-        
-        console.log("Application startup: React rendering completed");
-      } catch (renderError) {
-        console.error("Critical React rendering error:", renderError);
-        (window as any).__REACT_RENDER_ERROR = true;
-        
-        rootElement.innerHTML = `
-          <div style="
-            color: #721c24;
-            background-color: #f8d7da;
-            border: 1px solid #f5c6cb;
-            padding: 20px;
-            margin: 20px;
-            border-radius: 5px;
-            font-family: system-ui, sans-serif;
-          ">
-            <h2 style="margin-top: 0;">React Rendering Error</h2>
-            <p>The application failed to initialize the React tree.</p>
-            <p style="font-size: 0.8em; color: #666;">Error details: ${renderError instanceof Error ? renderError.message : String(renderError)}</p>
-            <button onclick="window.location.reload()" style="
-              background-color: #dc3545;
-              color: white;
-              border: none;
-              padding: 8px 16px;
-              border-radius: 4px;
-              cursor: pointer;
-              margin-top: 10px;
-            ">Reload Page</button>
-          </div>
-        `;
-      }
+      // Use StrictMode with caution - it can trigger duplicate mounting
+      root.render(
+        <StrictMode>
+          <App />
+        </StrictMode>
+      );
+      
+      // Mark React hooks as fully initialized after successful render
+      (window as any).__REACT_HOOK_INITIALIZATION_COMPLETED = true;
+      
+      console.log("Application startup: React rendering completed");
     }
   } catch (error) {
     console.error("Fatal error during application initialization:", error);

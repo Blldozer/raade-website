@@ -53,21 +53,26 @@ const useTypingEffect = (text: string, speed: number = 80) => {
  * Used in the hero section to create engaging text effects
  */
 export const useAnimatedText = () => {
+  // Check if we're in a React context environment
+  const isReactInitialized = typeof window !== 'undefined' && 
+    (window as any).__REACT_INITIALIZED === true;
+    
+  // If React isn't properly initialized, return safe defaults
+  if (!isReactInitialized) {
+    console.warn("useAnimatedText: React not fully initialized");
+    return getSafeDefaults();
+  }
+
   // Check if React hooks are available
   if (typeof useRef !== 'function' || typeof useEffect !== 'function') {
     console.warn("useAnimatedText: React hooks unavailable");
-    return {
-      text2Ref: { current: null },
-      orgNameRef: { current: null },
-      containerRef: { current: null },
-      lineWidth: "100%",
-      lineOpacity: 1
-    };
+    return getSafeDefaults();
   }
   
   // Check if framer-motion is available
   const isFramerMotionAvailable = typeof useScroll === 'function' && typeof useTransform === 'function';
   
+  // Refs for DOM elements
   const text2Ref = useRef<HTMLDivElement>(null);
   const orgNameRef = useRef<HTMLHeadingElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -137,5 +142,16 @@ export const useAnimatedText = () => {
     lineOpacity
   };
 };
+
+// Helper function to return safe defaults when React isn't available
+function getSafeDefaults() {
+  return {
+    text2Ref: { current: null },
+    orgNameRef: { current: null },
+    containerRef: { current: null },
+    lineWidth: "100%",
+    lineOpacity: 1
+  };
+}
 
 export default useAnimatedText;

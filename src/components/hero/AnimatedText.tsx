@@ -12,8 +12,18 @@ import { useAnimatedText } from './hooks/useAnimatedText';
  * - Animation effects with proper fallbacks for accessibility
  */
 const AnimatedText = () => {
+  // Check if we're in a React context environment by testing window flag
+  const isReactInitialized = typeof window !== 'undefined' && 
+    (window as any).__REACT_INITIALIZED === true;
+  
   // Check if framer motion is available before using it
   const isFramerMotionAvailable = typeof motion === 'function';
+  
+  // If React isn't properly initialized, render a static version right away
+  if (!isReactInitialized) {
+    console.warn("AnimatedText: React not fully initialized, rendering static version");
+    return renderStaticVersion();
+  }
   
   // Use a try-catch block to handle any hook errors
   try {
@@ -49,14 +59,7 @@ const AnimatedText = () => {
           </h2>
           
           {isFramerMotionAvailable ? (
-            <motion.div 
-              style={{ 
-                width: lineWidth,
-                opacity: lineOpacity
-              }}
-              className="absolute -bottom-4 left-0 h-1 bg-raade-gold-start"
-              aria-hidden="true"
-            />
+            <RenderAnimatedLine lineWidth={lineWidth} lineOpacity={lineOpacity} />
           ) : (
             <div 
               className="absolute -bottom-4 left-0 h-1 bg-raade-gold-start w-full"
@@ -68,37 +71,71 @@ const AnimatedText = () => {
     );
   } catch (error) {
     console.error("AnimatedText: Error rendering with animation hooks", error);
-    
-    // Fallback static version with no animations
-    return (
-      <div className="space-y-4 md:space-y-8">
-        <h1 
-          className="text-raade-gold-start text-[clamp(0.9rem,2vw,1.5rem)] font-medium tracking-wide uppercase font-alegreyasans"
-          aria-label="Rice Association for African Development"
-        >
-          Rice Association for African Development
-        </h1>
+    return renderStaticVersion();
+  }
+};
 
-        <div className="relative">
-          <h2 className="text-[clamp(1.75rem,6vw,4.5rem)] font-bold tracking-wide font-zillahighlight">
-            <div className="text-white">We can't wait for tomorrow.</div>
-            <div 
-              className="text-raade-gold-start"
-              aria-live="polite"
-            >
-              We're building it today.
-            </div>
-          </h2>
-          
-          <div 
-            className="absolute -bottom-4 left-0 h-1 bg-raade-gold-start w-full"
-            aria-hidden="true"
-          />
-        </div>
-      </div>
+// Separate component for the animated line to handle motion values safely
+const RenderAnimatedLine = ({ 
+  lineWidth, 
+  lineOpacity 
+}: { 
+  lineWidth: string | MotionValue<string>;
+  lineOpacity: number | MotionValue<number>;
+}) => {
+  try {
+    return (
+      <motion.div 
+        style={{ 
+          width: lineWidth,
+          opacity: lineOpacity
+        }}
+        className="absolute -bottom-4 left-0 h-1 bg-raade-gold-start"
+        aria-hidden="true"
+      />
+    );
+  } catch (error) {
+    console.error("AnimatedLine: Error rendering with motion", error);
+    // Fallback to static line if motion fails
+    return (
+      <div 
+        className="absolute -bottom-4 left-0 h-1 bg-raade-gold-start w-full"
+        aria-hidden="true"
+      />
     );
   }
 };
+
+// Static version as fallback
+function renderStaticVersion() {
+  return (
+    <div className="space-y-4 md:space-y-8">
+      <h1 
+        className="text-raade-gold-start text-[clamp(0.9rem,2vw,1.5rem)] font-medium tracking-wide uppercase font-alegreyasans"
+        aria-label="Rice Association for African Development"
+      >
+        Rice Association for African Development
+      </h1>
+
+      <div className="relative">
+        <h2 className="text-[clamp(1.75rem,6vw,4.5rem)] font-bold tracking-wide font-zillahighlight">
+          <div className="text-white">We can't wait for tomorrow.</div>
+          <div 
+            className="text-raade-gold-start"
+            aria-live="polite"
+          >
+            We're building it today.
+          </div>
+        </h2>
+        
+        <div 
+          className="absolute -bottom-4 left-0 h-1 bg-raade-gold-start w-full"
+          aria-hidden="true"
+        />
+      </div>
+    </div>
+  );
+}
 
 // Memoize component to prevent unnecessary re-renders
 export default memo(AnimatedText);
