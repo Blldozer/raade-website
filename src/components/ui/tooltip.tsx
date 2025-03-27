@@ -7,11 +7,17 @@ import { cn } from "@/lib/utils"
 /**
  * Tooltip components using Radix UI
  * 
- * Properly structured to ensure React context is respected
- * with TooltipProvider meant to be used at application level
+ * This component has been customized to ensure proper React context operation
+ * and prevent "Cannot read properties of null (reading 'useState')" errors.
+ * 
+ * The TooltipProvider component is meant to be used in AppProviders to
+ * ensure proper context initialization.
  */
 
-const TooltipProvider = TooltipPrimitive.Provider
+// Use the Provider directly rather than re-exporting it
+const TooltipProvider = ({ children, ...props }: TooltipPrimitive.TooltipProviderProps) => {
+  return <TooltipPrimitive.Provider {...props}>{children}</TooltipPrimitive.Provider>;
+};
 
 const Tooltip = TooltipPrimitive.Root
 

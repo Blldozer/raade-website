@@ -1,5 +1,5 @@
 
-import { ReactNode, useEffect } from "react";
+import { ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "sonner";
@@ -63,6 +63,7 @@ const AppProviders = ({ children }: AppProvidersProps) => {
     }
   }
 
+  // Important: Using explicit render tree structure with no hooks outside of React components
   return (
     <BrowserRouter>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
