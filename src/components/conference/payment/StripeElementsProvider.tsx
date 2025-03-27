@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import { StripeElementsOptions, loadStripe } from "@stripe/stripe-js";
@@ -144,9 +143,9 @@ const StripeElementsProvider: React.FC<StripeElementsProviderProps> = ({
   const options: StripeElementsOptions = {
     clientSecret,
     appearance: {
-      theme: 'stripe',
+      theme: 'stripe' as const,
       variables: {
-        colorPrimary: '#274675', // RAADE navy
+        colorPrimary: '#274675',
         colorBackground: '#ffffff',
         colorText: '#30313d',
         colorDanger: '#df1b41',
@@ -154,9 +153,7 @@ const StripeElementsProvider: React.FC<StripeElementsProviderProps> = ({
         borderRadius: '4px',
       }
     },
-    // Ensure Stripe forms are always loaded over HTTPS
     loader: 'always',
-    // Optimize API calls by setting locale
     locale: 'auto'
   };
 

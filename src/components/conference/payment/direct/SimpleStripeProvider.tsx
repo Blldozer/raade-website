@@ -31,7 +31,7 @@ interface SimpleStripeProviderProps {
 const SimpleStripeProvider = (props: SimpleStripeProviderProps) => {
   const options = {
     appearance: {
-      theme: 'stripe',
+      theme: 'stripe' as const, // Type assertion to ensure this is one of the allowed values
       variables: {
         colorPrimary: '#274675', // RAADE navy
         colorBackground: '#ffffff',
