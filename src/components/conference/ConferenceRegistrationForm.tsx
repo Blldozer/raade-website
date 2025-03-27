@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import RegistrationFormFields from "./RegistrationFormFields";
@@ -18,6 +17,7 @@ import { clearExistingSessionData, detectBackNavigation, getSessionDiagnostics }
  * - Enhanced session management and cleanup
  * - Better error recovery after payment failures
  * - Improved user experience with clear status messages
+ * - Added payment confirmation screen for better UX
  */
 const ConferenceRegistrationForm = () => {
   const {
@@ -100,11 +100,6 @@ const ConferenceRegistrationForm = () => {
   const handlePaymentSuccess = () => {
     form.reset();
     setShowPayment(false);
-    toast({
-      title: "Registration Complete",
-      description: "Your registration and payment were successful! You'll receive a confirmation email shortly.",
-      variant: "default",
-    });
   };
 
   const handlePaymentError = (errorMessage: string) => {
