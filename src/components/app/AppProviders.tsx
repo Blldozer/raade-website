@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from "react";
+import React, { ReactNode, useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "sonner";
@@ -7,7 +7,6 @@ import GlobalErrorFallback from "./GlobalErrorFallback";
 import { ThemeProvider } from "next-themes";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import ScrollToTop from "./ScrollToTop";
-import * as React from 'react'; // Import React directly for global assignment
 
 // Initialize the QueryClient with better error handling
 const queryClient = new QueryClient({
@@ -22,7 +21,7 @@ const queryClient = new QueryClient({
 // Check if we're running in development mode
 const isDevelopment = process.env.NODE_ENV === 'development';
 
-// Initialize React globally if needed (outside of component)
+// Ensure React is available globally if needed
 if (typeof window !== 'undefined' && !window.React) {
   window.React = React;
 }
@@ -73,28 +72,13 @@ const FallbackAppStructure = ({ children, errorMode = false }: FallbackAppStruct
  * Enhanced with React context initialization check and error recovery
  */
 const AppProviders = ({ children }: AppProvidersProps) => {
-  // First, handle non-browser environment - SSR case
-  if (typeof window === 'undefined') {
-    console.warn("AppProviders: Not in browser environment, skipping initialization");
-    return <FallbackAppStructure>{children}</FallbackAppStructure>;
-  }
-  
-  // Handle missing React hooks case
-  if (typeof useEffect !== 'function') {
-    console.error("AppProviders: React hooks not available");
-    return <FallbackAppStructure errorMode={true}>{children}</FallbackAppStructure>;
-  }
-  
-  // Set initialization flag - this is safe to do at the top level
-  window.__REACT_INITIALIZED = true;
-  
   // Hooks section - all hooks must be called unconditionally at the top level
   useEffect(() => {
     try {
       console.log("AppProviders: React context initialized and ready");
       
       // Attempt to recover from React context errors
-      if (window.__REACT_CONTEXT_ERROR) {
+      if (window && window.__REACT_CONTEXT_ERROR) {
         console.log("AppProviders: Detected previous context error, attempting recovery");
         window.__REACT_CONTEXT_ERROR = false;
       }
@@ -109,6 +93,17 @@ const AppProviders = ({ children }: AppProvidersProps) => {
       }
     };
   }, []);
+
+  // First, handle non-browser environment - SSR case
+  if (typeof window === 'undefined') {
+    console.warn("AppProviders: Not in browser environment, skipping initialization");
+    return <FallbackAppStructure>{children}</FallbackAppStructure>;
+  }
+  
+  // Set initialization flag
+  if (window && !window.__REACT_INITIALIZED) {
+    window.__REACT_INITIALIZED = true;
+  }
   
   // Simple log for debugging initialization
   console.log("AppProviders: Component mounted");
