@@ -101,7 +101,7 @@ const Reality = () => {
             transition={{ delay: 0.8 }}
             className="w-full lg:w-[61%]"
           >
-            <p className="text-xl font-lora text-black leading-relaxed">
+            <p className="text-xl font-lora  text-gray-700 leading-relaxed">
               But these statistics aren't just numbers—they represent missed opportunities 
               for transformation. They represent the gap between good intentions and lasting 
               impact. They represent why we need a new approach.
