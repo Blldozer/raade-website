@@ -43,7 +43,7 @@ const Impact = () => {
         }} transition={{
           duration: 0.6
         }} className="w-full lg:w-[61%] mt-8 lg:mt-0">
-            <p className="text-xl font-lora text-black leading-relaxed text-center">
+            <p className="text-xl font-lora text-gray-700 leading-relaxed text-center">
               We've come a long way, in a few short months, but we are only just getting started
             </p>
           </motion.div>
