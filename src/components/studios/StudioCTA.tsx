@@ -4,6 +4,15 @@ import { motion } from "framer-motion";
 import { Users, Handshake } from "lucide-react";
 import { Link } from "react-router-dom";
 
+/**
+ * StudioCTA Component - Call to action section for Innovation Studios
+ * 
+ * Features:
+ * - Animated gradient background with subtle radial effect
+ * - Two action paths: Student application and Partner submission
+ * - Motion-based reveal animations for improved UX
+ * - Responsive grid layout for different screen sizes
+ */
 const StudioCTA = () => {
   return (
     <section className="py-24 relative overflow-hidden" id="apply">
@@ -54,7 +63,7 @@ const StudioCTA = () => {
                 asChild
               >
                 <Link to="/apply/student">
-                  Apply Now
+                  <span className="font-bold">Apply Now</span>
                 </Link>
               </Button>
             </div>
@@ -83,7 +92,7 @@ const StudioCTA = () => {
                 asChild
               >
                 <Link to="/apply/partner">
-                  Partner With Us
+                  <span className="font-bold">Partner With Us</span>
                 </Link>
               </Button>
             </div>

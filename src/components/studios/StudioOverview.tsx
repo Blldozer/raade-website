@@ -38,12 +38,12 @@ const StudioOverview = () => {
           duration: 0.6
         }} className="w-full lg:w-[61%]">
             <div className="space-y-8 text-xl leading-relaxed font-lora text-gray-700 max-w-[800px]">
-              <p>
+              <p className="text-gray-700">
                 At RAADE, we focus on a powerful concept: identifying areas where millions 
                 of people cannot access essential products and services, then creating 
                 innovative solutions to make them accessible.
               </p>
-              <p>
+              <p className="text-gray-700">
                 Rather than simply improving existing offerings for those already served, 
                 we design pathways that reach those previously excluded from markets 
                 entirely — transforming "non-consumers" into consumers.
