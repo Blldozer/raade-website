@@ -190,13 +190,12 @@ const teamMembers = [
 ];
 
 // Try to get actual team members array from the imported data
-try {
-  const importedData = require('../TeamData').teamMembers;
-  if (Array.isArray(importedData)) {
-    Object.assign(teamMembers, importedData);
+import('../TeamData').then(module => {
+  if (Array.isArray(module.teamMembers)) {
+    Object.assign(teamMembers, module.teamMembers);
   }
-} catch (e) {
+}).catch(e => {
   console.warn("Could not import team data for indexing in ImageLoader");
-}
+});
 
 export default ImageLoader;
