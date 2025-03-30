@@ -73,7 +73,7 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
         };
       });
     }
-  }, [isInView, isLoaded, teamMembers]);
+  }, [isInView, isLoaded, teamMembers, isMobile]);
 
   // Reset animation state when component mounts or visibility changes
   useEffect(() => {

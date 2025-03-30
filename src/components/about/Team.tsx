@@ -80,7 +80,7 @@ const Team = () => {
             transition={{ duration: 0.6 }} 
             className="w-full lg:w-[61%] mt-8 lg:mt-0"
           >
-            <p className="text-xl font-lora text-black leading-relaxed">
+            <p className="text-xl font-lora text-gray-700 leading-relaxed">
               Meet the visionaries who refused to wait for change. Driven by deep conviction and extraordinary determination, our team transforms challenges into opportunities through sheer force of will. We're not just talking about African development - we're dedicating our minds, hearts, and hands to making it happen, one breakthrough solution at a time.
             </p>
           </motion.div>

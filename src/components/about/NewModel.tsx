@@ -35,7 +35,7 @@ const NewModel = () => {
             transition={{ duration: 0.6 }}
             className="w-full lg:w-[61%]"
           >
-            <div className="space-y-8 text-xl leading-relaxed font-lora text-black max-w-[800px]">
+            <div className="space-y-8 text-xl leading-relaxed font-lora text-gray-700 max-w-[800px]">
               <p>
                 We are pioneering a fundamentally different approach to African development. 
                 One where solutions aren’t imported, but co-created. Where innovation isn’t 

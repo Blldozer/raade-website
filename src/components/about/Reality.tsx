@@ -35,7 +35,7 @@ const Reality = () => {
             transition={{ duration: 0.6 }}
             className="w-full lg:w-[61%] mt-8 lg:mt-0"
           >
-            <p className="text-xl font-lora text-black leading-relaxed">
+            <p className="text-xl font-lora text-gray-700 leading-relaxed">
               For too long, development solutions have followed a one-way path: from the 
               Global North to Africa, from theory to practice, from boardrooms to communities. 
               The result? A landscape littered with well-intentioned but ineffective solutions.
