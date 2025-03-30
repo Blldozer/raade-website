@@ -1,4 +1,3 @@
-
 export const teamMembers = [
   {
     name: "Kene Onubogu",
@@ -58,7 +57,7 @@ export const teamMembers = [
     position: "Creative Design, Branding and Marketing Director"
   },
   {
-    name: "Djenabou Boakum",
+    name: "Djenabou Bokoum",
     classYear: "'28",
     position: "Creative Design, Branding and Marketing Officer"
   },

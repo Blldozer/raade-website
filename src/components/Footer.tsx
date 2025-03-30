@@ -1,4 +1,3 @@
-
 import { Mail, Link, Globe, Copyright, Shield, ArrowUp, Instagram, Linkedin } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
@@ -107,6 +106,29 @@ const Footer = () => {
             <Copyright className="h-4 w-4" />
             <span>{new Date().getFullYear()} RAADE. All rights reserved.</span>
           </div>
+          
+          {/* Site Contributors */}
+          <div className="text-sm text-gray-600">
+            <span className="mr-2">Site Contributors:</span>
+            <a 
+              href="https://www.linkedin.com/in/ifeoluwaidakolo/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-gray-600 hover:text-gray-800 transition-colors duration-200"
+            >
+              Ife Idakolo
+            </a>
+            <span className="mx-1">&amp;</span>
+            <a 
+              href="https://www.linkedin.com/in/kenerice/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-gray-600 hover:text-gray-800 transition-colors duration-200"
+            >
+              Kene Onubogu
+            </a>
+          </div>
+          
           <div className="flex items-center gap-4">
             <Button
               variant="link"
