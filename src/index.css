@@ -3,6 +3,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Font Face Declarations */
+@font-face {
+  font-family: 'Simula Book';
+  src: url('../fonts/Simula_Book_ImfTVa3.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Simula BookItalic';
+  src: url('../fonts/Simula_BookItalic_651eMqB.woff') format('woff');
+  font-weight: normal;
+  font-style: italic;
+  font-display: swap;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -74,5 +91,10 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  /* Custom utility classes */
+  .font-simula-italic {
+    font-family: 'Simula BookItalic', serif;
   }
 }
