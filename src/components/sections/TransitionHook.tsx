@@ -137,9 +137,9 @@ const TransitionHook = () => {
       ref={sectionRef} 
       className="min-h-screen flex flex-col justify-between section-padding bg-[#3C403A]"
     >
-      <div ref={contentRef} className="flex-grow flex items-center">
-        <div className="fluid-container text-center">
-          <h2 className="fluid-h2 font-bold text-white font-alegreyasans max-w-4xl mx-auto opacity-100">
+      <div ref={contentRef} className="flex-grow flex items-center justify-center">
+        <div className="fluid-container text-center w-full">
+          <h2 className="text-4xl md:text-7xl lg:text-8xl font-bold text-white font-alegreyasans max-w-6xl mx-auto opacity-100 leading-tight">
             Every day we wait
             <br className="hidden sm:block" />
             is another <span className="text-raade-gold-start">opportunity lost</span>.

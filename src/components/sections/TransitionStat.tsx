@@ -49,30 +49,38 @@ const TransitionStat = () => {
       
       // Reset initial state
       if (statCounter) {
-        gsap.set(statCounter, { autoAlpha: 0, scale: 0.95 });
+        // Make visible by default but still apply animations
+        gsap.set(statCounter, { autoAlpha: 1, scale: 1 });
       }
       
       if (contentElements.length) {
-        gsap.set(contentElements, { autoAlpha: 0, y: 15 });
+        // Make visible by default
+        gsap.set(contentElements, { autoAlpha: 1, y: 0 });
       }
       
-      // Build animation sequence
+      // Build animation sequence - these now enhance rather than control visibility
       if (statCounter) {
-        tl.to(statCounter, { 
-          scale: 1, 
-          autoAlpha: 1, 
-          duration: 1, 
-          ease: "back.out(1.1)" 
-        });
+        tl.fromTo(statCounter, 
+          { autoAlpha: 0.7, scale: 0.95 },
+          { 
+            scale: 1, 
+            autoAlpha: 1, 
+            duration: 1, 
+            ease: "back.out(1.1)" 
+          }
+        );
       }
       
       if (contentElements.length) {
-        tl.to(contentElements, { 
-          y: 0, 
-          autoAlpha: 1, 
-          duration: 0.6, 
-          stagger: 0.25 
-        }, "-=0.3");
+        tl.fromTo(contentElements,
+          { autoAlpha: 0.7, y: 15 },
+          { 
+            y: 0, 
+            autoAlpha: 1, 
+            duration: 0.6, 
+            stagger: 0.25 
+          }, "-=0.3"
+        );
       }
       
       // Create scroll trigger context for easier cleanup

@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -53,10 +52,10 @@ const ProjectCard = ({
       md: index % 2 === 1 ? '"content image"' : '"image content"'
     }[window.innerWidth < 768 ? 'xs' : 'md']
   }}>
-      <Link to={`/projects/${slug}`} className="project-image relative overflow-hidden rounded-2xl shadow-lg transform transition-transform duration-700 group-hover:scale-[1.02]" style={{
+      <Link to={`/projects/${slug}`} className="project-image relative overflow-hidden rounded-2xl shadow-lg" style={{
       gridArea: 'image'
     }}>
-        <img src={image} alt={title} className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105" />
+        <img src={image} alt={title} className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-[1.03]" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       </Link>
       
@@ -116,7 +115,7 @@ const FutureShowcase = () => {
     <section 
       id="future-showcase" 
       ref={sectionRef} 
-      className="relative py-16 sm:py-24 md:py-32 lg:py-40 bg-white" 
+      className="relative pt-4 sm:pt-8 md:pt-12 lg:pt-16 pb-16 sm:pb-24 md:pb-32 lg:pb-40 bg-white" 
       style={{
         height: 'auto',
         minHeight: '100vh',
@@ -124,7 +123,7 @@ const FutureShowcase = () => {
       }}
     >
       <div className="fluid-container mx-auto">
-        <div className="text-center mb-16 sm:mb-24 md:mb-32 lg:mb-40 section-header">
+        <div className="text-center mb-8 sm:mb-12 md:mb-16 lg:mb-20 section-header">
           <span className="block text-sm font-normal tracking-wider text-raade-navy/70 mb-4 uppercase opacity-100">
             Our Projects
           </span>
