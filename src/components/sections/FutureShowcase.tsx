@@ -72,7 +72,7 @@ const ProjectCard = ({
           {description}
         </p>
         <Link to={`/projects/${slug}`} className={`inline-flex items-center text-raade-yellow-orange hover:text-raade-yellow-orange/80 text-lg font-alegreyasans group-hover:translate-x-2 transition-all duration-300 ease-out`}>
-          Learn More 
+          See the Impact 
           <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
         </Link>
       </div>

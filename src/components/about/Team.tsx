@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { useInView } from "framer-motion";
@@ -65,7 +64,7 @@ const Team = () => {
             className="w-full lg:w-[39%]"
           >
             <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula">
-              Meet the <span className="font-['Simula_Book_Italic']">team</span>
+              Meet the <span className="font-simula-italic">team</span>
             </h2>
           </motion.div>
           <div className="lg:w-[61%]"></div>
