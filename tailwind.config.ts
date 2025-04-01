@@ -60,6 +60,7 @@ export default {
             end: "#FF8A6A",
           },
         },
+        cream: "#F5F5F0", // Added cream color for placeholder boxes
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

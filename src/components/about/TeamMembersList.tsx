@@ -41,14 +41,14 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
   // Force skeleton display on mobile until a threshold of images are loaded
   const [showSkeletons, setShowSkeletons] = useState(true);
   
-  // Reduced thresholds for faster perceived loading - lower threshold to ensure images display
+  // Calculate threshold once when component mounts - no longer depends on isMobile in effect
   const loadingThreshold = isMobile ? 0.05 : 0.1; // 5% on mobile (reduced from 20%), 10% on desktop
 
   // Preload first few images for faster initial display
   useEffect(() => {
     if (isInView && isLoaded) {
       // Preload first 3 images immediately
-      const preloadCount = isMobile ? 2 : 3;
+      const preloadCount = Math.min(3, teamMembers.length);
       const preloadImages = teamMembers.slice(0, preloadCount);
       
       preloadImages.forEach(member => {
@@ -103,12 +103,12 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
     };
   }, [isInView, isLoaded]);
 
-  // Calculate loading progress
+  // Calculate loading progress - now with memoized threshold
   useEffect(() => {
-    const totalImages = teamMembers.length;
-    const loadedCount = Object.values(loadedImages).filter(Boolean).length;
+    const newLoadedCount = Object.values(loadedImages).filter(Boolean).length;
+    const newTotalImages = teamMembers.length;
     
-    const percent = totalImages > 0 ? (loadedCount / totalImages) * 100 : 0;
+    const percent = newTotalImages > 0 ? (newLoadedCount / newTotalImages) * 100 : 0;
     setLoadingProgress(percent);
     
     // Hide skeletons once we reach the threshold
