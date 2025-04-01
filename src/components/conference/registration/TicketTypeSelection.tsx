@@ -52,6 +52,7 @@ const TicketTypeSelection = ({
           <SelectItem value={TICKET_TYPES_ENUM.STUDENT}>Student {getTicketPriceText(TICKET_TYPES_ENUM.STUDENT)}</SelectItem>
           <SelectItem value={TICKET_TYPES_ENUM.PROFESSIONAL}>Professional {getTicketPriceText(TICKET_TYPES_ENUM.PROFESSIONAL)}</SelectItem>
           <SelectItem value={TICKET_TYPES_ENUM.STUDENT_GROUP}>Student Group {getTicketPriceText(TICKET_TYPES_ENUM.STUDENT_GROUP)}</SelectItem>
+          <SelectItem value={TICKET_TYPES_ENUM.SPECIAL_BONUS}>Special {getTicketPriceText(TICKET_TYPES_ENUM.SPECIAL_BONUS)}</SelectItem>
         </SelectContent>
       </Select>
       {errors.ticketType && (
