@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react"
 
 const MOBILE_BREAKPOINT = 768
@@ -53,7 +52,7 @@ export function useIsMobile() {
         mql.removeListener(handleChange);
       }
     };
-  }, [isBrowser]);
+  }, []); // Empty dependency array - isBrowser will never change
 
   return isMobile;
 }
