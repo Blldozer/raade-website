@@ -28,6 +28,7 @@ interface SimpleStripeCheckoutProps {
  * - Processes payment without redirects
  * - Provides real-time feedback to users
  * - Reduces complexity with fewer moving parts
+ * - Ensures registration data is stored in Supabase
  */
 const SimpleStripeCheckout = ({
   ticketType,
@@ -94,6 +95,40 @@ const SimpleStripeCheckout = ({
     setCardError(event.error ? event.error.message : null);
   };
   
+  // Store registration data in Supabase
+  const storeRegistrationData = async () => {
+    try {
+      console.log("Storing registration data in Supabase");
+      
+      const { data, error } = await supabase.functions.invoke("store-registration", {
+        body: {
+          fullName,
+          email,
+          organization,
+          role,
+          ticketType,
+          specialRequests,
+          referralSource,
+          groupSize,
+          groupEmails: processedGroupEmails,
+          paymentComplete: true
+        }
+      });
+      
+      if (error) {
+        console.error("Error storing registration data:", error);
+        // Don't block the success flow, but log the error
+        return false;
+      }
+      
+      console.log("Registration data stored successfully:", data);
+      return true;
+    } catch (err) {
+      console.error("Failed to store registration data:", err);
+      return false;
+    }
+  };
+  
   // Process the payment when user submits
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -153,6 +188,9 @@ const SimpleStripeCheckout = ({
       if (stripeError) {
         throw new Error(stripeError.message || "Payment failed");
       }
+      
+      // Step 3: Store registration data in Supabase
+      await storeRegistrationData();
       
       // Success! Payment is complete
       toast({

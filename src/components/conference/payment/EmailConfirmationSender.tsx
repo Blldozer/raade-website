@@ -36,6 +36,8 @@ export const useEmailConfirmation = (
 ) => {
   const [sendingEmail, setSendingEmail] = useState<boolean>(false);
   const [emailSent, setEmailSent] = useState<boolean>(false);
+  const [storingData, setStoringData] = useState<boolean>(false);
+  const [dataStored, setDataStored] = useState<boolean>(false);
   const [retryCount, setRetryCount] = useState<number>(0);
   const { toast } = useToast();
   
@@ -53,6 +55,152 @@ export const useEmailConfirmation = (
     };
   }, []);
   
+  // Helper function to store registration data in Supabase
+  const storeRegistrationData = async () => {
+    if (dataStored) {
+      console.log("Registration data already stored, skipping");
+      return true;
+    }
+    
+    try {
+      if (isMountedRef.current) {
+        setStoringData(true);
+      }
+      
+      // Process group emails to a clean format
+      let processedGroupEmails = [];
+      if (registrationData.groupEmails && Array.isArray(registrationData.groupEmails)) {
+        processedGroupEmails = registrationData.groupEmails
+          .filter(Boolean)
+          .map(email => {
+            if (typeof email === 'object' && email !== null && 'value' in email) {
+              return email.value;
+            }
+            return String(email || '');
+          })
+          .filter(email => email.length > 0);
+      }
+      
+      // Build request data
+      const requestData = {
+        fullName: registrationData.fullName,
+        email: registrationData.email,
+        organization: registrationData.organization || "",
+        role: registrationData.role || "",
+        ticketType: registrationData.ticketType,
+        specialRequests: registrationData.specialRequests || "",
+        referralSource: registrationData.referralSource || "",
+        groupSize: registrationData.groupSize,
+        groupEmails: processedGroupEmails,
+        paymentComplete: true // Registration is being stored after successful payment
+      };
+      
+      console.log("Storing registration data in Supabase:", requestData);
+      
+      // Set a timeout for the data storage request
+      const STORAGE_TIMEOUT = 10000; // 10 seconds
+      
+      // Create a timeout promise
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => {
+          reject(new Error(`Registration storage timed out after ${STORAGE_TIMEOUT}ms`));
+        }, STORAGE_TIMEOUT);
+      });
+      
+      // Create the storage request promise
+      const storagePromise = supabase.functions.invoke('store-registration', {
+        body: requestData
+      });
+      
+      // Race the timeout against the actual request
+      const { data, error } = await Promise.race([
+        storagePromise,
+        timeoutPromise
+      ]);
+      
+      if (!isMountedRef.current) return false;
+      
+      if (error) {
+        console.error("Error storing registration data:", error);
+        
+        if (retryCount < MAX_RETRIES) {
+          const backoffTime = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s
+          console.log(`Will retry storing data in ${backoffTime}ms`);
+          
+          await new Promise(resolve => setTimeout(resolve, backoffTime));
+          
+          if (!isMountedRef.current) return false;
+          
+          setRetryCount(prev => prev + 1);
+          setStoringData(false);
+          return storeRegistrationData();
+        }
+        
+        toast({
+          title: "Registration data storage issue",
+          description: "We'll make sure your registration is properly recorded.",
+          variant: "destructive"
+        });
+        
+        return false;
+      } else {
+        if (data?.success) {
+          console.log("Registration data stored successfully:", data);
+          
+          if (isMountedRef.current) {
+            setDataStored(true);
+          }
+          
+          return true;
+        } else {
+          console.error("Registration storage returned an error:", data);
+          
+          if (retryCount < MAX_RETRIES) {
+            const backoffTime = Math.pow(2, retryCount) * 1000;
+            await new Promise(resolve => setTimeout(resolve, backoffTime));
+            
+            if (!isMountedRef.current) return false;
+            
+            setRetryCount(prev => prev + 1);
+            setStoringData(false);
+            return storeRegistrationData();
+          }
+          
+          return false;
+        }
+      }
+    } catch (error) {
+      if (!isMountedRef.current) return false;
+      
+      console.error("Error invoking store-registration function:", error);
+      
+      // If we have retries left and it's a timeout or network error
+      const isRetryableError = 
+        error.message?.includes('timeout') || 
+        error.message?.includes('network') ||
+        (error as { code?: string }).code === 'AbortError';
+        
+      if (isRetryableError && retryCount < MAX_RETRIES) {
+        const backoffTime = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s
+        console.log(`Will retry storing data in ${backoffTime}ms due to: ${error.message}`);
+        
+        await new Promise(resolve => setTimeout(resolve, backoffTime));
+        
+        if (!isMountedRef.current) return false;
+        
+        setRetryCount(prev => prev + 1);
+        setStoringData(false);
+        return storeRegistrationData();
+      }
+      
+      return false;
+    } finally {
+      if (isMountedRef.current) {
+        setStoringData(false);
+      }
+    }
+  };
+  
   const sendConfirmationEmail = async () => {
     // If email has already been sent, don't send it again
     if (emailSent) {
@@ -65,6 +213,13 @@ export const useEmailConfirmation = (
       }
       
       return;
+    }
+    
+    // First, store the registration data
+    const dataStorageResult = await storeRegistrationData();
+    
+    if (!dataStorageResult) {
+      console.warn("Failed to store registration data, but will still try to send email");
     }
     
     try {
@@ -200,6 +355,8 @@ export const useEmailConfirmation = (
   return { 
     sendingEmail, 
     emailSent,
+    storingData,
+    dataStored,
     sendConfirmationEmail 
   };
 };
