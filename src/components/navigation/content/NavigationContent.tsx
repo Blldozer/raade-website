@@ -126,7 +126,9 @@ const NavigationContent = ({ instanceId = 'nav-default' }: NavigationContentProp
 
     return (
       <nav 
-        className={`fixed top-0 w-full z-50 transition-all duration-300 ${backgroundClass}`}
+        className={`fixed top-0 w-full z-50 transition-all duration-300 transform ${
+          isVisible ? 'translate-y-0' : '-translate-y-full'
+        } ${backgroundClass}`}
         data-is-scrolled={isScrolled ? "true" : "false"}
         data-light-background={isLightBackground ? "true" : "false"}
         data-force-dark={forceDarkMode ? "true" : "false"}
