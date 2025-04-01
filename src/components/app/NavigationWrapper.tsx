@@ -1,4 +1,3 @@
-
 import { useLocation } from "react-router-dom";
 import Navigation from "../Navigation";
 import { useEffect, useState, useRef } from "react";
@@ -7,8 +6,8 @@ import { useEffect, useState, useRef } from "react";
  * NavigationWrapper component
  * Ensures only ONE instance of Navigation exists across the application
  * Sets proper navigation props based on current route
- * Enhanced to prevent duplicate navigation instances
  * Enhanced with better error handling for router context issues
+ * Enhanced with unique component IDs to track multiple instances for debugging
  * 
  * NOTE: Must be used inside a Router context
  */
