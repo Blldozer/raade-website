@@ -2,7 +2,7 @@
 /**
  * Calculate payment amount based on ticket type and group size
  * 
- * @param ticketType - Type of ticket (student, professional, student-group)
+ * @param ticketType - Type of ticket (student, professional, student-group, trial)
  * @param groupSize - Size of group for group registrations
  * @returns Object with amount, description and group flag
  */
@@ -14,6 +14,7 @@ export function calculatePaymentAmount(
   const STUDENT_PRICE = 3500; // $35.00
   const PROFESSIONAL_PRICE = 6000; // $60.00
   const GROUP_PRICE_PER_PERSON = 3000; // $30.00 per person
+  const TRIAL_PRICE = 100; // $1.00
   
   // Determine price based on ticket type
   switch (ticketType) {
@@ -44,6 +45,13 @@ export function calculatePaymentAmount(
         amount: totalAmount,
         description: `RAADE Conference 2025 - Student Group Registration (${groupSize} attendees)`,
         isGroupRegistration: true
+      };
+      
+    case "trial":
+      return {
+        amount: TRIAL_PRICE,
+        description: "RAADE Conference 2025 - Trial Registration ($1)",
+        isGroupRegistration: false
       };
     
     default:

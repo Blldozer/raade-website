@@ -20,6 +20,7 @@ const ConferenceRegistration = () => {
   const studentPrice = getTicketPrice(TICKET_TYPES_ENUM.STUDENT);
   const professionalPrice = getTicketPrice(TICKET_TYPES_ENUM.PROFESSIONAL);
   const groupPrice = getTicketPrice(TICKET_TYPES_ENUM.STUDENT_GROUP);
+  const trialPrice = getTicketPrice(TICKET_TYPES_ENUM.TRIAL);
   
   const handleRegistration = () => {
     navigate("/conference/register");
@@ -143,6 +144,18 @@ const ConferenceRegistration = () => {
           <Button variant="outline" className="border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-lora group" onClick={handleRegistration}>
             Register Group
             <ChevronRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+          </Button>
+        </div>
+        
+        {/* Trial Ticket Information */}
+        <div className="bg-gray-100 p-6 rounded-xl mt-6">
+          <h3 className="text-lg font-bold text-raade-navy mb-2 font-simula">Trial Registration</h3>
+          <p className="text-gray-600 mb-4 font-lora text-sm">
+            Want to test the registration process? Our ${trialPrice} trial ticket allows you to experience the registration flow without committing to a full-price ticket.
+          </p>
+          <Button variant="ghost" className="text-sm text-raade-navy hover:bg-gray-200 font-lora group" onClick={handleRegistration}>
+            Try Registration Process
+            <ChevronRight className="ml-1 h-3 w-3 transition-transform duration-300 group-hover:translate-x-1" />
           </Button>
         </div>
       </div>

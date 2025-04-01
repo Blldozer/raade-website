@@ -52,6 +52,7 @@ const TicketTypeSelection = ({
           <SelectItem value={TICKET_TYPES_ENUM.STUDENT}>Student {getTicketPriceText(TICKET_TYPES_ENUM.STUDENT)}</SelectItem>
           <SelectItem value={TICKET_TYPES_ENUM.PROFESSIONAL}>Professional {getTicketPriceText(TICKET_TYPES_ENUM.PROFESSIONAL)}</SelectItem>
           <SelectItem value={TICKET_TYPES_ENUM.STUDENT_GROUP}>Student Group {getTicketPriceText(TICKET_TYPES_ENUM.STUDENT_GROUP)}</SelectItem>
+          <SelectItem value={TICKET_TYPES_ENUM.TRIAL}>Trial Ticket {getTicketPriceText(TICKET_TYPES_ENUM.TRIAL)}</SelectItem>
         </SelectContent>
       </Select>
       {errors.ticketType && (
@@ -61,6 +62,12 @@ const TicketTypeSelection = ({
       {watchTicketType === TICKET_TYPES_ENUM.STUDENT && (
         <p className="text-gray-600 text-sm mt-1">
           Student tickets require a valid .edu email address.
+        </p>
+      )}
+      
+      {watchTicketType === TICKET_TYPES_ENUM.TRIAL && (
+        <p className="text-gray-600 text-sm mt-1">
+          Trial tickets are for testing the registration process.
         </p>
       )}
     </div>
