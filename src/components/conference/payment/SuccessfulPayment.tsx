@@ -21,6 +21,7 @@ interface SuccessfulPaymentProps {
  * - Controls confetti rendering to prevent performance issues
  * - Handles email confirmation state changes smoothly
  * - Prevents multiple button clicks during transitions
+ * - Shows data storage status for transparency
  */
 const SuccessfulPayment = ({
   registrationData,
@@ -30,7 +31,14 @@ const SuccessfulPayment = ({
   const [isTransitioning, setIsTransitioning] = useState(false);
   
   // Use email confirmation hook to handle sending confirmation email
-  const { sendingEmail, emailSent, sendConfirmationEmail } = useEmailConfirmation(
+  // and storing registration data
+  const { 
+    sendingEmail, 
+    emailSent, 
+    storingData,
+    dataStored,
+    sendConfirmationEmail 
+  } = useEmailConfirmation(
     registrationData,
     onContinue
   );
@@ -137,8 +145,17 @@ const SuccessfulPayment = ({
                   <p><span className="font-medium">Group Size:</span> {registrationData.groupSize} people</p>
                 )}
                 
-                {/* Stable email status display */}
-                <div className="h-6 mt-2">
+                {/* Status display section with fixed height */}
+                <div className="mt-4 space-y-1 min-h-[3.5rem]">
+                  {/* Data storage status */}
+                  {storingData && (
+                    <p className="text-blue-500 italic">Saving your registration data...</p>
+                  )}
+                  {dataStored && (
+                    <p className="text-green-500 italic">Registration data saved!</p>
+                  )}
+                  
+                  {/* Email status */}
                   {sendingEmail && (
                     <p className="text-blue-500 italic">Sending confirmation email...</p>
                   )}
