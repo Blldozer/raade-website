@@ -2,14 +2,13 @@
 import { z } from "zod";
 
 // Define the allowed ticket types
-export const TICKET_TYPES = ["student", "professional", "student-group", "trial"] as const;
+export const TICKET_TYPES = ["student", "professional", "student-group"] as const;
 
 // Define constants for easier reference (to avoid string literals)
 export const TICKET_TYPES_ENUM = {
   STUDENT: "student",
   PROFESSIONAL: "professional",
-  STUDENT_GROUP: "student-group",
-  TRIAL: "trial"
+  STUDENT_GROUP: "student-group"
 } as const;
 
 // Define the allowed referral sources
@@ -43,6 +42,9 @@ export const registrationFormSchema = z.object({
 // Alias for backward compatibility
 export const registrationSchema = registrationFormSchema;
 
+// Infer the TypeScript type from the Zod schema
+export type RegistrationFormData = z.infer<typeof registrationFormSchema>;
+
 // Export the default values for the form
 export const defaultFormValues: RegistrationFormData = {
   fullName: "",
@@ -70,8 +72,6 @@ export const getTicketPrice = (ticketType: typeof TICKET_TYPES[number]): number 
       return 60; // Updated to match payment function pricing
     case TICKET_TYPES_ENUM.STUDENT_GROUP:
       return 30; // Per person in group
-    case TICKET_TYPES_ENUM.TRIAL:
-      return 1; // $1 trial ticket
     default:
       return 35; // Default to student price
   }
@@ -130,6 +130,3 @@ export const validateTicketEmailDomain = (
 
   return { isValid: true };
 };
-
-// Infer the TypeScript type from the Zod schema
-export type RegistrationFormData = z.infer<typeof registrationFormSchema>;

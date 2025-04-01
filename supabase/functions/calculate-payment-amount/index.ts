@@ -23,7 +23,6 @@ serve(async (req) => {
     const STUDENT_PRICE = 3500; // $35.00
     const PROFESSIONAL_PRICE = 6000; // $60.00
     const GROUP_PRICE_PER_PERSON = 3000; // $30.00 per person
-    const TRIAL_PRICE = 100; // $1.00
     
     let amount = 0;
     
@@ -40,10 +39,6 @@ serve(async (req) => {
       case "student-group":
         const validGroupSize = Math.max(5, parseInt(String(groupSize)) || 5);
         amount = GROUP_PRICE_PER_PERSON * validGroupSize;
-        break;
-        
-      case "trial":
-        amount = TRIAL_PRICE;
         break;
       
       default:
