@@ -20,6 +20,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       className="toaster group"
       richColors
       closeButton
+      position="bottom-right"
       toastOptions={{
         classNames: {
           toast:
@@ -32,7 +33,6 @@ const Toaster = ({ ...props }: ToasterProps) => {
         },
         // Reduce duplicate toasts and prevent notification spam
         duration: 4000,
-        position: "bottom-right"
       }}
       {...props}
     />
