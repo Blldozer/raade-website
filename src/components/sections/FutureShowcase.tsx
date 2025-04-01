@@ -45,7 +45,7 @@ const ProjectCard = ({
   // Using RAADE brand colors for better visibility against white background
   const textColorClass = 'text-raade-navy';
   const textOpacityClass = 'text-raade-navy/80';
-  const descriptionClass = 'text-raade-navy/70';
+  const descriptionClass = 'text-raade-navy/70'; // Restored to original RAADE brand color
   return <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 min-h-[clamp(400px,50vh,600px)] group`} style={{
     gridTemplateAreas: {
       xs: '"image" "content"',
@@ -68,7 +68,7 @@ const ProjectCard = ({
         <h3 className={`fluid-h3 font-extrabold ${textColorClass} font-simula leading-tight font-bold`}>
           <strong>{title}</strong>
         </h3>
-        <p className={`${descriptionClass} font-lora leading-relaxed fluid-body`}>
+        <p className={`text-xl ${descriptionClass} font-lora leading-relaxed`}>
           {description}
         </p>
         <Link to={`/projects/${slug}`} className={`inline-flex items-center text-raade-yellow-orange hover:text-raade-yellow-orange/80 text-lg font-alegreyasans group-hover:translate-x-2 transition-all duration-300 ease-out`}>
@@ -115,31 +115,46 @@ const FutureShowcase = () => {
     <section 
       id="future-showcase" 
       ref={sectionRef} 
-      className="relative pt-4 sm:pt-8 md:pt-12 lg:pt-16 pb-16 sm:pb-24 md:pb-32 lg:pb-40 bg-white" 
+      className="relative pt-4 sm:pt-8 md:pt-12 lg:pt-16 pb-16 sm:pb-24 md:pb-32 lg:pb-40 bg-white overflow-hidden" 
       style={{
         height: 'auto',
         minHeight: '100vh',
         zIndex: 1 // Ensure proper stacking context
       }}
     >
-      <div className="fluid-container mx-auto">
-        <div className="text-center mb-8 sm:mb-12 md:mb-16 lg:mb-20 section-header">
-          <span className="block text-sm font-normal tracking-wider text-raade-navy/70 mb-4 uppercase opacity-100">
-            Our Projects
-          </span>
-          <h2 className="fluid-h2 leading-[1.15] font-simula text-raade-navy mb-8 opacity-100 font-black font-bold">
-            <strong>Building in Progress</strong>
-          </h2>
-          <div className="w-16 sm:w-24 h-1 bg-raade-yellow-orange mx-auto mb-8 opacity-100"></div>
-          <p className="fluid-body text-raade-navy/80 max-w-3xl mx-auto font-lora leading-relaxed opacity-100">
-            Step into the future we're creating. Each project is a window into tomorrow,
-            where innovation meets impact in real time.
-          </p>
+      <div className="fluid-container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+        {/* Title Section with 39/61 split */}
+        <div className="flex flex-col md:flex-row mb-8 md:mb-12">
+          <div className="md:w-[39%] text-left">
+            <span className="block text-sm font-normal tracking-wider text-raade-navy/70 mb-4 uppercase opacity-100">
+              Our Projects
+            </span>
+            <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-raade-navy mb-8 opacity-100 font-black max-w-[700px] text-left">
+              <strong>Building in Progress</strong>
+            </h2>
+            <div className="w-16 sm:w-24 h-1 bg-raade-yellow-orange mb-8 opacity-100"></div>
+          </div>
+          <div className="md:w-[61%]">
+            {/* Empty box that takes up 61% of the space */}
+          </div>
+        </div>
+        
+        {/* Content Section with reversed 39/61 split */}
+        <div className="flex flex-col md:flex-row mb-12 md:mb-16 lg:mb-20">
+          <div className="md:w-[39%]">
+            {/* Empty box that takes up 39% of the space */}
+          </div>
+          <div className="md:w-[61%]">
+            <p className="text-xl leading-relaxed font-lora text-raade-navy/70 max-w-[800px]">
+              Step into the future we're creating. Each project is a window into tomorrow,
+              where innovation meets impact in real time.
+            </p>
+          </div>
         </div>
 
-        <div className="space-y-16 sm:space-y-24 md:space-y-32">
+        <div className="space-y-8 sm:space-y-12 md:space-y-16">
           {showcaseProjects.map((project, index) => (
-            <div key={project.title} className="project-card">
+            <div key={project.title} className="project-card overflow-hidden">
               <ProjectCard {...project} index={index} slug={project.slug} />
             </div>
           ))}

@@ -137,8 +137,11 @@ const TransitionStat = () => {
         </div>
       </div>
       
-      {/* Bottom navigation */}
-      <div className="text-center absolute bottom-10 z-10">
+      {/* Separate content and navigation with flex spacer */}
+      <div className="flex-grow"></div>
+      
+      {/* Bottom content and navigation */}
+      <div className="text-center z-10 mt-12 mb-10">
         <p className="text-lg text-white/60 font-merriweather mb-6 content-element">
           Here's what we are building...
         </p>
