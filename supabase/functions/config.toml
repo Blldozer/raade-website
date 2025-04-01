@@ -1,4 +1,5 @@
 
+# Edge Functions configuration
 project_id = "dermbucktbegnbkjzobs"
 
 [calculate-payment-amount]
