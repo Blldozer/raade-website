@@ -1,20 +1,21 @@
 
 import { useTheme } from "next-themes"
-import { Toaster as Sonner } from "sonner"
-
-type ToasterProps = React.ComponentProps<typeof Sonner>
+import { Toaster as SonnerToaster, ToasterProps } from "sonner"
 
 /**
  * Sonner Toaster Component
  * 
- * This component requires ThemeProvider from next-themes to work properly,
- * which is why we've wrapped the app with ThemeProvider in AppProviders.tsx
+ * This component renders the toasts with improved handling:
+ * - Deduplicates toasts automatically
+ * - Respects theme from next-themes
+ * - Better animation and positioning
+ * - Provides rich colors for different status types
  */
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme()
 
   return (
-    <Sonner
+    <SonnerToaster
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
       richColors
@@ -29,6 +30,9 @@ const Toaster = ({ ...props }: ToasterProps) => {
           cancelButton:
             "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
         },
+        // Reduce duplicate toasts and prevent notification spam
+        duration: 4000,
+        position: "bottom-right"
       }}
       {...props}
     />

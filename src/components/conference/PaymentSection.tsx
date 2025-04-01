@@ -5,7 +5,6 @@ import { RegistrationFormData } from "./RegistrationFormTypes";
 import RegistrationSummary from "./RegistrationSummary";
 import { useState } from "react";
 import SuccessfulPayment from "./payment/SuccessfulPayment";
-import PaymentConfirmation from "./payment/PaymentConfirmation";
 
 interface PaymentSectionProps {
   registrationData: RegistrationFormData;

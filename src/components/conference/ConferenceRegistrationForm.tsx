@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import RegistrationFormFields from "./RegistrationFormFields";
@@ -62,7 +63,9 @@ const ConferenceRegistrationForm = () => {
         
         // If we're showing payment, reset the form to start fresh
         if (showPayment) {
+          // Use unique ID to prevent duplicate notifications
           toast({
+            id: "session-reset",
             title: "Session Reset",
             description: "Your previous checkout session has been cleared. You can try again with a fresh session.",
             variant: "default",
@@ -106,6 +109,9 @@ const ConferenceRegistrationForm = () => {
     // Log error details for debugging
     console.error("Payment error:", errorMessage);
     
+    // Generate consistent ID for this specific error to prevent duplicates
+    const errorId = `payment-error-${errorMessage.substring(0, 20)}`;
+    
     // If we get a critical error, reset form and go back to registration
     if (errorMessage.includes("Edge Function") || 
         errorMessage.includes("Payment service") ||
@@ -119,6 +125,7 @@ const ConferenceRegistrationForm = () => {
       setShowPayment(false);
       
       toast({
+        id: "payment-system-error",
         title: "Payment system error",
         description: "We're experiencing technical difficulties with our payment system. Please try again in a few moments.",
         variant: "destructive",
@@ -127,6 +134,7 @@ const ConferenceRegistrationForm = () => {
     }
     
     toast({
+      id: errorId, // Use consistent ID to prevent duplicates
       title: "Payment failed",
       description: errorMessage || "There was an error processing your payment. Please try again.",
       variant: "destructive",

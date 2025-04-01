@@ -36,8 +36,6 @@ export const useEmailConfirmation = (
 ) => {
   const [sendingEmail, setSendingEmail] = useState<boolean>(false);
   const [emailSent, setEmailSent] = useState<boolean>(false);
-  const [storingData, setStoringData] = useState<boolean>(false);
-  const [dataStored, setDataStored] = useState<boolean>(false);
   const [retryCount, setRetryCount] = useState<number>(0);
   const { toast } = useToast();
   
@@ -45,6 +43,8 @@ export const useEmailConfirmation = (
   const isMountedRef = useRef<boolean>(true);
   // Track if onComplete has been called
   const completeCalledRef = useRef<boolean>(false);
+  // Track if toast notification has been shown
+  const toastCalledRef = useRef<boolean>(false);
   // Maximum retry attempts
   const MAX_RETRIES = 3;
   
@@ -57,16 +57,7 @@ export const useEmailConfirmation = (
   
   // Helper function to store registration data in Supabase
   const storeRegistrationData = async () => {
-    if (dataStored) {
-      console.log("Registration data already stored, skipping");
-      return true;
-    }
-    
     try {
-      if (isMountedRef.current) {
-        setStoringData(true);
-      }
-      
       // Process group emails to a clean format
       let processedGroupEmails = [];
       if (registrationData.groupEmails && Array.isArray(registrationData.groupEmails)) {
@@ -132,25 +123,13 @@ export const useEmailConfirmation = (
           if (!isMountedRef.current) return false;
           
           setRetryCount(prev => prev + 1);
-          setStoringData(false);
           return storeRegistrationData();
         }
-        
-        toast({
-          title: "Registration data storage issue",
-          description: "We'll make sure your registration is properly recorded.",
-          variant: "destructive"
-        });
         
         return false;
       } else {
         if (data?.success) {
           console.log("Registration data stored successfully:", data);
-          
-          if (isMountedRef.current) {
-            setDataStored(true);
-          }
-          
           return true;
         } else {
           console.error("Registration storage returned an error:", data);
@@ -162,7 +141,6 @@ export const useEmailConfirmation = (
             if (!isMountedRef.current) return false;
             
             setRetryCount(prev => prev + 1);
-            setStoringData(false);
             return storeRegistrationData();
           }
           
@@ -189,15 +167,10 @@ export const useEmailConfirmation = (
         if (!isMountedRef.current) return false;
         
         setRetryCount(prev => prev + 1);
-        setStoringData(false);
         return storeRegistrationData();
       }
       
       return false;
-    } finally {
-      if (isMountedRef.current) {
-        setStoringData(false);
-      }
     }
   };
   
@@ -215,7 +188,7 @@ export const useEmailConfirmation = (
       return;
     }
     
-    // First, store the registration data
+    // First, store the registration data silently (no visible UI feedback)
     const dataStorageResult = await storeRegistrationData();
     
     if (!dataStorageResult) {
@@ -284,12 +257,15 @@ export const useEmailConfirmation = (
           return;
         }
         
-        // Out of retries
-        toast({
-          title: "Confirmation email could not be sent",
-          description: "We'll still send you conference details via email later.",
-          variant: "destructive"
-        });
+        // Only show error toast once, on final failure
+        if (!toastCalledRef.current) {
+          toastCalledRef.current = true;
+          toast({
+            title: "Confirmation email could not be sent",
+            description: "We'll still send you conference details via email later.",
+            variant: "destructive"
+          });
+        }
       } else {
         console.log("Confirmation email sent successfully:", data);
         
@@ -297,11 +273,15 @@ export const useEmailConfirmation = (
           setEmailSent(true);
         }
         
-        toast({
-          title: "Conference confirmation sent",
-          description: "Check your email for registration details.",
-          variant: "default"
-        });
+        // Only show success toast once
+        if (!toastCalledRef.current) {
+          toastCalledRef.current = true;
+          toast({
+            title: "Conference confirmation sent",
+            description: "Check your email for registration details.",
+            variant: "default"
+          });
+        }
       }
     } catch (error) {
       if (!isMountedRef.current) return;
@@ -330,11 +310,15 @@ export const useEmailConfirmation = (
         return;
       }
       
-      toast({
-        title: "Confirmation email could not be sent",
-        description: "We'll still send you conference details via email later.",
-        variant: "destructive"
-      });
+      // Only show error toast once
+      if (!toastCalledRef.current) {
+        toastCalledRef.current = true;
+        toast({
+          title: "Confirmation email could not be sent",
+          description: "We'll still send you conference details via email later.",
+          variant: "destructive"
+        });
+      }
     } finally {
       if (isMountedRef.current) {
         setSendingEmail(false);
@@ -355,8 +339,6 @@ export const useEmailConfirmation = (
   return { 
     sendingEmail, 
     emailSent,
-    storingData,
-    dataStored,
     sendConfirmationEmail 
   };
 };

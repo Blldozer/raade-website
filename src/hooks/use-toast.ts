@@ -1,6 +1,6 @@
 
 // Import the toast functionality from sonner
-import { toast as sonnerToast } from "sonner";
+import { toast as sonnerToast, Toaster } from "sonner";
 
 /**
  * Extended toast props interface that includes description property
@@ -14,28 +14,39 @@ export type ToastProps = {
   description?: React.ReactNode;
   action?: ToastActionElement;
   variant?: "default" | "destructive";
+  id?: string;
 };
 
 /**
  * Toast API for showing notifications
  * 
  * This implementation uses sonner under the hood while maintaining
- * the same API that components expect
+ * the same API that components expect. It adds deduplication based on ID
+ * to prevent duplicate notifications.
  * 
  * @param props - Toast configuration including title, description, and variant
  * @returns Object with toast id, dismiss and update methods
  */
 const toast = (props: ToastProps) => {
-  const { title, description, variant } = props;
+  const { title, description, variant, id } = props;
+  
+  // Create a unique ID for the toast if one isn't provided
+  const toastId = id || `${title}-${Date.now()}`;
   
   // Map our variant to sonner's equivalent
   const variantType = variant === "destructive" ? "error" : "default";
   
-  // Use sonner's toast function
-  return sonnerToast(title as string, {
+  // Use sonner's toast function with built-in deduplication
+  return sonnerToast[variantType](title as string, {
+    id: toastId, // Use consistent ID for deduplication
     description,
-    // Use Sonner's compatible properties
-    ...(variantType === "error" ? { style: { backgroundColor: "var(--destructive)", color: "var(--destructive-foreground)" } } : {})
+    // Add custom styling based on variant
+    style: variantType === "error" 
+      ? { 
+          backgroundColor: "var(--destructive)", 
+          color: "var(--destructive-foreground)" 
+        } 
+      : {}
   });
 };
 
@@ -54,4 +65,4 @@ const useToast = () => {
 };
 
 // Re-export with a clean API
-export { toast, useToast };
+export { toast, useToast, Toaster };
