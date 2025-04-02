@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, AlertCircle, HelpCircle } from "lucide-react";
@@ -11,7 +10,7 @@ interface SimpleStripeCheckoutProps {
   email: string;
   fullName: string;
   groupSize?: number;
-  groupEmails?: string[];
+  groupEmails?: Array<string | { value: string } | null>;
   organization?: string;
   role?: string;
   specialRequests?: string;
@@ -47,22 +46,17 @@ const SimpleStripeCheckout = ({
   const [attemptCount, setAttemptCount] = useState(0);
   const { toast } = useToast();
 
-  // Check for existing session on mount
   useEffect(() => {
-    // Clear any existing sessions when component mounts
     clearExistingSessionData();
     
-    // Check for rate limiting
     if (hasExceededMaxAttempts()) {
       setError("Too many payment attempts. Please try again later.");
     }
   }, []);
 
   const handleCheckout = async () => {
-    // Reset error state
     setError(null);
     
-    // Check for rate limiting
     if (hasExceededMaxAttempts()) {
       setError("Too many payment attempts. Please try again later.");
       return;
@@ -73,23 +67,30 @@ const SimpleStripeCheckout = ({
       return;
     }
 
-    // Start loading state
     setIsLoading(true);
     setAttemptCount(prev => prev + 1);
 
     try {
-      // Generate success and cancel URLs with cache busting
       const cacheBuster = `_${Date.now()}`;
       const successUrl = `${window.location.origin}/conference/success?cb=${cacheBuster}`;
       const cancelUrl = `${window.location.origin}/conference/register?cb=${cacheBuster}`;
 
-      // Prepare the checkout data
+      const processedEmails = groupEmails
+        .filter(Boolean)
+        .map(email => {
+          if (typeof email === 'object' && email !== null && 'value' in email) {
+            return email.value;
+          }
+          return String(email || '');
+        })
+        .filter(email => email.length > 0);
+
       const checkoutData = {
         ticketType,
         email,
         fullName,
         groupSize,
-        groupEmails,
+        groupEmails: processedEmails,
         organization,
         role,
         specialRequests,
@@ -98,7 +99,6 @@ const SimpleStripeCheckout = ({
         cancelUrl
       };
 
-      // Call the Supabase Edge Function to create a checkout session
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout-session`, {
         method: 'POST',
         headers: {
@@ -114,7 +114,6 @@ const SimpleStripeCheckout = ({
 
       const data = await response.json();
       
-      // Redirect to Stripe Checkout
       if (data.url) {
         window.location.href = data.url;
       } else {
