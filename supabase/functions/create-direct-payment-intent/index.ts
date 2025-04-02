@@ -9,7 +9,7 @@ import { corsHeaders } from "../_shared/cors.ts";
  * Simple Edge Function that creates a Stripe payment intent for direct payment processing.
  * This simplifies the payment flow by:
  * - Creating a payment intent without sessions or redirects
- * - Returning the client secret directly to be used with Stripe.js
+ * - Using idempotency keys to prevent duplicate charges
  * - Including necessary metadata for tracking and reporting
  */
 serve(async (req) => {
@@ -48,7 +48,8 @@ serve(async (req) => {
       role,
       specialRequests,
       referralSource,
-      groupEmails = []
+      groupEmails = [],
+      idempotencyKey // Use this to prevent duplicate charges
     } = requestData;
     
     // Validate required fields
@@ -66,6 +67,7 @@ serve(async (req) => {
     const STUDENT_PRICE = 3500; // $35.00
     const PROFESSIONAL_PRICE = 6000; // $60.00
     const GROUP_PRICE_PER_PERSON = 3000; // $30.00 per person
+    const SPECIAL_BONUS_PRICE = 500; // $5.00
     
     let amount = 0;
     let description = "";
@@ -81,6 +83,11 @@ serve(async (req) => {
       case "professional":
         amount = PROFESSIONAL_PRICE;
         description = "RAADE Conference 2025 - Professional Registration";
+        break;
+        
+      case "special-bonus":
+        amount = SPECIAL_BONUS_PRICE;
+        description = "RAADE Conference 2025 - Special Bonus Registration";
         break;
       
       case "student-group":
@@ -114,7 +121,9 @@ serve(async (req) => {
       ? groupEmails.join(", ")
       : "";
     
-    // Create a payment intent
+    // Create a payment intent with idempotency key to prevent duplicate charges
+    const idempotencyHeader = idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : undefined;
+    
     try {
       const paymentIntent = await stripe.paymentIntents.create({
         amount,
@@ -131,12 +140,13 @@ serve(async (req) => {
           role: role || "",
           specialRequests: specialRequests || "",
           referralSource: referralSource || "",
-          groupEmails: formattedGroupEmails
+          groupEmails: formattedGroupEmails,
+          idempotencyKey: idempotencyKey || "" // Store this for tracking
         },
         automatic_payment_methods: {
           enabled: true,
         },
-      });
+      }, idempotencyHeader);
       
       return new Response(
         JSON.stringify({
@@ -144,7 +154,8 @@ serve(async (req) => {
           amount,
           currency: "usd",
           isGroupRegistration,
-          ticketType
+          ticketType,
+          paymentIntentId: paymentIntent.id
         }),
         { 
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -154,14 +165,23 @@ serve(async (req) => {
     } catch (stripeError) {
       console.error("Stripe API error:", stripeError);
       
+      // Provide more specific error messages for common issues
+      let errorMessage = stripeError.message || "Unknown payment processing error";
+      let errorCode = stripeError.code || "unknown_error";
+      
+      if (stripeError.code === 'idempotency_key_in_use') {
+        errorMessage = "This payment is already being processed. Please wait or refresh the page.";
+        errorCode = "duplicate_request";
+      }
+      
       return new Response(
         JSON.stringify({ 
-          error: `Payment processing error: ${stripeError.message}`,
-          code: stripeError.code || "unknown_error"
+          error: `Payment processing error: ${errorMessage}`,
+          code: errorCode
         }),
         { 
           headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 500
+          status: stripeError.statusCode || 500
         }
       );
     }

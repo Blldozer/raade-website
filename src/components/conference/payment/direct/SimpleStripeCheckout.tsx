@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { clearExistingSessionData, getPaymentAttemptCount, hasExceededMaxAttempts, isWithinPaymentCooldown, storeCheckoutSession } from "../services/sessionManagement";
+import PaymentErrorHandler from "../PaymentErrorHandler";
 
 interface SimpleStripeCheckoutProps {
   ticketType: string;
@@ -26,9 +28,8 @@ interface SimpleStripeCheckoutProps {
  * A streamlined Stripe checkout that directly processes payments in the page:
  * - Uses Stripe Elements for card input
  * - Processes payment without redirects
+ * - Prevents duplicate charges with multiple safeguards
  * - Provides real-time feedback to users
- * - Reduces complexity with fewer moving parts
- * - Ensures registration data is stored in Supabase
  */
 const SimpleStripeCheckout = ({
   ticketType,
@@ -46,9 +47,14 @@ const SimpleStripeCheckout = ({
   const [isLoading, setIsLoading] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState(0);
   const [cardError, setCardError] = useState<string | null>(null);
+  const [processingError, setProcessingError] = useState<string | null>(null);
+  const [paymentId, setPaymentId] = useState<string | null>(null);
   const stripe = useStripe();
   const elements = useElements();
   const { toast } = useToast();
+  
+  // Track submission to prevent duplicate charges
+  const [hasSubmitted, setHasSubmitted] = useState(false);
   
   // Process emails to handle array of objects or strings
   const processedGroupEmails = Array.isArray(groupEmails) 
@@ -76,6 +82,7 @@ const SimpleStripeCheckout = ({
         
         if (error) {
           console.error("Error calculating payment amount:", error);
+          setProcessingError(`Failed to calculate payment amount: ${error.message}`);
           return;
         }
         
@@ -84,8 +91,14 @@ const SimpleStripeCheckout = ({
         }
       } catch (err) {
         console.error("Failed to calculate payment amount:", err);
+        setProcessingError(`Failed to calculate payment amount: ${err.message || "Unknown error"}`);
       }
     };
+    
+    // Clear any previous errors when component mounts
+    setProcessingError(null);
+    setCardError(null);
+    setHasSubmitted(false);
     
     calculateAmount();
   }, [ticketType, groupSize]);
@@ -96,7 +109,7 @@ const SimpleStripeCheckout = ({
   };
   
   // Store registration data in Supabase
-  const storeRegistrationData = async () => {
+  const storeRegistrationData = async (paymentIntentId: string) => {
     try {
       console.log("Storing registration data in Supabase");
       
@@ -111,7 +124,8 @@ const SimpleStripeCheckout = ({
           referralSource,
           groupSize,
           groupEmails: processedGroupEmails,
-          paymentComplete: true
+          paymentComplete: true,
+          paymentIntentId // Store the payment intent ID for reconciliation
         }
       });
       
@@ -133,6 +147,32 @@ const SimpleStripeCheckout = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Multiple submission prevention
+    if (isLoading || hasSubmitted) {
+      console.log("Payment already in progress or previously submitted");
+      return;
+    }
+    
+    // Check for payment cooldown
+    if (isWithinPaymentCooldown()) {
+      toast({
+        title: "Please wait",
+        description: "To prevent duplicate charges, please wait a few seconds before trying again.",
+        variant: "default",
+      });
+      return;
+    }
+    
+    // Check for too many attempts
+    if (hasExceededMaxAttempts()) {
+      toast({
+        title: "Too many payment attempts",
+        description: "For your security, we've limited the number of payment attempts. Please refresh the page to try again.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     if (!stripe || !elements) {
       toast({
         title: "Payment system not ready",
@@ -153,8 +193,14 @@ const SimpleStripeCheckout = ({
     }
     
     setIsLoading(true);
+    setHasSubmitted(true);
+    setProcessingError(null);
     
     try {
+      // Generate a unique payment ID to link attempts and prevent duplicates
+      const uniquePaymentId = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+      setPaymentId(uniquePaymentId);
+      
       // Step 1: Create payment intent
       const { data: intentData, error: intentError } = await supabase.functions.invoke("create-direct-payment-intent", {
         body: {
@@ -166,7 +212,8 @@ const SimpleStripeCheckout = ({
           role,
           specialRequests,
           referralSource,
-          groupEmails: processedGroupEmails
+          groupEmails: processedGroupEmails,
+          idempotencyKey: uniquePaymentId // Pass a unique ID to prevent duplicate charges
         }
       });
       
@@ -174,8 +221,11 @@ const SimpleStripeCheckout = ({
         throw new Error(intentError?.message || "Failed to create payment intent");
       }
       
+      // Track this checkout attempt
+      storeCheckoutSession(uniquePaymentId, email);
+      
       // Step 2: Confirm card payment
-      const { error: stripeError } = await stripe.confirmCardPayment(intentData.clientSecret, {
+      const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(intentData.clientSecret, {
         payment_method: {
           card: cardElement,
           billing_details: {
@@ -190,7 +240,10 @@ const SimpleStripeCheckout = ({
       }
       
       // Step 3: Store registration data in Supabase
-      await storeRegistrationData();
+      await storeRegistrationData(paymentIntent?.id || uniquePaymentId);
+      
+      // Clear session data now that payment is complete
+      clearExistingSessionData();
       
       // Success! Payment is complete
       toast({
@@ -205,6 +258,10 @@ const SimpleStripeCheckout = ({
       console.error("Payment error:", error);
       const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
       
+      // Store the error in state
+      setProcessingError(errorMessage);
+      
+      // Also notify with toast
       toast({
         title: "Payment failed",
         description: errorMessage,
@@ -212,19 +269,44 @@ const SimpleStripeCheckout = ({
       });
       
       onError(errorMessage);
+      
+      // Reset hasSubmitted to allow resubmission after error
+      setHasSubmitted(false);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Function to handle retry after error
+  const handleRetry = () => {
+    setProcessingError(null);
+    setHasSubmitted(false);
+  };
+
+  // Function to handle reset
+  const handleReset = () => {
+    onError("Payment cancelled - please start over");
+  };
+
   return (
     <div className="w-full">
+      {/* Show any processing errors */}
+      {processingError && (
+        <PaymentErrorHandler 
+          error={processingError}
+          onRetry={handleRetry}
+          onReset={handleReset}
+          attemptCount={getPaymentAttemptCount()}
+        />
+      )}
+      
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">
           <h3 className="text-lg font-medium">Payment Information</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             {ticketType === "student" ? "Student Ticket" : 
              ticketType === "professional" ? "Professional Ticket" : 
+             ticketType === "special-bonus" ? "Special Bonus Ticket" :
              "Group Registration"} - ${paymentAmount > 0 ? (paymentAmount / 100).toFixed(2) : "..."} USD
           </p>
           
@@ -258,7 +340,7 @@ const SimpleStripeCheckout = ({
         
         <Button
           type="submit"
-          disabled={isLoading || !stripe || !elements || paymentAmount <= 0}
+          disabled={isLoading || !stripe || !elements || paymentAmount <= 0 || hasSubmitted || hasExceededMaxAttempts()}
           className="w-full bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora 
             dark:bg-[#FBB03B] dark:hover:bg-[#FBB03B]/80 dark:text-white
             transition-colors duration-300"

@@ -1,175 +1,117 @@
-
 /**
- * Utilities for managing Stripe checkout sessions and preventing conflicts
+ * Session management utilities for payment processing
+ * 
+ * Handles session data, storage cleanup, and navigation detection
+ * to prevent duplicate payments and improve error recovery
  */
 
-/**
- * Generate a unique session identifier to ensure request isolation
- * Combines timestamp with random values for uniqueness
- */
-export const generateUniqueSessionId = (): string => {
-  const timestamp = Date.now();
-  const random = Math.random().toString(36).substring(2, 10);
-  const uniqueId = `${timestamp}-${random}`;
-  return uniqueId;
-};
+// Key for storing payment session ID in session storage
+const CHECKOUT_SESSION_ID_KEY = "checkoutSessionId";
+// Key for storing email in session storage for retrieving confirmation
+const REGISTRATION_EMAIL_KEY = "registrationEmail";
+// Key for tracking payment attempts to prevent duplicates
+const PAYMENT_ATTEMPTS_KEY = "paymentAttempts";
+// Key for storing the last payment timestamp to prevent rapid re-submissions
+const LAST_PAYMENT_TIMESTAMP = "lastPaymentTimestamp";
 
 /**
- * Clears any existing checkout session data from browser storage
- * Should be called when starting a new checkout or when navigating back
+ * Clear all payment session data from storage
  */
-export const clearExistingSessionData = (): void => {
-  try {
-    // Store original values for logging
-    const originalSessionId = sessionStorage.getItem("checkoutSessionId");
-    const originalEmail = sessionStorage.getItem("registrationEmail");
-    
-    // Clear any checkout session IDs
-    sessionStorage.removeItem("checkoutSessionId");
-    sessionStorage.removeItem("registrationEmail");
-    
-    // Also clear any payment intent related data for clean transition
-    sessionStorage.removeItem("paymentIntentId");
-    
-    // Log the operation for debugging
-    console.log("Session data cleared:", { 
-      hadSessionId: !!originalSessionId,
-      sessionIdPrefix: originalSessionId ? originalSessionId.substring(0, 8) + '...' : null, 
-      email: originalEmail ? originalEmail.substring(0, 3) + '***' : null
-    });
-  } catch (error) {
-    console.warn("Failed to clear session data:", error);
-  }
-};
+export function clearExistingSessionData(): void {
+  sessionStorage.removeItem(CHECKOUT_SESSION_ID_KEY);
+  sessionStorage.removeItem(REGISTRATION_EMAIL_KEY);
+  sessionStorage.removeItem(PAYMENT_ATTEMPTS_KEY);
+  // We keep the timestamp to enforce cooldown between attempts
+}
 
 /**
- * Saves checkout session ID to session storage
- * @param sessionId - The Stripe checkout session ID
- * @param email - The customer's email address
+ * Store checkout session details
+ * 
+ * @param sessionId Stripe checkout session ID
+ * @param email User's email for confirmation
  */
-export const saveCheckoutSession = (sessionId: string, email: string): void => {
-  try {
-    // Check if we're overwriting an existing session
-    const existingSessionId = sessionStorage.getItem("checkoutSessionId");
-    if (existingSessionId) {
-      console.warn("Overwriting existing checkout session:", {
-        old: existingSessionId.substring(0, 8) + '...',
-        new: sessionId.substring(0, 8) + '...'
-      });
-    }
-    
-    sessionStorage.setItem("checkoutSessionId", sessionId);
-    sessionStorage.setItem("registrationEmail", email);
-    console.log("Saved checkout session ID to session storage:", {
-      sessionIdPrefix: sessionId.substring(0, 8) + '...',
-      email: email.substring(0, 3) + '***'
-    });
-  } catch (error) {
-    console.warn("Failed to save session data:", error);
-  }
-};
-
-/**
- * Checks if a checkout session already exists
- * @returns boolean indicating if there's an existing session
- */
-export const hasExistingCheckoutSession = (): boolean => {
-  try {
-    const sessionId = sessionStorage.getItem("checkoutSessionId");
-    return !!sessionId;
-  } catch (error) {
-    console.warn("Error checking for existing session:", error);
-    return false;
-  }
-};
-
-/**
- * Detect back navigation from Stripe
- * Uses performance navigation timing API when available
- * @returns boolean indicating if user navigated back
- */
-export const detectBackNavigation = (): boolean => {
-  try {
-    if (window.performance && window.performance.getEntriesByType) {
-      const navEntries = window.performance.getEntriesByType('navigation');
-      if (navEntries.length > 0 && 'type' in navEntries[0]) {
-        // Check if navigation type is 'back_forward'
-        return (navEntries[0] as any).type === 'back_forward';
-      }
-    }
-    
-    // Fallback: check for Stripe-related URL parameters or referrer
-    const hasStripeParams = window.location.search.includes('session_id') || 
-                          window.location.search.includes('payment_intent');
-    const fromStripe = document.referrer.includes('checkout.stripe.com');
-    
-    return hasStripeParams || fromStripe;
-  } catch (error) {
-    console.warn("Error detecting navigation type:", error);
-    return false;
-  }
-};
-
-/**
- * Register event listeners to handle page history events
- * Ensures session is properly cleaned up when navigating
- * @param cleanupCallback - Function to call when navigation is detected
- */
-export const setupNavigationListeners = (cleanupCallback: () => void): () => void => {
-  const handlePageShow = (event: PageTransitionEvent) => {
-    if (event.persisted) {
-      // Page is being restored from the bfcache (back navigation)
-      console.log("Detected browser back navigation");
-      clearExistingSessionData();
-      cleanupCallback();
-    }
-  };
+export function storeCheckoutSession(sessionId: string, email: string): void {
+  sessionStorage.setItem(CHECKOUT_SESSION_ID_KEY, sessionId);
+  sessionStorage.setItem(REGISTRATION_EMAIL_KEY, email);
+  sessionStorage.setItem(LAST_PAYMENT_TIMESTAMP, Date.now().toString());
   
-  const handleVisibilityChange = () => {
-    // Additional check when page becomes visible again after being hidden
-    if (document.visibilityState === "visible" && detectBackNavigation()) {
-      console.log("Detected page visibility change after navigation");
-      clearExistingSessionData();
-      cleanupCallback();
-    }
-  };
-  
-  const handleBeforeUnload = () => {
-    // Log the session state before page unload
-    const sessionId = sessionStorage.getItem("checkoutSessionId");
-    if (sessionId) {
-      console.log("Page unloading with active session:", sessionId.substring(0, 8) + '...');
-    }
-  };
-
-  window.addEventListener("pageshow", handlePageShow);
-  document.addEventListener("visibilitychange", handleVisibilityChange);
-  window.addEventListener("beforeunload", handleBeforeUnload);
-  
-  // Return a cleanup function to remove the listeners
-  return () => {
-    window.removeEventListener("pageshow", handlePageShow);
-    document.removeEventListener("visibilitychange", handleVisibilityChange);
-    window.removeEventListener("beforeunload", handleBeforeUnload);
-  };
-};
+  // Track payment attempt count
+  const attempts = getPaymentAttemptCount();
+  sessionStorage.setItem(PAYMENT_ATTEMPTS_KEY, (attempts + 1).toString());
+}
 
 /**
- * Gets diagnostics info about the current session state
- * Useful for debugging session-related issues
+ * Check if we're within the payment cooldown period to prevent rapid re-submission
+ * 
+ * @returns true if we need to enforce cooldown (too many attempts)
  */
-export const getSessionDiagnostics = (): Record<string, any> => {
-  try {
-    return {
-      hasSessionId: !!sessionStorage.getItem("checkoutSessionId"),
-      sessionIdPrefix: sessionStorage.getItem("checkoutSessionId")?.substring(0, 8) + '...',
-      hasEmail: !!sessionStorage.getItem("registrationEmail"),
-      browserType: navigator.userAgent,
-      hasServiceWorker: 'serviceWorker' in navigator,
-      timestamp: new Date().toISOString()
-    };
-  } catch (error) {
-    console.warn("Error getting session diagnostics:", error);
-    return { error: String(error) };
+export function isWithinPaymentCooldown(): boolean {
+  const lastTimestamp = sessionStorage.getItem(LAST_PAYMENT_TIMESTAMP);
+  if (!lastTimestamp) return false;
+  
+  const now = Date.now();
+  const lastAttempt = parseInt(lastTimestamp);
+  const timeDiff = now - lastAttempt;
+  
+  // Enforce a 5 second cooldown between payment attempts
+  return timeDiff < 5000;
+}
+
+/**
+ * Get the current payment attempt count
+ * 
+ * @returns Number of payment attempts in this session
+ */
+export function getPaymentAttemptCount(): number {
+  const attempts = sessionStorage.getItem(PAYMENT_ATTEMPTS_KEY);
+  return attempts ? parseInt(attempts) : 0;
+}
+
+/**
+ * Check if we've exceeded the maximum number of payment attempts
+ * 
+ * @returns true if we've exceeded the maximum attempts
+ */
+export function hasExceededMaxAttempts(): boolean {
+  return getPaymentAttemptCount() >= 2; // Max 2 attempts
+}
+
+/**
+ * Reset the payment attempt counter
+ */
+export function resetPaymentAttempts(): void {
+  sessionStorage.removeItem(PAYMENT_ATTEMPTS_KEY);
+}
+
+/**
+ * Detect if the user is navigating back from a payment screen
+ * 
+ * @returns true if back navigation is detected
+ */
+export function detectBackNavigation(): boolean {
+  if (typeof window === "undefined" || !window.performance) return false;
+  
+  const navigation = window.performance.getEntriesByType("navigation");
+  if (navigation.length > 0 && navigation[0].type === "back_forward") {
+    return true;
   }
-};
+  
+  return false;
+}
+
+/**
+ * Get diagnostics about the current session state
+ * 
+ * @returns Object with session diagnostics
+ */
+export function getSessionDiagnostics(): Record<string, any> {
+  return {
+    hasCheckoutSession: !!sessionStorage.getItem(CHECKOUT_SESSION_ID_KEY),
+    hasEmail: !!sessionStorage.getItem(REGISTRATION_EMAIL_KEY),
+    paymentAttempts: getPaymentAttemptCount(),
+    lastPaymentTime: sessionStorage.getItem(LAST_PAYMENT_TIMESTAMP) || "none",
+    cooldownActive: isWithinPaymentCooldown(),
+    exceedsMaxAttempts: hasExceededMaxAttempts(),
+    backNavigation: detectBackNavigation()
+  };
+}

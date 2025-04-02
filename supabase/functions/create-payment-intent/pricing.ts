@@ -2,7 +2,7 @@
 /**
  * Calculate payment amount based on ticket type and group size
  * 
- * @param ticketType - Type of ticket (student, professional, student-group)
+ * @param ticketType - Type of ticket (student, professional, student-group, special-bonus)
  * @param groupSize - Size of group for group registrations
  * @returns Object with amount, description and group flag
  */
@@ -14,6 +14,7 @@ export function calculatePaymentAmount(
   const STUDENT_PRICE = 3500; // $35.00
   const PROFESSIONAL_PRICE = 6000; // $60.00
   const GROUP_PRICE_PER_PERSON = 3000; // $30.00 per person
+  const SPECIAL_BONUS_PRICE = 500; // $5.00
   
   // Determine price based on ticket type
   switch (ticketType) {
@@ -28,6 +29,13 @@ export function calculatePaymentAmount(
       return {
         amount: PROFESSIONAL_PRICE,
         description: "RAADE Conference 2025 - Professional Registration",
+        isGroupRegistration: false
+      };
+    
+    case "special-bonus":
+      return {
+        amount: SPECIAL_BONUS_PRICE,
+        description: "RAADE Conference 2025 - Special Bonus Registration",
         isGroupRegistration: false
       };
     
