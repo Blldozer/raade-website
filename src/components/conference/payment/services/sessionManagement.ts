@@ -1,3 +1,4 @@
+
 /**
  * Session Management Utilities
  * 
@@ -13,6 +14,7 @@ const SESSION_ID_KEY = "checkoutSessionId";
 const REGISTRATION_EMAIL_KEY = "registrationEmail";
 const PAYMENT_ATTEMPT_COUNT_KEY = "paymentAttemptCount";
 const PAYMENT_COOLDOWN_KEY = "paymentCooldownTimestamp";
+const MAX_PAYMENT_ATTEMPTS = 3;
 
 /**
  * Generate a unique session ID for payment tracking
@@ -89,6 +91,15 @@ export function getPaymentAttemptCount(): number {
 }
 
 /**
+ * Check if user has exceeded maximum payment attempts
+ * 
+ * @returns True if user has exceeded maximum attempts, false otherwise
+ */
+export function hasExceededMaxAttempts(): boolean {
+  return getPaymentAttemptCount() >= MAX_PAYMENT_ATTEMPTS;
+}
+
+/**
  * Check if user is in payment cooldown period
  * 
  * @returns True if cooldown is active, false otherwise
@@ -102,6 +113,13 @@ export function isInPaymentCooldown(): boolean {
   
   // Cooldown period is active for 30 seconds
   return now - cooldownTime < 30000;
+}
+
+/**
+ * Alias for isInPaymentCooldown to maintain compatibility with existing code
+ */
+export function isWithinPaymentCooldown(): boolean {
+  return isInPaymentCooldown();
 }
 
 /**

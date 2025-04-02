@@ -5,7 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { clearExistingSessionData, getPaymentAttemptCount, hasExceededMaxAttempts, isWithinPaymentCooldown, storeCheckoutSession } from "../services/sessionManagement";
+import { 
+  clearExistingSessionData, 
+  getPaymentAttemptCount, 
+  hasExceededMaxAttempts, 
+  isWithinPaymentCooldown, 
+  storeCheckoutSession 
+} from "../services/sessionManagement";
 import PaymentErrorHandler from "../PaymentErrorHandler";
 
 interface SimpleStripeCheckoutProps {

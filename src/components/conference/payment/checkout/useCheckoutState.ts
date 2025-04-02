@@ -1,86 +1,84 @@
 
-import { useState, useRef, useEffect } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { 
-  clearExistingSessionData, 
-  generateUniqueSessionId,
-  setupNavigationListeners
-} from "../services/sessionManagement";
+import { useState, useEffect, useRef } from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { clearExistingSessionData } from '../services/sessionManagement';
 
 /**
- * Custom hook to manage checkout state and lifecycle
+ * Custom hook to manage checkout session state
  * 
- * Handles:
- * - Loading state and retry mechanism
- * - Session management and cleanup
- * - Navigation event handling
- * - Request abort controller management
+ * Provides functionality for:
+ * - Managing loading and success states
+ * - Tracking checkout completion
+ * - Preventing duplicate callbacks
+ * - Cleaning up session data
  */
-export const useCheckoutState = () => {
+export function useCheckoutState() {
   const [isLoading, setIsLoading] = useState(false);
-  const [retryCount, setRetryCount] = useState(0);
-  const [requestId, setRequestId] = useState<string | null>(null);
-  const abortControllerRef = useRef<AbortController | null>(null);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const successCalledRef = useRef(false);
   const { toast } = useToast();
 
-  // Effect to clean up stale sessions and set up navigation listeners
-  useEffect(() => {
-    // Clear any existing sessions when component mounts
-    clearExistingSessionData();
+  // Reset state
+  const resetCheckoutState = () => {
+    setIsLoading(false);
+    setIsCompleted(false);
+    setError(null);
+    successCalledRef.current = false;
+  };
+
+  // Handle successful checkout
+  const handleSuccess = () => {
+    if (successCalledRef.current) return;
     
-    // Generate a unique request ID for this checkout attempt
-    const newRequestId = generateUniqueSessionId();
-    setRequestId(newRequestId);
+    successCalledRef.current = true;
+    setIsLoading(false);
+    setIsCompleted(true);
     
-    // Set up listeners for navigation events to clean up sessions
-    const removeListeners = setupNavigationListeners(() => {
-      // This callback runs when back navigation is detected
-      setIsLoading(false);
-      
-      // Abort any in-flight requests
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-        abortControllerRef.current = null;
-      }
-      
-      toast({
-        title: "Session Reset",
-        description: "Your payment session was reset when you returned. You can now continue registration.",
-        variant: "default",
-      });
+    // Display success toast
+    toast({
+      title: "Payment successful",
+      description: "Your payment has been processed successfully.",
+      variant: "default",
     });
     
-    // Clean up event listeners on component unmount
+    // Clear session data
+    clearExistingSessionData();
+  };
+
+  // Handle checkout error
+  const handleError = (errorMessage: string) => {
+    setIsLoading(false);
+    setError(errorMessage);
+    
+    // Display error toast
+    toast({
+      title: "Payment failed",
+      description: errorMessage || "There was an issue processing your payment.",
+      variant: "destructive",
+    });
+  };
+
+  // Clean up on unmount
+  useEffect(() => {
     return () => {
-      removeListeners();
-      
-      // If navigating away while loading, abort any pending requests
-      if (isLoading && abortControllerRef.current) {
-        abortControllerRef.current.abort();
-        abortControllerRef.current = null;
-        console.log("Aborting checkout request due to component unmount");
+      // If the component unmounts with no success or error, clean up
+      if (!successCalledRef.current && !error) {
+        clearExistingSessionData();
       }
     };
-  }, [toast, isLoading]);
-
-  const resetCheckoutState = () => {
-    // Clear any existing checkout requests
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    
-    // Create a new abort controller for this request
-    abortControllerRef.current = new AbortController();
-  };
+  }, [error]);
 
   return {
     isLoading,
     setIsLoading,
-    retryCount,
-    setRetryCount,
-    requestId,
-    setRequestId,
-    abortControllerRef,
-    resetCheckoutState
+    isCompleted,
+    setIsCompleted,
+    error,
+    setError,
+    resetCheckoutState,
+    handleSuccess,
+    handleError,
+    successCalledRef
   };
-};
+}
