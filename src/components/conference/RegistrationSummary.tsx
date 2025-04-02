@@ -1,6 +1,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
-import { RegistrationFormData, calculateTotalPrice } from "./RegistrationFormTypes";
+import { RegistrationFormData } from "./RegistrationFormTypes";
+import { calculateTotalPrice } from "./RegistrationFormTypes";
 
 interface RegistrationSummaryProps {
   registrationData: RegistrationFormData;

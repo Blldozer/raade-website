@@ -1,10 +1,9 @@
-
 import { useState, useEffect } from "react";
-import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { ArrowRight, AlertCircle, HelpCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { clearExistingSessionData, hasExceededMaxAttempts, isInPaymentCooldown } from "../services/sessionManagement";
+import PaymentErrorHandler from "../PaymentErrorHandler";
 
 interface SimpleStripeCheckoutProps {
   ticketType: string;
@@ -21,14 +20,13 @@ interface SimpleStripeCheckoutProps {
 }
 
 /**
- * SimpleStripeCheckout Component
+ * SimpleStripeCheckout Component - Streamlined Checkout Experience
  * 
- * A streamlined Stripe checkout that directly processes payments in the page:
- * - Uses Stripe Elements for card input
- * - Processes payment without redirects
- * - Provides real-time feedback to users
- * - Reduces complexity with fewer moving parts
- * - Ensures registration data is stored in Supabase
+ * A simplified version of our checkout flow that:
+ * - Directly calls Supabase Edge Function to create checkout session
+ * - Redirects user to Stripe's hosted checkout page
+ * - Handles errors and provides user feedback
+ * - Enforces rate limiting to prevent abuse
  */
 const SimpleStripeCheckout = ({
   ticketType,
@@ -41,242 +39,135 @@ const SimpleStripeCheckout = ({
   specialRequests,
   referralSource,
   onSuccess,
-  onError
+  onError,
 }: SimpleStripeCheckoutProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [paymentAmount, setPaymentAmount] = useState(0);
-  const [cardError, setCardError] = useState<string | null>(null);
-  const stripe = useStripe();
-  const elements = useElements();
+  const [error, setError] = useState<string | null>(null);
+  const [attemptCount, setAttemptCount] = useState(0);
   const { toast } = useToast();
-  
-  // Process emails to handle array of objects or strings
-  const processedGroupEmails = Array.isArray(groupEmails) 
-    ? groupEmails
-        .filter(Boolean) // Remove nullish values
+
+  useEffect(() => {
+    clearExistingSessionData();
+    
+    if (hasExceededMaxAttempts()) {
+      setError("Too many payment attempts. Please try again later.");
+    }
+  }, []);
+
+  const handleCheckout = async () => {
+    setError(null);
+    
+    if (hasExceededMaxAttempts()) {
+      setError("Too many payment attempts. Please try again later.");
+      return;
+    }
+    
+    if (isInPaymentCooldown()) {
+      setError("Please wait a moment before trying again.");
+      return;
+    }
+
+    setIsLoading(true);
+    setAttemptCount(prev => prev + 1);
+
+    try {
+      const cacheBuster = `_${Date.now()}`;
+      const successUrl = `${window.location.origin}/conference/success?cb=${cacheBuster}`;
+      const cancelUrl = `${window.location.origin}/conference/register?cb=${cacheBuster}`;
+
+      const processedEmails = groupEmails
+        .filter(Boolean)
         .map(email => {
           if (typeof email === 'object' && email !== null && 'value' in email) {
-            return typeof email.value === 'string' ? email.value : '';
+            return email.value;
           }
           return String(email || '');
         })
-        .filter(email => email.length > 0) // Remove empty strings
-    : [];
+        .filter(email => email.length > 0);
 
-  // Fetch payment amount when component mounts
-  useEffect(() => {
-    const calculateAmount = async () => {
-      try {
-        const { data, error } = await supabase.functions.invoke("calculate-payment-amount", {
-          body: { 
-            ticketType,
-            groupSize: groupSize || 0
-          }
-        });
-        
-        if (error) {
-          console.error("Error calculating payment amount:", error);
-          return;
-        }
-        
-        if (data?.amount) {
-          setPaymentAmount(data.amount);
-        }
-      } catch (err) {
-        console.error("Failed to calculate payment amount:", err);
-      }
-    };
-    
-    calculateAmount();
-  }, [ticketType, groupSize]);
+      const checkoutData = {
+        ticketType,
+        email,
+        fullName,
+        groupSize,
+        groupEmails: processedEmails,
+        organization,
+        role,
+        specialRequests,
+        referralSource,
+        successUrl,
+        cancelUrl
+      };
 
-  // Handle card element changes to show validation errors
-  const handleCardChange = (event: any) => {
-    setCardError(event.error ? event.error.message : null);
-  };
-  
-  // Store registration data in Supabase
-  const storeRegistrationData = async () => {
-    try {
-      console.log("Storing registration data in Supabase");
-      
-      const { data, error } = await supabase.functions.invoke("store-registration", {
-        body: {
-          fullName,
-          email,
-          organization,
-          role,
-          ticketType,
-          specialRequests,
-          referralSource,
-          groupSize,
-          groupEmails: processedGroupEmails,
-          paymentComplete: true
-        }
-      });
-      
-      if (error) {
-        console.error("Error storing registration data:", error);
-        // Don't block the success flow, but log the error
-        return false;
-      }
-      
-      console.log("Registration data stored successfully:", data);
-      return true;
-    } catch (err) {
-      console.error("Failed to store registration data:", err);
-      return false;
-    }
-  };
-  
-  // Process the payment when user submits
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!stripe || !elements) {
-      toast({
-        title: "Payment system not ready",
-        description: "Please try again in a moment",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    const cardElement = elements.getElement(CardElement);
-    if (!cardElement) {
-      toast({
-        title: "Card input not found",
-        description: "Please refresh the page and try again",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    setIsLoading(true);
-    
-    try {
-      // Step 1: Create payment intent
-      const { data: intentData, error: intentError } = await supabase.functions.invoke("create-direct-payment-intent", {
-        body: {
-          ticketType,
-          email,
-          fullName,
-          groupSize,
-          organization,
-          role,
-          specialRequests,
-          referralSource,
-          groupEmails: processedGroupEmails
-        }
-      });
-      
-      if (intentError || !intentData?.clientSecret) {
-        throw new Error(intentError?.message || "Failed to create payment intent");
-      }
-      
-      // Step 2: Confirm card payment
-      const { error: stripeError } = await stripe.confirmCardPayment(intentData.clientSecret, {
-        payment_method: {
-          card: cardElement,
-          billing_details: {
-            name: fullName,
-            email: email,
-          },
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout-session`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
         },
+        body: JSON.stringify(checkoutData)
       });
-      
-      if (stripeError) {
-        throw new Error(stripeError.message || "Payment failed");
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create checkout session");
       }
+
+      const data = await response.json();
       
-      // Step 3: Store registration data in Supabase
-      await storeRegistrationData();
-      
-      // Success! Payment is complete
-      toast({
-        title: "Payment successful!",
-        description: "Your registration is complete",
-        variant: "default",
-      });
-      
-      // Call the success callback
-      onSuccess();
-    } catch (error) {
-      console.error("Payment error:", error);
-      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
-      
-      toast({
-        title: "Payment failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
-      
-      onError(errorMessage);
-    } finally {
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("No checkout URL received");
+      }
+    } catch (err) {
       setIsLoading(false);
+      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
+      setError(errorMessage);
+      onError(errorMessage);
+      
+      toast({
+        variant: "destructive",
+        title: "Checkout Error",
+        description: errorMessage,
+      });
     }
   };
 
   return (
-    <div className="w-full">
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-2">
-          <h3 className="text-lg font-medium">Payment Information</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {ticketType === "student" ? "Student Ticket" : 
-             ticketType === "professional" ? "Professional Ticket" : 
-             "Group Registration"} - ${paymentAmount > 0 ? (paymentAmount / 100).toFixed(2) : "..."} USD
-          </p>
-          
-          <div className="p-4 border rounded-md bg-white dark:bg-gray-800">
-            <CardElement 
-              options={{
-                style: {
-                  base: {
-                    fontSize: '16px',
-                    color: '#32325d',
-                    fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-                    '::placeholder': {
-                      color: '#aab7c4',
-                    },
-                  },
-                  invalid: {
-                    color: '#fa755a',
-                    iconColor: '#fa755a',
-                  },
-                },
-              }}
-              onChange={handleCardChange}
-              className="py-2"
-            />
-          </div>
-          
-          {cardError && (
-            <p className="text-sm text-red-500">{cardError}</p>
-          )}
-        </div>
-        
-        <Button
-          type="submit"
-          disabled={isLoading || !stripe || !elements || paymentAmount <= 0}
-          className="w-full bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora 
-            dark:bg-[#FBB03B] dark:hover:bg-[#FBB03B]/80 dark:text-white
-            transition-colors duration-300"
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Processing Payment...
-            </>
-          ) : (
-            <>Complete Payment</>
-          )}
-        </Button>
-        
-        <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-          Secure payment processed by Stripe. Your card information is never stored on our servers.
-        </p>
-      </form>
+    <div className="space-y-4">
+      {error && (
+        <PaymentErrorHandler
+          error={error}
+          onRetry={handleCheckout}
+          onReset={() => {
+            clearExistingSessionData();
+            setError(null);
+          }}
+          attemptCount={attemptCount}
+        />
+      )}
+      
+      <Button
+        onClick={handleCheckout}
+        disabled={isLoading || hasExceededMaxAttempts()}
+        className="w-full bg-[#274675] hover:bg-[#274675]/90 text-white font-lora
+          dark:bg-[#274675] dark:hover:bg-[#274675]/80 dark:text-white
+          transition-colors duration-300"
+      >
+        {isLoading ? (
+          <>Processing...</>
+        ) : (
+          <>
+            Proceed to Payment
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </>
+        )}
+      </Button>
+      
+      <div className="flex items-center justify-center text-xs text-gray-500 dark:text-gray-400">
+        <HelpCircle className="h-3 w-3 mr-1" />
+        <span>Secure payment via Stripe</span>
+      </div>
     </div>
   );
 };
