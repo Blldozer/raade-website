@@ -5,8 +5,7 @@ import { z } from "zod";
 export const TICKET_TYPES_ENUM = {
   STUDENT: "student",
   PROFESSIONAL: "professional",
-  STUDENT_GROUP: "student-group",
-  SPECIAL_BONUS: "special-bonus"
+  STUDENT_GROUP: "student-group"
 } as const;
 
 /**
@@ -20,12 +19,48 @@ export function getTicketPriceText(ticketType: string) {
       return "($60)";
     case TICKET_TYPES_ENUM.STUDENT_GROUP:
       return "($30 per person, min 5 people)";
-    case TICKET_TYPES_ENUM.SPECIAL_BONUS:
-      return "($5)";
     default:
       return "";
   }
 }
+
+/**
+ * Get numeric price value for each ticket type (in dollars)
+ */
+export function getTicketPrice(ticketType: string): number {
+  switch(ticketType) {
+    case TICKET_TYPES_ENUM.STUDENT:
+      return 35;
+    case TICKET_TYPES_ENUM.PROFESSIONAL:
+      return 60;
+    case TICKET_TYPES_ENUM.STUDENT_GROUP:
+      return 30;
+    default:
+      return 0;
+  }
+}
+
+/**
+ * Calculate the total price based on ticket type and group size
+ */
+export function calculateTotalPrice(ticketType: string, groupSize?: number): number {
+  if (ticketType === TICKET_TYPES_ENUM.STUDENT_GROUP && groupSize && groupSize >= 5) {
+    return groupSize * getTicketPrice(TICKET_TYPES_ENUM.STUDENT_GROUP);
+  }
+  return getTicketPrice(ticketType);
+}
+
+// Define referral sources
+export const REFERRAL_SOURCES = [
+  "Rice University website",
+  "Social media",
+  "Friend or colleague",
+  "Email",
+  "Flyer or poster",
+  "Professor or academic advisor",
+  "Previous RAADE event",
+  "Other"
+] as const;
 
 // Registration form schema definition
 export const registrationFormSchema = z.object({
@@ -37,8 +72,7 @@ export const registrationFormSchema = z.object({
   ticketType: z.enum([
     TICKET_TYPES_ENUM.STUDENT, 
     TICKET_TYPES_ENUM.PROFESSIONAL, 
-    TICKET_TYPES_ENUM.STUDENT_GROUP,
-    TICKET_TYPES_ENUM.SPECIAL_BONUS
+    TICKET_TYPES_ENUM.STUDENT_GROUP
   ]),
   groupSize: z.number().min(5).optional()
     .refine(val => val === undefined || val >= 5, {

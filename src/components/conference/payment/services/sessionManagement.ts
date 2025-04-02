@@ -1,117 +1,186 @@
 /**
- * Session management utilities for payment processing
+ * Session Management Utilities
  * 
- * Handles session data, storage cleanup, and navigation detection
- * to prevent duplicate payments and improve error recovery
+ * This file provides utility functions for managing payment session state:
+ * - Generating unique session IDs
+ * - Storing checkout data in session storage
+ * - Loading checkout data from session storage
+ * - Cleaning up session data
+ * - Tracking payment attempts
  */
 
-// Key for storing payment session ID in session storage
-const CHECKOUT_SESSION_ID_KEY = "checkoutSessionId";
-// Key for storing email in session storage for retrieving confirmation
+const SESSION_ID_KEY = "checkoutSessionId";
 const REGISTRATION_EMAIL_KEY = "registrationEmail";
-// Key for tracking payment attempts to prevent duplicates
-const PAYMENT_ATTEMPTS_KEY = "paymentAttempts";
-// Key for storing the last payment timestamp to prevent rapid re-submissions
-const LAST_PAYMENT_TIMESTAMP = "lastPaymentTimestamp";
+const PAYMENT_ATTEMPT_COUNT_KEY = "paymentAttemptCount";
+const PAYMENT_COOLDOWN_KEY = "paymentCooldownTimestamp";
 
 /**
- * Clear all payment session data from storage
+ * Generate a unique session ID for payment tracking
+ * Uses a combination of timestamp and random characters
+ * 
+ * @returns Unique string ID
  */
-export function clearExistingSessionData(): void {
-  sessionStorage.removeItem(CHECKOUT_SESSION_ID_KEY);
-  sessionStorage.removeItem(REGISTRATION_EMAIL_KEY);
-  sessionStorage.removeItem(PAYMENT_ATTEMPTS_KEY);
-  // We keep the timestamp to enforce cooldown between attempts
+export function generateUniqueSessionId(): string {
+  const timestamp = Date.now();
+  const randomChars = Math.random().toString(36).substring(2, 15);
+  return `${timestamp}-${randomChars}`;
 }
 
 /**
- * Store checkout session details
+ * Save checkout session data to session storage
  * 
- * @param sessionId Stripe checkout session ID
- * @param email User's email for confirmation
+ * @param sessionId Unique session identifier
+ * @param email User's email address for verification
+ */
+export function saveCheckoutSession(sessionId: string, email: string): void {
+  sessionStorage.setItem(SESSION_ID_KEY, sessionId);
+  sessionStorage.setItem(REGISTRATION_EMAIL_KEY, email);
+}
+
+/**
+ * Store checkout session data in session storage
+ * 
+ * @param sessionId Unique session identifier 
+ * @param email User's email address for verification
  */
 export function storeCheckoutSession(sessionId: string, email: string): void {
-  sessionStorage.setItem(CHECKOUT_SESSION_ID_KEY, sessionId);
-  sessionStorage.setItem(REGISTRATION_EMAIL_KEY, email);
-  sessionStorage.setItem(LAST_PAYMENT_TIMESTAMP, Date.now().toString());
-  
-  // Track payment attempt count
-  const attempts = getPaymentAttemptCount();
-  sessionStorage.setItem(PAYMENT_ATTEMPTS_KEY, (attempts + 1).toString());
+  saveCheckoutSession(sessionId, email);
 }
 
 /**
- * Check if we're within the payment cooldown period to prevent rapid re-submission
+ * Get the stored checkout session ID if it exists
  * 
- * @returns true if we need to enforce cooldown (too many attempts)
+ * @returns Session ID string or null if not found
  */
-export function isWithinPaymentCooldown(): boolean {
-  const lastTimestamp = sessionStorage.getItem(LAST_PAYMENT_TIMESTAMP);
-  if (!lastTimestamp) return false;
-  
-  const now = Date.now();
-  const lastAttempt = parseInt(lastTimestamp);
-  const timeDiff = now - lastAttempt;
-  
-  // Enforce a 5 second cooldown between payment attempts
-  return timeDiff < 5000;
+export function getCheckoutSessionId(): string | null {
+  return sessionStorage.getItem(SESSION_ID_KEY);
+}
+
+/**
+ * Get the stored registration email if it exists
+ * 
+ * @returns Registration email string or null if not found
+ */
+export function getRegistrationEmail(): string | null {
+  return sessionStorage.getItem(REGISTRATION_EMAIL_KEY);
+}
+
+/**
+ * Increment the payment attempt count
+ * Used for limiting the number of attempts a user can make
+ * 
+ * @returns New attempt count
+ */
+export function incrementPaymentAttemptCount(): number {
+  const currentCount = getPaymentAttemptCount();
+  const newCount = currentCount + 1;
+  sessionStorage.setItem(PAYMENT_ATTEMPT_COUNT_KEY, newCount.toString());
+  return newCount;
 }
 
 /**
  * Get the current payment attempt count
  * 
- * @returns Number of payment attempts in this session
+ * @returns Current attempt count (default: 0)
  */
 export function getPaymentAttemptCount(): number {
-  const attempts = sessionStorage.getItem(PAYMENT_ATTEMPTS_KEY);
-  return attempts ? parseInt(attempts) : 0;
+  const countStr = sessionStorage.getItem(PAYMENT_ATTEMPT_COUNT_KEY);
+  return countStr ? parseInt(countStr, 10) : 0;
 }
 
 /**
- * Check if we've exceeded the maximum number of payment attempts
+ * Check if user is in payment cooldown period
  * 
- * @returns true if we've exceeded the maximum attempts
+ * @returns True if cooldown is active, false otherwise
  */
-export function hasExceededMaxAttempts(): boolean {
-  return getPaymentAttemptCount() >= 2; // Max 2 attempts
+export function isInPaymentCooldown(): boolean {
+  const cooldownTimestamp = sessionStorage.getItem(PAYMENT_COOLDOWN_KEY);
+  if (!cooldownTimestamp) return false;
+  
+  const cooldownTime = parseInt(cooldownTimestamp, 10);
+  const now = Date.now();
+  
+  // Cooldown period is active for 30 seconds
+  return now - cooldownTime < 30000;
 }
 
 /**
- * Reset the payment attempt counter
+ * Set payment cooldown timestamp
  */
-export function resetPaymentAttempts(): void {
-  sessionStorage.removeItem(PAYMENT_ATTEMPTS_KEY);
+export function setPaymentCooldown(): void {
+  sessionStorage.setItem(PAYMENT_COOLDOWN_KEY, Date.now().toString());
 }
 
 /**
- * Detect if the user is navigating back from a payment screen
+ * Clear all existing session data
+ * Called after successful payment or when resetting the flow
+ */
+export function clearExistingSessionData(): void {
+  sessionStorage.removeItem(SESSION_ID_KEY);
+  sessionStorage.removeItem(REGISTRATION_EMAIL_KEY);
+  sessionStorage.removeItem(PAYMENT_ATTEMPT_COUNT_KEY);
+}
+
+/**
+ * Get diagnostic information about the current session state
+ * Useful for debugging checkout flow issues
  * 
- * @returns true if back navigation is detected
+ * @returns Object with session state data
+ */
+export function getSessionDiagnostics() {
+  return {
+    hasSessionId: !!getCheckoutSessionId(),
+    sessionId: getCheckoutSessionId(),
+    registrationEmail: getRegistrationEmail(),
+    attemptCount: getPaymentAttemptCount(),
+    inCooldown: isInPaymentCooldown(),
+    timestamp: new Date().toISOString()
+  };
+}
+
+/**
+ * Setup listeners for navigation events to clear session data when needed
+ * Helps prevent abandoned checkout sessions
+ */
+export function setupNavigationListeners(): void {
+  // When user navigates back (history.back), clear session
+  window.addEventListener('popstate', () => {
+    // Only clear if there's an active session
+    if (getCheckoutSessionId()) {
+      console.log("Navigation detected, cleaning up session");
+      clearExistingSessionData();
+    }
+  });
+  
+  // When page is refreshed via reload
+  window.addEventListener('beforeunload', () => {
+    // Optionally clear data on page refresh
+    // For now we keep it to support returning from Stripe
+  });
+}
+
+/**
+ * Detect if user navigated back from Stripe
+ * 
+ * @returns True if user appears to have navigated back, false otherwise
  */
 export function detectBackNavigation(): boolean {
-  if (typeof window === "undefined" || !window.performance) return false;
-  
-  const navigation = window.performance.getEntriesByType("navigation");
-  if (navigation.length > 0 && navigation[0].type === "back_forward") {
-    return true;
+  // Check if we have performance navigation data
+  if (window.performance && window.performance.getEntriesByType) {
+    const navigationEntries = window.performance.getEntriesByType('navigation');
+    
+    if (navigationEntries && navigationEntries.length > 0) {
+      const navEntry = navigationEntries[0] as any;
+      
+      // Check for back navigation
+      if (navEntry && navEntry.type === 'back_forward') {
+        return true;
+      }
+    }
   }
   
-  return false;
-}
-
-/**
- * Get diagnostics about the current session state
- * 
- * @returns Object with session diagnostics
- */
-export function getSessionDiagnostics(): Record<string, any> {
-  return {
-    hasCheckoutSession: !!sessionStorage.getItem(CHECKOUT_SESSION_ID_KEY),
-    hasEmail: !!sessionStorage.getItem(REGISTRATION_EMAIL_KEY),
-    paymentAttempts: getPaymentAttemptCount(),
-    lastPaymentTime: sessionStorage.getItem(LAST_PAYMENT_TIMESTAMP) || "none",
-    cooldownActive: isWithinPaymentCooldown(),
-    exceedsMaxAttempts: hasExceededMaxAttempts(),
-    backNavigation: detectBackNavigation()
-  };
+  // Check for session ID as fallback
+  // If we have a session ID but no corresponding state in the current view,
+  // it's likely a back navigation
+  return !!getCheckoutSessionId();
 }

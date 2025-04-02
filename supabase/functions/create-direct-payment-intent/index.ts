@@ -67,7 +67,6 @@ serve(async (req) => {
     const STUDENT_PRICE = 3500; // $35.00
     const PROFESSIONAL_PRICE = 6000; // $60.00
     const GROUP_PRICE_PER_PERSON = 3000; // $30.00 per person
-    const SPECIAL_BONUS_PRICE = 500; // $5.00
     
     let amount = 0;
     let description = "";
@@ -83,11 +82,6 @@ serve(async (req) => {
       case "professional":
         amount = PROFESSIONAL_PRICE;
         description = "RAADE Conference 2025 - Professional Registration";
-        break;
-        
-      case "special-bonus":
-        amount = SPECIAL_BONUS_PRICE;
-        description = "RAADE Conference 2025 - Special Bonus Registration";
         break;
       
       case "student-group":
