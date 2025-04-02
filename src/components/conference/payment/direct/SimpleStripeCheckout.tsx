@@ -1,17 +1,9 @@
 
 import { useState, useEffect } from "react";
-import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { ArrowRight, AlertCircle, HelpCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { 
-  clearExistingSessionData, 
-  getPaymentAttemptCount, 
-  hasExceededMaxAttempts, 
-  isWithinPaymentCooldown, 
-  storeCheckoutSession 
-} from "../services/sessionManagement";
+import { clearExistingSessionData, hasExceededMaxAttempts, isInPaymentCooldown } from "../services/sessionManagement";
 import PaymentErrorHandler from "../PaymentErrorHandler";
 
 interface SimpleStripeCheckoutProps {
@@ -19,7 +11,7 @@ interface SimpleStripeCheckoutProps {
   email: string;
   fullName: string;
   groupSize?: number;
-  groupEmails?: Array<string | { value: string } | null>;
+  groupEmails?: string[];
   organization?: string;
   role?: string;
   specialRequests?: string;
@@ -29,13 +21,13 @@ interface SimpleStripeCheckoutProps {
 }
 
 /**
- * SimpleStripeCheckout Component
+ * SimpleStripeCheckout Component - Streamlined Checkout Experience
  * 
- * A streamlined Stripe checkout that directly processes payments in the page:
- * - Uses Stripe Elements for card input
- * - Processes payment without redirects
- * - Prevents duplicate charges with multiple safeguards
- * - Provides real-time feedback to users
+ * A simplified version of our checkout flow that:
+ * - Directly calls Supabase Edge Function to create checkout session
+ * - Redirects user to Stripe's hosted checkout page
+ * - Handles errors and provides user feedback
+ * - Enforces rate limiting to prevent abuse
  */
 const SimpleStripeCheckout = ({
   ticketType,
@@ -48,323 +40,135 @@ const SimpleStripeCheckout = ({
   specialRequests,
   referralSource,
   onSuccess,
-  onError
+  onError,
 }: SimpleStripeCheckoutProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [paymentAmount, setPaymentAmount] = useState(0);
-  const [cardError, setCardError] = useState<string | null>(null);
-  const [processingError, setProcessingError] = useState<string | null>(null);
-  const [paymentId, setPaymentId] = useState<string | null>(null);
-  const stripe = useStripe();
-  const elements = useElements();
+  const [error, setError] = useState<string | null>(null);
+  const [attemptCount, setAttemptCount] = useState(0);
   const { toast } = useToast();
-  
-  // Track submission to prevent duplicate charges
-  const [hasSubmitted, setHasSubmitted] = useState(false);
-  
-  // Process emails to handle array of objects or strings
-  const processedGroupEmails = Array.isArray(groupEmails) 
-    ? groupEmails
-        .filter(Boolean) // Remove nullish values
-        .map(email => {
-          if (typeof email === 'object' && email !== null && 'value' in email) {
-            return typeof email.value === 'string' ? email.value : '';
-          }
-          return String(email || '');
-        })
-        .filter(email => email.length > 0) // Remove empty strings
-    : [];
 
-  // Fetch payment amount when component mounts
+  // Check for existing session on mount
   useEffect(() => {
-    const calculateAmount = async () => {
-      try {
-        const { data, error } = await supabase.functions.invoke("calculate-payment-amount", {
-          body: { 
-            ticketType,
-            groupSize: groupSize || 0
-          }
-        });
-        
-        if (error) {
-          console.error("Error calculating payment amount:", error);
-          setProcessingError(`Failed to calculate payment amount: ${error.message}`);
-          return;
-        }
-        
-        if (data?.amount) {
-          setPaymentAmount(data.amount);
-        }
-      } catch (err) {
-        console.error("Failed to calculate payment amount:", err);
-        setProcessingError(`Failed to calculate payment amount: ${err.message || "Unknown error"}`);
-      }
-    };
+    // Clear any existing sessions when component mounts
+    clearExistingSessionData();
     
-    // Clear any previous errors when component mounts
-    setProcessingError(null);
-    setCardError(null);
-    setHasSubmitted(false);
-    
-    calculateAmount();
-  }, [ticketType, groupSize]);
-
-  // Handle card element changes to show validation errors
-  const handleCardChange = (event: any) => {
-    setCardError(event.error ? event.error.message : null);
-  };
-  
-  // Store registration data in Supabase
-  const storeRegistrationData = async (paymentIntentId: string) => {
-    try {
-      console.log("Storing registration data in Supabase");
-      
-      const { data, error } = await supabase.functions.invoke("store-registration", {
-        body: {
-          fullName,
-          email,
-          organization,
-          role,
-          ticketType,
-          specialRequests,
-          referralSource,
-          groupSize,
-          groupEmails: processedGroupEmails,
-          paymentComplete: true,
-          paymentIntentId // Store the payment intent ID for reconciliation
-        }
-      });
-      
-      if (error) {
-        console.error("Error storing registration data:", error);
-        // Don't block the success flow, but log the error
-        return false;
-      }
-      
-      console.log("Registration data stored successfully:", data);
-      return true;
-    } catch (err) {
-      console.error("Failed to store registration data:", err);
-      return false;
-    }
-  };
-  
-  // Process the payment when user submits
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Multiple submission prevention
-    if (isLoading || hasSubmitted) {
-      console.log("Payment already in progress or previously submitted");
-      return;
-    }
-    
-    // Check for payment cooldown
-    if (isWithinPaymentCooldown()) {
-      toast({
-        title: "Please wait",
-        description: "To prevent duplicate charges, please wait a few seconds before trying again.",
-        variant: "default",
-      });
-      return;
-    }
-    
-    // Check for too many attempts
+    // Check for rate limiting
     if (hasExceededMaxAttempts()) {
-      toast({
-        title: "Too many payment attempts",
-        description: "For your security, we've limited the number of payment attempts. Please refresh the page to try again.",
-        variant: "destructive",
-      });
+      setError("Too many payment attempts. Please try again later.");
+    }
+  }, []);
+
+  const handleCheckout = async () => {
+    // Reset error state
+    setError(null);
+    
+    // Check for rate limiting
+    if (hasExceededMaxAttempts()) {
+      setError("Too many payment attempts. Please try again later.");
       return;
     }
     
-    if (!stripe || !elements) {
-      toast({
-        title: "Payment system not ready",
-        description: "Please try again in a moment",
-        variant: "destructive",
-      });
+    if (isInPaymentCooldown()) {
+      setError("Please wait a moment before trying again.");
       return;
     }
-    
-    const cardElement = elements.getElement(CardElement);
-    if (!cardElement) {
-      toast({
-        title: "Card input not found",
-        description: "Please refresh the page and try again",
-        variant: "destructive",
-      });
-      return;
-    }
-    
+
+    // Start loading state
     setIsLoading(true);
-    setHasSubmitted(true);
-    setProcessingError(null);
-    
+    setAttemptCount(prev => prev + 1);
+
     try {
-      // Generate a unique payment ID to link attempts and prevent duplicates
-      const uniquePaymentId = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-      setPaymentId(uniquePaymentId);
-      
-      // Step 1: Create payment intent
-      const { data: intentData, error: intentError } = await supabase.functions.invoke("create-direct-payment-intent", {
-        body: {
-          ticketType,
-          email,
-          fullName,
-          groupSize,
-          organization,
-          role,
-          specialRequests,
-          referralSource,
-          groupEmails: processedGroupEmails,
-          idempotencyKey: uniquePaymentId // Pass a unique ID to prevent duplicate charges
-        }
-      });
-      
-      if (intentError || !intentData?.clientSecret) {
-        throw new Error(intentError?.message || "Failed to create payment intent");
-      }
-      
-      // Track this checkout attempt
-      storeCheckoutSession(uniquePaymentId, email);
-      
-      // Step 2: Confirm card payment
-      const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(intentData.clientSecret, {
-        payment_method: {
-          card: cardElement,
-          billing_details: {
-            name: fullName,
-            email: email,
-          },
+      // Generate success and cancel URLs with cache busting
+      const cacheBuster = `_${Date.now()}`;
+      const successUrl = `${window.location.origin}/conference/success?cb=${cacheBuster}`;
+      const cancelUrl = `${window.location.origin}/conference/register?cb=${cacheBuster}`;
+
+      // Prepare the checkout data
+      const checkoutData = {
+        ticketType,
+        email,
+        fullName,
+        groupSize,
+        groupEmails,
+        organization,
+        role,
+        specialRequests,
+        referralSource,
+        successUrl,
+        cancelUrl
+      };
+
+      // Call the Supabase Edge Function to create a checkout session
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout-session`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
         },
+        body: JSON.stringify(checkoutData)
       });
-      
-      if (stripeError) {
-        throw new Error(stripeError.message || "Payment failed");
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create checkout session");
       }
+
+      const data = await response.json();
       
-      // Step 3: Store registration data in Supabase
-      await storeRegistrationData(paymentIntent?.id || uniquePaymentId);
-      
-      // Clear session data now that payment is complete
-      clearExistingSessionData();
-      
-      // Success! Payment is complete
-      toast({
-        title: "Payment successful!",
-        description: "Your registration is complete",
-        variant: "default",
-      });
-      
-      // Call the success callback
-      onSuccess();
-    } catch (error) {
-      console.error("Payment error:", error);
-      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
-      
-      // Store the error in state
-      setProcessingError(errorMessage);
-      
-      // Also notify with toast
-      toast({
-        title: "Payment failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
-      
+      // Redirect to Stripe Checkout
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("No checkout URL received");
+      }
+    } catch (err) {
+      setIsLoading(false);
+      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
+      setError(errorMessage);
       onError(errorMessage);
       
-      // Reset hasSubmitted to allow resubmission after error
-      setHasSubmitted(false);
-    } finally {
-      setIsLoading(false);
+      toast({
+        variant: "destructive",
+        title: "Checkout Error",
+        description: errorMessage,
+      });
     }
-  };
-
-  // Function to handle retry after error
-  const handleRetry = () => {
-    setProcessingError(null);
-    setHasSubmitted(false);
-  };
-
-  // Function to handle reset
-  const handleReset = () => {
-    onError("Payment cancelled - please start over");
   };
 
   return (
-    <div className="w-full">
-      {/* Show any processing errors */}
-      {processingError && (
-        <PaymentErrorHandler 
-          error={processingError}
-          onRetry={handleRetry}
-          onReset={handleReset}
-          attemptCount={getPaymentAttemptCount()}
+    <div className="space-y-4">
+      {error && (
+        <PaymentErrorHandler
+          error={error}
+          onRetry={handleCheckout}
+          onReset={() => {
+            clearExistingSessionData();
+            setError(null);
+          }}
+          attemptCount={attemptCount}
         />
       )}
       
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-2">
-          <h3 className="text-lg font-medium">Payment Information</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {ticketType === "student" ? "Student Ticket" : 
-             ticketType === "professional" ? "Professional Ticket" : 
-             ticketType === "special-bonus" ? "Special Bonus Ticket" :
-             "Group Registration"} - ${paymentAmount > 0 ? (paymentAmount / 100).toFixed(2) : "..."} USD
-          </p>
-          
-          <div className="p-4 border rounded-md bg-white dark:bg-gray-800">
-            <CardElement 
-              options={{
-                style: {
-                  base: {
-                    fontSize: '16px',
-                    color: '#32325d',
-                    fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-                    '::placeholder': {
-                      color: '#aab7c4',
-                    },
-                  },
-                  invalid: {
-                    color: '#fa755a',
-                    iconColor: '#fa755a',
-                  },
-                },
-              }}
-              onChange={handleCardChange}
-              className="py-2"
-            />
-          </div>
-          
-          {cardError && (
-            <p className="text-sm text-red-500">{cardError}</p>
-          )}
-        </div>
-        
-        <Button
-          type="submit"
-          disabled={isLoading || !stripe || !elements || paymentAmount <= 0 || hasSubmitted || hasExceededMaxAttempts()}
-          className="w-full bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora 
-            dark:bg-[#FBB03B] dark:hover:bg-[#FBB03B]/80 dark:text-white
-            transition-colors duration-300"
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Processing Payment...
-            </>
-          ) : (
-            <>Complete Payment</>
-          )}
-        </Button>
-        
-        <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-          Secure payment processed by Stripe. Your card information is never stored on our servers.
-        </p>
-      </form>
+      <Button
+        onClick={handleCheckout}
+        disabled={isLoading || hasExceededMaxAttempts()}
+        className="w-full bg-[#274675] hover:bg-[#274675]/90 text-white font-lora
+          dark:bg-[#274675] dark:hover:bg-[#274675]/80 dark:text-white
+          transition-colors duration-300"
+      >
+        {isLoading ? (
+          <>Processing...</>
+        ) : (
+          <>
+            Proceed to Payment
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </>
+        )}
+      </Button>
+      
+      <div className="flex items-center justify-center text-xs text-gray-500 dark:text-gray-400">
+        <HelpCircle className="h-3 w-3 mr-1" />
+        <span>Secure payment via Stripe</span>
+      </div>
     </div>
   );
 };

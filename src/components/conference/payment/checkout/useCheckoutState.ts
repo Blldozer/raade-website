@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { clearExistingSessionData } from '../services/sessionManagement';
+import { clearExistingSessionData, generateUniqueSessionId } from '../services/sessionManagement';
 
 /**
  * Custom hook to manage checkout session state
@@ -10,13 +10,17 @@ import { clearExistingSessionData } from '../services/sessionManagement';
  * - Managing loading and success states
  * - Tracking checkout completion
  * - Preventing duplicate callbacks
+ * - Managing retry attempts
  * - Cleaning up session data
  */
 export function useCheckoutState() {
   const [isLoading, setIsLoading] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
   const successCalledRef = useRef(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const requestId = useRef<string | null>(generateUniqueSessionId()).current;
   const { toast } = useToast();
 
   // Reset state
@@ -24,7 +28,14 @@ export function useCheckoutState() {
     setIsLoading(false);
     setIsCompleted(false);
     setError(null);
+    setRetryCount(0);
     successCalledRef.current = false;
+    
+    // Abort any pending requests
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort("Reset requested");
+      abortControllerRef.current = null;
+    }
   };
 
   // Handle successful checkout
@@ -39,7 +50,6 @@ export function useCheckoutState() {
     toast({
       title: "Payment successful",
       description: "Your payment has been processed successfully.",
-      variant: "default",
     });
     
     // Clear session data
@@ -66,6 +76,12 @@ export function useCheckoutState() {
       if (!successCalledRef.current && !error) {
         clearExistingSessionData();
       }
+      
+      // Abort any pending requests
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort("Component unmounted");
+        abortControllerRef.current = null;
+      }
     };
   }, [error]);
 
@@ -76,6 +92,10 @@ export function useCheckoutState() {
     setIsCompleted,
     error,
     setError,
+    retryCount,
+    setRetryCount,
+    requestId,
+    abortControllerRef,
     resetCheckoutState,
     handleSuccess,
     handleError,
