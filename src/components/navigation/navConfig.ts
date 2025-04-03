@@ -1,4 +1,3 @@
-
 /**
  * Type definitions for navigation items
  */
@@ -46,6 +45,7 @@ const mainNavItems: NavItem[] = [
     dropdownItems: [
       { name: "Overview", href: "/conference#overview" },
       { name: "Why Attend", href: "/conference#why-attend" },
+      { name: "Speakers", href: "/conference#speakers" },
       { name: "Register Now", href: "/conference/register", highlight: true } // Explicitly point to the registration page
     ]
   }

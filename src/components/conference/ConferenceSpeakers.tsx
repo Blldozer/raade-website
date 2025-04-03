@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 
 const ConferenceSpeakers = () => {
   return (
-    <section id="speakers" className="py-16 px-4 md:px-8 bg-white">
+    <section className="py-16 px-4 md:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12 scroll-animate">
           <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-black">
