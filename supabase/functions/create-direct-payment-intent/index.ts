@@ -9,7 +9,7 @@ import { corsHeaders } from "../_shared/cors.ts";
  * Simple Edge Function that creates a Stripe payment intent for direct payment processing.
  * This simplifies the payment flow by:
  * - Creating a payment intent without sessions or redirects
- * - Using idempotency keys to prevent duplicate charges
+ * - Returning the client secret directly to be used with Stripe.js
  * - Including necessary metadata for tracking and reporting
  */
 serve(async (req) => {
@@ -48,8 +48,7 @@ serve(async (req) => {
       role,
       specialRequests,
       referralSource,
-      groupEmails = [],
-      idempotencyKey // Use this to prevent duplicate charges
+      groupEmails = []
     } = requestData;
     
     // Validate required fields
@@ -115,9 +114,7 @@ serve(async (req) => {
       ? groupEmails.join(", ")
       : "";
     
-    // Create a payment intent with idempotency key to prevent duplicate charges
-    const idempotencyHeader = idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : undefined;
-    
+    // Create a payment intent
     try {
       const paymentIntent = await stripe.paymentIntents.create({
         amount,
@@ -134,13 +131,12 @@ serve(async (req) => {
           role: role || "",
           specialRequests: specialRequests || "",
           referralSource: referralSource || "",
-          groupEmails: formattedGroupEmails,
-          idempotencyKey: idempotencyKey || "" // Store this for tracking
+          groupEmails: formattedGroupEmails
         },
         automatic_payment_methods: {
           enabled: true,
         },
-      }, idempotencyHeader);
+      });
       
       return new Response(
         JSON.stringify({
@@ -148,8 +144,7 @@ serve(async (req) => {
           amount,
           currency: "usd",
           isGroupRegistration,
-          ticketType,
-          paymentIntentId: paymentIntent.id
+          ticketType
         }),
         { 
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -159,23 +154,14 @@ serve(async (req) => {
     } catch (stripeError) {
       console.error("Stripe API error:", stripeError);
       
-      // Provide more specific error messages for common issues
-      let errorMessage = stripeError.message || "Unknown payment processing error";
-      let errorCode = stripeError.code || "unknown_error";
-      
-      if (stripeError.code === 'idempotency_key_in_use') {
-        errorMessage = "This payment is already being processed. Please wait or refresh the page.";
-        errorCode = "duplicate_request";
-      }
-      
       return new Response(
         JSON.stringify({ 
-          error: `Payment processing error: ${errorMessage}`,
-          code: errorCode
+          error: `Payment processing error: ${stripeError.message}`,
+          code: stripeError.code || "unknown_error"
         }),
         { 
           headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: stripeError.statusCode || 500
+          status: 500
         }
       );
     }

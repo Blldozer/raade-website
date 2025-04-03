@@ -1,67 +1,53 @@
 
+import React from "react";
 import { UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RegistrationFormData, REFERRAL_SOURCES } from "../RegistrationFormTypes";
-import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { FormItem } from "@/components/ui/form";
 
 interface ReferralSourceSectionProps {
   register: UseFormRegister<RegistrationFormData>;
-  setValue: UseFormSetValue<RegistrationFormData>;
-  watch: UseFormWatch<RegistrationFormData>;
+  setValue?: UseFormSetValue<RegistrationFormData>;
+  watch?: UseFormWatch<RegistrationFormData>;
 }
 
 /**
  * ReferralSourceSection Component
  * 
- * Displays a dropdown for selecting how the user heard about the conference.
- * Includes an "Other" option that displays an input field for custom responses.
+ * Displays options for how the registrant heard about the conference
+ * This is an optional field to help with marketing analytics
  * 
  * @param register - React Hook Form register function
- * @param setValue - React Hook Form setValue function
- * @param watch - React Hook Form watch function
+ * @param setValue - Optional React Hook Form setValue function for programmatic updates
+ * @param watch - Optional React Hook Form watch function for monitoring values
  */
-const ReferralSourceSection = ({
+const ReferralSourceSection: React.FC<ReferralSourceSectionProps> = ({ 
   register,
   setValue,
   watch
-}: ReferralSourceSectionProps) => {
-  const watchReferralSource = watch("referralSource");
-  const isOther = watchReferralSource === "Other";
-  
+}) => {
   return (
-    <div className="space-y-4">
-      <div>
-        <Label htmlFor="referralSource">How did you hear about us?</Label>
-        <Select
-          onValueChange={(value) => setValue("referralSource", value)}
-          value={watchReferralSource}
-        >
-          <SelectTrigger id="referralSource">
-            <SelectValue placeholder="Select an option" />
-          </SelectTrigger>
-          <SelectContent>
-            {REFERRAL_SOURCES.map((source) => (
-              <SelectItem key={source} value={source}>
-                {source}
-              </SelectItem>
-            ))}
-            <SelectItem value="Other">Other</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+    <div className="space-y-3">
+      <div className="text-sm font-medium">How did you hear about the conference? <span className="text-gray-500 text-xs">(optional)</span></div>
       
-      {isOther && (
-        <div>
-          <Label htmlFor="otherReferralSource">Please specify:</Label>
-          <Input
-            id="otherReferralSource"
-            placeholder="Where did you hear about us?"
-            {...register("referralSource")}
-            className="mt-1"
-          />
-        </div>
-      )}
+      <RadioGroup className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        {REFERRAL_SOURCES.map((source) => (
+          <FormItem key={source} className="flex items-center space-x-2 space-y-0">
+            <RadioGroupItem 
+              value={source} 
+              id={`referral-${source}`} 
+              {...register("referralSource")}
+            />
+            <Label 
+              htmlFor={`referral-${source}`}
+              className="text-sm cursor-pointer"
+            >
+              {source}
+            </Label>
+          </FormItem>
+        ))}
+      </RadioGroup>
     </div>
   );
 };
