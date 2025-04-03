@@ -1,1 +1,29 @@
+
 project_id = "dermbucktbegnbkjzobs"
+
+[calculate-payment-amount]
+verify_jwt = false
+
+[create-checkout-session]
+verify_jwt = false
+
+[create-direct-payment-intent]
+verify_jwt = false
+
+[create-payment-intent]
+verify_jwt = false
+
+[send-conference-confirmation]
+verify_jwt = false
+
+[send-verification-email]
+verify_jwt = false
+
+[store-registration]
+verify_jwt = false
+
+[verify-email-domain]
+verify_jwt = false
+
+[verify-email-token]
+verify_jwt = false

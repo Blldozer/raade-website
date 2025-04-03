@@ -98,18 +98,25 @@ export const useCardPayment = (
       // Process emails for consistency
       const processedGroupEmails = processGroupEmails(paymentData.groupEmails);
       
+      // Generate a unique tracking ID for this payment
+      const paymentTrackingId = `pay-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+      console.log(`Payment process started: ${paymentTrackingId}`);
+      
       // Step 1: Create payment intent
       const { data: intentData, error: intentError } = await supabase.functions.invoke("create-direct-payment-intent", {
         body: {
           ...paymentData,
-          groupEmails: processedGroupEmails
+          groupEmails: processedGroupEmails,
+          trackingId: paymentTrackingId
         }
       });
       
       if (intentError || !intentData?.clientSecret) {
-        console.error("Payment intent creation error:", intentError);
+        console.error(`Payment intent creation error (${paymentTrackingId}):`, intentError);
         throw new Error(intentError?.message || "Failed to create payment intent");
       }
+      
+      console.log(`Payment intent created (${paymentTrackingId})`);
       
       // Step 2: Confirm card payment with proper error handling
       const confirmResult = await stripe.confirmCardPayment(intentData.clientSecret, {
@@ -121,27 +128,32 @@ export const useCardPayment = (
           },
         },
       }).catch(err => {
-        console.error("Stripe confirmation error:", err);
+        console.error(`Stripe confirmation error (${paymentTrackingId}):`, err);
         throw new Error(err.message || "Payment confirmation failed");
       });
       
       if (confirmResult.error) {
-        console.error("Payment confirmation error:", confirmResult.error);
+        console.error(`Payment confirmation error (${paymentTrackingId}):`, confirmResult.error);
         throw new Error(confirmResult.error.message || "Payment failed");
       }
       
       // Verify payment intent status
       if (confirmResult.paymentIntent?.status !== 'succeeded') {
+        console.error(`Payment unsuccessful status (${paymentTrackingId}): ${confirmResult.paymentIntent?.status}`);
         throw new Error(`Payment status: ${confirmResult.paymentIntent?.status || 'unknown'}`);
       }
+      
+      console.log(`Payment confirmed successfully (${paymentTrackingId})`);
       
       // Payment is successful at this point
       // Mark success state first before any other operations
       setSuccessState(true);
       
       // Step 3: Store registration data in Supabase
+      console.log(`Storing registration data (${paymentTrackingId})`);
+      
       try {
-        await storeRegistrationData({
+        const registrationSuccess = await storeRegistrationData({
           fullName: paymentData.fullName,
           email: paymentData.email,
           organization: paymentData.organization,
@@ -153,8 +165,16 @@ export const useCardPayment = (
           groupEmails: processedGroupEmails,
           paymentComplete: true
         });
+        
+        if (registrationSuccess) {
+          console.log(`Registration stored successfully (${paymentTrackingId})`);
+        } else {
+          console.error(`Registration storage failed (${paymentTrackingId})`);
+          // Continue to success flow even if registration storage fails
+          // We'll rely on the payment record instead
+        }
       } catch (registrationError) {
-        console.error("Registration storage error:", registrationError);
+        console.error(`Registration storage error (${paymentTrackingId}):`, registrationError);
         // Continue to success flow even if registration storage fails
       }
       
@@ -165,13 +185,14 @@ export const useCardPayment = (
           description: "Your registration is complete",
         });
       } catch (toastError) {
-        console.error("Toast notification error:", toastError);
+        console.error(`Toast notification error (${paymentTrackingId}):`, toastError);
         // Fallback if toast fails - registration is still successful
       }
       
       // Call the success callback after a small delay to ensure state updates
       setTimeout(() => {
         onSuccess();
+        console.log(`Payment process completed successfully (${paymentTrackingId})`);
       }, 100);
       
     } catch (error) {
