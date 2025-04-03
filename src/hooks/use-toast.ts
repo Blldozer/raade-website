@@ -31,23 +31,32 @@ const toast = (props: ToastProps) => {
   const { title, description, variant, id } = props;
   
   // Create a unique ID for the toast if one isn't provided
-  const toastId = id || `${title}-${Date.now()}`;
+  const toastId = id || `${String(title)}-${Date.now()}`;
   
-  // Map our variant to sonner's equivalent
-  const variantType = variant === "destructive" ? "error" : "default";
+  // Choose the right method based on variant
+  const method = variant === "destructive" ? "error" : "default";
   
-  // Use sonner's toast function with built-in deduplication
-  return sonnerToast[variantType](title as string, {
-    id: toastId, // Use consistent ID for deduplication
-    description,
-    // Add custom styling based on variant
-    style: variantType === "error" 
-      ? { 
-          backgroundColor: "var(--destructive)", 
-          color: "var(--destructive-foreground)" 
-        } 
-      : {}
-  });
+  // Use sonner's toast function with proper fallbacks
+  if (typeof sonnerToast[method] === 'function') {
+    return sonnerToast[method](String(title || ''), {
+      id: toastId,
+      description,
+      // Add custom styling based on variant if needed
+      style: method === "error" 
+        ? { 
+            backgroundColor: "var(--destructive)", 
+            color: "var(--destructive-foreground)" 
+          } 
+        : {}
+    });
+  } else {
+    // Fallback in case the method doesn't exist
+    console.warn(`Toast variant "${method}" not supported, falling back to default`);
+    return sonnerToast(String(title || ''), {
+      id: toastId,
+      description
+    });
+  }
 };
 
 /**

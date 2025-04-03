@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ interface SimpleStripeCheckoutProps {
  * - Provides real-time feedback to users
  * - Reduces complexity with fewer moving parts
  * - Ensures registration data is stored in Supabase
+ * - Now with improved error handling and recovery
  */
 const SimpleStripeCheckout = ({
   ticketType,
@@ -45,6 +47,7 @@ const SimpleStripeCheckout = ({
   const [isLoading, setIsLoading] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState(0);
   const [cardError, setCardError] = useState<string | null>(null);
+  const [successState, setSuccessState] = useState<boolean>(false);
   const stripe = useStripe();
   const elements = useElements();
   const { toast } = useToast();
@@ -133,21 +136,33 @@ const SimpleStripeCheckout = ({
     e.preventDefault();
     
     if (!stripe || !elements) {
-      toast({
-        title: "Payment system not ready",
-        description: "Please try again in a moment",
-        variant: "destructive",
-      });
+      try {
+        toast({
+          title: "Payment system not ready",
+          description: "Please try again in a moment",
+          variant: "destructive",
+        });
+      } catch (toastError) {
+        console.error("Toast error:", toastError);
+        // Fallback alert if toast fails
+        alert("Payment system not ready. Please try again in a moment.");
+      }
       return;
     }
     
     const cardElement = elements.getElement(CardElement);
     if (!cardElement) {
-      toast({
-        title: "Card input not found",
-        description: "Please refresh the page and try again",
-        variant: "destructive",
-      });
+      try {
+        toast({
+          title: "Card input not found",
+          description: "Please refresh the page and try again",
+          variant: "destructive",
+        });
+      } catch (toastError) {
+        console.error("Toast error:", toastError);
+        // Fallback alert if toast fails
+        alert("Card input not found. Please refresh the page and try again.");
+      }
       return;
     }
     
@@ -198,36 +213,83 @@ const SimpleStripeCheckout = ({
         throw new Error(`Payment status: ${confirmResult.paymentIntent?.status || 'unknown'}`);
       }
       
+      // Payment is successful at this point
+      // Mark success state first before any other operations
+      setSuccessState(true);
+      
       // Step 3: Store registration data in Supabase
-      const registrationStored = await storeRegistrationData();
-      if (!registrationStored) {
-        console.warn("Registration data storage failed but payment was successful");
+      try {
+        const registrationStored = await storeRegistrationData();
+        if (!registrationStored) {
+          console.warn("Registration data storage failed but payment was successful");
+          // We still consider this a success since payment completed
+        }
+      } catch (registrationError) {
+        console.error("Registration storage error:", registrationError);
+        // Continue to success flow even if registration storage fails
       }
       
-      // Success! Payment is complete
-      toast({
-        title: "Payment successful!",
-        description: "Your registration is complete",
-        variant: "default",
-      });
+      // Success notification with error handling
+      try {
+        toast({
+          title: "Payment successful!",
+          description: "Your registration is complete",
+        });
+      } catch (toastError) {
+        console.error("Toast notification error:", toastError);
+        // Fallback if toast fails - registration is still successful
+      }
       
-      // Call the success callback
-      onSuccess();
+      // Call the success callback after a small delay to ensure state updates
+      setTimeout(() => {
+        onSuccess();
+      }, 100);
+      
     } catch (error) {
       console.error("Payment error:", error);
       const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
       
-      toast({
-        title: "Payment failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
+      try {
+        toast({
+          title: "Payment failed",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      } catch (toastError) {
+        console.error("Toast error handling payment failure:", toastError);
+        // Fallback alert if toast fails
+        alert(`Payment failed: ${errorMessage}`);
+      }
       
       onError(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
+
+  // If success state is true but we're still showing this component
+  // (likely due to a failure in the success callback), show a fallback success message
+  if (successState) {
+    return (
+      <div className="w-full rounded-lg bg-green-50 dark:bg-green-900/20 p-6 text-center">
+        <div className="flex justify-center mb-4">
+          <div className="h-12 w-12 rounded-full bg-green-100 dark:bg-green-700/30 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+        </div>
+        <h3 className="text-lg font-bold text-green-800 dark:text-green-300 mb-2">Payment Successful!</h3>
+        <p className="text-green-700 dark:text-green-400 mb-4">Your registration is complete.</p>
+        <Button 
+          onClick={onSuccess}
+          className="bg-green-600 hover:bg-green-700 text-white font-semibold"
+        >
+          Continue
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">

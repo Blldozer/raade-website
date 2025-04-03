@@ -2,7 +2,7 @@
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "sonner";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -28,7 +28,18 @@ const AppProviders = ({ children }: { children: React.ReactNode }) => {
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <QueryClientProvider client={queryClient}>
         {children}
-        <Toaster />
+        <Toaster 
+          position="bottom-right"
+          toastOptions={{
+            className: "toast-custom-class",
+            duration: 4000,
+            style: {
+              background: 'var(--background)',
+              color: 'var(--foreground)',
+              border: '1px solid var(--border)',
+            },
+          }}
+        />
       </QueryClientProvider>
     </ThemeProvider>
   );
