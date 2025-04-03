@@ -26,13 +26,16 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
   
-  // Get the request ID for tracking
-  const requestId = crypto.randomUUID();
+  // Get the request ID for tracking or generate a new one
+  const requestData = await req.json().catch(() => ({}));
+  const requestId = requestData.requestId || crypto.randomUUID();
+  
   console.log(`[${requestId}] Processing registration storage request`);
+  console.log(`[${requestId}] Supabase URL environment variable exists: ${!!Deno.env.get("SUPABASE_URL")}`);
+  console.log(`[${requestId}] Service Role Key environment variable exists: ${!!Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`);
   
   try {
     // Parse the request body
-    const requestData = await req.json();
     const { 
       fullName, 
       email, 
@@ -46,19 +49,40 @@ serve(async (req) => {
       paymentComplete = false
     } = requestData;
     
+    console.log(`[${requestId}] Registration data received for ${email}`);
+    
     // Validate required data
     if (!fullName || !email || !ticketType) {
       console.error(`[${requestId}] Missing required registration data`);
       return createResponse({
         success: false,
         message: "Missing required registration data",
+        requestId
       }, 400);
     }
     
     // Initialize Supabase client with admin privileges
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    
+    if (!supabaseUrl || !supabaseServiceRoleKey) {
+      console.error(`[${requestId}] Missing Supabase environment variables`);
+      return createResponse({
+        success: false,
+        message: "Server configuration error: Missing database connection details",
+        environmentCheck: {
+          hasUrl: !!supabaseUrl,
+          hasKey: !!supabaseServiceRoleKey
+        },
+        requestId
+      }, 500);
+    }
+    
+    console.log(`[${requestId}] Initializing Supabase client`);
+    
     const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL") || "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "",
+      supabaseUrl,
+      supabaseServiceRoleKey,
       {
         auth: {
           persistSession: false,
@@ -67,6 +91,7 @@ serve(async (req) => {
     );
     
     // Check if a record with this email already exists
+    console.log(`[${requestId}] Checking for existing registration: ${email}`);
     const { data: existingRegistration, error: checkError } = await supabaseAdmin
       .from('conference_registrations')
       .select('id, email, ticket_type')
@@ -75,7 +100,12 @@ serve(async (req) => {
       
     if (checkError) {
       console.error(`[${requestId}] Error checking for existing registration:`, checkError);
-      throw new Error(`Database error: ${checkError.message}`);
+      return createResponse({
+        success: false,
+        message: `Database error: ${checkError.message}`,
+        details: checkError,
+        requestId
+      }, 500);
     }
     
     // Process based on existing data or create new record
@@ -102,7 +132,12 @@ serve(async (req) => {
         
       if (updateError) {
         console.error(`[${requestId}] Error updating registration:`, updateError);
-        throw new Error(`Database update error: ${updateError.message}`);
+        return createResponse({
+          success: false,
+          message: `Database update error: ${updateError.message}`,
+          details: updateError,
+          requestId
+        }, 500);
       }
       
       result = { 
@@ -136,7 +171,12 @@ serve(async (req) => {
         
       if (insertError) {
         console.error(`[${requestId}] Error inserting registration:`, insertError);
-        throw new Error(`Database insert error: ${insertError.message}`);
+        return createResponse({
+          success: false,
+          message: `Database insert error: ${insertError.message}`,
+          details: insertError,
+          requestId
+        }, 500);
       }
       
       result = { 
@@ -150,6 +190,8 @@ serve(async (req) => {
     // If this is a group registration, handle the group members
     if (ticketType === "student-group" && groupSize && groupEmails && Array.isArray(groupEmails) && groupEmails.length > 0) {
       // Create or update group registration record
+      console.log(`[${requestId}] Processing group registration with ${groupEmails.length} members`);
+      
       const groupData = {
         lead_name: fullName,
         lead_email: email,
@@ -171,10 +213,12 @@ serve(async (req) => {
         
       if (groupCheckError) {
         console.error(`[${requestId}] Error checking for existing group:`, groupCheckError);
+        // Continue processing, don't exit with error
       }
       
       if (existingGroup) {
         // Update existing group
+        console.log(`[${requestId}] Updating existing group for ${email}`);
         const { data: updatedGroup, error: groupUpdateError } = await supabaseAdmin
           .from('group_registrations')
           .update(groupData)
@@ -185,9 +229,11 @@ serve(async (req) => {
           console.error(`[${requestId}] Error updating group:`, groupUpdateError);
         } else {
           groupId = existingGroup.id;
+          console.log(`[${requestId}] Group updated successfully: ${groupId}`);
         }
       } else {
         // Create new group
+        console.log(`[${requestId}] Creating new group for ${email}`);
         const { data: newGroup, error: groupInsertError } = await supabaseAdmin
           .from('group_registrations')
           .insert(groupData)
@@ -197,6 +243,7 @@ serve(async (req) => {
           console.error(`[${requestId}] Error inserting group:`, groupInsertError);
         } else {
           groupId = newGroup?.[0]?.id;
+          console.log(`[${requestId}] Group created successfully: ${groupId}`);
         }
       }
       
@@ -213,11 +260,17 @@ serve(async (req) => {
           })
           .filter(email => email.length > 0 && email.includes('@'));
         
+        console.log(`[${requestId}] Processing ${processedEmails.length} group members`);
+        
         // First delete any existing members to avoid duplicates
-        await supabaseAdmin
+        const { error: deleteError } = await supabaseAdmin
           .from('group_registration_members')
           .delete()
           .eq('group_id', groupId);
+          
+        if (deleteError) {
+          console.error(`[${requestId}] Error deleting existing group members:`, deleteError);
+        }
         
         // Now insert all the new members
         if (processedEmails.length > 0) {
@@ -245,16 +298,22 @@ serve(async (req) => {
     console.log(`[${requestId}] Registration storage successful`);
     return createResponse({
       success: true,
-      ...result
+      ...result,
+      requestId
     });
     
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    
     console.error(`[${requestId}] Unhandled error in store-registration:`, error);
+    console.error(`[${requestId}] Error details:`, { message: errorMessage, stack: errorStack });
     
     return createResponse({
       success: false,
-      message: error.message || "An unexpected error occurred",
-      requestId
+      message: errorMessage || "An unexpected error occurred",
+      requestId,
+      timestamp: new Date().toISOString()
     }, 500);
   }
 });
