@@ -1,15 +1,22 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/hooks/use-toast";
 import { registrationFormSchema, RegistrationFormData, TICKET_TYPES_ENUM } from "../RegistrationFormTypes";
 
+/**
+ * Custom hook to manage the registration form state and logic
+ * Improved with better validation handling and timeout recovery
+ */
 export const useRegistrationForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [registrationData, setRegistrationData] = useState<RegistrationFormData | null>(null);
   const [emailValidated, setEmailValidated] = useState(false);
+  
+  // Track validation timeout to allow manual override
+  const validationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Initialize form with zod schema validation
   const form = useForm<RegistrationFormData>({
@@ -30,17 +37,37 @@ export const useRegistrationForm = () => {
   // Watch ticket type for dependency tracking
   const watchTicketType = form.watch("ticketType");
 
-  const handleEmailValidation = async (result: { isValid: boolean; message?: string }) => {
+  const handleEmailValidation = (result: { isValid: boolean; message?: string }) => {
+    // Clear any pending timeouts
+    if (validationTimeoutRef.current) {
+      clearTimeout(validationTimeoutRef.current);
+      validationTimeoutRef.current = null;
+    }
+
     setEmailValidated(result.isValid);
     return result.isValid;
   };
 
   const handleInitialSubmit = async (data: RegistrationFormData) => {
-    // If email hasn't been validated as valid yet, show a friendly message
-    if (!emailValidated && data.ticketType !== "professional") {
+    // For professional tickets, skip email validation
+    const skipValidation = data.ticketType === TICKET_TYPES_ENUM.PROFESSIONAL;
+    
+    // If email hasn't been validated as valid yet and we're not skipping validation
+    if (!skipValidation && !emailValidated) {
+      // Set a timeout to allow manual override after 5 seconds
+      // This fixes stuck validation by allowing user to proceed regardless
+      validationTimeoutRef.current = setTimeout(() => {
+        setEmailValidated(true);
+        toast({
+          title: "Email validation timeout",
+          description: "We couldn't validate your email domain but you can proceed. Please ensure you've provided the correct email.",
+          variant: "default",
+        });
+      }, 5000);
+      
       toast({
         title: "Email validation required",
-        description: "Please make sure your email address is valid for the selected ticket type.",
+        description: "Please wait while we validate your email address for the selected ticket type.",
         variant: "default",
       });
       return;
@@ -79,6 +106,12 @@ export const useRegistrationForm = () => {
       groupSize: undefined,
     });
     setEmailValidated(false);
+    
+    // Clear any pending timeouts
+    if (validationTimeoutRef.current) {
+      clearTimeout(validationTimeoutRef.current);
+      validationTimeoutRef.current = null;
+    }
   };
 
   return {
