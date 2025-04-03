@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { Button } from "@/components/ui/button";
@@ -171,11 +170,12 @@ const SimpleStripeCheckout = ({
       });
       
       if (intentError || !intentData?.clientSecret) {
+        console.error("Payment intent creation error:", intentError);
         throw new Error(intentError?.message || "Failed to create payment intent");
       }
       
-      // Step 2: Confirm card payment
-      const { error: stripeError } = await stripe.confirmCardPayment(intentData.clientSecret, {
+      // Step 2: Confirm card payment with proper error handling
+      const confirmResult = await stripe.confirmCardPayment(intentData.clientSecret, {
         payment_method: {
           card: cardElement,
           billing_details: {
@@ -183,14 +183,26 @@ const SimpleStripeCheckout = ({
             email: email,
           },
         },
+      }).catch(err => {
+        console.error("Stripe confirmation error:", err);
+        throw new Error(err.message || "Payment confirmation failed");
       });
       
-      if (stripeError) {
-        throw new Error(stripeError.message || "Payment failed");
+      if (confirmResult.error) {
+        console.error("Payment confirmation error:", confirmResult.error);
+        throw new Error(confirmResult.error.message || "Payment failed");
+      }
+      
+      // Verify payment intent status
+      if (confirmResult.paymentIntent?.status !== 'succeeded') {
+        throw new Error(`Payment status: ${confirmResult.paymentIntent?.status || 'unknown'}`);
       }
       
       // Step 3: Store registration data in Supabase
-      await storeRegistrationData();
+      const registrationStored = await storeRegistrationData();
+      if (!registrationStored) {
+        console.warn("Registration data storage failed but payment was successful");
+      }
       
       // Success! Payment is complete
       toast({
