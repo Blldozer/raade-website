@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@contentsquare/tag-sdk": "^1.1.0",
     "@hookform/resolvers": "^3.9.0",
     "@huggingface/transformers": "^3.3.2",
     "@radix-ui/react-accordion": "^1.2.0",

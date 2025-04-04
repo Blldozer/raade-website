@@ -1,9 +1,9 @@
-
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import AppProviders from "./components/app/AppProviders";
 import AppRoutes from "./components/app/AppRoutes";
 import Footer from "./components/Footer";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { initializeContentsquare } from "./config/analytics-config";
 
 /**
  * App Component - Main application container
@@ -14,10 +14,20 @@ import ErrorBoundary from "./components/ErrorBoundary";
  * - Navigation handled within AppRoutes component
  * - Simplified structure for better maintainability
  * - Added explicit error boundary and suspense at app root
+ * - Analytics tracking for UX insights (Contentsquare)
  */
 const App = () => {
   // Add console logging to help debug startup issues
   console.log("App: Rendering");
+  
+  // Initialize analytics tracking
+  useEffect(() => {
+    // Only initialize in production to avoid tracking during development
+    if (process.env.NODE_ENV === 'production') {
+      initializeContentsquare();
+      console.log("Analytics: Contentsquare initialized");
+    }
+  }, []);
   
   return (
     <ErrorBoundary 
