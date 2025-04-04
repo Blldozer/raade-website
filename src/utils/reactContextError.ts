@@ -39,4 +39,12 @@ export function useSafeHook<T>(hookFn: () => T, fallbackValue: T): T {
   }
 }
 
-// NOTE: Window interface declarations are centralized in types/global.d.ts
+// Mark React as initialized on load
+if (typeof window !== 'undefined') {
+  try {
+    window.__REACT_INITIALIZED = true;
+    console.log("React context initialization flag set");
+  } catch (e) {
+    console.error("Failed to set React initialization flag:", e);
+  }
+}
