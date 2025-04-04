@@ -1,4 +1,6 @@
+
 import { useState, useEffect } from "react"
+import { useSafeHook } from "@/utils/reactContextError";
 
 const MOBILE_BREAKPOINT = 768
 
@@ -12,8 +14,15 @@ const MOBILE_BREAKPOINT = 768
  * - Resilient to React context issues with safe initialization
  */
 export function useIsMobile() {
-  // Check if we're in a browser environment
+  // Check if we're in a browser environment and React is available
   const isBrowser = typeof window !== 'undefined';
+  const isReactAvailable = typeof React !== 'undefined' && React !== null && typeof React.useState === 'function';
+  
+  // If React isn't available, return a safe default
+  if (!isReactAvailable) {
+    console.warn("useIsMobile: React hooks unavailable, returning fallback value");
+    return false;
+  }
   
   // Initialize with a safe default for SSR
   const [isMobile, setIsMobile] = useState(false);

@@ -34,7 +34,14 @@ const SectionWrapper = ({
   children 
 }: SectionWrapperProps) => {
   // Verify React is available before trying to use hooks
-  if (typeof React !== 'object' || typeof React.useRef !== 'function') {
+  const isReactAvailable = 
+    typeof window !== 'undefined' && 
+    window.__REACT_INITIALIZED === true && 
+    typeof React === 'object' && 
+    React !== null && 
+    typeof React.useRef === 'function';
+  
+  if (!isReactAvailable) {
     console.error(`SectionWrapper (${id}): React context unavailable`);
     
     // Return minimal fallback that won't crash
