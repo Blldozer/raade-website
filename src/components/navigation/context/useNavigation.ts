@@ -1,5 +1,5 @@
 
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { NavigationContext } from "./NavigationContextDefinition";
 
 /**
@@ -9,8 +9,8 @@ import { NavigationContext } from "./NavigationContextDefinition";
  */
 export const useNavigation = () => {
   // Check if React is properly initialized 
-  if (typeof useContext !== 'function') {
-    console.error("useNavigation: React hooks unavailable");
+  if (typeof React !== 'object' || React === null) {
+    console.error("useNavigation: React not properly initialized");
     // Return fallback
     return getFallbackNavigationContext();
   }
