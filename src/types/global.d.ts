@@ -16,8 +16,10 @@ interface Window {
 
 // Define global namespace for CSS custom properties
 declare namespace CSSStyleDeclaration {
-  // Add CSS variables used in the project
-  'navbar-height': string;
-  'fluid-body': string;
-  'fluid-heading': string;
+  interface Properties {
+    // Add CSS variables used in the project
+    'navbar-height': string;
+    'fluid-body': string;
+    'fluid-heading': string;
+  }
 }
