@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { calculateTimeLeft } from "./timerUtils";
 import { TimeLeft } from "./types";
 
@@ -20,6 +20,18 @@ export type { TimeLeft };
  * @returns Time left object with days, hours, minutes, seconds and expired flag
  */
 export const useCountdown = (targetDate: Date) => {
+  // Check if React is available
+  if (typeof window === 'undefined' || !window.__REACT_INITIALIZED) {
+    console.warn("useCountdown: React not properly initialized");
+    return {
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+      expired: false
+    };
+  }
+  
   const [timeLeft, setTimeLeft] = useState(() => {
     // Initial calculation
     return calculateTimeLeft(targetDate);

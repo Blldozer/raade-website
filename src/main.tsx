@@ -6,10 +6,10 @@ import App from "./App";
 import "./index.css";
 import AppProviders from "@/components/app/AppProviders";
 
-// Set global flag to indicate React is initialized
-// This needs to happen BEFORE any components are rendered
+// Create global React initialization flag
+// This MUST happen BEFORE any components are rendered
 if (typeof window !== 'undefined') {
-  // Create React initialization flag
+  // Set React initialization flag first thing
   window.__REACT_INITIALIZED = true;
   
   // Add React to window for emergency fallback access

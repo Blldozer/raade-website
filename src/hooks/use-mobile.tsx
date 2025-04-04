@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useSafeHook } from "@/utils/reactContextError";
 
 const MOBILE_BREAKPOINT = 768
@@ -16,7 +16,7 @@ const MOBILE_BREAKPOINT = 768
 export function useIsMobile() {
   // Check if we're in a browser environment and React is available
   const isBrowser = typeof window !== 'undefined';
-  const isReactAvailable = typeof React !== 'undefined' && React !== null && typeof React.useState === 'function';
+  const isReactAvailable = isBrowser && window.__REACT_INITIALIZED === true;
   
   // If React isn't available, return a safe default
   if (!isReactAvailable) {

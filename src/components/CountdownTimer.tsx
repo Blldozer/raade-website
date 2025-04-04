@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { useCountdown } from "./countdown/useCountdown";
 import NavTimerDisplay from "./countdown/NavTimerDisplay";
@@ -35,8 +35,7 @@ const CountdownTimer = ({
   textColor
 }: CountdownTimerProps) => {
   // Check if React is properly initialized before using hooks
-  const isReactAvailable = typeof React !== 'undefined' && React !== null && 
-                         typeof React.useState === 'function' && typeof React.useEffect === 'function';
+  const isReactAvailable = typeof window !== 'undefined' && window.__REACT_INITIALIZED === true;
                          
   if (!isReactAvailable) {
     console.warn("CountdownTimer: React hooks unavailable, rendering fallback");
