@@ -20,6 +20,16 @@ const Navigation = ({
   forceDarkMode = false,
   useShortFormLogo = false 
 }: NavigationProps) => {
+  // Check if React is properly initialized before using hooks
+  if (typeof React !== 'object' || React === null) {
+    console.error("Navigation: React not properly initialized");
+    return (
+      <div className="fixed top-0 w-full z-50 bg-gray-100 p-4">
+        <span className="font-bold">RAADE</span>
+      </div>
+    );
+  }
+  
   // Generate a unique ID for this navigation instance
   const uniqueId = `nav-main-${Math.random().toString(36).substring(2, 9)}`;
   
