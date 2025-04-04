@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Linkedin, Twitter, Globe, Clock, Calendar } from "lucide-react";
@@ -7,10 +7,36 @@ import { getSpeakerById } from "../data/speakersData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
+/**
+ * SpeakerProfile Component
+ * 
+ * Displays detailed information about a conference speaker, including:
+ * - Bio and professional background
+ * - Speaking session details
+ * - Areas of expertise
+ * - Social media links
+ * 
+ * Features:
+ * - Responsive layout (stacked on mobile, side-by-side on desktop)
+ * - Animation for smooth page transitions
+ * - Sticky sidebar navigation on desktop
+ * - Easy navigation back to conference page
+ * - Fallback for when speaker is not found
+ */
 const SpeakerProfile = () => {
   const { speakerId } = useParams<{ speakerId: string }>();
   const navigate = useNavigate();
   const speaker = getSpeakerById(speakerId || "");
+
+  useEffect(() => {
+    // Update page title with speaker name
+    if (speaker) {
+      document.title = `${speaker.name} | RAADE Day Forum`;
+    }
+    
+    // Scroll to top when component loads
+    window.scrollTo(0, 0);
+  }, [speaker]);
 
   if (!speaker) {
     return (
@@ -22,6 +48,14 @@ const SpeakerProfile = () => {
       </div>
     );
   }
+
+  // Calculate background initials for the image placeholder
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(part => part.charAt(0))
+      .join('');
+  };
 
   return (
     <div className="bg-white min-h-screen pt-24 pb-16">
@@ -61,6 +95,7 @@ const SpeakerProfile = () => {
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-gray-500 hover:text-[#0077B5] transition-colors"
+                      aria-label={`LinkedIn profile of ${speaker.name}`}
                     >
                       <Linkedin size={20} />
                     </a>
@@ -71,6 +106,7 @@ const SpeakerProfile = () => {
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-gray-500 hover:text-[#1DA1F2] transition-colors"
+                      aria-label={`Twitter profile of ${speaker.name}`}
                     >
                       <Twitter size={20} />
                     </a>
@@ -81,6 +117,7 @@ const SpeakerProfile = () => {
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-gray-500 hover:text-raade-navy transition-colors"
+                      aria-label={`Website of ${speaker.name}`}
                     >
                       <Globe size={20} />
                     </a>
@@ -149,7 +186,7 @@ const SpeakerProfile = () => {
                 <Button 
                   variant="outline" 
                   className="border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-opensans"
-                  onClick={() => navigate("/conference")}
+                  onClick={() => navigate("/conference#speakers")}
                 >
                   View All Speakers
                 </Button>
