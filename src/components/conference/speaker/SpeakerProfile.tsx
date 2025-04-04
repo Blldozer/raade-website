@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -49,14 +48,6 @@ const SpeakerProfile = () => {
     );
   }
 
-  // Calculate background initials for the image placeholder
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(part => part.charAt(0))
-      .join('');
-  };
-
   return (
     <div className="bg-white min-h-screen pt-24 pb-16">
       <div className="max-w-4xl mx-auto px-4">
@@ -77,10 +68,27 @@ const SpeakerProfile = () => {
               transition={{ duration: 0.5 }}
               className="sticky top-24"
             >
-              <div className="aspect-square bg-gray-200 rounded-lg mb-4 relative">
-                <div className="absolute inset-0 flex items-center justify-center bg-raade-navy/10 rounded-lg">
-                  <p className="text-raade-navy font-medium font-montserrat text-xl">{speaker.imagePlaceholder}</p>
-                </div>
+              <div className="aspect-square bg-gray-200 rounded-lg mb-4 relative overflow-hidden">
+                {/* Real speaker image instead of placeholder */}
+                <img 
+                  src={`/Speaker Images/${speaker.id}.jpg`} 
+                  alt={speaker.name}
+                  onError={(e) => {
+                    // Try jpeg if jpg not found
+                    (e.target as HTMLImageElement).src = `/Speaker Images/${speaker.id}.jpeg`;
+                    (e.target as HTMLImageElement).onerror = (e2) => {
+                      // Fallback to placeholder if neither image format works
+                      const target = e.target as HTMLImageElement;
+                      target.src = "";
+                      target.alt = speaker.imagePlaceholder;
+                      target.style.display = "none";
+                      (target.parentElement as HTMLElement).innerHTML = `<div class="absolute inset-0 flex items-center justify-center bg-raade-navy/10 rounded-lg">
+                        <p class="text-raade-navy font-medium font-montserrat text-xl">${speaker.imagePlaceholder}</p>
+                      </div>`;
+                    };
+                  }}
+                  className="w-full h-full object-cover rounded-lg"
+                />
               </div>
               
               <h1 className="text-2xl font-bold text-raade-navy font-montserrat mb-2">{speaker.name}</h1>

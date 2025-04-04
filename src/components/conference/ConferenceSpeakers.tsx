@@ -1,4 +1,3 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { ExternalLink } from "lucide-react";
@@ -15,7 +14,7 @@ import { Link } from "react-router-dom";
  * Features:
  * - Responsive grid layout (1 column on mobile, 3 columns on desktop)
  * - Scroll animations for better user engagement
- * - Profile image placeholders with speaker initials
+ * - Speaker images from the public folder
  * - Links to detailed speaker profiles
  * - Mobile-optimized design with proper spacing and text sizing
  */
@@ -43,11 +42,27 @@ const ConferenceSpeakers = () => {
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
               <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow h-full flex flex-col">
-                <div className="aspect-[4/3] bg-gray-200 relative">
-                  {/* Speaker image placeholder */}
-                  <div className="absolute inset-0 flex items-center justify-center bg-raade-navy/10">
-                    <p className="text-raade-navy font-medium font-lora text-xl">{speaker.imagePlaceholder}</p>
-                  </div>
+                <div className="aspect-[4/3] bg-gray-200 relative overflow-hidden">
+                  {/* Real speaker image instead of placeholder */}
+                  <img 
+                    src={`/Speaker Images/${speaker.id}.jpg`} 
+                    alt={speaker.name}
+                    onError={(e) => {
+                      // Try jpeg if jpg not found
+                      (e.target as HTMLImageElement).src = `/Speaker Images/${speaker.id}.jpeg`;
+                      (e.target as HTMLImageElement).onerror = (e2) => {
+                        // Fallback to placeholder if neither image format works
+                        const target = e.target as HTMLImageElement;
+                        target.src = "";
+                        target.alt = speaker.imagePlaceholder;
+                        target.style.display = "none";
+                        (target.parentElement as HTMLElement).innerHTML = `<div class="absolute inset-0 flex items-center justify-center bg-raade-navy/10">
+                          <p class="text-raade-navy font-medium font-lora text-xl">${speaker.imagePlaceholder}</p>
+                        </div>`;
+                      };
+                    }}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
                   <h3 className="text-xl font-bold text-raade-navy font-simula">{speaker.name}</h3>
