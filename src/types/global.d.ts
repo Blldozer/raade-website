@@ -1,11 +1,10 @@
-
+// Extend the Window interface to include our custom properties
 interface Window {
-  // React initialization flags
-  __REACT_INITIALIZED: boolean;
-  __REACT_CONTEXT_ERROR: boolean;
-  
-  // Global React reference for early access
-  React: typeof import('react');
-  
-  // Any other global variables your app needs
+  __REACT_INITIALIZED?: boolean;
+  __STRIPE_PROMISE?: Promise<any>;
+  __STRIPE_ELEMENTS?: any;
+  __ANALYTICS_INITIALIZED?: boolean;
+  __LOAD_TIME?: number;
 }
+
+// Other global type declarations can go here

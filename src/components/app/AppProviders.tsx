@@ -24,9 +24,10 @@ const queryClient = new QueryClient({
  * - Sonner toast provider for notifications
  */
 const AppProviders = ({ children }: { children: React.ReactNode }) => {
+  // No hooks outside of the component body
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         {children}
         <Toaster 
           position="bottom-right"
@@ -40,8 +41,8 @@ const AppProviders = ({ children }: { children: React.ReactNode }) => {
             },
           }}
         />
-      </QueryClientProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 };
 

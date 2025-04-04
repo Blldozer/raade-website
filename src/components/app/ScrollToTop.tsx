@@ -19,13 +19,6 @@ interface ScrollToTopProps {
 }
 
 const ScrollToTop = ({ children }: ScrollToTopProps) => {
-  // First check if we can safely access React context
-  if (typeof window === 'undefined' || 
-      typeof useEffect !== 'function') {
-    console.warn("ScrollToTop: React context not fully initialized, rendering children without scroll functionality");
-    return <>{children}</>;
-  }
-
   try {
     // Get current location from React Router - will throw if no router context
     const { pathname } = useLocation();

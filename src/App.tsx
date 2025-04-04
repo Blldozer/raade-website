@@ -1,5 +1,5 @@
+
 import { Suspense, useEffect } from "react";
-import AppProviders from "./components/app/AppProviders";
 import AppRoutes from "./components/app/AppRoutes";
 import Footer from "./components/Footer";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -9,7 +9,6 @@ import { initializeContentsquare } from "./config/analytics-config";
  * App Component - Main application container
  * 
  * Features:
- * - All providers consolidated in AppProviders
  * - Routes centralized in AppRoutes
  * - Navigation handled within AppRoutes component
  * - Simplified structure for better maintainability
@@ -53,12 +52,10 @@ const App = () => {
           </div>
         }
       >
-        <AppProviders>
-          <div className="flex flex-col min-h-screen">
-            <AppRoutes />
-            <Footer />
-          </div>
-        </AppProviders>
+        <div className="flex flex-col min-h-screen">
+          <AppRoutes />
+          <Footer />
+        </div>
       </Suspense>
     </ErrorBoundary>
   );
