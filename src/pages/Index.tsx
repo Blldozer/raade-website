@@ -23,7 +23,7 @@ const JoinSection = lazy(() => import(/* webpackChunkName: "join-section" */ "@/
  */
 const Index = () => {
   // Check if React is properly initialized to prevent "Cannot read properties of null" errors
-  if (typeof React !== 'object' || React === null) {
+  if (!window.__REACT_INITIALIZED || typeof React !== 'object' || React === null) {
     console.error("Index: React not properly initialized");
     
     // Render a minimal fallback that won't crash
@@ -38,8 +38,24 @@ const Index = () => {
   }
   
   try {
-    // Use our custom hook to handle page logic with safe fallbacks
-    const { isMobile } = useIndexPage();
+    // Safely use our custom hook with a fallback if it fails
+    let pageState = {
+      isMobile: false,
+      isTablet: false,
+      isLowPerformanceDevice: false,
+      animationsEnabled: false
+    };
+    
+    try {
+      // Only use the hook if we've verified React is available
+      if (typeof React.useState === 'function') {
+        const hookResult = useIndexPage();
+        pageState = hookResult || pageState;
+      }
+    } catch (error) {
+      console.error("Index: Error using page hooks:", error);
+      // Continue with default pageState
+    }
     
     console.log("Index component rendering");
     

@@ -9,12 +9,29 @@
 // Check if React context is properly initialized
 export const isReactContextAvailable = (): boolean => {
   try {
+    // Multiple checks to ensure React is properly initialized
+    if (typeof window === 'undefined') {
+      return false; // Not in browser
+    }
+    
     // Check window initialization flag
-    if (typeof window !== 'undefined' && window.__REACT_INITIALIZED === true) {
+    if (window.__REACT_INITIALIZED === true) {
+      return true;
+    }
+    
+    // Check for React global object
+    const isReactGlobalValid = typeof React === 'object' && 
+                              React !== null && 
+                              typeof React.useState === 'function';
+    
+    if (isReactGlobalValid) {
+      // If React is valid but flag not set, set it now
+      window.__REACT_INITIALIZED = true;
       return true;
     }
     
     // React is not initialized
+    console.warn("React context not properly initialized");
     return false;
   } catch (error) {
     console.error("Failed to check React context availability:", error);
@@ -43,7 +60,7 @@ export function useSafeHook<T>(hookFn: () => T, fallbackValue: T): T {
 if (typeof window !== 'undefined') {
   try {
     window.__REACT_INITIALIZED = true;
-    console.log("React context initialization flag set");
+    console.log("React context initialization flag set in reactContextError.ts");
   } catch (e) {
     console.error("Failed to set React initialization flag:", e);
   }

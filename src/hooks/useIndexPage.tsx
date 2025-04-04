@@ -11,7 +11,7 @@ import { useSafeHook } from '@/utils/reactContextError';
  */
 export const useIndexPage = () => {
   // Check if React is properly initialized
-  if (typeof React === 'undefined' || typeof useEffect !== 'function') {
+  if (typeof React === 'undefined' || typeof React.useEffect !== 'function') {
     console.warn("useIndexPage: React hooks not available");
     return {
       isMobile: false,
@@ -26,28 +26,37 @@ export const useIndexPage = () => {
     const { isMobile, isTablet } = useResponsive();
     
     // Use section transitions hook - with fallback if it fails
-    let sectionTransitions = { isLowPerformanceDevice: false, animationsEnabled: false };
-    try {
-      sectionTransitions = useSectionTransitions();
-    } catch (error) {
-      console.error("useIndexPage: Error in section transitions hook:", error);
+    const sectionTransitions = { isLowPerformanceDevice: false, animationsEnabled: false };
+    
+    // Only try to use the hook if React is available
+    if (typeof React !== 'undefined' && React.useState) {
+      try {
+        const transitionsResult = useSectionTransitions();
+        if (transitionsResult) {
+          Object.assign(sectionTransitions, transitionsResult);
+        }
+      } catch (error) {
+        console.error("useIndexPage: Error in section transitions hook:", error);
+      }
     }
     
-    // Set up the document on first render
-    useEffect(() => {
-      // Set the title
-      document.title = 'RAADE - Rice Association for African Development';
-      
-      // Initialize the body
-      document.body.setAttribute('data-page', 'index');
-      document.body.classList.add('index-page');
-      
-      // Clean up when unmounting
-      return () => {
-        document.body.removeAttribute('data-page');
-        document.body.classList.remove('index-page');
-      };
-    }, []);
+    // Set up the document on first render - only if we're in a browser
+    if (typeof document !== 'undefined') {
+      useEffect(() => {
+        // Set the title
+        document.title = 'RAADE - Rice Association for African Development';
+        
+        // Initialize the body
+        document.body.setAttribute('data-page', 'index');
+        document.body.classList.add('index-page');
+        
+        // Clean up when unmounting
+        return () => {
+          document.body.removeAttribute('data-page');
+          document.body.classList.remove('index-page');
+        };
+      }, []);
+    }
     
     return {
       isMobile,

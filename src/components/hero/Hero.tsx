@@ -26,7 +26,7 @@ if (typeof gsap === 'object' && gsap.registerPlugin) {
  */
 const Hero = () => {
   // CRITICAL: Check if we're running in a valid React context before trying to use hooks
-  if (typeof React !== 'object' || typeof useRef !== 'function') {
+  if (!window.__REACT_INITIALIZED || typeof React !== 'object' || React === null || typeof React.useRef !== 'function') {
     console.error("Hero component: React context unavailable, rendering fallback");
     
     // Return minimal fallback that won't crash
@@ -60,10 +60,14 @@ const Hero = () => {
     
     // Set initial nav background to light because this hero has a dark background
     useEffect(() => {
-      document.body.setAttribute('data-nav-background', 'light');
+      if (typeof document !== 'undefined' && document.body) {
+        document.body.setAttribute('data-nav-background', 'light');
+      }
       
       return () => {
-        document.body.removeAttribute('data-nav-background');
+        if (typeof document !== 'undefined' && document.body) {
+          document.body.removeAttribute('data-nav-background');
+        }
       };
     }, []);
     

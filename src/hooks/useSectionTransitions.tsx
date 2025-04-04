@@ -15,7 +15,7 @@ import { useSafeHook } from '@/utils/reactContextError';
  */
 export const useSectionTransitions = () => {
   // First check if we can safely access React hooks
-  if (typeof React === 'undefined' || typeof useState !== 'function') {
+  if (typeof React === 'undefined' || typeof React.useState !== 'function') {
     console.warn("useSectionTransitions: React hooks not available");
     return { 
       isLowPerformanceDevice: false, 
@@ -63,11 +63,13 @@ export const useSectionTransitions = () => {
         console.log("Low performance device detected:", isLowPerfDevice);
         
         // Set up ScrollTrigger optimization globally
-        if (gsap.utils.checkPrefix("ScrollTrigger")) {
-          ScrollTrigger.config({
-            ignoreMobileResize: true,
-            autoRefreshEvents: "visibilitychange,DOMContentLoaded,load,resize"
-          });
+        if (gsap && gsap.utils && gsap.utils.checkPrefix && gsap.utils.checkPrefix("ScrollTrigger")) {
+          if (ScrollTrigger && ScrollTrigger.config) {
+            ScrollTrigger.config({
+              ignoreMobileResize: true,
+              autoRefreshEvents: "visibilitychange,DOMContentLoaded,load,resize"
+            });
+          }
         }
         
         // Mark as initialized
@@ -80,7 +82,9 @@ export const useSectionTransitions = () => {
       // If device is low performance, apply minimal animations
       if (isLowPerformanceDevice) {
         console.log("Using minimal animations for low-performance device");
-        document.body.classList.add('low-performance-mode');
+        if (typeof document !== 'undefined' && document.body) {
+          document.body.classList.add('low-performance-mode');
+        }
       }
       
       return () => {
@@ -89,19 +93,23 @@ export const useSectionTransitions = () => {
         
         try {
           // Clean up ScrollTrigger instances
-          if (gsap.utils.checkPrefix("ScrollTrigger")) {
-            ScrollTrigger.getAll().forEach(trigger => {
-              try {
-                trigger.kill();
-              } catch (e) {
-                console.error("Error killing ScrollTrigger:", e);
+          if (gsap && gsap.utils && gsap.utils.checkPrefix && gsap.utils.checkPrefix("ScrollTrigger")) {
+            if (ScrollTrigger && ScrollTrigger.getAll) {
+              ScrollTrigger.getAll().forEach(trigger => {
+                try {
+                  trigger.kill();
+                } catch (e) {
+                  console.error("Error killing ScrollTrigger:", e);
+                }
+              });
+              if (ScrollTrigger.clearMatchMedia) {
+                ScrollTrigger.clearMatchMedia();
               }
-            });
-            ScrollTrigger.clearMatchMedia();
+            }
           }
           
           // Remove performance mode class if it was added
-          if (isLowPerformanceDevice) {
+          if (isLowPerformanceDevice && typeof document !== 'undefined' && document.body) {
             document.body.classList.remove('low-performance-mode');
           }
         } catch (error) {
