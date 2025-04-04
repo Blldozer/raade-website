@@ -1,10 +1,23 @@
-// Extend the Window interface to include our custom properties
+
+/**
+ * Global TypeScript declarations
+ * 
+ * This file extends global interfaces with properties used throughout the application.
+ * TypeScript will recognize these declarations across all files.
+ */
+
 interface Window {
+  // Used to track React initialization status to prevent "React not available" errors
   __REACT_INITIALIZED?: boolean;
-  __STRIPE_PROMISE?: Promise<any>;
-  __STRIPE_ELEMENTS?: any;
-  __ANALYTICS_INITIALIZED?: boolean;
-  __LOAD_TIME?: number;
+  
+  // Make React globally available for fallback access
+  React?: typeof import('react');
 }
 
-// Other global type declarations can go here
+// Define global namespace for CSS custom properties
+declare namespace CSSStyleDeclaration {
+  // Add CSS variables used in the project
+  'navbar-height': string;
+  'fluid-body': string;
+  'fluid-heading': string;
+}
