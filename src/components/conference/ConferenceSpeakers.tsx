@@ -1,9 +1,11 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { speakersList } from "./data/speakersData";
 import { Link } from "react-router-dom";
+import { getSpeakerImagePosition, createImageFallback } from "@/utils/speakerImageUtils";
 
 /**
  * ConferenceSpeakers Component
@@ -14,7 +16,7 @@ import { Link } from "react-router-dom";
  * Features:
  * - Responsive grid layout (1 column on mobile, 3 columns on desktop)
  * - Scroll animations for better user engagement
- * - Speaker images from the public folder
+ * - Speaker images with improved face positioning and fallback handling
  * - Links to detailed speaker profiles
  * - Mobile-optimized design with proper spacing and text sizing
  */
@@ -42,8 +44,8 @@ const ConferenceSpeakers = () => {
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
               <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow h-full flex flex-col">
-                <div className="aspect-[4/3] bg-gray-200 relative overflow-hidden">
-                  {/* Real speaker image instead of placeholder */}
+                <div className="aspect-square bg-gray-200 relative overflow-hidden">
+                  {/* Speaker image with improved positioning */}
                   <img 
                     src={`/Speaker Images/${speaker.id}.jpg`} 
                     alt={speaker.name}
@@ -56,13 +58,16 @@ const ConferenceSpeakers = () => {
                         target.src = "";
                         target.alt = speaker.imagePlaceholder;
                         target.style.display = "none";
-                        (target.parentElement as HTMLElement).innerHTML = `<div class="absolute inset-0 flex items-center justify-center bg-raade-navy/10">
-                          <p class="text-raade-navy font-medium font-lora text-xl">${speaker.imagePlaceholder}</p>
-                        </div>`;
+                        (target.parentElement as HTMLElement).innerHTML = createImageFallback(
+                          speaker.id, 
+                          speaker.imagePlaceholder
+                        );
                       };
                     }}
-                    className="w-full h-full object-cover"
+                    className={`w-full h-full ${getSpeakerImagePosition(speaker.id)}`}
                   />
+                  {/* Subtle gradient overlay to ensure text readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
                   <h3 className="text-xl font-bold text-raade-navy font-simula">{speaker.name}</h3>

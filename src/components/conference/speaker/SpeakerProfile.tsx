@@ -5,6 +5,7 @@ import { ArrowLeft, Linkedin, Twitter, Globe, Clock, Calendar } from "lucide-rea
 import { getSpeakerById } from "../data/speakersData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { getSpeakerImagePosition, createImageFallback } from "@/utils/speakerImageUtils";
 
 /**
  * SpeakerProfile Component
@@ -21,6 +22,7 @@ import { Card, CardContent } from "@/components/ui/card";
  * - Sticky sidebar navigation on desktop
  * - Easy navigation back to conference page
  * - Fallback for when speaker is not found
+ * - Improved image positioning for better display of faces
  */
 const SpeakerProfile = () => {
   const { speakerId } = useParams<{ speakerId: string }>();
@@ -69,7 +71,7 @@ const SpeakerProfile = () => {
               className="sticky top-24"
             >
               <div className="aspect-square bg-gray-200 rounded-lg mb-4 relative overflow-hidden">
-                {/* Real speaker image instead of placeholder */}
+                {/* Real speaker image with improved positioning */}
                 <img 
                   src={`/Speaker Images/${speaker.id}.jpg`} 
                   alt={speaker.name}
@@ -82,12 +84,14 @@ const SpeakerProfile = () => {
                       target.src = "";
                       target.alt = speaker.imagePlaceholder;
                       target.style.display = "none";
-                      (target.parentElement as HTMLElement).innerHTML = `<div class="absolute inset-0 flex items-center justify-center bg-raade-navy/10 rounded-lg">
-                        <p class="text-raade-navy font-medium font-montserrat text-xl">${speaker.imagePlaceholder}</p>
-                      </div>`;
+                      (target.parentElement as HTMLElement).innerHTML = createImageFallback(
+                        speaker.id, 
+                        speaker.imagePlaceholder, 
+                        true
+                      );
                     };
                   }}
-                  className="w-full h-full object-cover rounded-lg"
+                  className={`w-full h-full rounded-lg ${getSpeakerImagePosition(speaker.id)}`}
                 />
               </div>
               
