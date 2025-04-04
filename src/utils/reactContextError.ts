@@ -1,4 +1,6 @@
 
+import React from 'react';
+
 /**
  * Utility to detect and handle React context errors
  * 
