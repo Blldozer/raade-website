@@ -49,7 +49,7 @@ export const financeSpeakers: Speaker[] = [
     id: "ismael-fanny",
     name: "Ismaël Fanny",
     role: "Investment Officer",
-    organization: "International Finance Corporation (IFC), World  ",
+    organization: "International Finance Corporation (IFC), World Bank",
     imagePlaceholder: "Ismaël Fanny",
     bio: "Impact investment professional focusing on funding projects in the Caribbean region.",
     fullBio: "Ismaël Fanny is an Investment Officer with the International Finance Corporation (IFC), a member of the World Bank Group. In this role, he focuses on impact investments, particularly in the Caribbean region, where he helps fund projects and startups that have a direct positive impact on local communities. Prior to joining IFC, Ismaël gained experience in private equity and entrepreneurship. He holds an MBA from McGill University. Additionally, Ismaël has been featured in IFC's \"90 Seconds With\" series, where he discusses the organization's adaptability and efforts in delivering for clients in Haiti.",
