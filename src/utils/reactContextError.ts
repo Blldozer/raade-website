@@ -2,68 +2,54 @@
 import React from 'react';
 
 /**
- * Utility to detect and handle React context errors
+ * Helper function to safely use hooks when there might be React context issues
+ * This pattern helps prevent "React hooks can only be called inside of the body of a function component" errors
  * 
- * This allows the app to gracefully handle situations where
- * React hooks are called outside of a React Context environment
+ * @param hookFn The hook function to safely execute
+ * @param fallbackValue The fallback value to return if the hook cannot be executed
+ * @returns The result of the hook or the fallback value
  */
-
-// Check if React context is properly initialized
-export const isReactContextAvailable = (): boolean => {
-  try {
-    // Multiple checks to ensure React is properly initialized
-    if (typeof window === 'undefined') {
-      return false; // Not in browser
-    }
-    
-    // Check window initialization flag
-    if (window.__REACT_INITIALIZED === true) {
-      return true;
-    }
-    
-    // Check for React global object
-    const isReactGlobalValid = typeof React === 'object' && 
-                              React !== null && 
-                              typeof React.useState === 'function';
-    
-    if (isReactGlobalValid) {
-      // If React is valid but flag not set, set it now
-      window.__REACT_INITIALIZED = true;
-      return true;
-    }
-    
-    // React is not initialized
-    console.warn("React context not properly initialized");
-    return false;
-  } catch (error) {
-    console.error("Failed to check React context availability:", error);
-    return false;
-  }
-};
-
-// Safe wrapper for React hooks with a fallback
 export function useSafeHook<T>(hookFn: () => T, fallbackValue: T): T {
-  try {
-    // Only call the hook if React is initialized
-    if (isReactContextAvailable()) {
-      return hookFn();
-    }
-    
-    // Return fallback if React context isn't available
-    console.warn("React context not available, using fallback value");
+  // First check if we're in a valid React context
+  if (typeof React !== 'object' || !React || typeof React.useState !== 'function') {
+    console.warn("React hooks not available in this context");
     return fallbackValue;
+  }
+  
+  try {
+    // Try to execute the hook
+    return hookFn();
   } catch (error) {
-    console.error(`Error in useSafeHook:`, error);
+    console.error("Error executing React hook:", error);
     return fallbackValue;
   }
 }
 
-// Mark React as initialized on load
-if (typeof window !== 'undefined') {
+/**
+ * Safely initializes a React reference only if React is available
+ * 
+ * @param initialValue The initial value for the ref
+ * @returns A React ref object or a plain object with a current property
+ */
+export function safeUseRef<T>(initialValue: T): React.RefObject<T> | { current: T } {
+  if (typeof React !== 'object' || !React || typeof React.useRef !== 'function') {
+    return { current: initialValue };
+  }
+  
   try {
-    window.__REACT_INITIALIZED = true;
-    console.log("React context initialization flag set in reactContextError.ts");
-  } catch (e) {
-    console.error("Failed to set React initialization flag:", e);
+    return React.useRef(initialValue);
+  } catch (error) {
+    console.error("Error creating React ref:", error);
+    return { current: initialValue };
+  }
+}
+
+/**
+ * Global type declaration for window to include the React initialization flag
+ */
+declare global {
+  interface Window {
+    __REACT_INITIALIZED: boolean;
+    React: typeof React;
   }
 }
