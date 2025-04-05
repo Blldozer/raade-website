@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
+import commonjs from '@rollup/plugin-commonjs';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -28,6 +29,11 @@ export default defineConfig(({ mode }) => ({
     // Only use componentTagger in development mode
     mode === 'development' &&
     componentTagger(),
+    // Add commonjs plugin with stricter options to prevent TDZ errors
+    commonjs({
+      transformMixedEsModules: true,
+      strictRequires: true
+    })
   ].filter(Boolean),
   resolve: {
     alias: {
@@ -39,13 +45,19 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    // Improve transpilation to handle temporal dead zone errors
+    target: 'es2018',
     commonjsOptions: {
       transformMixedEsModules: true,
+      // Prevent hoisting which can cause TDZ errors
+      strictRequires: true,
     },
     rollupOptions: {
       // Ensure external dependencies are properly handled
       external: [],
       output: {
+        // Improve code splitting to avoid circular dependencies
+        experimentalMinChunkSize: 10000,
         manualChunks: function manualChunks(id) {
           if (id.includes('node_modules')) {
             // Create a chunk for React
@@ -74,6 +86,8 @@ export default defineConfig(({ mode }) => ({
   optimizeDeps: {
     esbuildOptions: {
       target: 'es2020',
+      // Ensure proper handling of dynamic imports
+      splitting: true,
     },
     include: [
       'react', 
