@@ -41,7 +41,8 @@ const initializeApp = () => {
   
   try {
     // Initialize React when DOM is ready
-    ReactDOM.createRoot(rootElement).render(
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(
       <React.StrictMode>
         <AppProviders>
           <BrowserRouter>

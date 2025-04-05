@@ -1,3 +1,4 @@
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -8,7 +9,18 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    // Add more robust error handling for dependency resolution
+    hmr: {
+      overlay: true,
+    },
+    // Ensure watch options are properly set for file system events
+    watch: {
+      usePolling: false,
+      interval: 100,
+    },
   },
+  // Clear the cache on start
+  cacheDir: '.vite',
   plugins: [
     react({
       jsxImportSource: "react",
@@ -22,6 +34,8 @@ export default defineConfig(({ mode }) => ({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+    // Improve module resolution with preserveSymlinks
+    preserveSymlinks: false,
   },
   // Optimization settings
   build: {
@@ -57,5 +71,16 @@ export default defineConfig(({ mode }) => ({
         }
       }
     }
-  }
+  },
+  // Add optimizeDeps to improve dependency optimization
+  optimizeDeps: {
+    // Force inclusion of React and related packages
+    include: ['react', 'react-dom', 'react-router-dom'],
+    // Ensure proper dependency discovery
+    esbuildOptions: {
+      define: {
+        global: 'globalThis',
+      },
+    },
+  },
 }));
