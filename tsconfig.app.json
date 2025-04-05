@@ -14,23 +14,26 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "jsxImportSource": "react",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
 
     /* Linting */
     "strict": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noImplicitAny": false,
-    "noFallthroughCasesInSwitch": false,
-
+    "noFallthroughCasesInSwitch": true,
+    
+    /* Path aliases */
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "react": ["./node_modules/@types/react"],
-      "react/jsx-runtime": ["./node_modules/react/jsx-runtime"]
+      "react": ["./node_modules/react"],
+      "react/jsx-runtime": ["./node_modules/react/jsx-runtime.js"],
+      "react-dom": ["./node_modules/react-dom"],
+      "react-router-dom": ["./node_modules/react-router-dom"]
     },
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
     "resolveJsonModule": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }

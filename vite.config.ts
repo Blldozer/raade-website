@@ -86,8 +86,6 @@ export default defineConfig(({ mode }) => ({
   optimizeDeps: {
     esbuildOptions: {
       target: 'es2020',
-      // Ensure proper handling of dynamic imports
-      splitting: true,
     },
     include: [
       'react', 
