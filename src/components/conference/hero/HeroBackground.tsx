@@ -1,4 +1,5 @@
-import * as React from "react";
+
+import React, { memo } from "react";
 
 /**
  * HeroBackground Component
@@ -65,4 +66,4 @@ const HeroBackground = () => {
 };
 
 // Use memo to prevent unnecessary re-renders
-export default React.memo(HeroBackground);
+export default memo(HeroBackground);

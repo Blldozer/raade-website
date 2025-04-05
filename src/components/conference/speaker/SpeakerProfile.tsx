@@ -1,4 +1,5 @@
-import * as React from "react";
+
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getSpeakerById } from "../data/speakersData";
 import BackButton from "./components/BackButton";
@@ -22,7 +23,7 @@ const SpeakerProfile = () => {
   const { speakerId } = useParams<{ speakerId: string }>();
   const speaker = getSpeakerById(speakerId || "");
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Update page title with speaker name
     if (speaker) {
       document.title = `${speaker.name} | RAADE Day Forum`;

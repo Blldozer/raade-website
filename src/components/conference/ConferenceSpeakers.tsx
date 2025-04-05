@@ -1,4 +1,5 @@
-import * as React from "react";
+
+import React from "react";
 import { motion } from "framer-motion";
 import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -109,6 +110,7 @@ const ConferenceSpeakers = () => {
             Join us to hear from these distinguished speakers and many more industry experts.
           </p>
           <Button
+            variant="outline"
             className="border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-lora"
             asChild
           >

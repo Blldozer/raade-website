@@ -1,4 +1,5 @@
-import React from './hooks/react-hooks';
+
+import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
@@ -40,8 +41,7 @@ const initializeApp = () => {
   
   try {
     // Initialize React when DOM is ready
-    const root = ReactDOM.createRoot(rootElement);
-    root.render(
+    ReactDOM.createRoot(rootElement).render(
       <React.StrictMode>
         <AppProviders>
           <BrowserRouter>
