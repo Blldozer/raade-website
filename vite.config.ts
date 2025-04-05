@@ -1,4 +1,3 @@
-
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -32,55 +31,58 @@ export default defineConfig(({ mode }) => ({
   ].filter(Boolean),
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      '@': path.resolve(__dirname, 'src'),
     },
-    // Improve module resolution with preserveSymlinks
-    preserveSymlinks: false,
+    dedupe: ['react', 'react-dom'],
+    preserveSymlinks: true
   },
-  // Optimization settings
   build: {
-    // Ensure sourcemaps aren't included in production
-    sourcemap: false,
-    // Minify output for production
-    minify: 'terser',
-    // Ensure no WebSocket HMR connections are attempted in production
-    manifest: true,
-    // Disable HMR explicitly in production build
-    hmr: false,
-    // Improve chunk loading strategy - modified for better React compatibility
+    outDir: 'dist',
+    sourcemap: true,
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
     rollupOptions: {
+      // Ensure external dependencies are properly handled
+      external: [],
       output: {
-        manualChunks: (id) => {
-          // Ensure React and ReactDOM stay in the same chunk
-          if (id.includes('node_modules/react/') || 
-              id.includes('node_modules/react-dom/') || 
-              id.includes('node_modules/scheduler/') ||
-              id.includes('node_modules/use-sync-external-store/')) {
-            return 'react-vendor';
+        manualChunks: function manualChunks(id) {
+          if (id.includes('node_modules')) {
+            // Create a chunk for React
+            if (id.includes('react') || id.includes('react-dom')) {
+              return 'vendor-react';
+            }
+            
+            // Create a chunk for Framer Motion
+            if (id.includes('framer-motion')) {
+              return 'vendor-framer-motion';
+            }
+            
+            // Create a chunk for UI components
+            if (id.includes('@radix-ui') || id.includes('lucide')) {
+              return 'vendor-ui';
+            }
+            
+            // Default vendor chunk
+            return 'vendor';
           }
-          // Keep GSAP libraries together
-          if (id.includes('node_modules/gsap/')) {
-            return 'gsap-vendor';
-          }
-          // Ensure all Radix UI components are bundled together
-          if (id.includes('node_modules/@radix-ui/')) {
-            return 'radix-vendor';
-          }
-          // Let other dependencies be chunked normally
-          return undefined;
         }
       }
     }
   },
   // Add optimizeDeps to improve dependency optimization
   optimizeDeps: {
-    // Force inclusion of React and related packages
-    include: ['react', 'react-dom', 'react-router-dom'],
-    // Ensure proper dependency discovery
     esbuildOptions: {
-      define: {
-        global: 'globalThis',
-      },
+      target: 'es2020',
     },
-  },
+    include: [
+      'react', 
+      'react-dom', 
+      'framer-motion', 
+      '@radix-ui/react-dialog', 
+      'lucide-react',
+      'react-router-dom'
+    ],
+    exclude: []
+  }
 }));
