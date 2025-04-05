@@ -12,8 +12,7 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "noEmit": true,
-    "jsx": "react-jsx",
-    "jsxImportSource": "react",
+    "jsx": "react",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
 
@@ -26,11 +25,7 @@
     /* Path aliases */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "react": ["./node_modules/react"],
-      "react/jsx-runtime": ["./node_modules/react/jsx-runtime.js"],
-      "react-dom": ["./node_modules/react-dom"],
-      "react-router-dom": ["./node_modules/react-router-dom"]
+      "@/*": ["./src/*"]
     },
     "resolveJsonModule": true
   },

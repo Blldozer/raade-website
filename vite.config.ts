@@ -22,10 +22,8 @@ export default defineConfig(({ mode }) => ({
   // Clear the cache on start
   cacheDir: '.vite',
   plugins: [
-    react({
-      jsxImportSource: "react",
-      plugins: [],
-    }),
+    // Standard React SWC plugin without custom JSX options
+    react(),
     // Only use componentTagger in development mode
     mode === 'development' &&
     componentTagger(),
@@ -38,6 +36,8 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
+      // Add explicit alias for react/jsx-runtime to help with resolution
+      'react/jsx-runtime': path.resolve(__dirname, 'node_modules/react/jsx-runtime')
     },
     dedupe: ['react', 'react-dom'],
     preserveSymlinks: true
