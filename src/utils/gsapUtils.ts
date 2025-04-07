@@ -1,3 +1,4 @@
+
 // Import from our centralized registration file instead of directly
 import { gsap, ScrollTrigger, ScrollTriggerType, ScrollToPlugin } from './gsapRegistration';
 
