@@ -1,6 +1,5 @@
 // Import from our centralized registration file instead of directly
-import { gsap, ScrollTrigger, type ScrollTrigger as ScrollTriggerType } from './gsapRegistration';
-import ScrollToPlugin from 'gsap/ScrollToPlugin';
+import { gsap, ScrollTrigger, ScrollTriggerType, ScrollToPlugin } from './gsapRegistration';
 
 /**
  * Centralized GSAP plugin registration
