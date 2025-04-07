@@ -18,7 +18,8 @@ export default defineConfig(({ mode }) => ({
       interval: 100,
     },
     allowedHosts: [
-      'a6ffbe3b-6a03-493f-92bd-706dd74e0403.lovableproject.com'
+      'a6ffbe3b-6a03-493f-92bd-706dd74e0403.lovableproject.com',
+      '2a5eb0cf-41d8-4c91-9d88-664725fbd180-00-383l0rqa7gpnc.picard.replit.dev'
     ]
   },
   cacheDir: '.vite',
