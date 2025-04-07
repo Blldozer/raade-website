@@ -3,7 +3,19 @@
  * This file ensures React types and hooks are properly available throughout the application
  */
 
-import * as React from 'react';
+import React, {
+  type FC,
+  type ReactElement,
+  type ComponentProps,
+  type ComponentPropsWithoutRef,
+  type HTMLAttributes,
+  type FormEvent,
+  type MouseEvent,
+  type ChangeEvent,
+  type Ref,
+  type RefObject,
+  type MutableRefObject
+} from 'react';
 
 // Export everything from React that we need
 export default React;
@@ -37,3 +49,17 @@ export const Component = React.Component;
 
 // Define proper Component class with state, props, and methods
 export abstract class PureComponent<P = {}, S = {}, SS = any> extends React.PureComponent<P, S, SS> {}
+
+export type {
+  FC,
+  ReactElement,
+  ComponentProps,
+  ComponentPropsWithoutRef,
+  HTMLAttributes,
+  FormEvent,
+  MouseEvent,
+  ChangeEvent,
+  Ref,
+  RefObject,
+  MutableRefObject
+};

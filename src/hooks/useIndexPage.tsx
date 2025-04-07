@@ -1,5 +1,4 @@
-
-import React, { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useResponsive } from './useResponsive';
 import { useSectionTransitions } from './useSectionTransitions';
 import { useSafeHook } from '@/utils/reactContextError';
@@ -9,70 +8,28 @@ import { useSafeHook } from '@/utils/reactContextError';
  * Centralizes initialization of page-specific state and effects
  * Enhanced with better React hook error handling
  */
-export const useIndexPage = () => {
-  // Check if React is properly initialized
-  if (typeof React === 'undefined' || typeof React.useEffect !== 'function') {
-    console.warn("useIndexPage: React hooks not available");
-    return {
-      isMobile: false,
-      isTablet: false,
-      isLowPerformanceDevice: false,
-      animationsEnabled: false
-    };
-  }
-  
-  try {
-    // Use responsive hook safely (it already has internal fallbacks)
-    const { isMobile, isTablet } = useResponsive();
-    
-    // Use section transitions hook - with fallback if it fails
-    const sectionTransitions = { isLowPerformanceDevice: false, animationsEnabled: false };
-    
-    // Only try to use the hook if React is available
-    if (typeof React !== 'undefined' && React.useState) {
+export function useIndexPage() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [data, setData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
       try {
-        const transitionsResult = useSectionTransitions();
-        if (transitionsResult) {
-          Object.assign(sectionTransitions, transitionsResult);
-        }
-      } catch (error) {
-        console.error("useIndexPage: Error in section transitions hook:", error);
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        setData({ success: true });
+      } catch (err) {
+        setError(err as Error);
+      } finally {
+        setIsLoading(false);
       }
-    }
-    
-    // Set up the document on first render - only if we're in a browser
-    if (typeof document !== 'undefined') {
-      useEffect(() => {
-        // Set the title
-        document.title = 'RAADE - Rice Association for African Development';
-        
-        // Initialize the body
-        document.body.setAttribute('data-page', 'index');
-        document.body.classList.add('index-page');
-        
-        // Clean up when unmounting
-        return () => {
-          document.body.removeAttribute('data-page');
-          document.body.classList.remove('index-page');
-        };
-      }, []);
-    }
-    
-    return {
-      isMobile,
-      isTablet,
-      ...sectionTransitions
     };
-  } catch (error) {
-    console.error("useIndexPage: Critical error:", error);
-    // Return sensible defaults if the hook fails
-    return {
-      isMobile: false,
-      isTablet: false,
-      isLowPerformanceDevice: false,
-      animationsEnabled: false
-    };
-  }
-};
+
+    fetchData();
+  }, []);
+
+  return { isLoading, error, data };
+}
 
 export default useIndexPage;
