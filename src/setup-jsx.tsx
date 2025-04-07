@@ -1,3 +1,4 @@
+
 /**
  * React JSX Setup
  * 
@@ -5,11 +6,8 @@
  * Import this at the top of any component files that use JSX
  */
 
-// Import React module
-import React from 'react';
-
-// Re-export common hooks for easy access
-export const {
+// Import from our centralized React exports
+import React, {
   useState,
   useEffect,
   useReducer,
@@ -23,7 +21,23 @@ export const {
   useTransition,
   useSyncExternalStore,
   useDebugValue
-} = React;
+} from './react-exports';
 
 // Create a standard way to import React
+export {
+  useState,
+  useEffect,
+  useReducer,
+  useRef,
+  useCallback,
+  useMemo,
+  useContext,
+  useLayoutEffect,
+  useId,
+  useImperativeHandle,
+  useTransition,
+  useSyncExternalStore,
+  useDebugValue
+};
+
 export default React;

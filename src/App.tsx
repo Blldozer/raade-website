@@ -1,5 +1,5 @@
 
-import { Suspense, useEffect } from "react";
+import React, { Suspense, useEffect } from "./react-exports";
 import AppRoutes from "./components/app/AppRoutes";
 import Footer from "./components/Footer";
 import ErrorBoundary from "./components/ErrorBoundary";

@@ -1,4 +1,6 @@
+
 import * as React from "react";
+import { useState, useEffect, useMemo, useCallback } from "../react-exports";
 import { cn } from "@/lib/utils";
 import { useCountdown } from "./countdown/useCountdown";
 import NavTimerDisplay from "./countdown/NavTimerDisplay";
@@ -46,12 +48,12 @@ const CountdownTimer = ({
   }
   
   // Safe router context access with fallback
-  const [locationPath, setLocationPath] = React.useState('/');
-  const [isDarkBackground, setIsDarkBackground] = React.useState(false);
-  const [scrollPastHero, setScrollPastHero] = React.useState(false);
+  const [locationPath, setLocationPath] = useState('/');
+  const [isDarkBackground, setIsDarkBackground] = useState(false);
+  const [scrollPastHero, setScrollPastHero] = useState(false);
   
   // Initialize router-related state safely
-  React.useEffect(() => {
+  useEffect(() => {
     try {
       // Try to access router context safely
       if (typeof window !== 'undefined' && window.location) {
@@ -69,12 +71,12 @@ const CountdownTimer = ({
   
   // Use the provided targetDate or fall back to the default
   // Using a clearer date format with explicit year, month, day
-  const CONFERENCE_DATE = React.useMemo(() => {
+  const CONFERENCE_DATE = useMemo(() => {
     return targetDate ? new Date(targetDate) : new Date('2025-04-11T17:30:00');
   }, [targetDate]);
   
   // Add debugging for the target date (only once on mount)
-  React.useEffect(() => {
+  useEffect(() => {
     console.log("CountdownTimer initialized with:", {
       providedDate: targetDate,
       parsedDate: CONFERENCE_DATE.toISOString(),
@@ -87,7 +89,7 @@ const CountdownTimer = ({
   const timeLeft = useCountdown(CONFERENCE_DATE);
   
   // Memoize the scroll handler to prevent recreation on each render
-  const handleScroll = React.useCallback(() => {
+  const handleScroll = useCallback(() => {
     const isPastHero = isScrollPastHero();
     if (scrollPastHero !== isPastHero) {
       setScrollPastHero(isPastHero);
@@ -95,7 +97,7 @@ const CountdownTimer = ({
   }, [scrollPastHero]);
   
   // Add scroll event listener to detect when user has scrolled past hero section
-  React.useEffect(() => {
+  useEffect(() => {
     // Check if we're in a browser environment
     if (typeof window !== 'undefined') {
       window.addEventListener('scroll', handleScroll);
@@ -108,7 +110,7 @@ const CountdownTimer = ({
   }, [handleScroll]);
   
   // Calculate effective dark background state once per relevant state change
-  const effectiveDarkBackground = React.useMemo(() => {
+  const effectiveDarkBackground = useMemo(() => {
     return scrollPastHero && 
       (locationPath === '/' || 
        locationPath === '/about' || 
@@ -117,7 +119,7 @@ const CountdownTimer = ({
   }, [scrollPastHero, locationPath, isDarkBackground]);
   
   // Create custom color scheme - memoized to prevent unnecessary recalculations
-  const customColorScheme = React.useMemo(() => {
+  const customColorScheme = useMemo(() => {
     const scheme: ColorScheme = {};
     
     if (accentColor) {
@@ -138,14 +140,14 @@ const CountdownTimer = ({
   }, [accentColor, textColor]);
   
   // Calculate final color scheme - memoized to prevent unnecessary recalculations
-  const finalColorScheme = React.useMemo(() => {
+  const finalColorScheme = useMemo(() => {
     return Object.keys(customColorScheme).length > 0 && typeof colorScheme === 'object'
       ? { ...colorScheme, ...customColorScheme }
       : (Object.keys(customColorScheme).length > 0 ? customColorScheme : colorScheme);
   }, [colorScheme, customColorScheme]);
   
   // Calculate final colors - memoized to prevent unnecessary recalculations
-  const colors = React.useMemo(() => {
+  const colors = useMemo(() => {
     const baseColors = getColorClasses(finalColorScheme, effectiveDarkBackground);
     
     // Ensure background is transparent

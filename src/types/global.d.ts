@@ -6,12 +6,35 @@
  * TypeScript will recognize these declarations across all files.
  */
 
-interface Window {
-  // Used to track React initialization status to prevent "React not available" errors
-  __REACT_INITIALIZED?: boolean;
+// Add global JSX namespace
+import * as React from 'react';
+
+declare global {
+  namespace JSX {
+    interface Element extends React.ReactElement<any, any> {}
+    interface ElementClass extends React.Component<any> {
+      render(): React.ReactNode;
+    }
+    interface ElementAttributesProperty {
+      props: {};
+    }
+    interface ElementChildrenAttribute {
+      children: {};
+    }
+    
+    // Adds intrinsic elements like 'div', 'span', etc.
+    interface IntrinsicElements {
+      [elemName: string]: any;
+    }
+  }
   
-  // Make React globally available for fallback access
-  React?: typeof import('react');
+  // Used to track React initialization status to prevent "React not available" errors
+  interface Window {
+    __REACT_INITIALIZED?: boolean;
+    
+    // Make React globally available for fallback access
+    React?: typeof import('react');
+  }
 }
 
 // Define global namespace for CSS custom properties
@@ -23,3 +46,5 @@ declare namespace CSSStyleDeclaration {
     'fluid-heading': string;
   }
 }
+
+export {};
