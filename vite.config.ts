@@ -1,15 +1,12 @@
-
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
+import react from "@vitejs/plugin-react";
 import path from "path";
 
-export default defineConfig(({ mode }) => ({
-  plugins: [
-    react()
-  ],
+export default defineConfig({
+  plugins: [react()],
   server: {
-    host: "::",
-    port: 8080,
+    host: true,
+    port: 3000,
     hmr: {
       overlay: true,
     },
@@ -33,23 +30,13 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: "dist",
-    sourcemap: mode === "development",
-    minify: mode === "production",
+    sourcemap: true,
+    minify: 'terser',
     rollupOptions: {
       output: {
-        manualChunks: function(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom')) {
-              return 'react-vendor';
-            }
-            if (id.includes('framer-motion')) {
-              return 'vendor-framer-motion';
-            }
-            if (id.includes('@radix-ui') || id.includes('lucide')) {
-              return 'vendor-ui';
-            }
-            return 'vendor';
-          }
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          'react-router': ['react-router-dom']
         }
       }
     }
@@ -60,10 +47,12 @@ export default defineConfig(({ mode }) => ({
       'react-dom',
       'framer-motion',
       'lucide-react',
-      'lovable-tagger'
+      'lovable-tagger',
+      '@types/react',
+      '@types/react-dom'
     ],
     exclude: [
       '@contentsquare/tag-sdk'
     ]
   }
-}))
+})

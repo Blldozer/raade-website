@@ -4,6 +4,7 @@
  */
 
 import * as React from 'react';
+import React from 'react';
 
 declare global {
   // Declare the global JSX namespace to ensure JSX is properly recognized
@@ -29,6 +30,54 @@ declare global {
 // Re-export React to make it available as a global
 declare module 'react' {
   export = React;
+  export as namespace React;
+
+  namespace React {
+    type ReactNode = React.ReactElement | string | number | boolean | null | undefined | ReactNodeArray;
+    interface ReactNodeArray extends Array<ReactNode> {}
+    
+    interface ReactElement<P = any, T extends string | JSXElementConstructor<any> = string | JSXElementConstructor<any>> {
+      type: T;
+      props: P;
+      key: Key | null;
+    }
+
+    type JSXElementConstructor<P> = ((props: P) => ReactElement<any, any> | null) | (new (props: P) => Component<any, any>);
+    
+    type Key = string | number;
+
+    interface RefObject<T> {
+      readonly current: T | null;
+    }
+
+    interface MutableRefObject<T> {
+      current: T;
+    }
+
+    function useRef<T = undefined>(): MutableRefObject<T | undefined>;
+    function useRef<T>(initialValue: T): MutableRefObject<T>;
+    function useRef<T = undefined>(): RefObject<T>;
+
+    type EffectCallback = () => (void | (() => void | undefined));
+    type DependencyList = ReadonlyArray<any>;
+
+    function useEffect(effect: EffectCallback, deps?: DependencyList): void;
+
+    // Define Component class with proper typing for props and state
+    class Component<P = {}, S = {}> {
+      constructor(props: P);
+      readonly props: P;
+      state: S;
+      setState<K extends keyof S>(
+        state: ((prevState: Readonly<S>, props: Readonly<P>) => (Pick<S, K> | S | null)) | (Pick<S, K> | S | null),
+        callback?: () => void
+      ): void;
+      forceUpdate(callback?: () => void): void;
+      render(): ReactNode;
+      readonly context: any;
+      readonly refs: { [key: string]: any };
+    }
+  }
 }
 
 // Add declarations for framer-motion
@@ -69,4 +118,53 @@ declare module 'lucide-react' {
   interface IconComponent extends React.FC<any> {}
   const Icon: { [key: string]: IconComponent };
   export default Icon;
+}
+
+declare module 'react' {
+  export interface ReactNode {}
+  export interface ErrorInfo {
+    componentStack: string;
+  }
+  
+  export function useRef<T = any>(initialValue?: T): React.MutableRefObject<T>;
+  export function useEffect(effect: React.EffectCallback, deps?: React.DependencyList): void;
+  export function useState<T>(initialState: T | (() => T)): [T, React.Dispatch<React.SetStateAction<T>>];
+  
+  export interface DetailedHTMLProps<E extends HTMLAttributes<T>, T> extends HTMLAttributes<T> {
+    ref?: LegacyRef<T>;
+  }
+  
+  export interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {
+    className?: string;
+    id?: string;
+    style?: React.CSSProperties;
+  }
+  
+  export interface DOMAttributes<T> {
+    children?: ReactNode;
+    dangerouslySetInnerHTML?: {
+      __html: string;
+    };
+  }
+  
+  export interface AriaAttributes {
+    'aria-label'?: string;
+    'aria-labelledby'?: string;
+    'aria-describedby'?: string;
+  }
+  
+  export type LegacyRef<T> = string | ((instance: T | null) => void) | React.RefObject<T> | null;
+  
+  export interface RefObject<T> {
+    readonly current: T | null;
+  }
+  
+  export interface MutableRefObject<T> {
+    current: T;
+  }
+  
+  export type EffectCallback = () => void | (() => void);
+  export type DependencyList = ReadonlyArray<any>;
+  export type Dispatch<A> = (value: A) => void;
+  export type SetStateAction<S> = S | ((prevState: S) => S);
 }
