@@ -1,4 +1,4 @@
-import React from '../../hooks/react-hooks';
+import React from '../../setup-jsx';
 
 /**
  * Fallback component for when pages are loading

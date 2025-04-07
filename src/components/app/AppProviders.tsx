@@ -1,4 +1,5 @@
-import React, { useEffect } from '../../hooks/react-hooks';
+import * as React from 'react';
+import { useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";

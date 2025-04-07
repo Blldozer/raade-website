@@ -1,4 +1,4 @@
- import React from '../../hooks/react-hooks';
+ import React from '../../setup-jsx';
 import { motion } from "framer-motion";
 import { ArrowLeftRight } from "lucide-react";
 
