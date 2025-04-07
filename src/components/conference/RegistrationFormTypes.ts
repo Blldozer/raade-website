@@ -21,6 +21,14 @@ export const REFERRAL_SOURCES = [
   "RAADE Outreach Team"
 ] as const;
 
+// Define the sale end date (April 8, 2025, 4:00 PM CST)
+export const SALE_END_DATE = new Date('2025-04-08T16:00:00-05:00');
+
+// Function to check if the sale is still active
+export const isSaleActive = (): boolean => {
+  return new Date() < SALE_END_DATE;
+};
+
 // Create a Zod schema for the registration form
 export const registrationFormSchema = z.object({
   fullName: z.string().min(2, "Full name is required"),
@@ -61,19 +69,22 @@ export const defaultFormValues: RegistrationFormData = {
 
 /**
  * Get the ticket price based on ticket type
+ * Automatically accounts for whether the sale is active
  * @param ticketType The type of ticket
  * @returns The price of the ticket in USD
  */
 export const getTicketPrice = (ticketType: typeof TICKET_TYPES[number]): number => {
+  const saleActive = isSaleActive();
+  
   switch (ticketType) {
     case TICKET_TYPES_ENUM.STUDENT:
-      return 25; // SALE price (was $35)
+      return saleActive ? 25 : 35; // Sale: $25, Regular: $35
     case TICKET_TYPES_ENUM.PROFESSIONAL:
-      return 50; // SALE price (was $60)
+      return saleActive ? 50 : 60; // Sale: $50, Regular: $60
     case TICKET_TYPES_ENUM.STUDENT_GROUP:
-      return 20; // SALE price (was $30) per person
+      return saleActive ? 20 : 30; // Sale: $20, Regular: $30 per person
     default:
-      return 25; // Default to student price
+      return saleActive ? 25 : 35; // Default to student price
   }
 };
 

@@ -7,6 +7,7 @@ import ConferenceRegistrationForm from "@/components/conference/ConferenceRegist
 import StripeStatusCheck from "@/components/conference/payment/StripeStatusCheck";
 import { useNavBackground } from "@/hooks/useNavBackground";
 import SaleCountdown from "@/components/conference/SaleCountdown";
+import { isSaleActive } from "@/components/conference/RegistrationFormTypes";
 
 /**
  * Conference Registration Page
@@ -18,10 +19,11 @@ import SaleCountdown from "@/components/conference/SaleCountdown";
  * - Uses a dark navbar for proper contrast
  * - Smooth animations for an engaging UI
  * - Enhanced session cleanup to prevent payment issues
- * - Added sale countdown timer for 24-hour sale
+ * - Added sale countdown timer that only shows during active sales
  */
 const ConferenceRegistration = () => {
   const navigate = useNavigate();
+  const saleActive = isSaleActive();
   
   // Initialize navigation background control
   // Setting to 'dark' to ensure proper navbar styling on this page
@@ -72,13 +74,21 @@ const ConferenceRegistration = () => {
             transition={{ duration: 0.6 }}
             className="dark:text-white"
           >
-            <div className="mb-4">
-              <SaleCountdown />
-            </div>
+            {saleActive && (
+              <div className="mb-4">
+                <SaleCountdown />
+              </div>
+            )}
             
             <h1 className="text-4xl font-bold text-raade-navy mb-4 font-simula dark:text-white">Conference Registration</h1>
-            <p className="text-lg text-gray-600 mb-2 font-lora dark:text-gray-300">Register for the RAADE African Development Forum 2025, taking place on April 11-12.</p>
-            <p className="text-red-600 font-medium mb-6">Special 24-hour sale pricing available now!</p>
+            <p className="text-lg text-gray-600 mb-2 font-lora dark:text-gray-300">
+              Register for the RAADE African Development Forum 2025, taking place on April 11-12.
+            </p>
+            {saleActive ? (
+              <p className="text-red-600 font-medium mb-6">Special pricing available now - limited time offer!</p>
+            ) : (
+              <p className="text-blue-600 font-medium mb-6">Early registration is recommended as space is limited.</p>
+            )}
             
             {/* Add the Stripe status check component */}
             <div className="mb-6">
