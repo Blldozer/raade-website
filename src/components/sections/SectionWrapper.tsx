@@ -23,7 +23,8 @@ interface SectionWrapperProps {
   background: "light" | "dark";
   backgroundColor?: string;
   className?: string;
-  children: any;
+  children: React.ReactNode;
+  class?: string; // Add class property type
 }
 
 const SectionWrapper: React.FC<SectionWrapperProps> = ({ 
