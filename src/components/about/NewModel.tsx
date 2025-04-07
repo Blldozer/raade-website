@@ -1,4 +1,5 @@
- import React from '../../setup-jsx';
+
+import React from 'react';
 import { motion } from "framer-motion";
 import { ArrowLeftRight } from "lucide-react";
 
@@ -12,7 +13,7 @@ const NewModel = () => {
       <div className="max-w-[1600px] mx-auto px-6 md:px-12">
         {/* Title Section with 39/61 split */}
         <div className="flex flex-col lg:flex-row">
-        <motion.div
+          <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -39,19 +40,19 @@ const NewModel = () => {
             <div className="space-y-8 text-xl leading-relaxed font-lora text-gray-700 max-w-[800px]">
               <p>
                 We are pioneering a fundamentally different approach to African development. 
-                One where solutions aren’t imported, but co-created. Where innovation isn’t 
-                imposed, but inspired. Where students don’t just study development—they drive it.
+                One where solutions aren't imported, but co-created. Where innovation isn't 
+                imposed, but inspired. Where students don't just study development—they drive it.
               </p>
               <p>
                 Our model bridges two worlds: the innovative spirit of Rice University and 
                 the transformative potential of African organizations. Through this unique 
-                partnership, we’re creating solutions that are both groundbreaking and 
+                partnership, we're creating solutions that are both groundbreaking and 
                 grounded in local realities.
               </p>
               <p>
-                This isn’t just another development initiative. It’s a movement that brings 
+                This isn't just another development initiative. It's a movement that brings 
                 together student innovators and African change-makers to solve real challenges, 
-                create lasting impact, and reimagine what’s possible.
+                create lasting impact, and reimagine what's possible.
               </p>
             </div>
             {/* Interactive Diagram */}
@@ -84,7 +85,7 @@ const NewModel = () => {
             </motion.div>
           </motion.div>
         </div>
-        </div>
+      </div>
     </section>
   );
 };

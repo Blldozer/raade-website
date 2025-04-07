@@ -1,8 +1,8 @@
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   plugins: [
     react()
@@ -10,17 +10,18 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
-    // Add more robust error handling for dependency resolution
     hmr: {
       overlay: true,
     },
-    // Ensure watch options are properly set for file system events
     watch: {
       usePolling: false,
       interval: 100,
     },
+    allowedHosts: [
+      'a6ffbe3b-6a03-493f-92bd-706dd74e0403.lovableproject.com',
+      '2a5eb0cf-41d8-4c91-9d88-664725fbd180-00-383l0rqa7gpnc.picard.replit.dev'
+    ]
   },
-  // Clear the cache on start
   cacheDir: '.vite',
   resolve: {
     alias: {
@@ -32,33 +33,27 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: "dist",
-    // Enable source maps for debugging
     sourcemap: mode === "development",
-    // Enable minification for production
     minify: mode === "production",
-    // Split chunks for better caching
     rollupOptions: {
       output: {
         manualChunks: function(id) {
           if (id.includes('node_modules')) {
-            // Create a chunk for React and ReactDOM
             if (id.includes('react') || id.includes('react-dom')) {
               return 'react-vendor';
             }
-            // Create a chunk for UI libraries
-            if (id.includes('@radix-ui') || 
-                id.includes('framer-motion') || 
-                id.includes('lucide-react')) {
-              return 'ui-vendor';
+            if (id.includes('framer-motion')) {
+              return 'vendor-framer-motion';
             }
-            // All other dependencies
+            if (id.includes('@radix-ui') || id.includes('lucide')) {
+              return 'vendor-ui';
+            }
             return 'vendor';
           }
         }
       }
     }
   },
-  // Add optimizeDeps to improve dependency optimization
   optimizeDeps: {
     include: [
       'react', 
@@ -68,7 +63,6 @@ export default defineConfig(({ mode }) => ({
       'lovable-tagger'
     ],
     exclude: [
-      // Exclude problematic packages
       '@contentsquare/tag-sdk'
     ]
   }

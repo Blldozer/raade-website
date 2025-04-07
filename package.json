@@ -83,6 +83,7 @@
     "terser": "^5.39.0",
     "three": "^0.173.0",
     "vaul": "^0.9.3",
+    "vite_react_shadcn_ts": "file:",
     "zod": "^3.23.8"
   },
   "devDependencies": {
