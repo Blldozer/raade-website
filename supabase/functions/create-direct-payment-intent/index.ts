@@ -2,6 +2,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { corsHeaders } from "../_shared/cors.ts";
+import { calculatePaymentAmount } from "../_shared/pricing.ts";
 
 /**
  * Create Direct Payment Intent Function
@@ -11,6 +12,7 @@ import { corsHeaders } from "../_shared/cors.ts";
  * - Creating a payment intent without sessions or redirects
  * - Returning the client secret directly to be used with Stripe.js
  * - Including necessary metadata for tracking and reporting
+ * - Now properly respects the sale pricing period (April 7-8, 2025)
  */
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -62,52 +64,13 @@ serve(async (req) => {
       );
     }
     
-    // Define base prices in cents (duplicated for safety)
-    const STUDENT_PRICE = 3500; // $35.00
-    const PROFESSIONAL_PRICE = 6000; // $60.00
-    const GROUP_PRICE_PER_PERSON = 3000; // $30.00 per person
+    // Use the shared pricing calculation function to get the correct amount
+    // This ensures pricing consistency between all payment methods
+    const paymentInfo = calculatePaymentAmount(ticketType, groupSize);
     
-    let amount = 0;
-    let description = "";
-    let isGroupRegistration = false;
-    
-    // Calculate amount based on ticket type
-    switch (ticketType) {
-      case "student":
-        amount = STUDENT_PRICE;
-        description = "RAADE Conference 2025 - Student Registration";
-        break;
-      
-      case "professional":
-        amount = PROFESSIONAL_PRICE;
-        description = "RAADE Conference 2025 - Professional Registration";
-        break;
-      
-      case "student-group":
-        if (!groupSize || groupSize < 5) {
-          return new Response(
-            JSON.stringify({ error: "Group registrations require at least 5 participants" }),
-            { 
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-              status: 400
-            }
-          );
-        }
-        
-        amount = GROUP_PRICE_PER_PERSON * groupSize;
-        description = `RAADE Conference 2025 - Student Group Registration (${groupSize} attendees)`;
-        isGroupRegistration = true;
-        break;
-      
-      default:
-        return new Response(
-          JSON.stringify({ error: `Invalid ticket type: ${ticketType}` }),
-          { 
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-            status: 400
-          }
-        );
-    }
+    const amount = paymentInfo.amount;
+    const description = paymentInfo.description;
+    const isGroupRegistration = paymentInfo.isGroupRegistration;
     
     // Format group emails for metadata storage
     const formattedGroupEmails = Array.isArray(groupEmails) 

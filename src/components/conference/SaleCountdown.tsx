@@ -1,59 +1,40 @@
 
 import { useState, useEffect } from 'react';
 import { Clock } from 'lucide-react';
+import { useCountdown } from '../countdown/useCountdown';
+import { formatTimeUnit } from '../countdown/timerUtils';
 
 /**
  * SaleCountdown Component
  * 
- * Displays a 24-hour countdown timer for the conference ticket sale
- * Can be placed on various pages to remind users of the limited-time offer
+ * Displays a countdown timer for the conference ticket sale with a fixed end date
+ * Sale period: April 7, 2025 4:00 PM CST to April 8, 2025 4:00 PM CST
+ * Features:
+ * - Uses a fixed end date/time that doesn't reset on refresh
+ * - Shows remaining time in hours, minutes, and seconds
+ * - Displays "Sale ended" message when the countdown expires
+ * - Matches RAADE branding with red accents
  */
 const SaleCountdown = () => {
-  const [timeLeft, setTimeLeft] = useState({
-    hours: 24,
-    minutes: 0,
-    seconds: 0
-  });
+  // Fixed end date: April 8, 2025, 4:00 PM CST
+  const SALE_END_DATE = new Date('2025-04-08T16:00:00-05:00'); // CST is UTC-5
 
-  // Set up the countdown timer
-  useEffect(() => {
-    // For a real implementation, you'd set an end date/time
-    // For demo purposes we'll just start a 24-hour countdown
-    const endTime = new Date();
-    endTime.setHours(endTime.getHours() + 24);
-    
-    const updateTimer = () => {
-      const now = new Date();
-      const difference = endTime.getTime() - now.getTime();
-      
-      if (difference <= 0) {
-        // Sale has ended
-        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
-        clearInterval(timer);
-        return;
-      }
-      
-      const hours = Math.floor(difference / (1000 * 60 * 60));
-      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-      
-      setTimeLeft({ hours, minutes, seconds });
-    };
-    
-    // Initial update
-    updateTimer();
-    
-    // Set interval to update every second
-    const timer = setInterval(updateTimer, 1000);
-    
-    // Clean up interval on unmount
-    return () => clearInterval(timer);
-  }, []);
+  // Use our existing countdown hook to get the time remaining
+  const timeLeft = useCountdown(SALE_END_DATE);
   
-  // Format time with leading zeros
-  const formatTime = (value: number) => {
-    return value.toString().padStart(2, '0');
-  };
+  // Show different states based on whether the sale has ended
+  if (timeLeft.expired) {
+    return (
+      <div className="bg-gray-100 border border-gray-200 rounded-lg p-3 flex items-center justify-center">
+        <div className="text-gray-700 font-bold">
+          Sale has ended. Regular pricing now in effect.
+        </div>
+      </div>
+    );
+  }
+  
+  // Format the total remaining time in hours (including days converted to hours)
+  const totalHours = timeLeft.days * 24 + timeLeft.hours;
   
   return (
     <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-center justify-center">
@@ -61,8 +42,9 @@ const SaleCountdown = () => {
       <div className="text-red-700 font-bold">
         Sale ends in: 
         <span className="ml-1 font-mono">
-          {formatTime(timeLeft.hours)}:{formatTime(timeLeft.minutes)}:{formatTime(timeLeft.seconds)}
+          {totalHours > 9 ? totalHours : `0${totalHours}`}:{formatTimeUnit(timeLeft.minutes)}:{formatTimeUnit(timeLeft.seconds)}
         </span>
+        <span className="ml-2 text-xs text-red-600">(April 8, 2025, 4:00 PM CST)</span>
       </div>
     </div>
   );
