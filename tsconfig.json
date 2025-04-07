@@ -3,7 +3,7 @@
     "target": "ES2022",
     "module": "ESNext",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "jsx": "react-jsx",
+    "jsx": "react",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
@@ -22,12 +22,9 @@
     "sourceMap": true,
     "isolatedModules": true,
     "forceConsistentCasingInFileNames": true,
-    "declaration": true,
-    "emitDeclarationOnly": false,
-    "composite": true,
-    "useDefineForClassFields": true
+    "outDir": "./dist",
+    "noEmit": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts", "src/types/*.d.ts", "vite.config.ts"],
-  "exclude": ["node_modules", "dist", "**/*.spec.ts"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "build"]
 }
