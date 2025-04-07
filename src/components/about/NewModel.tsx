@@ -1,4 +1,5 @@
- import { motion } from "framer-motion";
+ import React from '../../hooks/react-hooks';
+import { motion } from "framer-motion";
 import { ArrowLeftRight } from "lucide-react";
 
 /**
