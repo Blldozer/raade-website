@@ -55,3 +55,32 @@ const ReactModule = {
   forwardRef,
   lazy,
   Suspense,
+};
+
+export default ReactModule;
+
+// Re-export individual hooks and components
+export {
+  createElement,
+  Fragment,
+  useCallback,
+  useContext,
+  useDebugValue,
+  useEffect,
+  useId,
+  useImperativeHandle,
+  useLayoutEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  useTransition,
+  StrictMode,
+  Component,
+  createContext,
+  memo,
+  forwardRef,
+  lazy,
+  Suspense,
+};
