@@ -1,39 +1,15 @@
-
-import gsap from 'gsap';
-import ScrollTrigger from 'gsap/ScrollTrigger';
+// Import from our centralized registration file instead of directly
+import { gsap, ScrollTrigger, type ScrollTrigger as ScrollTriggerType } from './gsapRegistration';
 import ScrollToPlugin from 'gsap/ScrollToPlugin';
 
 /**
  * Centralized GSAP plugin registration
  * This ensures plugins are only registered once, preventing "already registered" errors
  */
-let pluginsRegistered = false;
+let pluginsRegistered = true; // Changed to true since we register in gsapRegistration
 
 export const registerGsapPlugins = () => {
-  if (!pluginsRegistered) {
-    try {
-      // Check if GSAP is actually loaded
-      if (!gsap) {
-        console.error("GSAP not found");
-        return false;
-      }
-      
-      // Register plugins if they're not already registered
-      if (!gsap.utils.checkPrefix("ScrollTrigger")) {
-        gsap.registerPlugin(ScrollTrigger);
-      }
-      
-      if (!gsap.utils.checkPrefix("ScrollToPlugin")) {
-        gsap.registerPlugin(ScrollToPlugin);
-      }
-      
-      pluginsRegistered = true;
-      console.log("GSAP plugins registered successfully");
-    } catch (error) {
-      console.error("Error registering GSAP plugins:", error);
-      return false;
-    }
-  }
+  // This function is kept for backward compatibility but plugins are already registered
   return pluginsRegistered;
 };
 
@@ -56,7 +32,7 @@ export const safeKillTimeline = (timeline: gsap.core.Timeline | null) => {
 /**
  * Safely kills a ScrollTrigger instance with proper error handling
  */
-export const safeKillScrollTrigger = (trigger: ScrollTrigger | null) => {
+export const safeKillScrollTrigger = (trigger: ScrollTriggerType | null) => {
   if (trigger && typeof trigger.kill === 'function') {
     try {
       trigger.kill();

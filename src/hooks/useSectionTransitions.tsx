@@ -1,8 +1,6 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavBackground } from './useNavBackground';
-import gsap from 'gsap';
-import ScrollTrigger from 'gsap/ScrollTrigger';
+import { gsap, ScrollTrigger } from '@/utils/gsapRegistration';
 import { registerGsapPlugins } from '@/utils/gsapUtils';
 import { useSafeHook } from '@/utils/reactContextError';
 
