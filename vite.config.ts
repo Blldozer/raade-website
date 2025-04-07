@@ -1,10 +1,12 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import commonjs from '@rollup/plugin-commonjs';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  plugins: [
+    react()
+  ],
   server: {
     host: "::",
     port: 8080,
@@ -20,58 +22,34 @@ export default defineConfig(({ mode }) => ({
   },
   // Clear the cache on start
   cacheDir: '.vite',
-  plugins: [
-    // Standard React SWC plugin without custom JSX options
-    react(),
-    // Add commonjs plugin with stricter options to prevent TDZ errors
-    commonjs({
-      transformMixedEsModules: true,
-      strictRequires: true
-    })
-  ].filter(Boolean),
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
-      // Add explicit alias for react/jsx-runtime to help with resolution
-      'react/jsx-runtime': path.resolve(__dirname, 'node_modules/react/jsx-runtime')
     },
-    dedupe: ['react', 'react-dom'],
-    preserveSymlinks: true
+    extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json']
   },
   build: {
-    outDir: 'dist',
-    sourcemap: true,
-    // Improve transpilation to handle temporal dead zone errors
-    target: 'es2018',
-    commonjsOptions: {
-      transformMixedEsModules: true,
-      // Prevent hoisting which can cause TDZ errors
-      strictRequires: true,
-    },
+    outDir: "dist",
+    // Enable source maps for debugging
+    sourcemap: mode === "development",
+    // Enable minification for production
+    minify: mode === "production",
+    // Split chunks for better caching
     rollupOptions: {
-      // Ensure external dependencies are properly handled
-      external: [],
       output: {
-        // Improve code splitting to avoid circular dependencies
-        experimentalMinChunkSize: 10000,
-        manualChunks: function manualChunks(id) {
+        manualChunks: function(id) {
           if (id.includes('node_modules')) {
-            // Create a chunk for React
+            // Create a chunk for React and ReactDOM
             if (id.includes('react') || id.includes('react-dom')) {
-              return 'vendor-react';
+              return 'react-vendor';
             }
-            
-            // Create a chunk for Framer Motion
-            if (id.includes('framer-motion')) {
-              return 'vendor-framer-motion';
+            // Create a chunk for UI libraries
+            if (id.includes('@radix-ui') || 
+                id.includes('framer-motion') || 
+                id.includes('lucide-react')) {
+              return 'ui-vendor';
             }
-            
-            // Create a chunk for UI components
-            if (id.includes('@radix-ui') || id.includes('lucide')) {
-              return 'vendor-ui';
-            }
-            
-            // Default vendor chunk
+            // All other dependencies
             return 'vendor';
           }
         }
@@ -80,17 +58,15 @@ export default defineConfig(({ mode }) => ({
   },
   // Add optimizeDeps to improve dependency optimization
   optimizeDeps: {
-    esbuildOptions: {
-      target: 'es2020',
-    },
     include: [
       'react', 
-      'react-dom', 
-      'framer-motion', 
-      '@radix-ui/react-dialog', 
-      'lucide-react',
-      'react-router-dom'
+      'react-dom',
+      'framer-motion',
+      'lucide-react'
     ],
-    exclude: []
+    exclude: [
+      // Exclude problematic packages
+      '@contentsquare/tag-sdk'
+    ]
   }
-}));
+}))
