@@ -41,6 +41,7 @@ export default defineConfig({
     sourcemap: true,
     minify: 'terser',
     rollupOptions: {
+      external: ['gsap'],
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
