@@ -6,6 +6,8 @@ export default {
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
     "./index.html",
+    "./public/**/*.html",
+    "./src/**/*.{html,js,jsx,ts,tsx}",
   ],
   prefix: "",
   theme: {

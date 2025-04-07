@@ -3,6 +3,7 @@ import AppRoutes from "./components/app/AppRoutes";
 import Footer from "./components/Footer";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { initializeContentsquare } from "./config/analytics-config";
+import "./tailwind.css"; // Import processed Tailwind CSS
 
 /**
  * App Component - Main application container

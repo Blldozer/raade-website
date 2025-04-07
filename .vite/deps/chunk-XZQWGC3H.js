@@ -6,7 +6,7 @@ import {
   useDirection,
   useId,
   useLayoutEffect2
-} from "./chunk-UI4BJPGZ.js";
+} from "./chunk-4N3WHBS3.js";
 import {
   createContextScope
 } from "./chunk-AT4NJABD.js";
@@ -369,4 +369,4 @@ export {
   Item,
   Presence
 };
-//# sourceMappingURL=chunk-3J2TKKMK.js.map
+//# sourceMappingURL=chunk-XZQWGC3H.js.map
