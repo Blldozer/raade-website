@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useLayoutEffect, ReactNode, createContext } from "react";
+import { useState, useEffect, useLayoutEffect, ReactNode, createContext } from "react";
 import { useLocation } from "react-router-dom";
 import { useResponsive } from "@/hooks/useResponsive";
 import { NavigationContext, NavigationState } from "./NavigationContextDefinition";
@@ -27,13 +27,6 @@ export const NavigationProvider = ({
     useShortFormLogo?: boolean;
   }
 }) => {
-  // Check if React is properly initialized before using hooks
-  if (typeof React !== 'object' || React === null) {
-    console.error("NavigationProvider: React not properly initialized");
-    // Return children without context to avoid crashes
-    return <>{children}</>;
-  }
-  
   // Generate a unique string ID for component instance tracking
   const instanceId = `nav-${Math.random().toString(36).substring(2, 9)}`;
   

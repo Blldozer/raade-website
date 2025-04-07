@@ -1,7 +1,7 @@
+
 [build]
   publish = "dist"
   command = "npm run build"
-  environment = { NODE_VERSION = "18.18.0" }
 
 [[redirects]]
   from = "/*"
@@ -14,7 +14,7 @@
   [headers.values]
     X-Frame-Options = "DENY"
     X-XSS-Protection = "1; mode=block"
-    Content-Security-Policy = "frame-ancestors 'none'; default-src 'self'; script-src 'self' https://js.stripe.com https://api.stripe.com https://*.supabase.co https://cdn.gpteng.co 'unsafe-inline' https://*.contentsquare.net https://static.hj.contentsquare.net https://netlify-scripts.netlify.app https://netlify-rum.netlify.app; connect-src 'self' https://*.supabase.co https://api.stripe.com https://*.amazonaws.com wss://*.supabase.co https://*.stripe.com https://pay.google.com https://ingesteer.services-prod.nsvcs.net https://fonts.googleapis.com https://fonts.gstatic.com https://*.contentsquare.net; frame-src https://js.stripe.com https://hooks.stripe.com https://pay.google.com; img-src 'self' data: https://*.amazonaws.com https://*.supabase.co https://dermbucktbegnbkjzobs.supabase.co https://storage.googleapis.com https://images.unsplash.com https://*.contentsquare.net; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; worker-src 'self' blob: https://*.contentsquare.net;"
+    Content-Security-Policy = "frame-ancestors 'none'; default-src 'self'; script-src 'self' https://js.stripe.com https://api.stripe.com https://*.supabase.co https://cdn.gpteng.co 'unsafe-inline'; connect-src 'self' https://*.supabase.co https://api.stripe.com https://*.amazonaws.com wss://*.supabase.co https://*.stripe.com https://pay.google.com https://ingesteer.services-prod.nsvcs.net https://fonts.googleapis.com https://fonts.gstatic.com; frame-src https://js.stripe.com https://hooks.stripe.com https://pay.google.com; img-src 'self' data: https://*.amazonaws.com https://*.supabase.co https://dermbucktbegnbkjzobs.supabase.co https://storage.googleapis.com https://images.unsplash.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com;"
     Access-Control-Allow-Origin = "*"
     Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
     Access-Control-Allow-Headers = "authorization, x-client-info, apikey, content-type"

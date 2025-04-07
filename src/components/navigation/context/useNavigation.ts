@@ -1,5 +1,5 @@
 
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { NavigationContext } from "./NavigationContextDefinition";
 
 /**
@@ -9,15 +9,8 @@ import { NavigationContext } from "./NavigationContextDefinition";
  */
 export const useNavigation = () => {
   // Check if React is properly initialized 
-  const isReactAvailable = 
-    typeof window !== 'undefined' && 
-    window.__REACT_INITIALIZED === true && 
-    typeof React === 'object' && 
-    React !== null && 
-    typeof React.useContext === 'function';
-    
-  if (!isReactAvailable) {
-    console.error("useNavigation: React not properly initialized");
+  if (typeof useContext !== 'function') {
+    console.error("useNavigation: React hooks unavailable");
     // Return fallback
     return getFallbackNavigationContext();
   }
@@ -55,11 +48,7 @@ function getFallbackNavigationContext() {
       isLightBackground: true,
       forceDarkMode: false
     },
-    setIsDarkBackground: () => {},
-    // Add a handleNavigation function for components that need it
-    handleNavigation: (href: string) => {
-      window.location.href = href;
-    }
+    setIsDarkBackground: () => {}
   };
 }
 

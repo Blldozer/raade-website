@@ -1,5 +1,4 @@
 
-import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 /**
@@ -14,24 +13,6 @@ import { useNavigate, useLocation } from "react-router-dom";
  * - Error handling for router context issues
  */
 export const useNavigation = () => {
-  // Check if React is available and window is defined
-  const isClientSide = typeof window !== 'undefined';
-  const isReactAvailable = isClientSide && window.__REACT_INITIALIZED === true;
-  
-  // If React or window isn't available, return a fallback function
-  if (!isReactAvailable || !isClientSide) {
-    console.warn("useNavigation: React not properly initialized, returning fallback");
-    
-    return {
-      handleNavigation: (href: string) => {
-        console.warn("useNavigation: Using fallback navigation", href);
-        if (isClientSide) {
-          window.location.href = href;
-        }
-      }
-    };
-  }
-  
   try {
     const navigate = useNavigate();
     const location = useLocation();
@@ -127,9 +108,7 @@ export const useNavigation = () => {
       handleNavigation: (href: string) => {
         console.warn("useNavigation: Using fallback navigation to", href);
         // Simple fallback that uses window.location
-        if (isClientSide) {
-          window.location.href = href;
-        }
+        window.location.href = href;
       }
     };
   }

@@ -1,6 +1,5 @@
-
-import * as React from "react";
-import { useState, useEffect, useMemo, useCallback } from "../react-exports";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useCountdown } from "./countdown/useCountdown";
 import NavTimerDisplay from "./countdown/NavTimerDisplay";
@@ -35,18 +34,6 @@ const CountdownTimer = ({
   accentColor,
   textColor
 }: CountdownTimerProps) => {
-  // Check if React is properly initialized before using hooks
-  const isReactAvailable = typeof window !== 'undefined' && window.__REACT_INITIALIZED === true;
-                         
-  if (!isReactAvailable) {
-    console.warn("CountdownTimer: React hooks unavailable, rendering fallback");
-    return (
-      <div className={cn("inline-flex items-center rounded-md px-2 py-1", className)}>
-        <span className="text-sm font-medium">Conference April 11-12, 2025</span>
-      </div>
-    );
-  }
-  
   // Safe router context access with fallback
   const [locationPath, setLocationPath] = useState('/');
   const [isDarkBackground, setIsDarkBackground] = useState(false);
@@ -55,24 +42,21 @@ const CountdownTimer = ({
   // Initialize router-related state safely
   useEffect(() => {
     try {
-      // Try to access router context safely
-      if (typeof window !== 'undefined' && window.location) {
-        // Fallback to window.location if React Router isn't available
-        setLocationPath(window.location.pathname);
-      }
+      const location = useLocation();
+      setLocationPath(location.pathname);
       
       // Get initial background check based on current route
-      setIsDarkBackground(!hasLightBackground(locationPath));
+      setIsDarkBackground(!hasLightBackground(location.pathname));
     } catch (error) {
       // If router context is not available, use safe defaults
       console.log("CountdownTimer: Router context not available, using defaults");
     }
-  }, [locationPath]);
+  }, []);
   
   // Use the provided targetDate or fall back to the default
   // Using a clearer date format with explicit year, month, day
   const CONFERENCE_DATE = useMemo(() => {
-    return targetDate ? new Date(targetDate) : new Date('2025-04-11T17:30:00');
+    return targetDate ? new Date(targetDate) : new Date('2025-04-11T09:00:00');
   }, [targetDate]);
   
   // Add debugging for the target date (only once on mount)
@@ -94,7 +78,7 @@ const CountdownTimer = ({
     if (scrollPastHero !== isPastHero) {
       setScrollPastHero(isPastHero);
     }
-  }, [scrollPastHero]);
+  }, [scrollPastHero, isScrollPastHero]);
   
   // Add scroll event listener to detect when user has scrolled past hero section
   useEffect(() => {

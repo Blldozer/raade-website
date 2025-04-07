@@ -1,3 +1,4 @@
+
 import React from "react";
 import AboutHero from "../components/about/AboutHero";
 import { useAboutPage } from "../hooks/useAboutPage";
@@ -15,7 +16,9 @@ import { useLocation } from "react-router-dom";
  */
 const About = () => {
   const {
+    activeSection,
     hasError,
+    isMobile,
     scrollToSection
   } = useAboutPage();
   

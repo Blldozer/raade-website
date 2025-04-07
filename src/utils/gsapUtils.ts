@@ -1,14 +1,39 @@
-// Import from our centralized registration file instead of directly
-import { gsap, ScrollTrigger, ScrollTriggerType, ScrollToPlugin } from './gsapRegistration';
+
+import gsap from 'gsap';
+import ScrollTrigger from 'gsap/ScrollTrigger';
+import ScrollToPlugin from 'gsap/ScrollToPlugin';
 
 /**
  * Centralized GSAP plugin registration
  * This ensures plugins are only registered once, preventing "already registered" errors
  */
-let pluginsRegistered = true; // Changed to true since we register in gsapRegistration
+let pluginsRegistered = false;
 
 export const registerGsapPlugins = () => {
-  // This function is kept for backward compatibility but plugins are already registered
+  if (!pluginsRegistered) {
+    try {
+      // Check if GSAP is actually loaded
+      if (!gsap) {
+        console.error("GSAP not found");
+        return false;
+      }
+      
+      // Register plugins if they're not already registered
+      if (!gsap.utils.checkPrefix("ScrollTrigger")) {
+        gsap.registerPlugin(ScrollTrigger);
+      }
+      
+      if (!gsap.utils.checkPrefix("ScrollToPlugin")) {
+        gsap.registerPlugin(ScrollToPlugin);
+      }
+      
+      pluginsRegistered = true;
+      console.log("GSAP plugins registered successfully");
+    } catch (error) {
+      console.error("Error registering GSAP plugins:", error);
+      return false;
+    }
+  }
   return pluginsRegistered;
 };
 
@@ -31,7 +56,7 @@ export const safeKillTimeline = (timeline: gsap.core.Timeline | null) => {
 /**
  * Safely kills a ScrollTrigger instance with proper error handling
  */
-export const safeKillScrollTrigger = (trigger: ScrollTriggerType | null) => {
+export const safeKillScrollTrigger = (trigger: ScrollTrigger | null) => {
   if (trigger && typeof trigger.kill === 'function') {
     try {
       trigger.kill();
@@ -80,8 +105,7 @@ export const createSafeGsapContext = (fn: GsapContextFunc, scope?: Element | nul
   try {
     // Create context only if GSAP is properly loaded
     if (gsap && gsap.context) {
-      // Convert null scope to undefined to satisfy TypeScript
-      const context = gsap.context(fn, scope || undefined);
+      const context = gsap.context(fn, scope);
       
       return () => {
         try {

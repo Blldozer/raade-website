@@ -16,18 +16,17 @@ interface VideoBackgroundProps {
  * @param setVideoLoaded - Function to update the loaded state
  */
 const VideoBackground = ({ videoLoaded, setVideoLoaded }: VideoBackgroundProps) => {
-  // Check if React is properly initialized
-  if (typeof window === 'undefined' || !window.__REACT_INITIALIZED) {
-    console.warn("VideoBackground: React not properly initialized");
+  const videoRef = useRef<HTMLVideoElement>(null);
+  
+  // Verify React hooks are available
+  if (typeof useEffect !== 'function' || typeof useRef !== 'function') {
+    console.warn("VideoBackground: React hooks unavailable");
     
     // Return a static fallback instead of video
     return (
       <div className="absolute inset-0 bg-[#1A365D] z-0"></div>
     );
   }
-  
-  // Create ref only if we're in a proper React context
-  const videoRef = useRef<HTMLVideoElement>(null);
   
   useEffect(() => {
     const video = videoRef.current;

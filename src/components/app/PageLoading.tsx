@@ -1,4 +1,3 @@
-import React from 'react';
 
 /**
  * Fallback component for when pages are loading

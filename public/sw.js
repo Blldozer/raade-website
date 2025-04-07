@@ -21,6 +21,7 @@ const urlsToCache = [
 
 // Font files to cache separately with longer expiration
 const fontUrlsToCache = [
+  '/fonts/Amadine.woff',
   '/fonts/Simula_Book_ImfTVa3.woff',
   '/fonts/Simula_BookItalic_651eMqB.woff',
 ];

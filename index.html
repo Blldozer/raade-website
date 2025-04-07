@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0, user-scalable=yes, viewport-fit=cover" />
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://*.supabase.co https://api.stripe.com https://*.stripe.com https://pay.google.com https://*.amazonaws.com https://ingesteer.services-prod.nsvcs.net https://*.googleapis.com https://fonts.gstatic.com https://cdn.gpteng.co https://*.gpteng.co https://*.contentsquare.net https://*.netlify.app; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://*.supabase.co https://*.stripe.com https://*.contentsquare.net; script-src 'self' 'unsafe-inline' https://cdn.gpteng.co https://js.stripe.com https://api.stripe.com https://*.contentsquare.net https://static.hj.contentsquare.net https://*.netlify.app https://netlify-scripts.netlify.app; script-src-elem 'self' 'unsafe-inline' https://cdn.gpteng.co https://js.stripe.com https://api.stripe.com https://*.contentsquare.net https://static.hj.contentsquare.net https://*.netlify.app https://netlify-scripts.netlify.app https://netlify-rum.netlify.app; frame-src 'self' https://js.stripe.com https://*.stripe.com; worker-src 'self' blob: https://*.contentsquare.net;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://*.supabase.co https://api.stripe.com https://*.stripe.com https://pay.google.com https://*.amazonaws.com https://ingesteer.services-prod.nsvcs.net https://*.googleapis.com https://fonts.gstatic.com https://cdn.gpteng.co https://*.gpteng.co https://*.contentsquare.net; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://*.supabase.co https://*.stripe.com; script-src 'self' 'unsafe-inline' https://cdn.gpteng.co https://js.stripe.com https://*.contentsquare.net; script-src-elem 'self' 'unsafe-inline' https://cdn.gpteng.co https://js.stripe.com https://*.contentsquare.net; frame-src 'self' https://js.stripe.com https://*.stripe.com;">
     <title>RAADE - Rice Association for African Development</title>
     <meta name="description" content="Rice Association for African Development - Empowering innovation across the African continent through student-led Innovation Studios and global connections" />
     
@@ -14,6 +14,7 @@
     <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
     
     <!-- Preload critical resources but with safer syntax -->
+    <link rel="preload" href="/fonts/Amadine.woff" as="font" type="font/woff" crossorigin="anonymous" />
     <link rel="preload" href="/fonts/Simula_Book_ImfTVa3.woff" as="font" type="font/woff" crossorigin="anonymous" />
     
     <!-- Preconnect to external domains -->
@@ -25,6 +26,14 @@
     
     <!-- Simplified font loading with better font-display settings -->
     <style>
+      @font-face {
+        font-family: 'Amadine';
+        src: url('/fonts/Amadine.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+      }
+
       @font-face {
         font-family: 'Simula Book';
         src: url('/fonts/Simula_Book_ImfTVa3.woff') format('woff');

@@ -3,7 +3,7 @@ import TeamMember from "./TeamMember";
 import { useState, useEffect } from "react";
 import TeamImageLoadingIndicator from "./team/TeamImageLoadingIndicator";
 import TeamImageSkeleton from "./team/TeamImageSkeleton";
-import { useMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface TeamMembersListProps {
   teamMembers: Array<{
@@ -32,7 +32,7 @@ const TeamMembersList = ({ teamMembers, isInView, isLoaded }: TeamMembersListPro
   const [networkStatus, setNetworkStatus] = useState<'online'|'offline'>('online');
   
   // Get device info for conditional rendering
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
   
   // Count how many images have actually loaded
   const loadedCount = Object.values(loadedImages).filter(Boolean).length;

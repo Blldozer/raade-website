@@ -4,7 +4,7 @@ import { useInView } from "framer-motion";
 import TeamMembersList from "./TeamMembersList";
 import { teamMembers } from "./TeamData";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/use-mobile";
 import TeamImageSkeleton from "./team/TeamImageSkeleton";
 
 /**
@@ -18,7 +18,7 @@ const Team = () => {
   const isInView = useInView(sectionRef, { once: true, amount: 0.1 });
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
 
   // Initialize component with improved state management - reduced delay to 50ms
   useEffect(() => {

@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Users, Building } from "lucide-react"; // Changed Handshake to Building
+import { Users, Handshake } from "lucide-react";
 import { Link } from "react-router-dom";
 
 /**
@@ -79,7 +79,7 @@ const StudioCTA = () => {
           >
             <div className="flex flex-col items-center text-center space-y-4">
               <div className="p-4 rounded-full bg-raade-yellow-orange/20 mb-2">
-                <Building className="h-8 w-8 text-raade-yellow-orange" /> {/* Changed from Handshake to Building */}
+                <Handshake className="h-8 w-8 text-raade-yellow-orange" />
               </div>
               <h3 className="text-2xl font-simula text-white">Submit a Challenge</h3>
               <p className="text-white/80 font-lora">

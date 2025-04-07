@@ -1,7 +1,7 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Handshake as HandshakeIcon } from 'lucide-react';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 

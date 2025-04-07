@@ -1,29 +1,12 @@
-
 import React, { useRef, memo, useCallback } from 'react';
 import AnimatedText from '../AnimatedText';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
-/**
- * HeroContent Component - Main content for the hero section
- * 
- * Features:
- * - Animated text with staggered entrance effects
- * - Responsive layout for mobile and desktop
- * - Call to action buttons
- * - Smooth scrolling to join section
- * - Enhanced with React context error handling
- */
 const HeroContent = () => {
-  // CRITICAL: Check if we're running in a valid React context before trying to use hooks
-  const isReactAvailable = typeof window !== 'undefined' && 
-                         window.__REACT_INITIALIZED === true && 
-                         typeof React === 'object' && 
-                         React !== null && 
-                         typeof React.useRef === 'function';
-  
-  // If React hooks aren't available, return a minimal fallback
-  if (!isReactAvailable) {
-    console.error("HeroContent: React hooks unavailable, rendering fallback");
+  // Verify React hook availability before using hooks
+  if (typeof useRef !== 'function') {
+    console.error("HeroContent: React hooks unavailable");
+    // Return minimal fallback UI
     return (
       <div className="relative z-30 pt-20">
         <div className="fluid-container h-screen flex flex-col justify-center">

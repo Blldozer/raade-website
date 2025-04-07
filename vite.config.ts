@@ -1,75 +1,61 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import { componentTagger } from "lovable-tagger";
 
-export default defineConfig({
+// https://vitejs.dev/config/
+export default defineConfig(({ mode }) => ({
+  server: {
+    host: "::",
+    port: 8080,
+  },
   plugins: [
     react({
-      babel: {
-        parserOpts: {
-          plugins: ['decorators-legacy', 'classProperties']
-        }
-      }
-    })
-  ],
-  server: {
-    host: true,
-    port: 8080,
-    hmr: {
-      overlay: true,
-    },
-    watch: {
-      usePolling: false,
-      interval: 100,
-    },
-    allowedHosts: [
-      'a6ffbe3b-6a03-493f-92bd-706dd74e0403.lovableproject.com',
-      '2a5eb0cf-41d8-4c91-9d88-664725fbd180-00-383l0rqa7gpnc.picard.replit.dev'
-    ]
-  },
-  cacheDir: '.vite',
+      jsxImportSource: "react",
+      plugins: [],
+    }),
+    // Only use componentTagger in development mode
+    mode === 'development' &&
+    componentTagger(),
+  ].filter(Boolean),
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src'),
-      'lucide-react': path.resolve(__dirname, 'node_modules/lucide-react'),
-      'lovable-tagger': path.resolve(__dirname, 'node_modules/lovable-tagger')
+      "@": path.resolve(__dirname, "./src"),
     },
-    extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json']
   },
+  // Optimization settings
   build: {
-    outDir: "dist",
-    sourcemap: true,
+    // Ensure sourcemaps aren't included in production
+    sourcemap: false,
+    // Minify output for production
     minify: 'terser',
+    // Ensure no WebSocket HMR connections are attempted in production
+    manifest: true,
+    // Disable HMR explicitly in production build
+    hmr: false,
+    // Improve chunk loading strategy - modified for better React compatibility
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom'],
-          'radix-vendor': [
-            '@radix-ui/react-accordion',
-            '@radix-ui/react-alert-dialog',
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-dropdown-menu',
-            '@radix-ui/react-tabs',
-            '@radix-ui/react-tooltip'
-          ],
-          'gsap-vendor': ['gsap', 'gsap/ScrollTrigger', 'gsap/ScrollToPlugin']
+        manualChunks: (id) => {
+          // Ensure React and ReactDOM stay in the same chunk
+          if (id.includes('node_modules/react/') || 
+              id.includes('node_modules/react-dom/') || 
+              id.includes('node_modules/scheduler/') ||
+              id.includes('node_modules/use-sync-external-store/')) {
+            return 'react-vendor';
+          }
+          // Keep GSAP libraries together
+          if (id.includes('node_modules/gsap/')) {
+            return 'gsap-vendor';
+          }
+          // Ensure all Radix UI components are bundled together
+          if (id.includes('node_modules/@radix-ui/')) {
+            return 'radix-vendor';
+          }
+          // Let other dependencies be chunked normally
+          return undefined;
         }
       }
     }
-  },
-  optimizeDeps: {
-    include: [
-      'react', 
-      'react-dom',
-      'framer-motion',
-      'lucide-react',
-      'gsap',
-      'gsap/ScrollTrigger',
-      'gsap/ScrollToPlugin'
-    ],
-    exclude: [
-      '@contentsquare/tag-sdk',
-      'lovable-tagger'
-    ]
   }
-})
+}));

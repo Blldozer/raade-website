@@ -1,4 +1,5 @@
-import * as React from "react";
+
+import React from "react";
 import { getSpeakerImagePosition, createImageFallback } from "@/utils/speakerImageUtils";
 
 /**
@@ -27,36 +28,20 @@ const SpeakerImage = ({ speakerId, name, imagePlaceholder, rounded = true }: Spe
         src={`/Speaker Images/${speakerId}.jpg`} 
         alt={name}
         onError={(e) => {
-          try {
-            // Try jpeg if jpg not found
+          // Try jpeg if jpg not found
+          (e.target as HTMLImageElement).src = `/Speaker Images/${speakerId}.jpeg`;
+          (e.target as HTMLImageElement).onerror = (e2) => {
+            // Fallback to placeholder if neither image format works
             const target = e.target as HTMLImageElement;
-            if (!target) return; // Guard against null target
-            
-            target.src = `/Speaker Images/${speakerId}.jpeg`;
-            target.onerror = (e2) => {
-              try {
-                // Fallback to placeholder if neither image format works
-                if (!target || !target.parentElement) return; // Guard against null elements
-                
-                target.src = "";
-                target.alt = imagePlaceholder || name;
-                target.style.display = "none";
-                
-                // Safer DOM manipulation
-                const parent = target.parentElement;
-                if (parent) {
-                  const fallbackDiv = document.createElement('div');
-                  fallbackDiv.className = `flex items-center justify-center w-full h-full bg-gray-100 ${rounded ? "rounded-lg" : ""}`;
-                  fallbackDiv.innerHTML = `<span class="text-3xl font-bold text-gray-400">${imagePlaceholder || name.charAt(0)}</span>`;
-                  parent.appendChild(fallbackDiv);
-                }
-              } catch (err) {
-                console.warn('Error in image fallback:', err);
-              }
-            };
-          } catch (err) {
-            console.warn('Error in image error handler:', err);
-          }
+            target.src = "";
+            target.alt = imagePlaceholder;
+            target.style.display = "none";
+            (target.parentElement as HTMLElement).innerHTML = createImageFallback(
+              speakerId, 
+              imagePlaceholder, 
+              rounded
+            );
+          };
         }}
         className={`w-full h-full ${roundedClass} ${getSpeakerImagePosition(speakerId)}`}
       />
