@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useSectionAwareNavigation } from './navigation/useSectionAwareNavigation';
+import { useSectionMarkers } from './navigation/useSectionMarkers';
 
 /**
  * Main hook to manage navigation background color based on current scroll position
@@ -7,15 +7,18 @@ import { useSectionAwareNavigation } from './navigation/useSectionAwareNavigatio
  * 
  * @param initialBackground - The initial background to use ('light' or 'dark')
  */
-export function useNavBackground() {
-  const { currentSection } = useSectionAwareNavigation();
-  const prevSection = useRef(currentSection);
+export function useNavBackground(initialBackground: 'light' | 'dark' = 'light') {
+  const { isMounted } = useSectionMarkers();
+  const prevBackground = useRef(initialBackground);
 
   useEffect(() => {
-    if (currentSection !== prevSection.current) {
-      prevSection.current = currentSection;
-    }
-  }, [currentSection]);
+    // Set initial background
+    document.body.setAttribute('data-nav-background', initialBackground);
+    
+    return () => {
+      document.body.removeAttribute('data-nav-background');
+    };
+  }, [initialBackground]);
 
-  return { currentSection };
+  return { currentBackground: initialBackground };
 }

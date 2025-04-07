@@ -3,7 +3,15 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react({
+      babel: {
+        parserOpts: {
+          plugins: ['decorators-legacy', 'classProperties']
+        }
+      }
+    })
+  ],
   server: {
     host: true,
     port: 3000,
@@ -46,13 +54,11 @@ export default defineConfig({
       'react', 
       'react-dom',
       'framer-motion',
-      'lucide-react',
-      'lovable-tagger',
-      '@types/react',
-      '@types/react-dom'
+      'lucide-react'
     ],
     exclude: [
-      '@contentsquare/tag-sdk'
+      '@contentsquare/tag-sdk',
+      'lovable-tagger'
     ]
   }
 })

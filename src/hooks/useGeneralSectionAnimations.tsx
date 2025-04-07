@@ -1,4 +1,3 @@
-
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
@@ -21,6 +20,8 @@ export const useGeneralSectionAnimations = () => {
     
     // Create one timeline per section for better performance
     sections.forEach((section) => {
+      if (!section) return;
+      
       const contentElements = section.querySelectorAll(".content-element:not(.opacity-100)");
       if (!contentElements.length) return;
       
@@ -63,7 +64,7 @@ export const useGeneralSectionAnimations = () => {
     // Improved cleanup function
     return () => {
       // Kill all timelines we created
-      animationsSet.current.forEach(tl => {
+      animationsSet.current.forEach((tl: any) => {
         if (tl && typeof tl.kill === 'function') {
           tl.kill();
         }

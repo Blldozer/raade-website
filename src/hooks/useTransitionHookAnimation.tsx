@@ -1,4 +1,3 @@
-
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
@@ -57,6 +56,7 @@ export const useTransitionHookAnimation = (abortSignal?: AbortSignal) => {
           },
           onComplete: () => {
             // Optional: Clean up will-change property after animation completes
+            if (!section) return;
             const elements = section.querySelectorAll('h2, p, button');
             elements.forEach(el => {
               if (el instanceof HTMLElement) {
@@ -69,6 +69,7 @@ export const useTransitionHookAnimation = (abortSignal?: AbortSignal) => {
         timeline.current = tl;
         
         // Get all elements we need to animate
+        if (!section) return;
         const heading = section.querySelector("h2");
         const paragraphText = section.querySelector("p");
         const scrollButton = section.querySelector("button");
