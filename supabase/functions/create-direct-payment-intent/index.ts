@@ -2,7 +2,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { corsHeaders } from "../_shared/cors.ts";
-import { calculatePaymentAmount } from "../create-payment-intent/pricing.ts";
+import { calculatePaymentAmount } from "../_shared/pricing.ts";
 
 /**
  * Create Direct Payment Intent Function
