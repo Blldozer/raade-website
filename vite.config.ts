@@ -25,6 +25,8 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
+      'lucide-react': path.resolve(__dirname, 'node_modules/lucide-react'),
+      'lovable-tagger': path.resolve(__dirname, 'node_modules/lovable-tagger')
     },
     extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json']
   },
@@ -62,7 +64,8 @@ export default defineConfig(({ mode }) => ({
       'react', 
       'react-dom',
       'framer-motion',
-      'lucide-react'
+      'lucide-react',
+      'lovable-tagger'
     ],
     exclude: [
       // Exclude problematic packages
