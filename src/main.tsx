@@ -1,3 +1,6 @@
+// Import GSAP registration first to ensure it's available globally
+import "@/utils/gsapRegistration";
+
 import React from 'react';
 import * as ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
