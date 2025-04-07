@@ -1,4 +1,3 @@
-
 // Import from our centralized registration file instead of directly
 import { gsap, ScrollTrigger, ScrollTriggerType, ScrollToPlugin } from './gsapRegistration';
 
@@ -81,7 +80,8 @@ export const createSafeGsapContext = (fn: GsapContextFunc, scope?: Element | nul
   try {
     // Create context only if GSAP is properly loaded
     if (gsap && gsap.context) {
-      const context = gsap.context(fn, scope);
+      // Convert null scope to undefined to satisfy TypeScript
+      const context = gsap.context(fn, scope || undefined);
       
       return () => {
         try {

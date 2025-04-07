@@ -16,6 +16,14 @@ export type WithClassName<T = {}> = T & { className?: string };
 export type WithChildren<T = {}> = T & { children?: React.ReactNode };
 
 /**
+ * Interface for React components with display name and $$typeof properties
+ */
+interface ReactComponentType {
+  displayName?: string;
+  $$typeof?: symbol;
+}
+
+/**
  * Applies displayName to a component
  */
 export function withDisplayName<T extends React.ElementType>(
@@ -67,10 +75,11 @@ export function patchRadixModule<T extends Record<string, any>>(
     }
 
     // Handle component objects (they usually have a render method)
-    if (typeof component === 'object' && component.$$typeof) {
+    if (typeof component === 'object' && component !== null && (component as ReactComponentType).$$typeof) {
+      const reactComponent = component as ReactComponentType & React.ElementType;
       result[key] = patchRadixComponent(
-        component,
-        component.displayName || `${prefix}${key}`
+        reactComponent as any,
+        reactComponent.displayName || `${prefix}${key}`
       );
     } else {
       // Just pass through non-component values
