@@ -41,7 +41,7 @@ export default defineConfig({
     sourcemap: true,
     minify: 'terser',
     rollupOptions: {
-      external: ['gsap'],
+      external: ['gsap', 'gsap/ScrollTrigger'],
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
@@ -55,7 +55,8 @@ export default defineConfig({
       'react', 
       'react-dom',
       'framer-motion',
-      'lucide-react'
+      'lucide-react',
+      'gsap'
     ],
     exclude: [
       '@contentsquare/tag-sdk',
