@@ -56,7 +56,7 @@ const CountdownTimer = ({
   // Use the provided targetDate or fall back to the default
   // Using a clearer date format with explicit year, month, day
   const CONFERENCE_DATE = useMemo(() => {
-    return targetDate ? new Date(targetDate) : new Date('2025-04-11T09:00:00');
+    return targetDate ? new Date(targetDate) : new Date('2025-04-11T17:30:00');
   }, [targetDate]);
   
   // Add debugging for the target date (only once on mount)
