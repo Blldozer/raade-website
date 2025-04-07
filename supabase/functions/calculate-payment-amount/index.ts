@@ -19,10 +19,10 @@ serve(async (req) => {
     const requestData = await req.json();
     const { ticketType, groupSize = 0 } = requestData;
     
-    // Define base prices in cents
-    const STUDENT_PRICE = 3500; // $35.00
-    const PROFESSIONAL_PRICE = 6000; // $60.00
-    const GROUP_PRICE_PER_PERSON = 3000; // $30.00 per person
+    // Define SALE prices in cents
+    const STUDENT_PRICE = 2500; // $25.00 (was $35.00)
+    const PROFESSIONAL_PRICE = 5000; // $50.00 (was $60.00)
+    const GROUP_PRICE_PER_PERSON = 2000; // $20.00 per person (was $30.00)
     
     let amount = 0;
     
@@ -37,7 +37,8 @@ serve(async (req) => {
         break;
       
       case "student-group":
-        const validGroupSize = Math.max(5, parseInt(String(groupSize)) || 5);
+        // Allow for groups of 3 or more now (was 5+)
+        const validGroupSize = Math.max(3, parseInt(String(groupSize)) || 3);
         amount = GROUP_PRICE_PER_PERSON * validGroupSize;
         break;
       
@@ -56,7 +57,7 @@ serve(async (req) => {
         amount,
         currency: "usd",
         ticketType,
-        ...(ticketType === "student-group" ? { groupSize: Math.max(5, parseInt(String(groupSize)) || 5) } : {})
+        ...(ticketType === "student-group" ? { groupSize: Math.max(3, parseInt(String(groupSize)) || 3) } : {})
       }),
       { 
         headers: { ...corsHeaders, "Content-Type": "application/json" },

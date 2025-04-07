@@ -6,6 +6,7 @@ import Navigation from "@/components/Navigation";
 import ConferenceRegistrationForm from "@/components/conference/ConferenceRegistrationForm";
 import StripeStatusCheck from "@/components/conference/payment/StripeStatusCheck";
 import { useNavBackground } from "@/hooks/useNavBackground";
+import SaleCountdown from "@/components/conference/SaleCountdown";
 
 /**
  * Conference Registration Page
@@ -17,6 +18,7 @@ import { useNavBackground } from "@/hooks/useNavBackground";
  * - Uses a dark navbar for proper contrast
  * - Smooth animations for an engaging UI
  * - Enhanced session cleanup to prevent payment issues
+ * - Added sale countdown timer for 24-hour sale
  */
 const ConferenceRegistration = () => {
   const navigate = useNavigate();
@@ -70,8 +72,13 @@ const ConferenceRegistration = () => {
             transition={{ duration: 0.6 }}
             className="dark:text-white"
           >
+            <div className="mb-4">
+              <SaleCountdown />
+            </div>
+            
             <h1 className="text-4xl font-bold text-raade-navy mb-4 font-simula dark:text-white">Conference Registration</h1>
-            <p className="text-lg text-gray-600 mb-8 font-lora dark:text-gray-300">Register for the RAADE African Development Forum 2025, taking place on April 11-12. Early bird registration is now open!</p>
+            <p className="text-lg text-gray-600 mb-2 font-lora dark:text-gray-300">Register for the RAADE African Development Forum 2025, taking place on April 11-12.</p>
+            <p className="text-red-600 font-medium mb-6">Special 24-hour sale pricing available now!</p>
             
             {/* Add the Stripe status check component */}
             <div className="mb-6">

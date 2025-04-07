@@ -67,11 +67,29 @@ export const defaultFormValues: RegistrationFormData = {
 export const getTicketPrice = (ticketType: typeof TICKET_TYPES[number]): number => {
   switch (ticketType) {
     case TICKET_TYPES_ENUM.STUDENT:
-      return 35; // Updated to match payment function pricing
+      return 25; // SALE price (was $35)
     case TICKET_TYPES_ENUM.PROFESSIONAL:
-      return 60; // Updated to match payment function pricing
+      return 50; // SALE price (was $60)
     case TICKET_TYPES_ENUM.STUDENT_GROUP:
-      return 30; // Per person in group
+      return 20; // SALE price (was $30) per person
+    default:
+      return 25; // Default to student price
+  }
+};
+
+/**
+ * Get the regular (non-sale) ticket price 
+ * @param ticketType The type of ticket
+ * @returns The regular price of the ticket in USD
+ */
+export const getRegularTicketPrice = (ticketType: typeof TICKET_TYPES[number]): number => {
+  switch (ticketType) {
+    case TICKET_TYPES_ENUM.STUDENT:
+      return 35; // Regular price
+    case TICKET_TYPES_ENUM.PROFESSIONAL:
+      return 60; // Regular price
+    case TICKET_TYPES_ENUM.STUDENT_GROUP:
+      return 30; // Regular price per person
     default:
       return 35; // Default to student price
   }

@@ -10,31 +10,31 @@ export function calculatePaymentAmount(
   ticketType: string, 
   groupSize?: number
 ): { amount: number; description: string; isGroupRegistration: boolean } {
-  // Define base prices in cents
-  const STUDENT_PRICE = 3500; // $35.00
-  const PROFESSIONAL_PRICE = 6000; // $60.00
-  const GROUP_PRICE_PER_PERSON = 3000; // $30.00 per person
+  // Define SALE prices in cents
+  const STUDENT_PRICE = 2500; // $25.00 (was $35.00)
+  const PROFESSIONAL_PRICE = 5000; // $50.00 (was $60.00)
+  const GROUP_PRICE_PER_PERSON = 2000; // $20.00 per person (was $30.00)
   
   // Determine price based on ticket type
   switch (ticketType) {
     case "student":
       return {
         amount: STUDENT_PRICE,
-        description: "RAADE Conference 2025 - Student Registration",
+        description: "RAADE Conference 2025 - Student Registration (SALE)",
         isGroupRegistration: false
       };
     
     case "professional":
       return {
         amount: PROFESSIONAL_PRICE,
-        description: "RAADE Conference 2025 - Professional Registration",
+        description: "RAADE Conference 2025 - Professional Registration (SALE)",
         isGroupRegistration: false
       };
     
     case "student-group":
-      // Validate group size
-      if (!groupSize || groupSize < 5) {
-        throw new Error("Invalid ticket type: Group registrations require at least 5 participants");
+      // Validate group size - now minimum 3 (was 5)
+      if (!groupSize || groupSize < 3) {
+        throw new Error("Invalid ticket type: Group registrations require at least 3 participants");
       }
       
       // Calculate total price for the group
@@ -42,7 +42,7 @@ export function calculatePaymentAmount(
       
       return {
         amount: totalAmount,
-        description: `RAADE Conference 2025 - Student Group Registration (${groupSize} attendees)`,
+        description: `RAADE Conference 2025 - Student Group Registration (SALE - ${groupSize} attendees)`,
         isGroupRegistration: true
       };
     

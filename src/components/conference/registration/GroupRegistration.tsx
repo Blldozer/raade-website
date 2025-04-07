@@ -25,7 +25,7 @@ interface GroupRegistrationProps {
  * GroupRegistration Component
  * 
  * Handles the group registration form fields:
- * - Group size selection (minimum 5 people)
+ * - Group size selection (minimum 3 people for sale)
  * - Group member email collection with proper autocomplete attributes
  * - Validation for group size and email domains
  * - Price calculation and display
@@ -42,7 +42,7 @@ const GroupRegistration = ({ watch, setValue, control, errors }: GroupRegistrati
     name: "groupEmails",
   });
 
-  const groupSize = watch("groupSize") || 5;
+  const groupSize = watch("groupSize") || 3; // Default to 3 now instead of 5
   const totalPrice = calculateTotalPrice("student-group", groupSize);
   
   return (
@@ -53,7 +53,7 @@ const GroupRegistration = ({ watch, setValue, control, errors }: GroupRegistrati
           <div>
             <h3 className="font-medium text-blue-700">Group Registration</h3>
             <p className="text-sm text-blue-600">
-              Register multiple students at a discounted rate ($30/person).
+              <span className="bg-red-100 text-red-800 px-2 py-0.5 rounded font-medium">SALE!</span> Register 3+ students at a discounted rate ($20/person).
               All group members must have valid .edu email addresses.
             </p>
           </div>
@@ -70,6 +70,8 @@ const GroupRegistration = ({ watch, setValue, control, errors }: GroupRegistrati
             <SelectValue placeholder="Select group size" />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value="3">3 People</SelectItem>
+            <SelectItem value="4">4 People</SelectItem>
             <SelectItem value="5">5 People</SelectItem>
             <SelectItem value="6">6 People</SelectItem>
             <SelectItem value="7">7 People</SelectItem>
@@ -85,7 +87,7 @@ const GroupRegistration = ({ watch, setValue, control, errors }: GroupRegistrati
         <div className="mt-2 p-3 bg-gray-50 rounded-md">
           <div className="flex justify-between items-center">
             <span className="text-gray-700">Price per person:</span>
-            <span className="font-medium">$30</span>
+            <span className="font-medium">$20</span>
           </div>
           <div className="flex justify-between items-center mt-1">
             <span className="text-gray-700">Group size:</span>
