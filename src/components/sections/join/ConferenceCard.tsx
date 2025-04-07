@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Calendar, Handshake } from 'lucide-react';
+import { ArrowRight, Calendar, HandshakeIcon } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
@@ -35,7 +35,7 @@ const ConferenceCard = () => {
         
         <CardHeader>
           <CardTitle className="text-2xl font-simula text-[#274675] flex items-center">
-            <Handshake className="mr-2 h-5 w-5 text-[#FBB03B]" /> 
+            <HandshakeIcon className="mr-2 h-5 w-5 text-[#FBB03B]" /> 
             African Development Forum
           </CardTitle>
           <CardDescription className="text-[#274675]/70 font-lora">
