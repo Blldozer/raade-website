@@ -1,3 +1,4 @@
+
 // Use the globally loaded GSAP
 declare const gsap: any;
 declare const ScrollTrigger: any;

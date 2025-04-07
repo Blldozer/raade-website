@@ -1,3 +1,4 @@
+
 // Import GSAP registration first to ensure it's available globally
 import "@/utils/gsapRegistration";
 
