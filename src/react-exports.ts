@@ -1,22 +1,24 @@
-
 /**
  * React Exports - Centralized exports for React components and hooks
  * This file ensures React types and hooks are properly available throughout the application
  */
 
-// Re-export React as both default and named export
-import * as ReactModule from 'react';
+// Simple direct import of React - this pattern works well with React 18+
+import React from 'react';
 
-// Create explicit exports to avoid TypeScript errors
+// Export everything from React that we need
+export default React;
+
+// Re-export all hooks and components directly
 export const {
   useState,
   useEffect,
-  useLayoutEffect,
+  useReducer,
+  useRef,
   useCallback,
   useMemo,
   useContext,
-  useRef,
-  useReducer,
+  useLayoutEffect,
   useId,
   useImperativeHandle,
   useTransition,
@@ -30,33 +32,6 @@ export const {
   StrictMode,
   Suspense,
   lazy,
-  Component
-} = ReactModule;
-
-// Export React types
-export type {
-  FC,
-  ReactNode,
-  ReactElement,
-  CSSProperties,
-  FormEvent,
-  MouseEvent,
-  ChangeEvent,
-  Ref,
-  RefObject,
-  MutableRefObject,
-  ComponentProps,
-  ComponentPropsWithoutRef,
-  ComponentType,
-  PropsWithChildren,
-  ButtonHTMLAttributes,
-  HTMLAttributes,
-  InputHTMLAttributes,
-  TextareaHTMLAttributes,
-  ElementRef,
-  Dispatch,
-  SetStateAction
-} from 'react';
-
-// Export React as default
-export default ReactModule;
+  Component,
+  version
+} = React;

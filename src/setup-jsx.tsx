@@ -1,4 +1,3 @@
-
 /**
  * React JSX Setup
  * 
@@ -6,8 +5,11 @@
  * Import this at the top of any component files that use JSX
  */
 
-// Import from our centralized React exports
-import React, {
+// Import React directly - this pattern works well with React 18+
+import * as React from 'react';
+
+// Import all hooks directly from React
+const {
   useState,
   useEffect,
   useReducer,
@@ -20,10 +22,19 @@ import React, {
   useImperativeHandle,
   useTransition,
   useSyncExternalStore,
-  useDebugValue
-} from './react-exports';
+  useDebugValue,
+  StrictMode,
+  Component,
+  createElement,
+  Fragment,
+  Suspense,
+  createContext,
+  memo,
+  forwardRef,
+  lazy
+} = React;
 
-// Create a standard way to import React
+// Re-export everything for use in components
 export {
   useState,
   useEffect,
@@ -37,7 +48,17 @@ export {
   useImperativeHandle,
   useTransition,
   useSyncExternalStore,
-  useDebugValue
+  useDebugValue,
+  StrictMode,
+  Component,
+  createElement,
+  Fragment,
+  Suspense,
+  createContext,
+  memo,
+  forwardRef,
+  lazy
 };
 
+// Export React as default
 export default React;
