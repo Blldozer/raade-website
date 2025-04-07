@@ -3,11 +3,11 @@ import {
   require_react_is
 } from "./chunk-VPAMVI5C.js";
 import {
-  init_is_prop_valid_browser_esm
-} from "./chunk-NIFMJICR.js";
-import {
   require_react_dom
 } from "./chunk-RWMEXVXJ.js";
+import {
+  init_is_prop_valid_browser_esm
+} from "./chunk-NIFMJICR.js";
 import {
   require_jsx_runtime
 } from "./chunk-DN3UF52H.js";

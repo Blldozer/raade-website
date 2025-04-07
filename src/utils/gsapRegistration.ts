@@ -1,11 +1,11 @@
+import gsap from 'gsap';
+import ScrollTrigger from 'gsap/ScrollTrigger';
+import ScrollToPlugin from 'gsap/ScrollToPlugin';
 
-// Use the globally loaded GSAP
-declare const gsap: any;
-declare const ScrollTrigger: any;
-declare const ScrollToPlugin: any;
+// Register all GSAP plugins first thing
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
-// No need to register plugins as they're already registered via CDN scripts
-// Export the global instances for use throughout the app
+// Export GSAP and plugins for use throughout the app
 export { gsap, ScrollTrigger, ScrollToPlugin };
 
 // Export type for easier usage

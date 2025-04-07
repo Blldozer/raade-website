@@ -1,4 +1,3 @@
-
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
@@ -42,11 +41,18 @@ export default defineConfig({
     sourcemap: true,
     minify: 'terser',
     rollupOptions: {
-      external: ['gsap', 'gsap/ScrollTrigger'],
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom'],
-          'react-router': ['react-router-dom']
+          'react-vendor': ['react', 'react-dom'],
+          'radix-vendor': [
+            '@radix-ui/react-accordion',
+            '@radix-ui/react-alert-dialog',
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-tooltip'
+          ],
+          'gsap-vendor': ['gsap', 'gsap/ScrollTrigger', 'gsap/ScrollToPlugin']
         }
       }
     }
@@ -57,7 +63,9 @@ export default defineConfig({
       'react-dom',
       'framer-motion',
       'lucide-react',
-      'gsap'
+      'gsap',
+      'gsap/ScrollTrigger',
+      'gsap/ScrollToPlugin'
     ],
     exclude: [
       '@contentsquare/tag-sdk',
