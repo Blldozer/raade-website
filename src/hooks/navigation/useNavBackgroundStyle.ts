@@ -1,82 +1,40 @@
 
-import { useNavigation } from "@/components/navigation/context/useNavigation";
-import { useLocation } from "react-router-dom";
-import { hasFixedNavbarStyle } from "./useNavBackgroundUtils";
+import { useEffect, useState } from 'react';
+import { useNavigation } from '@/components/navigation/context/useNavigation';
 
 /**
- * Hook to extract background styling logic for navigation
+ * useNavBackgroundStyle Hook
  * 
- * Centralizes the complex logic for determining navigation background styles
- * based on scroll state, background type, and special page requirements
- * 
- * @returns CSS classes and states for the navigation background
+ * Determines the navigation background styling based on:
+ * - Current scroll position
+ * - Whether we're in dark mode
+ * - Whether we're on the hero page
  */
 export const useNavBackgroundStyle = () => {
   const { state } = useNavigation();
-  const { 
-    isScrolled, 
-    isLightBackground,
-    forceDarkMode
-  } = state;
+  const [bgClass, setBgClass] = useState('');
   
-  const location = useLocation();
-  const pathname = location.pathname;
-  
-  // Determine if this is a special page that needs dark styling
-  const isConferenceRegistrationPage = pathname === '/conference/register';
-  const isConferencePage = pathname.includes('/conference');
-  const isStudioPage = pathname.includes('/studios');
-  const isHomePage = pathname === '/' || pathname === '';
-  
-  /**
-   * Helper function to determine navbar background styling based on state
-   * Priority order:
-   * 1. Not scrolled - always transparent regardless of page type
-   * 2. Scrolled + special pages - subtle dark glassmorphism 
-   * 3. Scrolled + regular pages - subtle glassmorphism
-   */
-  const getBackgroundClass = (): string => {
-    // First priority: Always transparent at top of page regardless of page type
-    if (!isScrolled) {
-      return "bg-transparent border-transparent";
+  useEffect(() => {
+    const { isScrolled, isHeroPage, isDarkBackground, forceDarkMode } = state;
+    let newBgClass = '';
+    
+    if (isScrolled) {
+      // Scrolled state - solid background
+      newBgClass = isDarkBackground || forceDarkMode
+        ? 'bg-[#274675]/95 text-white'
+        : 'bg-white/95 text-[#274675] shadow-sm';
+    } else if (isHeroPage) {
+      // Hero page - transparent with white text
+      newBgClass = 'bg-transparent text-white';
+    } else {
+      // Default state - depends on background
+      newBgClass = isDarkBackground || forceDarkMode
+        ? 'bg-transparent text-white'
+        : 'bg-white/95 text-[#274675] shadow-sm';
     }
     
-    // Second priority: Special pages that should have dark navbar when scrolled
-    if ((isConferenceRegistrationPage || isConferencePage || isStudioPage || isHomePage || forceDarkMode) && isScrolled) {
-      // Dark glassmorphism for these special pages when scrolled
-      return "bg-black/20 backdrop-blur-md border-b border-white/10 shadow-md";
-    }
-    
-    // Third priority: Subtle glassmorphism when scrolled (same for both light/dark)
-    return "bg-black/10 backdrop-blur-md border-b border-white/10 shadow-sm";
-  };
+    setBgClass(newBgClass);
+  }, [state]);
   
-  // Determine if we're against a dark background
-  // This happens when either:
-  // 1. We're on a page with dark elements behind navbar (homepage, conference, studios)
-  // 2. We have light background mode disabled
-  // 3. We're on special pages that force dark navbar
-  const isAgainstDarkBackground = 
-    !isLightBackground || 
-    forceDarkMode || 
-    isConferenceRegistrationPage ||
-    isConferencePage ||
-    isStudioPage ||
-    isHomePage;
-  
-  // Only consider fixed styling when scrolled
-  const shouldUseFixedStyle = isScrolled && hasFixedNavbarStyle(pathname);
-  
-  return {
-    backgroundClass: getBackgroundClass(),
-    isConferenceRegistrationPage,
-    isConferencePage,
-    isStudioPage,
-    isHomePage,
-    effectiveLightBackground: (forceDarkMode || isConferenceRegistrationPage || isConferencePage || isStudioPage || isHomePage) 
-      ? false 
-      : isLightBackground,
-    isAgainstDarkBackground,
-    shouldUseFixedStyle
-  };
+  return bgClass;
 };

@@ -1,67 +1,72 @@
 
 import React, { createContext, useReducer, ReactNode } from "react";
+import { NavigationState, NavigationAction, NavigationContextType, NavigationProviderProps } from "./NavigationContextDefinition";
 
-// Define the state shape
-export interface NavigationState {
-  isScrolled: boolean;
-  isHeroPage: boolean;
-  isLightBackground: boolean;
-  isMobileMenuOpen: boolean;
-}
-
-// Define action types
-type NavigationAction =
-  | { type: "SET_SCROLLED"; payload: boolean }
-  | { type: "SET_HERO_PAGE"; payload: boolean }
-  | { type: "SET_LIGHT_BACKGROUND"; payload: boolean }
-  | { type: "TOGGLE_MOBILE_MENU" }
-  | { type: "SET_MOBILE_MENU"; payload: boolean };
-
-// Define the context type
-interface NavigationContextType {
-  state: NavigationState;
-  dispatch: React.Dispatch<NavigationAction>;
-}
-
-// Create the context with a default undefined value
-export const NavigationContext = createContext<NavigationContextType | undefined>(undefined);
-
-// Initial state
 const initialState: NavigationState = {
   isScrolled: false,
   isHeroPage: false,
-  isLightBackground: false,
+  forceDarkMode: false,
+  useShortFormLogo: false,
   isMobileMenuOpen: false,
+  isVisible: true,
+  isDarkBackground: false,
+  isMobile: false,
+  isTablet: false,
+  currentSection: null
 };
 
-// Reducer function to handle all navigation state updates
-function navigationReducer(state: NavigationState, action: NavigationAction): NavigationState {
+const reducer = (state: NavigationState, action: NavigationAction): NavigationState => {
   switch (action.type) {
     case "SET_SCROLLED":
       return { ...state, isScrolled: action.payload };
     case "SET_HERO_PAGE":
       return { ...state, isHeroPage: action.payload };
-    case "SET_LIGHT_BACKGROUND":
-      return { ...state, isLightBackground: action.payload };
+    case "SET_DARK_MODE":
+      return { ...state, forceDarkMode: action.payload };
+    case "SET_SHORT_LOGO":
+      return { ...state, useShortFormLogo: action.payload };
     case "TOGGLE_MOBILE_MENU":
       return { ...state, isMobileMenuOpen: !state.isMobileMenuOpen };
     case "SET_MOBILE_MENU":
       return { ...state, isMobileMenuOpen: action.payload };
+    case "SET_VISIBILITY":
+      return { ...state, isVisible: action.payload };
+    case "SET_DARK_BACKGROUND":
+      return { ...state, isDarkBackground: action.payload };
+    case "SET_MOBILE":
+      return { ...state, isMobile: action.payload };
+    case "SET_TABLET":
+      return { ...state, isTablet: action.payload };
+    case "SET_CURRENT_SECTION":
+      return { ...state, currentSection: action.payload };
     default:
       return state;
   }
-}
+};
 
-// Provider component
-interface NavigationProviderProps {
-  children: ReactNode;
-}
+export const NavigationContext = createContext<NavigationContextType>({
+  state: initialState,
+  dispatch: () => null,
+  setIsDarkBackground: () => {}
+});
 
-export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children }) => {
-  const [state, dispatch] = useReducer(navigationReducer, initialState);
+export const NavigationProvider: React.FC<NavigationProviderProps> = ({ 
+  children, 
+  initialProps 
+}) => {
+  // Apply initial props if provided
+  const actualInitialState = initialProps 
+    ? { ...initialState, ...initialProps } 
+    : initialState;
+  
+  const [state, dispatch] = useReducer(reducer, actualInitialState);
+  
+  const setIsDarkBackground = (isDark: boolean) => {
+    dispatch({ type: "SET_DARK_BACKGROUND", payload: isDark });
+  };
 
   return (
-    <NavigationContext.Provider value={{ state, dispatch }}>
+    <NavigationContext.Provider value={{ state, dispatch, setIsDarkBackground }}>
       {children}
     </NavigationContext.Provider>
   );

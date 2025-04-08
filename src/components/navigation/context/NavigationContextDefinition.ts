@@ -1,42 +1,39 @@
 
-import { createContext } from "react";
-
 /**
- * Navigation state interface
- * Defines the structure of the navigation context state
+ * Navigation Context Type Definitions
+ * 
+ * Defines the structure of the navigation context state and dispatcher
  */
+
 export interface NavigationState {
-  // Visibility and scroll states
   isScrolled: boolean;
-  isPastHero: boolean;
+  isHeroPage: boolean;
+  forceDarkMode: boolean;
+  useShortFormLogo: boolean;
+  isMobileMenuOpen: boolean;
   isVisible: boolean;
-  
-  // Background and styling
   isDarkBackground: boolean;
-  
-  // Section awareness
-  currentSection: Element | null;
-  currentSectionId: string | null;
-  isLightBackground: boolean;
-  
-  // Responsive state
   isMobile: boolean;
   isTablet: boolean;
-  
-  // Page context
-  isHeroPage: boolean;
-  useShortFormLogo: boolean;
-  forceDarkMode: boolean; // Added this property to fix the error
+  currentSection: string | null;
 }
 
-/**
- * Navigation context interface
- * Combines state with any actions the context might provide
- */
+export interface NavigationAction {
+  type: string;
+  payload?: any;
+}
+
 export interface NavigationContextType {
   state: NavigationState;
+  dispatch: React.Dispatch<NavigationAction>;
   setIsDarkBackground: (isDark: boolean) => void;
 }
 
-// Create the context with a default undefined value
-export const NavigationContext = createContext<NavigationContextType | undefined>(undefined);
+export interface NavigationProviderProps {
+  children: React.ReactNode;
+  initialProps?: {
+    isHeroPage: boolean;
+    forceDarkMode: boolean;
+    useShortFormLogo: boolean;
+  };
+}

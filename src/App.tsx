@@ -20,35 +20,42 @@ import RegistrationSuccess from './pages/RegistrationSuccess';
 import ComingSoon from './pages/ComingSoon';
 import Donate from './pages/Donate';
 
+/**
+ * Root Application Component
+ * 
+ * Main app entry point that sets up:
+ * - Global error boundary
+ * - Application providers (theme, query client, etc.)
+ * - Router configuration
+ */
 function App() {
   return (
-    <ErrorBoundary fallback={(error) => <GlobalErrorFallback error={error} />}>
+    <ErrorBoundary fallback={({ error }) => <GlobalErrorFallback error={error} />}>
       <AppProviders>
         <Router>
-          <ScrollToTop>
-            <NavigationWrapper>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/about" element={<About />} />
-                
-                <Route path="/conference" element={<Conference />} />
-                <Route path="/conference/registration" element={<ConferenceRegistration />} />
-                <Route path="/conference/confirmation" element={<RegistrationSuccess />} />
-                <Route path="/conference/speakers/:speakerId" element={<SpeakerProfile />} />
-                
-                <Route path="/innovation-studios" element={<InnovationStudios />} />
-                <Route path="/projects/:projectId" element={<ProjectDetail />} />
-                
-                <Route path="/partner-application" element={<PartnerApplication />} />
-                <Route path="/student-application" element={<StudentApplication />} />
-                
-                <Route path="/donate" element={<Donate />} />
-                
-                <Route path="/coming-soon" element={<ComingSoon />} />
-                <Route path="*" element={<ComingSoon />} />
-              </Routes>
-            </NavigationWrapper>
-          </ScrollToTop>
+          <ScrollToTop />
+          <NavigationWrapper>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/about" element={<About />} />
+              
+              <Route path="/conference" element={<Conference />} />
+              <Route path="/conference/registration" element={<ConferenceRegistration />} />
+              <Route path="/conference/confirmation" element={<RegistrationSuccess />} />
+              <Route path="/conference/speakers/:speakerId" element={<SpeakerProfile />} />
+              
+              <Route path="/innovation-studios" element={<InnovationStudios />} />
+              <Route path="/projects/:projectId" element={<ProjectDetail />} />
+              
+              <Route path="/partner-application" element={<PartnerApplication />} />
+              <Route path="/student-application" element={<StudentApplication />} />
+              
+              <Route path="/donate" element={<Donate />} />
+              
+              <Route path="/coming-soon" element={<ComingSoon />} />
+              <Route path="*" element={<ComingSoon />} />
+            </Routes>
+          </NavigationWrapper>
         </Router>
       </AppProviders>
     </ErrorBoundary>
