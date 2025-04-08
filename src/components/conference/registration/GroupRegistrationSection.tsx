@@ -1,175 +1,165 @@
 
-import { UseFormWatch, UseFormSetValue, Control, useFieldArray } from "react-hook-form";
+import { UseFormRegister, UseFormSetValue, UseFormWatch, useFieldArray, Control } from "react-hook-form";
 import { RegistrationFormData } from "../RegistrationFormTypes";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Minus, Plus, AlertCircle, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { validateTicketEmailDomain } from "../RegistrationFormTypes";
-import { useState, useEffect } from "react";
+import { Trash, PlusCircle, Info, AlertCircle } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 /**
  * GroupRegistrationSection Component
  * 
- * Handles group registration form fields:
- * - Shows/hides based on ticket type
- * - Manages group size selection
- * - Collects email addresses for each group member
- * - Validates student emails for .edu domains
+ * Manages the group registration flow where a primary registrant can
+ * register multiple attendees at once.
  * 
- * @param watch - React Hook Form watch function
+ * Features:
+ * - Dynamically add/remove group members
+ * - Validate email formats
+ * - Display clear feedback on requirements
+ * 
+ * @param register - React Hook Form register function
  * @param setValue - React Hook Form setValue function
+ * @param watch - React Hook Form watch function
  * @param control - React Hook Form control object
+ * @param errors - Form validation errors
  */
 interface GroupRegistrationSectionProps {
-  watch: UseFormWatch<RegistrationFormData>;
+  register: UseFormRegister<RegistrationFormData>;
   setValue: UseFormSetValue<RegistrationFormData>;
+  watch: UseFormWatch<RegistrationFormData>;
   control: Control<RegistrationFormData>;
+  errors: any;
 }
 
 const GroupRegistrationSection = ({
-  watch,
+  register,
   setValue,
-  control
+  watch,
+  control,
+  errors,
 }: GroupRegistrationSectionProps) => {
-  const [emailValidations, setEmailValidations] = useState<Record<number, { isValid: boolean; message?: string }>>({});
-  
   const ticketType = watch("ticketType");
-  const groupSize = watch("groupSize") || 0;
+  const groupSize = watch("groupSize");
   
-  // For student groups, use field array to manage multiple email inputs
   const { fields, append, remove } = useFieldArray({
     control,
     name: "groupEmails",
   });
-  
-  // When group size changes, adjust the number of email fields
-  useEffect(() => {
-    if (ticketType !== "student-group") return;
 
-    // Add or remove email fields based on group size
-    const currentLength = fields.length;
-    
-    if (groupSize > currentLength) {
-      // Add new email fields
-      for (let i = currentLength; i < groupSize; i++) {
-        append({ value: "" });
-      }
-    } else if (groupSize < currentLength) {
-      // Remove excess email fields
-      for (let i = currentLength - 1; i >= groupSize; i--) {
-        remove(i);
-      }
-    }
-  }, [groupSize, fields.length, append, remove, ticketType]);
-
-  // When an email value changes, validate it
-  const handleEmailChange = (index: number, email: string) => {
-    const result = validateTicketEmailDomain(email, ticketType);
-    setEmailValidations(prev => ({
-      ...prev,
-      [index]: result
-    }));
-  };
-
-  // If ticket type is not student-group, don't show this section
+  // Only show this section if the ticket type is student-group
   if (ticketType !== "student-group") {
     return null;
   }
 
+  // Add an email field when a user increases the group size
+  const handleAddEmail = () => {
+    append({ email: "" });
+  };
+
+  // Calculate how many more emails are needed to match the group size
+  const getEmailsNeeded = () => {
+    if (!groupSize || !fields) return 0;
+    return Math.max(0, groupSize - fields.length);
+  };
+
+  const emailsNeeded = getEmailsNeeded();
+
   return (
-    <div className="space-y-4 border p-4 rounded-md border-gray-200 dark:border-gray-700">
-      <div>
-        <Label htmlFor="groupSize" className="font-lora">Group Size</Label>
-        <div className="flex items-center space-x-3 mt-1">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={() => {
-              const newSize = Math.max(2, (groupSize || 5) - 1);
-              setValue("groupSize", newSize);
-            }}
-            disabled={groupSize <= 2}
-          >
-            <Minus className="h-4 w-4" />
-          </Button>
-          
-          <Input 
-            id="groupSize" 
-            type="number"
-            min="2"
-            max="20"
-            className="w-20 text-center"
-            value={groupSize || 5}
-            onChange={(e) => {
-              const value = parseInt(e.target.value);
-              setValue("groupSize", isNaN(value) ? 5 : Math.max(2, Math.min(20, value)));
-            }}
-          />
-          
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={() => {
-              const newSize = Math.min(20, (groupSize || 5) + 1);
-              setValue("groupSize", newSize);
-            }}
-            disabled={groupSize >= 20}
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
+    <div className="space-y-6 mt-6 p-6 border rounded-lg bg-gray-50">
+      <div className="flex items-start justify-between">
+        <div>
+          <h3 className="text-lg font-semibold font-lora">Group Members</h3>
+          <p className="text-sm text-gray-600 mt-1">
+            Please provide the email addresses of all group members.
+          </p>
         </div>
-        <p className="text-gray-500 text-sm mt-1">
-          Minimum 2, maximum 20 people per group
-        </p>
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Info className="h-5 w-5 text-gray-500" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-xs">
+              <p>
+                All group members will receive a confirmation email with their
+                ticket information. You are responsible for ensuring their
+                information is correct.
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
-      
-      <div className="space-y-2">
-        <Label className="font-lora">Group Member Emails</Label>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-          Please enter the email addresses of all group members. For student tickets, .edu email addresses are required.
-        </p>
-        
+
+      {/* Email list */}
+      <div className="space-y-4">
         {fields.map((field, index) => (
-          <div key={field.id} className="flex items-center space-x-2">
-            <div className="relative flex-grow">
+          <div key={field.id} className="flex items-center gap-2">
+            <div className="flex-1">
+              <Label
+                htmlFor={`groupEmails.${index}.email`}
+                className="sr-only"
+              >
+                Group Member Email {index + 1}
+              </Label>
               <Input
+                id={`groupEmails.${index}.email`}
+                type="email"
                 placeholder={`Group member ${index + 1} email`}
-                value={typeof field.value === 'object' && field.value !== null ? field.value.value : field.value || ''}
-                onChange={(e) => {
-                  setValue(`groupEmails.${index}`, { value: e.target.value });
-                  handleEmailChange(index, e.target.value);
-                }}
-                className={emailValidations[index]?.isValid === false ? "border-red-300 pr-10" : ""}
+                {...register(`groupEmails.${index}.email`)}
+                className={cn(
+                  errors?.groupEmails?.[index]?.email && "border-red-500"
+                )}
               />
-              {emailValidations[index] && !emailValidations[index].isValid && (
-                <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
-                  <AlertCircle className="h-5 w-5 text-red-500" />
-                </div>
+              {errors?.groupEmails?.[index]?.email && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.groupEmails[index].email.message}
+                </p>
               )}
             </div>
-            {index > 0 && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={() => remove(index)}
-                className="h-8 w-8"
-              >
-                <XCircle className="h-4 w-4" />
-              </Button>
-            )}
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => remove(index)}
+              className="shrink-0"
+            >
+              <Trash className="h-5 w-5 text-gray-500" />
+              <span className="sr-only">Remove email</span>
+            </Button>
           </div>
         ))}
-        
-        {Object.values(emailValidations).some(v => !v.isValid) && (
-          <p className="text-red-500 text-sm">All student group members must use .edu email addresses</p>
-        )}
       </div>
+
+      {/* Show warning if emails don't match group size */}
+      {groupSize && fields.length !== groupSize && (
+        <div className="flex items-center gap-2 text-amber-600 bg-amber-50 p-3 rounded-md text-sm">
+          <AlertCircle className="h-5 w-5 shrink-0" />
+          <p>
+            {emailsNeeded > 0
+              ? `Please add ${emailsNeeded} more email${
+                  emailsNeeded === 1 ? "" : "s"
+                } to match your group size of ${groupSize}.`
+              : `You have ${Math.abs(
+                  emailsNeeded
+                )} too many emails for your group size of ${groupSize}.`}
+          </p>
+        </div>
+      )}
+
+      {/* Add email button */}
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full"
+        onClick={handleAddEmail}
+      >
+        <PlusCircle className="h-4 w-4 mr-2" />
+        Add another group member
+      </Button>
     </div>
   );
 };
