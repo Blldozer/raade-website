@@ -3,61 +3,67 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 /**
- * Custom hook for sending conference registration confirmation emails
+ * Custom hook to handle email confirmation process
  * 
- * Handles email confirmation sending state and error handling
+ * Manages the state and logic for sending confirmation emails
+ * after successful payment or registration
  */
 export const useEmailConfirmation = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
-  
+  const [error, setError] = useState<string | null>(null);
+
   /**
-   * Send confirmation email to the registered attendee
+   * Send email confirmation to the user
    * 
-   * @param email - Recipient's email address
-   * @param name - Recipient's name
+   * @param email - User's email address
+   * @param fullName - User's full name
    * @param ticketType - Type of ticket purchased
-   * @returns Promise that resolves when email is sent
+   * @returns Promise indicating if email was sent successfully
    */
   const sendEmailConfirmation = async (
     email: string,
-    name: string,
+    fullName: string,
     ticketType: string
-  ): Promise<void> => {
-    if (!email || !name) {
-      console.error("Cannot send confirmation without email and name");
-      return;
+  ): Promise<boolean> => {
+    if (!email) {
+      setError("Email address is required");
+      return false;
     }
-    
+
     setIsLoading(true);
+    setError(null);
     
     try {
-      const { error } = await supabase.functions.invoke("send-conference-confirmation", {
+      const { error } = await supabase.functions.invoke("send-confirmation-email", {
         body: {
           email,
-          name,
-          ticketType,
-          requestId: `conf-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`
+          fullName,
+          ticketType
         }
       });
       
       if (error) {
-        throw error;
+        console.error("Error sending confirmation email:", error);
+        setError(error.message);
+        return false;
       }
       
       setEmailSent(true);
-      console.log("Conference confirmation email sent successfully");
+      return true;
     } catch (err) {
       console.error("Failed to send confirmation email:", err);
-      // We don't want to throw here as this would break the UI flow
+      setError(err instanceof Error ? err.message : "Unknown error");
+      return false;
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   return {
     sendEmailConfirmation,
     isLoading,
-    emailSent
+    emailSent,
+    error
   };
 };
