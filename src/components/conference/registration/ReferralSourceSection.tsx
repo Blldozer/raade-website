@@ -1,53 +1,91 @@
 
-import React from "react";
-import { UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
-import { RegistrationFormData, REFERRAL_SOURCES } from "../RegistrationFormTypes";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { FormItem } from "@/components/ui/form";
+import { Control, FieldErrors, UseFormRegister, UseFormWatch } from "react-hook-form";
+import { RegistrationFormData } from "../RegistrationFormTypes";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState, useEffect } from "react";
 
 interface ReferralSourceSectionProps {
   register: UseFormRegister<RegistrationFormData>;
-  setValue?: UseFormSetValue<RegistrationFormData>;
-  watch?: UseFormWatch<RegistrationFormData>;
+  errors: FieldErrors<RegistrationFormData>;
+  control: Control<RegistrationFormData>;
+  watch: UseFormWatch<RegistrationFormData>;
 }
 
 /**
  * ReferralSourceSection Component
  * 
- * Displays options for how the registrant heard about the conference
- * This is an optional field to help with marketing analytics
+ * Provides form fields for collecting information about how the user heard about the event
+ * With conditional logic to show an input field for "Other" sources
  * 
  * @param register - React Hook Form register function
- * @param setValue - Optional React Hook Form setValue function for programmatic updates
- * @param watch - Optional React Hook Form watch function for monitoring values
+ * @param errors - Form validation errors
+ * @param control - React Hook Form control object
+ * @param watch - React Hook Form watch function
  */
-const ReferralSourceSection: React.FC<ReferralSourceSectionProps> = ({ 
+const ReferralSourceSection = ({
   register,
-  setValue,
+  errors,
+  control,
   watch
-}) => {
+}: ReferralSourceSectionProps) => {
+  const watchReferralSource = watch("referralSource");
+  const [showOtherField, setShowOtherField] = useState(false);
+  
+  useEffect(() => {
+    // Check if referral source is "Other" to show the custom input field
+    setShowOtherField(watchReferralSource === "Other");
+  }, [watchReferralSource]);
+
   return (
-    <div className="space-y-3">
-      <div className="text-sm font-medium">How did you hear about the conference? <span className="text-gray-500 text-xs">(optional)</span></div>
+    <div className="space-y-4">
+      <h3 className="text-lg font-medium">How did you hear about us?</h3>
       
-      <RadioGroup className="grid grid-cols-1 md:grid-cols-2 gap-2">
-        {REFERRAL_SOURCES.map((source) => (
-          <FormItem key={source} className="flex items-center space-x-2 space-y-0">
-            <RadioGroupItem 
-              value={source} 
-              id={`referral-${source}`} 
-              {...register("referralSource")}
-            />
-            <Label 
-              htmlFor={`referral-${source}`}
-              className="text-sm cursor-pointer"
+      <FormField
+        control={control}
+        name="referralSource"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Referral Source</FormLabel>
+            <Select
+              onValueChange={field.onChange}
+              defaultValue={field.value}
             >
-              {source}
-            </Label>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select how you heard about us" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                <SelectItem value="Friends">Friends or Colleagues</SelectItem>
+                <SelectItem value="University ASA">University ASA</SelectItem>
+                <SelectItem value="LinkedIn">LinkedIn</SelectItem>
+                <SelectItem value="Instagram">Instagram</SelectItem>
+                <SelectItem value="No Bystanders">No Bystanders</SelectItem>
+                <SelectItem value="RAADE Outreach Team">RAADE Outreach Team</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+            <FormMessage />
           </FormItem>
-        ))}
-      </RadioGroup>
+        )}
+      />
+      
+      {showOtherField && (
+        <div>
+          <FormLabel htmlFor="otherReferralSource">Please specify</FormLabel>
+          <Input
+            id="otherReferralSource"
+            placeholder="How did you hear about us?"
+            className="mt-1"
+            {...register("otherReferralSource")}
+          />
+          {errors.otherReferralSource && (
+            <p className="text-red-500 text-sm mt-1">{errors.otherReferralSource.message}</p>
+          )}
+        </div>
+      )}
     </div>
   );
 };

@@ -23,11 +23,27 @@ export interface NavigationState {
   isMobile: boolean;
   isTablet: boolean;
   
+  // Mobile menu state
+  isMobileMenuOpen: boolean;
+  
   // Page context
   isHeroPage: boolean;
   useShortFormLogo: boolean;
-  forceDarkMode: boolean; // Added this property to fix the error
+  forceDarkMode: boolean;
 }
+
+/**
+ * Navigation action types
+ * Used for the reducer to determine which action to perform
+ */
+export type NavigationAction =
+  | { type: 'SET_IS_DARK_BACKGROUND'; isDarkBackground: boolean }
+  | { type: 'TOGGLE_MOBILE_MENU' }
+  | { type: 'CLOSE_MOBILE_MENU' }
+  | { type: 'SET_IS_VISIBLE'; isVisible: boolean }
+  | { type: 'SET_IS_MOBILE'; isMobile: boolean }
+  | { type: 'SET_IS_TABLET'; isTablet: boolean }
+  | { type: 'SET_CURRENT_SECTION'; section: Element | null };
 
 /**
  * Navigation context interface
@@ -36,6 +52,7 @@ export interface NavigationState {
 export interface NavigationContextType {
   state: NavigationState;
   setIsDarkBackground: (isDark: boolean) => void;
+  dispatch: React.Dispatch<NavigationAction>;
 }
 
 // Create the context with a default undefined value

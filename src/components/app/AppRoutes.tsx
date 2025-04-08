@@ -17,6 +17,7 @@ import PartnerApplication from "../../pages/PartnerApplication";
 import ConferenceRegistration from "../../pages/ConferenceRegistration";
 import SpeakerProfile from "../../pages/SpeakerProfile";
 import RegistrationSuccess from "../../pages/RegistrationSuccess";
+import DonationSuccess from "../../pages/DonationSuccess";
 
 /**
  * AppRoutes component
@@ -45,6 +46,7 @@ const AppRoutes = () => {
               <Route path="/conference/register" element={<ConferenceRegistration />} />
               <Route path="/conference/success" element={<RegistrationSuccess />} />
               <Route path="/conference/speakers/:speakerId" element={<SpeakerProfile />} />
+              <Route path="/donation-success" element={<DonationSuccess />} />
               <Route path="/projects/:projectSlug" element={<ProjectDetail />} />
               <Route path="/apply/student" element={<StudentApplication />} />
               <Route path="/apply/partner" element={<PartnerApplication />} />

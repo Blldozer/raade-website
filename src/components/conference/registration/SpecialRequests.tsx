@@ -1,11 +1,12 @@
 
-import { UseFormRegister } from "react-hook-form";
+import { FieldErrors, UseFormRegister } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RegistrationFormData } from "../RegistrationFormTypes";
 
 interface SpecialRequestsProps {
   register: UseFormRegister<RegistrationFormData>;
+  errors: FieldErrors<RegistrationFormData>;
 }
 
 /**
@@ -16,8 +17,9 @@ interface SpecialRequestsProps {
  * for accessibility and form submissions.
  * 
  * @param register - React Hook Form register function
+ * @param errors - Form validation errors
  */
-const SpecialRequests = ({ register }: SpecialRequestsProps) => {
+const SpecialRequests = ({ register, errors }: SpecialRequestsProps) => {
   return (
     <div>
       <Label htmlFor="specialRequests">Special Requests</Label>
@@ -28,6 +30,9 @@ const SpecialRequests = ({ register }: SpecialRequestsProps) => {
         autoComplete="off"
         {...register("specialRequests")}
       />
+      {errors.specialRequests && (
+        <p className="text-red-500 text-sm mt-1">{errors.specialRequests.message}</p>
+      )}
     </div>
   );
 };
