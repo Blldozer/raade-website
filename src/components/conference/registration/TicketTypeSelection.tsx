@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import {
   RegistrationFormData,
-  getTicketPriceText,
+  getTicketPrice,
   TICKET_TYPES_ENUM
 } from "../RegistrationFormTypes";
 
@@ -38,6 +38,12 @@ const TicketTypeSelection = ({
 }: TicketTypeSelectionProps) => {
   const watchTicketType = watch("ticketType");
   
+  // Helper function to get price text for displaying in the dropdown
+  const getTicketPriceDisplay = (ticketType: TICKET_TYPES_ENUM) => {
+    const price = getTicketPrice(ticketType);
+    return `($${price})`;
+  };
+  
   return (
     <div>
       <Label htmlFor="ticketType">Ticket Type</Label>
@@ -49,9 +55,9 @@ const TicketTypeSelection = ({
           <SelectValue placeholder="Select ticket type" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value={TICKET_TYPES_ENUM.STUDENT}>Student {getTicketPriceText(TICKET_TYPES_ENUM.STUDENT)}</SelectItem>
-          <SelectItem value={TICKET_TYPES_ENUM.PROFESSIONAL}>Professional {getTicketPriceText(TICKET_TYPES_ENUM.PROFESSIONAL)}</SelectItem>
-          <SelectItem value={TICKET_TYPES_ENUM.STUDENT_GROUP}>Student Group {getTicketPriceText(TICKET_TYPES_ENUM.STUDENT_GROUP)}</SelectItem>
+          <SelectItem value={TICKET_TYPES_ENUM.STUDENT}>Student {getTicketPriceDisplay(TICKET_TYPES_ENUM.STUDENT)}</SelectItem>
+          <SelectItem value={TICKET_TYPES_ENUM.PROFESSIONAL}>Professional {getTicketPriceDisplay(TICKET_TYPES_ENUM.PROFESSIONAL)}</SelectItem>
+          <SelectItem value={TICKET_TYPES_ENUM.STUDENT_GROUP}>Student Group {getTicketPriceDisplay(TICKET_TYPES_ENUM.STUDENT_GROUP)}</SelectItem>
         </SelectContent>
       </Select>
       {errors.ticketType && (
