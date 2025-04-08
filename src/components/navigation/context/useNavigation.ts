@@ -16,3 +16,5 @@ export const useNavigation = () => {
   
   return context;
 };
+
+export default useNavigation;

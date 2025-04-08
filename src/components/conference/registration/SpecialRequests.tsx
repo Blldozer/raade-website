@@ -1,12 +1,13 @@
+
 import React from "react";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { UseFormRegister } from "react-hook-form";
+import { UseFormRegister, FormState } from "react-hook-form";
 import { RegistrationFormData } from "../RegistrationFormTypes";
 
 export interface SpecialRequestsProps {
   register: UseFormRegister<RegistrationFormData>;
-  errors: any;
+  errors: FormState<RegistrationFormData>["errors"];
 }
 
 /**
@@ -33,7 +34,7 @@ const SpecialRequests: React.FC<SpecialRequestsProps> = ({ register, errors }) =
           />
         </FormControl>
         {errors.specialRequests && (
-          <FormMessage>{errors.specialRequests.message}</FormMessage>
+          <FormMessage>{(errors.specialRequests as any).message}</FormMessage>
         )}
       </FormItem>
     </div>

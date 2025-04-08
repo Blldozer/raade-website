@@ -48,16 +48,21 @@ const RegistrationFormFields = ({
         register={register} 
         errors={errors} 
         watch={watch} 
+        control={control}
         onEmailValidation={onEmailValidation}
       />
       
       <TicketTypeSelection 
+        register={register}
+        errors={errors}
         watch={watch} 
         setValue={setValue} 
-        errors={errors} 
+        control={control}
       />
       
       <GroupRegistrationSection
+        register={register}
+        errors={errors}
         watch={watch}
         setValue={setValue}
         control={control}
@@ -65,11 +70,16 @@ const RegistrationFormFields = ({
 
       <ReferralSourceSection 
         register={register}
+        errors={errors}
         setValue={setValue}
         watch={watch}
+        control={control}
       />
 
-      <SpecialRequests register={register} />
+      <SpecialRequests 
+        register={register} 
+        errors={errors}
+      />
     </div>
   );
 };

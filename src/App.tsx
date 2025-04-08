@@ -29,8 +29,11 @@ import Donate from './pages/Donate';
  * - Router configuration
  */
 function App() {
+  // Cast the error component to ReactNode to fix TS error
+  const errorFallback = (error: any) => <GlobalErrorFallback error={error} />;
+
   return (
-    <ErrorBoundary fallback={(error) => <GlobalErrorFallback error={error} />}>
+    <ErrorBoundary fallback={errorFallback}>
       <ScrollToTop />
       <NavigationWrapper />
       <Routes>

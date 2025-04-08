@@ -14,7 +14,13 @@ import { useNavigation } from "@/components/navigation/context/useNavigation";
  */
 export const useNavBackgroundStyle = () => {
   const { state } = useNavigation();
-  const { isScrolled, isHeroPage, forceDarkMode, isLightBackground } = state;
+  
+  // Apply proper fallbacks for potentially undefined properties
+  const isScrolled = state.isScrolled || false;
+  const isHeroPage = state.isHeroPage || false;
+  const forceDarkMode = state.forceDarkMode || false;
+  const isLightBackground = state.isLightBackground !== undefined ? state.isLightBackground : true;
+  const isDarkBackground = state.isDarkBackground || false;
   
   // Not scrolled on hero page = transparent
   if (isHeroPage && !isScrolled) {
@@ -22,7 +28,7 @@ export const useNavBackgroundStyle = () => {
   }
   
   // Force dark mode = dark background
-  if (forceDarkMode) {
+  if (forceDarkMode || isDarkBackground) {
     return "bg-[#274675] text-white";
   }
   

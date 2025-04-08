@@ -26,7 +26,9 @@ export const useNavigationBackground = () => {
       
       if (newHasScrolled !== hasScrolled) {
         setHasScrolled(newHasScrolled);
-        dispatch({ type: "SET_SCROLLED", payload: newHasScrolled });
+        if (dispatch) {
+          dispatch({ type: "SET_SCROLLED", payload: newHasScrolled });
+        }
       }
     };
     
@@ -42,10 +44,10 @@ export const useNavigationBackground = () => {
 
   // Update section-specific attributes
   useEffect(() => {
-    const { currentSection } = state;
+    const currentSection = state.currentSection;
     
     // Set background color based on current section
-    if (currentSection) {
+    if (currentSection && setIsDarkBackground) {
       const needsDarkNav = [
         "hero", 
         "join",
@@ -59,12 +61,16 @@ export const useNavigationBackground = () => {
 
   // Set hero page flag when on home page
   useEffect(() => {
-    const isHeroPage = location.pathname === "/";
-    dispatch({ type: "SET_HERO_PAGE", payload: isHeroPage });
+    if (dispatch) {
+      const isHeroPage = location.pathname === "/";
+      dispatch({ type: "SET_HERO_PAGE", payload: isHeroPage });
+    }
   }, [location.pathname, dispatch]);
 
   // Detect device type for responsive navigation
   useEffect(() => {
+    if (!dispatch) return;
+    
     const handleResize = () => {
       const width = window.innerWidth;
       dispatch({ 

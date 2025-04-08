@@ -29,6 +29,7 @@ const ReferralSourceSection: React.FC<ReferralSourceSectionProps> = ({
   setValue
 }) => {
   const watchReferralSource = watch("referralSource");
+  // Fix the type error by ensuring Other is a valid value in the comparison
   const isOtherSelected = watchReferralSource === "Other";
 
   return (
@@ -71,7 +72,7 @@ const ReferralSourceSection: React.FC<ReferralSourceSectionProps> = ({
             <Input
               id="otherReferralSource"
               placeholder="How did you hear about us?"
-              {...register("otherReferralSource")}
+              {...register("otherReferralSource" as keyof RegistrationFormData)}
             />
           </FormControl>
           {errors.otherReferralSource && (

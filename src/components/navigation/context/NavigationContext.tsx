@@ -1,14 +1,15 @@
 
 import React, { createContext, useReducer, ReactNode } from "react";
-import { NavigationState, NavigationAction, NavigationContextType, NavigationProviderProps } from "./NavigationContextDefinition";
+import { NavigationState, NavigationContextType, NavigationProviderProps, NavigationAction } from "./NavigationContextDefinition";
 
 const initialState: NavigationState = {
   isScrolled: false,
   isHeroPage: false,
   forceDarkMode: false,
   useShortFormLogo: false,
-  isMobileMenuOpen: false,
+  isLightBackground: true,
   isVisible: true,
+  isMobileMenuOpen: false,
   isDarkBackground: false,
   isMobile: false,
   isTablet: false,

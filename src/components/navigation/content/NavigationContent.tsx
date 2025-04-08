@@ -25,18 +25,10 @@ const NavigationContent: React.FC<NavigationContentProps> = ({ children }) => {
   // Initialize background detection and scroll awareness
   useNavigationBackground();
   
-  // Extract navigation state properties for easier access
-  const { 
-    isScrolled,
-    isHeroPage,
-    isVisible,
-    isDarkBackground,
-    isMobileMenuOpen,
-    isMobile,
-    isTablet,
-    useShortFormLogo,
-    forceDarkMode
-  } = state;
+  // Safely access state properties with defaults in case they're undefined
+  const isVisible = state.isVisible !== undefined ? state.isVisible : true;
+  const isMobile = state.isMobile || false;
+  const isTablet = state.isTablet || false;
 
   return (
     <>
