@@ -159,16 +159,18 @@ export const useCardPayment = (
         const registrationSuccess = await storeRegistrationData({
           fullName: paymentData.fullName,
           email: paymentData.email,
-          organization: paymentData.organization,
-          role: paymentData.role,
+          organization: paymentData.organization || "",
+          role: paymentData.role || "",
           ticketType: paymentData.ticketType,
           specialRequests: paymentData.specialRequests,
           referralSource: paymentData.referralSource,
           groupSize: paymentData.groupSize,
           groupEmails: processedGroupEmails,
+          paymentComplete: true,
+          // Add these new properties, but make sure storeRegistrationData supports them
+          couponApplied: !!paymentData.couponCode,
           couponCode: paymentData.couponCode,
-          couponDiscount: paymentData.couponDiscount,
-          paymentComplete: true
+          couponDiscount: paymentData.couponDiscount
         });
         
         if (registrationSuccess) {

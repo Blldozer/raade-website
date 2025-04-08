@@ -8,6 +8,21 @@ interface CouponValidationResult {
   couponCode?: string;
 }
 
+// Define a type for the coupon code data structure
+interface CouponCode {
+  id: string;
+  code: string;
+  discount_type: string;
+  discount_amount: number;
+  is_active: boolean;
+  max_uses?: number;
+  current_uses: number;
+  expires_at?: string;
+  created_at: string;
+  created_by?: string;
+  description?: string;
+}
+
 /**
  * Coupon Service
  * 
@@ -44,8 +59,11 @@ export const validateCouponCode = async (code: string): Promise<CouponValidation
       };
     }
     
+    // Explicit type assertion to CouponCode
+    const typedCoupon = coupon as CouponCode;
+    
     // Check if the coupon has expired
-    if (coupon.expires_at && new Date(coupon.expires_at) < new Date()) {
+    if (typedCoupon.expires_at && new Date(typedCoupon.expires_at) < new Date()) {
       console.log("Coupon expired:", code);
       return { 
         isValid: false, 
@@ -55,7 +73,7 @@ export const validateCouponCode = async (code: string): Promise<CouponValidation
     }
     
     // Check if the coupon has reached its usage limit
-    if (coupon.max_uses && coupon.current_uses >= coupon.max_uses) {
+    if (typedCoupon.max_uses && typedCoupon.current_uses >= typedCoupon.max_uses) {
       console.log("Coupon usage limit reached:", code);
       return { 
         isValid: false, 
@@ -66,9 +84,9 @@ export const validateCouponCode = async (code: string): Promise<CouponValidation
     
     // Calculate discount
     let discountPercentage = 0;
-    if (coupon.discount_type === "percentage") {
-      discountPercentage = Number(coupon.discount_amount);
-    } else if (coupon.discount_type === "fixed") {
+    if (typedCoupon.discount_type === "percentage") {
+      discountPercentage = Number(typedCoupon.discount_amount);
+    } else if (typedCoupon.discount_type === "fixed") {
       // For fixed amount discounts, we'd need to calculate the percentage based on the ticket price
       // We're simplifying here to just handle percentage discounts
       discountPercentage = 0;
@@ -78,7 +96,7 @@ export const validateCouponCode = async (code: string): Promise<CouponValidation
     return { 
       isValid: true, 
       discount: discountPercentage,
-      couponCode: coupon.code
+      couponCode: typedCoupon.code
     };
     
   } catch (error) {
@@ -101,9 +119,12 @@ export const incrementCouponUsage = async (code: string): Promise<boolean> => {
   if (!code) return false;
   
   try {
-    const { error } = await supabase.rpc('increment_coupon_usage', { 
-      code_param: code.trim().toUpperCase() 
-    });
+    // Instead of using RPC, we'll do a direct update since the function doesn't exist
+    const { data, error } = await supabase
+      .from("coupon_codes")
+      .update({ current_uses: supabase.rpc('increment', { column_name: 'current_uses' }) })
+      .eq("code", code.trim().toUpperCase())
+      .select("current_uses");
     
     if (error) {
       console.error("Error incrementing coupon usage:", error);
@@ -116,3 +137,4 @@ export const incrementCouponUsage = async (code: string): Promise<boolean> => {
     return false;
   }
 };
+

@@ -4,14 +4,17 @@ import { supabase } from "@/integrations/supabase/client";
 interface RegistrationData {
   fullName: string;
   email: string;
-  organization?: string;
-  role?: string;
+  organization: string;
+  role: string;
   ticketType: string;
   specialRequests?: string;
   referralSource?: string;
   groupSize?: number;
   groupEmails?: string[];
   paymentComplete: boolean;
+  couponApplied?: boolean;
+  couponCode?: string;
+  couponDiscount?: number;
 }
 
 /**
@@ -35,7 +38,8 @@ export const useRegistrationStorage = () => {
         fullName: data.fullName,
         ticketType: data.ticketType,
         paymentComplete: data.paymentComplete,
-        hasGroupData: data.groupSize && data.groupSize > 0
+        hasGroupData: data.groupSize && data.groupSize > 0,
+        couponApplied: data.couponApplied
       });
       
       // Generate a tracking ID for this request

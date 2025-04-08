@@ -6,6 +6,7 @@ import SpecialRequests from "./registration/SpecialRequests";
 import BasicInformationSection from "./registration/BasicInformationSection";
 import GroupRegistrationSection from "./registration/GroupRegistrationSection";
 import ReferralSourceSection from "./registration/ReferralSourceSection";
+import CouponCodeInput from "./registration/CouponCodeInput";
 import { useGroupSizeReset } from "./registration/useGroupSizeReset";
 
 interface RegistrationFormFieldsProps {
@@ -64,6 +65,12 @@ const RegistrationFormFields = ({
       />
 
       <ReferralSourceSection 
+        register={register}
+        setValue={setValue}
+        watch={watch}
+      />
+
+      <CouponCodeInput
         register={register}
         setValue={setValue}
         watch={watch}
