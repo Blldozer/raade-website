@@ -13,6 +13,7 @@ interface UseProcessPaymentConfirmationProps {
   stripe: Stripe | null;
   elements: StripeElements | null;
   email: string;
+  getClientSecret: () => string | null;
 }
 
 /**
@@ -24,7 +25,8 @@ interface UseProcessPaymentConfirmationProps {
 export const useProcessPaymentConfirmation = ({
   stripe,
   elements,
-  email
+  email,
+  getClientSecret
 }: UseProcessPaymentConfirmationProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
   
@@ -50,11 +52,11 @@ export const useProcessPaymentConfirmation = ({
         return { success: false, reason: "card-element-missing" };
       }
       
-      // Get the client secret from window object
-      const clientSecret = (window as any).__stripeClientSecret;
+      // Get the client secret from the provided function
+      const clientSecret = getClientSecret();
       
       if (!clientSecret) {
-        console.error("Client secret is missing from window object");
+        console.error("Client secret is missing");
         return { success: false, reason: "client-secret-missing" };
       }
       

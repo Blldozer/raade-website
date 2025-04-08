@@ -9,6 +9,7 @@ import { usePaymentElements } from "./hooks/usePaymentElements";
 import { usePaymentSubmission } from "./hooks/usePaymentSubmission";
 import { useStripePaymentIntentCheck } from "./hooks/useStripePaymentIntentCheck";
 import PaymentFormElements from "./PaymentFormElements";
+import { AlertCircle } from "lucide-react";
 
 interface PaymentFormProps {
   email: string;
@@ -43,18 +44,35 @@ const PaymentForm = ({
 }: PaymentFormProps) => {
   const [message, setMessage] = useState<string | null>(null);
   const [paymentCompleted, setPaymentCompleted] = useState(false);
+  const [clientSecretError, setClientSecretError] = useState<boolean>(false);
   const isMountedRef = useRef(true);
   const successCalledRef = useRef(false);
   const errorCalledRef = useRef(false); // Track if error callback has been called
   
-  // Store client secret in window for access by the payment confirmation process
-  useEffect(() => {
-    // This is a hack to pass the client secret to the confirmation process
-    // A better approach would be to refactor to pass it directly
-    if (typeof window !== 'undefined' && amount > 0) {
-      console.log(`Setting up payment form for $${amount} (${requestId || 'unknown'})`);
+  // Get client secret from window object
+  const getClientSecret = () => {
+    const secret = (window as any).__stripeClientSecret;
+    if (!secret) {
+      console.error("Client secret is missing, cannot process payment");
+      setClientSecretError(true);
+      return null;
     }
-  }, [amount, requestId]);
+    return secret;
+  };
+  
+  // Check for client secret on component mount
+  useEffect(() => {
+    const clientSecret = getClientSecret();
+    if (clientSecret) {
+      console.log(`Payment form initialized with client secret (${requestId || 'unknown'})`);
+    } else {
+      console.error(`Missing client secret in payment form (${requestId || 'unknown'})`);
+      if (!errorCalledRef.current) {
+        errorCalledRef.current = true;
+        onError("Payment system configuration error. Please try again.");
+      }
+    }
+  }, [requestId, onError]);
   
   // Use custom hooks to manage Stripe elements and payment submission
   const { elements, stripe, isElementsLoading } = usePaymentElements();
@@ -67,6 +85,7 @@ const PaymentForm = ({
     stripe,
     elements,
     email,
+    getClientSecret,
     onSuccess: () => {
       setMessage("Payment succeeded!");
       setPaymentCompleted(true);
@@ -130,6 +149,24 @@ const PaymentForm = ({
 
   if (isElementsLoading) {
     return <div className="text-center p-4">Loading payment form...</div>;
+  }
+
+  if (clientSecretError) {
+    return (
+      <div className="p-4 border rounded bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-300">
+        <div className="flex items-center space-x-2 mb-2">
+          <AlertCircle className="h-5 w-5" />
+          <h3 className="font-medium">Payment System Error</h3>
+        </div>
+        <p>The payment system could not be initialized. Missing payment authorization.</p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="mt-3 px-4 py-2 bg-white dark:bg-slate-800 border border-red-300 dark:border-red-700 rounded-md text-sm"
+        >
+          Try Again
+        </button>
+      </div>
+    );
   }
 
   return (

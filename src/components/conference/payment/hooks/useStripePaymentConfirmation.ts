@@ -14,6 +14,7 @@ interface UseStripePaymentConfirmationProps {
   stripe: Stripe | null;
   elements: StripeElements | null;
   email: string;
+  getClientSecret: () => string | null;
   onSuccess: () => void;
   onError: (error: string) => void;
   setMessage: (message: string | null) => void;
@@ -33,6 +34,7 @@ export const useStripePaymentConfirmation = ({
   stripe,
   elements,
   email,
+  getClientSecret,
   onSuccess,
   onError,
   setMessage,
@@ -66,7 +68,8 @@ export const useStripePaymentConfirmation = ({
   } = useProcessPaymentConfirmation({
     stripe,
     elements,
-    email
+    email,
+    getClientSecret
   });
   
   // Set up timeout handling
@@ -96,6 +99,13 @@ export const useStripePaymentConfirmation = ({
     if (isProcessing) {
       console.log("Payment already processing, ignoring duplicate submission");
       return { success: false, reason: "already-processing" };
+    }
+
+    const clientSecret = getClientSecret();
+    if (!clientSecret) {
+      console.error('Missing client secret for payment confirmation!');
+      reportError("Payment system configuration error. Please try again.");
+      return { success: false, reason: "missing-client-secret" };
     }
 
     console.log(`Starting payment confirmation process (${requestId || 'unknown'})`);

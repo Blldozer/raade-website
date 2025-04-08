@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
@@ -5,6 +6,7 @@ import PaymentForm from "../PaymentForm";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { TICKET_TYPES_ENUM, calculateTotalPrice } from "../../RegistrationFormTypes";
+import { AlertCircle, Loader2 } from "lucide-react";
 
 // Initialize Stripe with the production publishable key
 const stripePromise = loadStripe(
@@ -54,12 +56,16 @@ const SimpleStripeProvider = ({
   const [isGroupRegistration, setIsGroupRegistration] = useState<boolean>(false);
   const [isLoadingIntent, setIsLoadingIntent] = useState<boolean>(true);
   const [requestId, setRequestId] = useState<string | null>(null);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [intentError, setIntentError] = useState<string | null>(null);
   const { toast } = useToast();
 
   // Create payment intent when component mounts
   useEffect(() => {
     const createIntent = async () => {
       setIsLoadingIntent(true);
+      setIntentError(null);
+      
       // Generate a unique request ID for tracking
       const reqId = `req-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
       setRequestId(reqId);
@@ -84,12 +90,14 @@ const SimpleStripeProvider = ({
         
         if (error) {
           console.error(`Payment intent creation error (${reqId}):`, error);
+          setIntentError(error.message || "Failed to create payment intent");
           throw new Error(error.message || "Failed to create payment intent");
         }
         
         // Check for client secret in the response for standard payments
         if (!data?.clientSecret && !data?.freeRegistration) {
           console.error(`Invalid payment intent response (${reqId}):`, data);
+          setIntentError("Invalid payment intent response from server");
           throw new Error("Invalid payment intent response from server");
         }
         
@@ -99,8 +107,10 @@ const SimpleStripeProvider = ({
           hasClientSecret: !!data.clientSecret
         });
         
-        // Save client secret in window object for the payment confirmation process to use
+        // Save client secret state
         if (data.clientSecret) {
+          setClientSecret(data.clientSecret);
+          // Also save in window object for the payment confirmation process to use
           (window as any).__stripeClientSecret = data.clientSecret;
         }
         
@@ -118,6 +128,8 @@ const SimpleStripeProvider = ({
         const errorMessage = err instanceof Error 
           ? err.message 
           : "An unknown error occurred while setting up payment";
+        
+        setIntentError(errorMessage);
         
         // Show error toast
         toast({
@@ -139,28 +151,49 @@ const SimpleStripeProvider = ({
     return (
       <div className="flex items-center justify-center p-8">
         <div className="animate-pulse text-gray-500 dark:text-gray-400 text-center">
-          <svg
+          <Loader2
             className="animate-spin h-8 w-8 text-[#FBB03B] mx-auto mb-2"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
+          />
           <p>Setting up payment...</p>
         </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (intentError) {
+    return (
+      <div className="p-4 border rounded bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-300">
+        <div className="flex items-center space-x-2 mb-2">
+          <AlertCircle className="h-5 w-5" />
+          <h3 className="font-medium">Payment Setup Failed</h3>
+        </div>
+        <p>{intentError}</p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="mt-3 px-4 py-2 bg-white dark:bg-slate-800 border border-red-300 dark:border-red-700 rounded-md text-sm"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
+  // Success state but with no client secret (should not happen)
+  if (!clientSecret && !intentError) {
+    return (
+      <div className="p-4 border rounded bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-300">
+        <div className="flex items-center space-x-2 mb-2">
+          <AlertCircle className="h-5 w-5" />
+          <h3 className="font-medium">Payment System Error</h3>
+        </div>
+        <p>The payment system returned an invalid response. Unable to create payment session.</p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="mt-3 px-4 py-2 bg-white dark:bg-slate-800 border border-red-300 dark:border-red-700 rounded-md text-sm"
+        >
+          Try Again
+        </button>
       </div>
     );
   }
