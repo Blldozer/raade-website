@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from "react";
 import { UseFormWatch } from "react-hook-form";
-import { RegistrationFormData, TICKET_TYPES_ENUM } from "../RegistrationFormTypes";
+import { RegistrationFormData, TICKET_TYPES_ENUM, validateTicketEmailDomain } from "../RegistrationFormTypes";
 
 /**
  * Custom hook to handle email validation for ticket types
@@ -34,17 +33,13 @@ export const useEmailValidation = (
       return;
     }
 
-    // Set checking state
     setIsCheckingEmail(true);
 
-    // Small delay to simulate validation
     const timer = setTimeout(() => {
-      // Validate the email domain for the selected ticket type
       const result = validateTicketEmailDomain(email, ticketType);
       setValidationResult(result);
       setIsCheckingEmail(false);
 
-      // Call the callback if provided
       if (onValidation) {
         onValidation(result);
       }
@@ -58,30 +53,4 @@ export const useEmailValidation = (
     validationMessage: validationResult.message,
     isCheckingEmail
   };
-};
-
-/**
- * Validates if an email domain is appropriate for the selected ticket type
- * @param email The email address to validate
- * @param ticketType The selected ticket type
- * @returns Validation result object
- */
-const validateTicketEmailDomain = (
-  email: string,
-  ticketType: string
-): { isValid: boolean; message?: string } => {
-  if (!email || !email.includes('@')) {
-    return { isValid: false, message: "Please enter a valid email address" };
-  }
-
-  // For student tickets, validate .edu domain
-  if ((ticketType === TICKET_TYPES_ENUM.STUDENT || ticketType === TICKET_TYPES_ENUM.STUDENT_GROUP) && 
-      !email.toLowerCase().endsWith('.edu')) {
-    return { 
-      isValid: false, 
-      message: "Student tickets require an .edu email address" 
-    };
-  }
-
-  return { isValid: true };
 };
