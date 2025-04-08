@@ -1,11 +1,14 @@
-
 import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { NavigationProvider } from "./context/NavigationContext";
 import NavigationContent from "./content/NavigationContent";
 
-interface NavigationContainerProps {
-  children: React.ReactNode;
+export interface NavigationContainerProps {
+  instanceId?: string;
+  isHeroPage?: boolean;
+  forceDarkMode?: boolean;
+  useShortFormLogo?: boolean;
+  children?: React.ReactNode;
 }
 
 /**
@@ -16,21 +19,27 @@ interface NavigationContainerProps {
  * - Initializes the navigation context with the correct values
  * - Renders the navigation content
  */
-const NavigationContainer: React.FC<NavigationContainerProps> = ({ children }) => {
+const NavigationContainer: React.FC<NavigationContainerProps> = ({ 
+  children, 
+  instanceId,
+  isHeroPage = false,
+  forceDarkMode = false,
+  useShortFormLogo = false
+}) => {
   const location = useLocation();
   
   // Determine if we're on the hero page (home page)
-  const isHeroPage = location.pathname === "/";
+  const isHeroPageValue = location.pathname === "/";
   
   // Determine if we should force dark mode based on the route
-  const forceDarkMode = [
+  const forceDarkModeValue = [
     "/innovation-studios",
     "/student-application",
     "/partner-application"
   ].includes(location.pathname);
   
   // Determine if we should use the short form logo
-  const useShortFormLogo = [
+  const useShortFormLogoValue = [
     "/student-application",
     "/partner-application"
   ].includes(location.pathname);
@@ -38,9 +47,10 @@ const NavigationContainer: React.FC<NavigationContainerProps> = ({ children }) =
   return (
     <NavigationProvider 
       initialProps={{
-        isHeroPage,
-        forceDarkMode,
-        useShortFormLogo
+        instanceId,
+        isHeroPage: isHeroPageValue,
+        forceDarkMode: forceDarkModeValue,
+        useShortFormLogo: useShortFormLogoValue
       }}
     >
       <NavigationContent>

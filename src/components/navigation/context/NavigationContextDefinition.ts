@@ -1,4 +1,3 @@
-
 /**
  * Navigation Context Type Definitions
  * 
@@ -16,6 +15,8 @@ export interface NavigationState {
   isMobile: boolean;
   isTablet: boolean;
   currentSection: string | null;
+  instanceId?: string;
+  isLightBackground?: boolean;
 }
 
 export interface NavigationAction {
@@ -32,6 +33,7 @@ export interface NavigationContextType {
 export interface NavigationProviderProps {
   children: React.ReactNode;
   initialProps?: {
+    instanceId?: string;
     isHeroPage: boolean;
     forceDarkMode: boolean;
     useShortFormLogo: boolean;
