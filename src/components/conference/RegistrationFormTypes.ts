@@ -38,5 +38,5 @@ export {
 } from './types/RegistrationSchema';
 export type { RegistrationFormData } from './types/RegistrationSchema';
 
-// For backward compatibility, alias the registration schema
-export const registrationSchema = registrationFormSchema;
+// Export registrationSchema directly from the source
+export { registrationFormSchema as registrationSchema } from './types/RegistrationSchema';
