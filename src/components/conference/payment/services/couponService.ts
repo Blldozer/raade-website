@@ -1,6 +1,6 @@
 
 import { CouponValidationResult } from "../../RegistrationFormTypes";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Validates a coupon code against the database

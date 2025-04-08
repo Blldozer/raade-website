@@ -1,112 +1,114 @@
 
-import { UseFormRegister, UseFormWatch } from "react-hook-form";
-import { RegistrationFormData } from "../RegistrationFormTypes";
+import { useState } from "react";
+import { UseFormRegister } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { RegistrationFormData } from "../RegistrationFormTypes";
 import { InfoIcon } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
+interface BasicInformationSectionProps {
+  register: UseFormRegister<RegistrationFormData>;
+  errors: any;
+  onEmailValidation?: (result: { isValid: boolean; message?: string }) => void;
+}
 
 /**
  * BasicInformationSection Component
  * 
- * Contains the core registration fields like name, email,
- * organization, and role.
+ * Renders the basic user information form fields:
+ * - Name
+ * - Email
+ * - Organization
+ * - Role
  * 
- * @param register - React Hook Form register function
- * @param errors - Form validation errors
- * @param watch - React Hook Form watch function
- * @param onEmailValidation - Callback for email validation results
+ * Includes real-time validation for required fields
  */
-interface BasicInformationSectionProps {
-  register: UseFormRegister<RegistrationFormData>;
-  errors: any;
-  watch?: UseFormWatch<RegistrationFormData>;
-  onEmailValidation?: (result: { isValid: boolean; message?: string }) => void;
-}
-
-const BasicInformationSection = ({ 
-  register, 
-  errors, 
-  watch, 
-  onEmailValidation 
+const BasicInformationSection = ({
+  register,
+  errors,
+  onEmailValidation
 }: BasicInformationSectionProps) => {
+  const [isValidatingEmail, setIsValidatingEmail] = useState(false);
+
+  const handleEmailBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+    const email = e.target.value;
+    if (!email || !email.includes('@')) return;
+    
+    // For demo purposes - just validate the format
+    // In a real app, you might do more validation
+    if (onEmailValidation) {
+      onEmailValidation({
+        isValid: true,
+        message: "Email looks valid"
+      });
+    }
+  };
+
   return (
     <div className="space-y-4">
-      <div>
-        <Label htmlFor="fullName" className="font-lora">Full Name</Label>
-        <Input
-          id="fullName"
-          type="text"
-          placeholder="Your full name"
-          className="mt-1"
-          {...register("fullName", { required: "Full name is required" })}
-        />
-        {errors.fullName && (
-          <p className="text-sm text-red-500 mt-1">{errors.fullName.message}</p>
-        )}
-      </div>
-
-      <div>
-        <div className="flex items-center gap-2">
-          <Label htmlFor="email" className="font-lora">Email Address</Label>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <InfoIcon className="h-4 w-4 text-gray-400" />
-              </TooltipTrigger>
-              <TooltipContent>
-                This email will be used for your registration confirmation and updates about the conference.
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+      <h3 className="text-lg font-medium">Personal Information</h3>
+      
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="fullName" className="font-lora">Full Name</Label>
+          <Input
+            id="fullName"
+            placeholder="Your full name"
+            {...register("fullName")}
+            className={errors.fullName ? "border-red-500" : ""}
+          />
+          {errors.fullName && (
+            <p className="text-sm text-red-500">{errors.fullName.message}</p>
+          )}
         </div>
-        <Input
-          id="email"
-          type="email"
-          placeholder="your.email@example.com"
-          className="mt-1"
-          {...register("email", {
-            required: "Email is required",
-            pattern: {
-              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-              message: "Please enter a valid email address"
-            }
-          })}
-        />
-        {errors.email && (
-          <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
-        )}
+        
+        <div className="space-y-2">
+          <Label htmlFor="email" className="font-lora">Email Address</Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="your.email@example.com"
+            {...register("email")}
+            onBlur={handleEmailBlur}
+            className={errors.email ? "border-red-500" : ""}
+          />
+          {errors.email && (
+            <p className="text-sm text-red-500">{errors.email.message}</p>
+          )}
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="organization" className="font-lora">Organization/University</Label>
+          <Input
+            id="organization"
+            placeholder="Your organization or university"
+            {...register("organization")}
+            className={errors.organization ? "border-red-500" : ""}
+          />
+          {errors.organization && (
+            <p className="text-sm text-red-500">{errors.organization.message}</p>
+          )}
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="role" className="font-lora">Role/Major</Label>
+          <Input
+            id="role"
+            placeholder="Your professional role or major"
+            {...register("role")}
+            className={errors.role ? "border-red-500" : ""}
+          />
+          {errors.role && (
+            <p className="text-sm text-red-500">{errors.role.message}</p>
+          )}
+        </div>
       </div>
-
-      <div>
-        <Label htmlFor="organization" className="font-lora">Organization / University</Label>
-        <Input
-          id="organization"
-          type="text"
-          placeholder="Your organization or university"
-          className="mt-1"
-          {...register("organization", { required: "Organization is required" })}
-        />
-        {errors.organization && (
-          <p className="text-sm text-red-500 mt-1">
-            {errors.organization.message}
-          </p>
-        )}
-      </div>
-
-      <div>
-        <Label htmlFor="role" className="font-lora">Role / Major</Label>
-        <Input
-          id="role"
-          type="text"
-          placeholder="Your role or major"
-          className="mt-1"
-          {...register("role", { required: "Role or major is required" })}
-        />
-        {errors.role && (
-          <p className="text-sm text-red-500 mt-1">{errors.role.message}</p>
-        )}
+      
+      <div className="text-sm text-gray-500 flex items-start gap-2">
+        <InfoIcon className="h-4 w-4 mt-0.5 flex-shrink-0" />
+        <p>
+          Your personal information is only used for conference communication and won't be shared with third parties.
+        </p>
       </div>
     </div>
   );

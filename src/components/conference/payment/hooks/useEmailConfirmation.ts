@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { RegistrationFormData } from "../../RegistrationFormTypes";
-import { storeRegistrationData } from "../services/registrationDataService";
+import { processRegistrationData } from "../services/registrationDataService";
 import { sendConfirmationEmail } from "../services/emailConfirmationService";
 
 /**
@@ -59,11 +59,11 @@ export const useEmailConfirmation = (
         setSendingEmail(true);
       }
       
-      // First, store the registration data silently
-      const dataStorageResult = await storeRegistrationData(registrationData);
+      // First, process the registration data silently
+      const processedData = processRegistrationData(registrationData);
       
-      if (!dataStorageResult) {
-        console.warn("Failed to store registration data, but will still try to send email");
+      if (!processedData) {
+        console.warn("Failed to process registration data, but will still try to send email");
       }
       
       if (!isMountedRef.current) return;

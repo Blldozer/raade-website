@@ -66,7 +66,7 @@ const PaymentSection = ({
         try {
           const result = await validateCouponCode(registrationData.couponCode);
           setIsCouponValid(result.isValid);
-          setCouponDiscount(result.isValid ? result.discount : 0);
+          setCouponDiscount(result.isValid ? result.discountAmount || 0 : 0);
           
           if (!result.isValid) {
             toast({
