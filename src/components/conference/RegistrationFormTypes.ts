@@ -38,5 +38,7 @@ export {
 } from './types/RegistrationSchema';
 export type { RegistrationFormData } from './types/RegistrationSchema';
 
-// Export registrationSchema directly from the source
-export { registrationFormSchema as registrationSchema } from './types/RegistrationSchema';
+// Re-export for backward compatibility
+// Using explicit import to fix the reference error
+import { registrationFormSchema as schema } from './types/RegistrationSchema';
+export { schema as registrationSchema };
