@@ -1,18 +1,23 @@
 
-/**
- * Speaker Utility Functions
- * 
- * Contains helper functions for working with speaker data
- */
 import { Speaker } from "../types/Speaker";
-import { speakersList } from "../speakersList";
+import { leadershipSpeakers } from "../speakers/leadershipSpeakers";
+import { entrepreneurSpeakers } from "../speakers/entrepreneurSpeakers";
+import { financeSpeakers } from "../speakers/financeSpeakers";
 
 /**
- * Find a speaker by their unique ID
+ * Get a speaker by their ID across all categories
  * 
- * @param id - Unique identifier for the speaker
- * @returns Speaker object if found, undefined otherwise
+ * @param id Speaker's unique identifier
+ * @returns Speaker object or undefined if not found
  */
 export const getSpeakerById = (id: string): Speaker | undefined => {
-  return speakersList.find(speaker => speaker.id === id);
+  // Combine all speaker categories
+  const allSpeakers = [
+    ...leadershipSpeakers,
+    ...entrepreneurSpeakers,
+    ...financeSpeakers
+  ];
+  
+  // Find speaker with matching ID
+  return allSpeakers.find(speaker => speaker.id === id);
 };
