@@ -1,3 +1,4 @@
+
 import { Control, UseFormRegister, FormState, UseFormWatch } from "react-hook-form";
 import { RegistrationFormData } from "../RegistrationFormTypes";
 import BasicInformation from "./BasicInformation";
@@ -7,7 +8,6 @@ interface BasicInformationSectionProps {
   register: UseFormRegister<RegistrationFormData>;
   errors: FormState<RegistrationFormData>["errors"];
   watch: UseFormWatch<RegistrationFormData>;
-  control: Control<RegistrationFormData>;
   onEmailValidation?: (result: { isValid: boolean; message?: string }) => void;
 }
 
@@ -26,7 +26,6 @@ const BasicInformationSection = ({
   register,
   errors,
   watch,
-  control,
   onEmailValidation
 }: BasicInformationSectionProps) => {
   // Use the email validation hook
@@ -40,7 +39,6 @@ const BasicInformationSection = ({
       register={register}
       errors={errors}
       watch={watch}
-      control={control}
       isCheckingEmail={isCheckingEmail}
       emailValidationMessage={validationMessage}
       emailIsValid={isValid}

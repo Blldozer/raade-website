@@ -1,10 +1,12 @@
 
-import { useEffect } from "react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useState, useEffect } from "react";
+import ConfettiExplosion from "react-confetti-explosion";
+import { Check } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { RegistrationFormData } from "../RegistrationFormTypes";
-import { useEmailConfirmation } from "./hooks/useEmailConfirmation";
+import { useEmailConfirmation } from "./EmailConfirmationSender";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface SuccessfulPaymentProps {
   registrationData: RegistrationFormData;
@@ -14,89 +16,164 @@ interface SuccessfulPaymentProps {
 /**
  * SuccessfulPayment Component
  * 
- * Displays success message after payment completion and
- * triggers email confirmation to be sent to the user
- * 
- * @param registrationData - The completed registration data
- * @param onContinue - Callback for when user completes the flow
+ * An improved payment success screen that:
+ * - Uses staggered animations for visual stability
+ * - Controls confetti rendering to prevent performance issues
+ * - Handles email confirmation state changes smoothly
+ * - Prevents multiple button clicks during transitions
+ * - Shows only email confirmation status for simplicity
  */
 const SuccessfulPayment = ({
   registrationData,
-  onContinue,
+  onContinue
 }: SuccessfulPaymentProps) => {
+  const [exploding, setExploding] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  
+  // Use email confirmation hook to handle sending confirmation email
+  // and storing registration data
   const { 
-    sendConfirmation, 
-    isLoading, 
-    isSuccess, 
-    errorMessage, 
-    reset 
-  } = useEmailConfirmation();
-
+    sendingEmail, 
+    emailSent, 
+    sendConfirmationEmail 
+  } = useEmailConfirmation(
+    registrationData,
+    onContinue
+  );
+  
   // Send confirmation email when component mounts
   useEffect(() => {
-    const sendEmail = async () => {
-      await sendConfirmation(registrationData);
-    };
+    // Small delay before starting animations and processes
+    const startupDelay = setTimeout(() => {
+      setExploding(true);
+      sendConfirmationEmail();
+    }, 100);
     
-    sendEmail();
+    // Set confetti to stop after 3 seconds
+    const confettiTimer = setTimeout(() => {
+      setExploding(false);
+    }, 3000);
     
-    // Cleanup function
     return () => {
-      reset();
+      clearTimeout(startupDelay);
+      clearTimeout(confettiTimer);
     };
-  }, [registrationData, sendConfirmation, reset]);
+  }, [sendConfirmationEmail]);
+
+  const handleContinueClick = () => {
+    if (isTransitioning) return;
+    
+    setIsTransitioning(true);
+    // Short delay to allow exit animations to complete
+    setTimeout(onContinue, 300);
+  };
 
   return (
-    <div className="flex flex-col items-center text-center space-y-8">
-      <div className="rounded-full bg-green-100 p-3 dark:bg-green-900/30">
-        <CheckCircle className="h-12 w-12 text-green-600 dark:text-green-400" />
-      </div>
-      
-      <div>
-        <h2 className="text-2xl font-bold mb-2">Registration Complete!</h2>
-        <p className="text-gray-600 dark:text-gray-400">
-          Thank you for registering for our conference. Your payment has been processed successfully.
-        </p>
-      </div>
-      
-      {isLoading && (
-        <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          <span>Sending confirmation email...</span>
-        </div>
-      )}
-      
-      {isSuccess && (
-        <Alert className="bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-700">
-          <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
-          <AlertTitle className="text-green-800 dark:text-green-300">Email Sent</AlertTitle>
-          <AlertDescription className="text-green-700 dark:text-green-400">
-            A confirmation email has been sent to {registrationData.email}.
-            Please check your inbox!
-          </AlertDescription>
-        </Alert>
-      )}
-      
-      {errorMessage && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>
-            {errorMessage}
-            <div className="mt-2">
-              Don't worry, your registration is still complete. You can continue.
-            </div>
-          </AlertDescription>
-        </Alert>
-      )}
-      
-      <Button
-        onClick={onContinue}
-        className="bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white mt-4"
+    <AnimatePresence mode="wait">
+      <motion.div
+        key="payment-success"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
       >
-        Continue
-      </Button>
-    </div>
+        <Card className="relative overflow-hidden border-[#FBB03B]/20 dark:border-[#FBB03B]/30 dark:bg-gray-900 shadow-lg">
+          {exploding && (
+            <div className="absolute left-1/2 top-0 -translate-x-1/2 z-10 pointer-events-none">
+              <ConfettiExplosion 
+                force={0.6}
+                duration={2500}
+                particleCount={80}
+                width={1200}
+              />
+            </div>
+          )}
+          
+          <CardContent className="pt-6 text-center">
+            <motion.div 
+              className="flex flex-col items-center justify-center py-10"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4 }}
+            >
+              <motion.div 
+                className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center mb-6"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.4 }}
+              >
+                <Check className="h-8 w-8 text-green-600" />
+              </motion.div>
+              
+              <motion.h2 
+                className="text-2xl font-bold text-gray-900 mb-2 font-simula dark:text-white"
+                initial={{ y: 10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.4 }}
+              >
+                Payment Successful!
+              </motion.h2>
+              
+              <motion.p 
+                className="text-gray-600 mb-6 max-w-md mx-auto dark:text-gray-300 font-lora"
+                initial={{ y: 10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.4, duration: 0.4 }}
+              >
+                Thank you for registering for the RAADE Conference 2025. We look forward to seeing you on April 11-12!
+              </motion.p>
+              
+              <motion.div 
+                className="bg-gray-50 p-4 rounded-lg mb-6 w-full max-w-md text-left dark:bg-gray-800"
+                initial={{ y: 10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.4 }}
+              >
+                <h3 className="font-bold mb-2 text-lg text-raade-navy dark:text-white font-simula">Registration Details:</h3>
+                <p><span className="font-medium">Name:</span> {registrationData.fullName}</p>
+                <p><span className="font-medium">Email:</span> {registrationData.email}</p>
+                <p>
+                  <span className="font-medium">Ticket Type:</span> {registrationData.ticketType
+                    .split('-')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ')
+                  }
+                </p>
+                {registrationData.ticketType === "student-group" && registrationData.groupSize && (
+                  <p><span className="font-medium">Group Size:</span> {registrationData.groupSize} people</p>
+                )}
+                
+                {/* Email status - Only showing email confirmation status now */}
+                <div className="mt-4 space-y-1 min-h-[1.75rem]">
+                  {sendingEmail && (
+                    <p className="text-blue-500 italic">Sending confirmation email...</p>
+                  )}
+                  {emailSent && (
+                    <p className="text-green-500 italic">Confirmation email sent!</p>
+                  )}
+                </div>
+              </motion.div>
+              
+              <motion.div
+                initial={{ y: 10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.6, duration: 0.4 }}
+              >
+                <Button 
+                  onClick={handleContinueClick}
+                  disabled={isTransitioning}
+                  className="bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora px-8
+                    dark:bg-[#FBB03B] dark:hover:bg-[#FBB03B]/80 dark:text-white
+                    transition-colors duration-300"
+                >
+                  Return to Home
+                </Button>
+              </motion.div>
+            </motion.div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 

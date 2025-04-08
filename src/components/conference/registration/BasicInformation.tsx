@@ -1,5 +1,5 @@
-import React from "react";
-import { UseFormRegister, FormState, UseFormWatch, Control } from "react-hook-form";
+
+import { UseFormRegister, FormState, UseFormWatch } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { RegistrationFormData } from "../RegistrationFormTypes";
@@ -8,7 +8,6 @@ interface BasicInformationProps {
   register: UseFormRegister<RegistrationFormData>;
   errors: FormState<RegistrationFormData>["errors"];
   watch: UseFormWatch<RegistrationFormData>;
-  control: Control<RegistrationFormData>;
   isCheckingEmail: boolean;
   emailValidationMessage?: string | null;
   emailIsValid?: boolean | null;
@@ -26,7 +25,6 @@ interface BasicInformationProps {
  * @param register - React Hook Form register function
  * @param errors - Form validation errors
  * @param watch - React Hook Form watch function
- * @param control - React Hook Form control
  * @param isCheckingEmail - Whether email validation is in progress
  * @param emailValidationMessage - Validation message for email
  * @param emailIsValid - Whether the email is valid
@@ -35,7 +33,6 @@ const BasicInformation = ({
   register, 
   errors, 
   watch, 
-  control,
   isCheckingEmail,
   emailValidationMessage,
   emailIsValid

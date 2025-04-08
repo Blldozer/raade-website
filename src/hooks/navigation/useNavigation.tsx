@@ -87,11 +87,11 @@ export const useNavigation = () => {
           state: { scrollToSection: hash }
         });
       } else {
-        // Regular navigation to a page root
+        // Regular navigation to a page root (hero section)
         console.log(`Regular navigation to ${href} (top of page)`);
         navigate(basePath);
         
-        // Scroll to top
+        // Scroll to top after navigation
         window.scrollTo({
           top: 0,
           behavior: 'auto'
@@ -113,5 +113,3 @@ export const useNavigation = () => {
     };
   }
 };
-
-export default useNavigation;

@@ -1,65 +1,73 @@
 
-import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { NavigationProvider } from "./context/NavigationContext";
 import NavigationContent from "./content/NavigationContent";
+import ErrorBoundary from "../ErrorBoundary";
 
-export interface NavigationContainerProps {
+interface NavigationContainerProps {
   instanceId?: string;
   isHeroPage?: boolean;
   forceDarkMode?: boolean;
   useShortFormLogo?: boolean;
-  children?: React.ReactNode;
 }
 
 /**
- * NavigationContainer Component
+ * NavigationContainer Component - Main container for navigation components
  * 
- * Top-level navigation component that:
- * - Determines page type and sets appropriate styles
- * - Initializes the navigation context with the correct values
- * - Renders the navigation content
+ * Delegates rendering to specialized components while providing
+ * a shared context for navigation state management
+ * 
+ * Enhanced with unique instance IDs to prevent duplicate rendering
+ * and ensure proper cleanup when navigating between pages
  */
-const NavigationContainer: React.FC<NavigationContainerProps> = ({ 
-  children, 
+const NavigationContainer = ({ 
   instanceId,
-  isHeroPage = false,
+  isHeroPage = false, 
   forceDarkMode = false,
-  useShortFormLogo = false
-}) => {
-  const location = useLocation();
+  useShortFormLogo = false 
+}: NavigationContainerProps) => {
+  // Generate a unique ID for this navigation instance if not provided
+  // Using a string instead of useRef to avoid React context issues
+  const localInstanceId = instanceId || `nav-container-${Math.random().toString(36).substring(2, 9)}`;
   
-  // Determine if we're on the hero page (home page)
-  const isHeroPageValue = location.pathname === "/";
-  
-  // Determine if we should force dark mode based on the route
-  const forceDarkModeValue = [
-    "/innovation-studios",
-    "/student-application",
-    "/partner-application"
-  ].includes(location.pathname);
-  
-  // Determine if we should use the short form logo
-  const useShortFormLogoValue = [
-    "/student-application",
-    "/partner-application"
-  ].includes(location.pathname);
+  let locationPath = '/';
+  // Try to get location info, but don't crash if it fails
+  try {
+    const location = useLocation();
+    locationPath = location.pathname;
+    
+    // Check if we're on the conference registration page to ensure dark navbar
+    const isConferenceRegistration = locationPath === '/conference/register';
+    const isAboutPage = locationPath === '/about';
+    const finalForceDarkMode = isConferenceRegistration ? true : forceDarkMode;
+    
+    // Log mounting info
+    console.log(`NavigationContainer (${localInstanceId}): Mounting on ${locationPath}`);
 
-  return (
-    <NavigationProvider 
-      initialProps={{
-        instanceId,
-        isHeroPage: isHeroPageValue,
-        forceDarkMode: forceDarkModeValue,
-        useShortFormLogo: useShortFormLogoValue,
-        isLightBackground: false
-      }}
-    >
-      <NavigationContent>
-        {children}
-      </NavigationContent>
-    </NavigationProvider>
-  );
+    return (
+      <ErrorBoundary fallback={
+        <div className="fixed top-0 w-full z-50 bg-gray-100 p-4">
+          <span className="font-bold">Navigation Error</span>
+        </div>
+      }>
+        <NavigationProvider initialProps={{ 
+          isHeroPage, 
+          forceDarkMode: finalForceDarkMode, 
+          useShortFormLogo 
+        }}>
+          <NavigationContent instanceId={localInstanceId} />
+        </NavigationProvider>
+      </ErrorBoundary>
+    );
+  } catch (error) {
+    console.error(`NavigationContainer (${localInstanceId}): Router error`, error);
+    // Provide a minimal fallback navigation
+    return (
+      <div className="fixed top-0 w-full z-50 bg-gray-100 p-4">
+        <span className="font-bold">RAADE</span>
+      </div>
+    );
+  }
 };
 
 export default NavigationContainer;

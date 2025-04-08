@@ -1,82 +1,51 @@
 
-import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
-import { useNavBackgroundStyle } from "@/hooks/navigation/useNavBackgroundStyle";
-import { useNavigation } from "./context/useNavigation";
-import NavLogo from "./NavLogo";
+import React from "react";
 import NavLinks from "./NavLinks";
-import JoinButton from "./JoinButton";
+import { useNavigation } from "./context/useNavigation";
 
 interface DesktopNavProps {
+  isScrolled?: boolean;
+  isHeroPage?: boolean;
   className?: string;
-  isDropdownOpen?: Record<string, boolean>;
-  onDropdownChange?: (key: string, isOpen: boolean) => void;
-  onClickLink?: () => void;
+  forceDarkMode?: boolean;
 }
 
 /**
  * DesktopNav Component
  * 
- * Desktop-specific navigation bar that includes:
- * - Logo
- * - Navigation links
- * - Join/Register button
+ * Renders the desktop version of the navigation with links
+ * Uses the navigation context for styling decisions
  * 
- * Responsive to scroll position and page context.
+ * @param isScrolled - Whether the page has been scrolled (legacy prop, use context instead)
+ * @param isHeroPage - Whether this is displayed on a hero section (legacy prop, use context instead)
+ * @param className - Additional CSS classes to apply
+ * @param forceDarkMode - Whether to force dark mode styling (legacy prop, use context instead)
  */
-const DesktopNav: React.FC<DesktopNavProps> = ({
-  className = "",
-  isDropdownOpen,
-  onDropdownChange,
-  onClickLink
-}) => {
-  const location = useLocation();
+const DesktopNav = ({ 
+  isScrolled = false, 
+  isHeroPage = false, 
+  className = "", 
+  forceDarkMode = false 
+}: DesktopNavProps) => {
+  // Use the navigation context for styling
   const { state } = useNavigation();
-  const { isScrolled, isHeroPage, forceDarkMode } = state;
   
-  // Get the appropriate background style
-  const bgClass = useNavBackgroundStyle();
+  // Prioritize context values but fall back to props for backward compatibility
+  const actualIsScrolled = state.isScrolled || isScrolled;
+  const actualIsHeroPage = state.isHeroPage || isHeroPage;
   
-  // Track dropdown states
-  const [dropdownStates, setDropdownStates] = useState<Record<string, boolean>>({});
+  // Use light background to determine if we should use dark mode styling
+  // When on light backgrounds, use dark text/dark logo
+  const actualForceDarkMode = state.isLightBackground || forceDarkMode;
   
-  // Handle dropdown toggle
-  const handleDropdownChange = (key: string, isOpen: boolean) => {
-    if (onDropdownChange) {
-      onDropdownChange(key, isOpen);
-    } else {
-      setDropdownStates(prev => ({
-        ...prev,
-        [key]: isOpen
-      }));
-    }
-  };
-  
-  // Determine dropdown state - controlled or uncontrolled
-  const actualDropdownStates = isDropdownOpen || dropdownStates;
-
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${bgClass} ${className}`}
-    >
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16 md:h-20">
-          <NavLogo />
-          
-          <div className="hidden md:flex items-center space-x-2">
-            <NavLinks 
-              isDropdownOpen={actualDropdownStates}
-              onDropdownChange={handleDropdownChange}
-              onClickLink={onClickLink}
-            />
-            
-            <div className="ml-4">
-              <JoinButton buttonStyles="bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </header>
+    <div className={`hidden md:flex items-center space-x-8 ${className}`}>
+      <NavLinks 
+        isScrolled={actualIsScrolled} 
+        isHeroPage={actualIsHeroPage} 
+        forceDarkMode={actualForceDarkMode} 
+      />
+    </div>
   );
 };
 

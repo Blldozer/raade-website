@@ -1,34 +1,30 @@
 
 project_id = "dermbucktbegnbkjzobs"
 
-[api]
-enabled = true
-port = 54321
-schemas = ["public", "storage"]
-
-[db]
-port = 54322
-
-[studio]
-enabled = true
-port = 54323
-
-[inbucket]
-enabled = true
-port = 54324
-
-[storage]
-enabled = true
-
-[auth]
-enabled = true
-
-[realtime]
-enabled = true
-
-[edge-functions]
-[edge-functions.create-donation-payment]
+[functions]
+[functions.calculate-payment-amount]
 verify_jwt = false
 
-[edge-functions.update-donation-status]
+[functions.create-checkout-session]
+verify_jwt = false
+
+[functions.create-direct-payment-intent]
+verify_jwt = false
+
+[functions.create-payment-intent]
+verify_jwt = false
+
+[functions.send-conference-confirmation]
+verify_jwt = false
+
+[functions.send-verification-email]
+verify_jwt = false
+
+[functions.store-registration]
+verify_jwt = false
+
+[functions.verify-email-domain]
+verify_jwt = false
+
+[functions.verify-email-token]
 verify_jwt = false

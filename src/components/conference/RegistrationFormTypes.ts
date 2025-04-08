@@ -1,3 +1,4 @@
+
 import { z } from "zod";
 
 // Define the allowed ticket types
@@ -43,8 +44,7 @@ export const registrationFormSchema = z.object({
       value: z.string().email("Invalid email address")
     }).or(z.string().email("Invalid email address")).nullable()
   ).optional(),
-  specialRequests: z.string().optional(),
-  couponCode: z.string().optional()
+  specialRequests: z.string().optional()
 });
 
 // Alias for backward compatibility
@@ -64,8 +64,7 @@ export const defaultFormValues: RegistrationFormData = {
   groupSize: undefined,
   groupEmails: [],
   specialRequests: "",
-  referralSource: undefined,
-  couponCode: ""
+  referralSource: undefined
 };
 
 /**

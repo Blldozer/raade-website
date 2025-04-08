@@ -1,59 +1,53 @@
 
-import { useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
+/**
+ * ScrollToTop Component
+ * 
+ * Scrolls to the top of the page when the route changes
+ * - Watches for location changes using React Router
+ * - Automatically scrolls to top on navigation
+ * - Preserves smooth scrolling behavior
+ * - Must be used inside Router context (BrowserRouter)
+ * - Enhanced with proper router context error handling
+ * 
+ * @param children - Child components to render
+ */
 interface ScrollToTopProps {
-  children?: React.ReactNode;
+  children: ReactNode;
 }
 
-/**
- * ScrollToTop component
- * 
- * Scrolls to the top of the page on route changes
- * Also handles navigation to specific sections using URL hash or location state
- */
 const ScrollToTop = ({ children }: ScrollToTopProps) => {
-  const { pathname, hash, state } = useLocation();
-
-  useEffect(() => {
-    // Handle basic scrolling to top on route change
-    if (!hash) {
-      window.scrollTo(0, 0);
-    }
-
-    // Handle hash navigation
-    if (hash) {
-      setTimeout(() => {
-        const id = hash.replace('#', '');
-        const element = document.getElementById(id);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 100);
-    }
-
-    // Handle scrollToSection from state (used in some components)
-    if (state && state.scrollToSection) {
-      setTimeout(() => {
-        const section = document.getElementById(state.scrollToSection);
-        if (section) {
-          section.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 100);
-    }
-
-    // Handle scrollToJoin state specifically (used by the navigation)
-    if (state && state.scrollToJoin) {
-      setTimeout(() => {
-        const joinSection = document.getElementById('join');
-        if (joinSection) {
-          joinSection.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 100);
-    }
-  }, [pathname, hash, state]);
-
-  return <>{children}</>;
+  try {
+    // Get current location from React Router - will throw if no router context
+    const { pathname } = useLocation();
+    
+    // When pathname changes, scroll to top
+    useEffect(() => {
+      console.log("ScrollToTop: Path changed to", pathname);
+      try {
+        // Use smooth scrolling for better user experience
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      } catch (error) {
+        // Fallback for older browsers that don't support smooth scrolling
+        console.warn("Smooth scrolling not supported, using instant scroll");
+        window.scrollTo(0, 0);
+      }
+    }, [pathname]);
+    
+    // Render children normally if everything worked
+    return <>{children}</>;
+  } catch (error) {
+    // If we hit an error during hook usage, log it and return children anyway
+    console.error("ScrollToTop: Error using router hooks - is this component inside a Router?", error);
+    
+    // Render children even if ScrollToTop functionality fails
+    return <>{children}</>;
+  }
 };
 
 export default ScrollToTop;

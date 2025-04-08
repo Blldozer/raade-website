@@ -1,63 +1,64 @@
 
-import React from 'react';
-import './App.css';
-import { Routes, Route } from 'react-router-dom';
-import AppProviders from './components/app/AppProviders';
-import NavigationWrapper from './components/app/NavigationWrapper';
-import ErrorBoundary from './components/ErrorBoundary';
-import GlobalErrorFallback from './components/app/GlobalErrorFallback';
-import ScrollToTop from './components/app/ScrollToTop';
-import Index from './pages/Index';
-import Conference from './pages/Conference';
-import ConferenceRegistration from './pages/ConferenceRegistration';
-import About from './pages/About';
-import InnovationStudios from './pages/InnovationStudios';
-import SpeakerProfile from './pages/SpeakerProfile';
-import ProjectDetail from './pages/ProjectDetail';
-import PartnerApplication from './pages/PartnerApplication';
-import StudentApplication from './pages/StudentApplication';
-import RegistrationSuccess from './pages/RegistrationSuccess';
-import ComingSoon from './pages/ComingSoon';
-import Donate from './pages/Donate';
+import { Suspense, useEffect } from "react";
+import AppRoutes from "./components/app/AppRoutes";
+import Footer from "./components/Footer";
+import ErrorBoundary from "./components/ErrorBoundary";
+import { initializeContentsquare } from "./config/analytics-config";
 
 /**
- * Root Application Component
+ * App Component - Main application container
  * 
- * Main app entry point that sets up:
- * - Global error boundary
- * - Application providers (theme, query client, etc.)
- * - Router configuration
+ * Features:
+ * - Routes centralized in AppRoutes
+ * - Navigation handled within AppRoutes component
+ * - Simplified structure for better maintainability
+ * - Added explicit error boundary and suspense at app root
+ * - Analytics tracking for UX insights (Contentsquare)
  */
-function App() {
-  // Cast the error component to ReactNode to fix TS error
-  const errorFallback = (error: any) => <GlobalErrorFallback error={error} />;
-
+const App = () => {
+  // Add console logging to help debug startup issues
+  console.log("App: Rendering");
+  
+  // Initialize analytics tracking
+  useEffect(() => {
+    // Only initialize in production to avoid tracking during development
+    if (process.env.NODE_ENV === 'production') {
+      initializeContentsquare();
+      console.log("Analytics: Contentsquare initialized");
+    }
+  }, []);
+  
   return (
-    <ErrorBoundary fallback={errorFallback}>
-      <ScrollToTop />
-      <NavigationWrapper />
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/about" element={<About />} />
-        
-        <Route path="/conference" element={<Conference />} />
-        <Route path="/conference/registration" element={<ConferenceRegistration />} />
-        <Route path="/conference/confirmation" element={<RegistrationSuccess />} />
-        <Route path="/conference/speakers/:speakerId" element={<SpeakerProfile />} />
-        
-        <Route path="/innovation-studios" element={<InnovationStudios />} />
-        <Route path="/projects/:projectId" element={<ProjectDetail />} />
-        
-        <Route path="/partner-application" element={<PartnerApplication />} />
-        <Route path="/student-application" element={<StudentApplication />} />
-        
-        <Route path="/donate" element={<Donate />} />
-        
-        <Route path="/coming-soon" element={<ComingSoon />} />
-        <Route path="*" element={<ComingSoon />} />
-      </Routes>
+    <ErrorBoundary 
+      fallback={
+        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+          <div className="p-8 text-center">
+            <h2 className="text-2xl font-bold mb-4">Application Error</h2>
+            <p className="mb-6">An unexpected error occurred while loading the application.</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="bg-[#274675] text-white px-4 py-2 rounded hover:bg-opacity-90"
+            >
+              Refresh Page
+            </button>
+          </div>
+        </div>
+      }
+    >
+      <Suspense 
+        fallback={
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#274675]"></div>
+          </div>
+        }
+      >
+        <div className="flex flex-col min-h-screen">
+          <AppRoutes />
+          <Footer />
+        </div>
+      </Suspense>
     </ErrorBoundary>
   );
-}
+};
 
 export default App;

@@ -1,35 +1,43 @@
 
 import React from "react";
-import { useLocation } from "react-router-dom";
-
-export interface NavDropdownItemProps {
-  to: string;
-  onClick: () => void;
-  children: React.ReactNode;
+import { useNavigation } from "@/hooks/navigation/useNavigation";
+interface NavDropdownItemProps {
+  name: string;
+  href: string;
+  onClick?: () => void;
 }
 
 /**
  * NavDropdownItem Component
  * 
- * Individual item inside a dropdown menu
- * Handles active state based on current route
+ * Renders individual dropdown navigation links with:
+ * - Proper styling consistent with the site's design
+ * - Correct navigation handling via the useNavigation hook
+ * - Support for custom onClick handlers (e.g., for closing mobile menu)
+ * - Improved text scaling for better cross-device compatibility
  */
-const NavDropdownItem: React.FC<NavDropdownItemProps> = ({ to, onClick, children }) => {
-  const location = useLocation();
-  const isActive = location.pathname === to;
-  
-  return (
-    <button
-      className={`block w-full text-left px-4 py-2 text-sm transition-colors ${
-        isActive
-          ? "bg-blue-50 text-[#FBB03B]"
-          : "text-gray-700 hover:bg-gray-50 hover:text-[#FBB03B]"
-      }`}
-      onClick={onClick}
-    >
-      {children}
-    </button>
-  );
-};
+const NavDropdownItem = ({
+  name,
+  href,
+  onClick
+}: NavDropdownItemProps) => {
+  const {
+    handleNavigation
+  } = useNavigation();
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
 
+    // Call custom onClick handler if provided
+    if (onClick) onClick();
+
+    // Handle navigation
+    handleNavigation(href);
+  };
+  return <li>
+      <a href={href} onClick={handleClick} className="block px-4 py-2 text-[clamp(0.9rem,3vw,1.1rem)] text-[#274675] hover:text-[#FBB03B] hover:bg-[#F5F5F0] transition-colors font-alegreyasans font-bold">
+        {name}
+      </a>
+    </li>;
+};
 export default NavDropdownItem;

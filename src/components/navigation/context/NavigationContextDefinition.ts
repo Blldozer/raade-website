@@ -1,36 +1,42 @@
 
+import { createContext } from "react";
+
+/**
+ * Navigation state interface
+ * Defines the structure of the navigation context state
+ */
 export interface NavigationState {
+  // Visibility and scroll states
   isScrolled: boolean;
-  isHeroPage: boolean;
-  forceDarkMode: boolean;
-  useShortFormLogo: boolean;
+  isPastHero: boolean;
+  isVisible: boolean;
+  
+  // Background and styling
+  isDarkBackground: boolean;
+  
+  // Section awareness
+  currentSection: Element | null;
+  currentSectionId: string | null;
   isLightBackground: boolean;
-  isVisible?: boolean;
-  isMobileMenuOpen?: boolean;
-  isDarkBackground?: boolean;
-  isMobile?: boolean;
-  isTablet?: boolean;
-  currentSection?: string | null;
-  instanceId?: string;
+  
+  // Responsive state
+  isMobile: boolean;
+  isTablet: boolean;
+  
+  // Page context
+  isHeroPage: boolean;
+  useShortFormLogo: boolean;
+  forceDarkMode: boolean; // Added this property to fix the error
 }
 
-export interface NavigationAction {
-  type: string;
-  payload: any;
-}
-
+/**
+ * Navigation context interface
+ * Combines state with any actions the context might provide
+ */
 export interface NavigationContextType {
   state: NavigationState;
-  dispatch: React.Dispatch<NavigationAction>;
   setIsDarkBackground: (isDark: boolean) => void;
-  setScrolled?: (isScrolled: boolean) => void;
-  setIsHeroPage?: (isHeroPage: boolean) => void;
-  setForceDarkMode?: (forceDarkMode: boolean) => void;
-  setUseShortFormLogo?: (useShortFormLogo: boolean) => void;
-  setIsLightBackground?: (isLightBackground: boolean) => void;
 }
 
-export interface NavigationProviderProps {
-  children: React.ReactNode;
-  initialProps?: Partial<NavigationState>;
-}
+// Create the context with a default undefined value
+export const NavigationContext = createContext<NavigationContextType | undefined>(undefined);

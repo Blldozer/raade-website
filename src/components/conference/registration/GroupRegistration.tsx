@@ -1,5 +1,5 @@
-import React from "react";
-import { UseFormWatch, UseFormSetValue, Control, useFieldArray, FieldErrors, UseFormRegister } from "react-hook-form";
+
+import { UseFormWatch, UseFormSetValue, Control, useFieldArray, FieldErrors } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { RegistrationFormData, calculateTotalPrice } from "../RegistrationFormTypes";
 
 interface GroupRegistrationProps {
-  register: UseFormRegister<RegistrationFormData>;
   watch: UseFormWatch<RegistrationFormData>;
   setValue: UseFormSetValue<RegistrationFormData>;
   control: Control<RegistrationFormData>;
@@ -37,7 +36,7 @@ interface GroupRegistrationProps {
  * @param control - React Hook Form control object
  * @param errors - Form validation errors
  */
-const GroupRegistration = ({ watch, setValue, control, errors, register }: GroupRegistrationProps) => {
+const GroupRegistration = ({ watch, setValue, control, errors }: GroupRegistrationProps) => {
   const { fields, append, remove } = useFieldArray({
     control,
     name: "groupEmails",
