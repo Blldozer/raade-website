@@ -17,6 +17,8 @@ interface AmountSelectionProps {
   register: UseFormRegister<DonationFormValues>;
   setValue: UseFormSetValue<DonationFormValues>;
   errors: any;
+  onAmountSelect?: (amount: number) => void;
+  onCustomAmount?: () => void;
 }
 
 /**
@@ -36,21 +38,31 @@ const AmountSelection = ({
   setIsCustomAmount,
   register,
   setValue,
-  errors
+  errors,
+  onAmountSelect,
+  onCustomAmount
 }: AmountSelectionProps) => {
   
   // Helper function to handle amount selection
   const handleAmountSelect = (amount: number) => {
-    setSelectedAmount(amount);
-    setValue("amount", amount);
-    setIsCustomAmount(false);
+    if (onAmountSelect) {
+      onAmountSelect(amount);
+    } else {
+      setSelectedAmount(amount);
+      setValue("amount", amount);
+      setIsCustomAmount(false);
+    }
   };
 
   // Helper function to toggle custom amount input
   const handleCustomAmount = () => {
-    setIsCustomAmount(true);
-    setValue("amount", undefined);
-    setSelectedAmount(null);
+    if (onCustomAmount) {
+      onCustomAmount();
+    } else {
+      setIsCustomAmount(true);
+      setValue("amount", undefined);
+      setSelectedAmount(null);
+    }
   };
 
   return (
