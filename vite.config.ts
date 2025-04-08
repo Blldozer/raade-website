@@ -35,6 +35,7 @@ export default defineConfig(({ mode }) => ({
     hmr: false,
     // Improve chunk loading strategy - modified for better React compatibility
     rollupOptions: {
+      external: ['react-helmet'],
       output: {
         manualChunks: (id) => {
           // Ensure React and ReactDOM stay in the same chunk
