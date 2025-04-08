@@ -1,46 +1,49 @@
 
-// This is the right code for the hamburger implementation
-import React from 'react';
-import { Menu } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useNavBackgroundStyle } from '@/hooks/navigation/useNavBackgroundStyle';
+import React from "react";
+import { Menu, X } from "lucide-react";
+import { useNavigation } from "../context/useNavigation";
 
 interface MobileNavButtonProps {
   onClick: () => void;
   forceDarkMode?: boolean;
+  isOpen?: boolean;
 }
 
 /**
  * MobileNavButton Component
  * 
- * Renders a clean hamburger menu button for mobile navigation
- * Uses context to determine proper text color based on background
- * 
- * @param onClick - Function to call when the button is clicked
- * @param forceDarkMode - Whether to force dark mode styling
+ * Button that toggles the mobile navigation menu
+ * Adapts its appearance based on background color
  */
-const MobileNavButton = ({ 
+const MobileNavButton: React.FC<MobileNavButtonProps> = ({ 
   onClick, 
-  forceDarkMode = false 
-}: MobileNavButtonProps) => {
-  // Get background style information
-  const { isAgainstDarkBackground } = useNavBackgroundStyle();
+  forceDarkMode = false,
+  isOpen = false
+}) => {
+  const { state } = useNavigation();
+  const { isHeroPage, isScrolled } = state;
   
-  // Determine button color based on background context
-  const buttonColor = isAgainstDarkBackground
-    ? "text-white hover:bg-white/10" // White button against dark backgrounds
-    : "text-[#274675] hover:bg-gray-100/10"; // Dark button against light backgrounds
-
+  // Determine if we're against a dark background (white text)
+  const isAgainstDarkBackground = 
+    (isHeroPage && !isScrolled) || 
+    forceDarkMode || 
+    state.isLightBackground === false;
+  
   return (
     <button
       onClick={onClick}
-      className={cn(
-        "p-2 rounded-full transition-colors",
-        buttonColor
-      )}
-      aria-label="Open menu"
+      className={`p-2 rounded-full transition-colors ${
+        isAgainstDarkBackground
+          ? "text-white hover:bg-white/10"
+          : "text-gray-800 hover:bg-gray-100"
+      }`}
+      aria-label={isOpen ? "Close menu" : "Open menu"}
     >
-      <Menu size={24} />
+      {isOpen ? (
+        <X className="h-6 w-6" />
+      ) : (
+        <Menu className="h-6 w-6" />
+      )}
     </button>
   );
 };

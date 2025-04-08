@@ -1,58 +1,56 @@
 
-import React, { useState, useRef } from "react";
+import React, { useRef } from "react";
 import { useOnClickOutside } from "@/hooks/use-click-outside";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 export interface NavDropdownProps {
   triggerText: string;
   isOpen: boolean;
-  onOpenChange: (isOpen: boolean) => void;
+  onOpenChange: (open: boolean) => void;
   children: React.ReactNode;
 }
 
 /**
  * NavDropdown Component
  * 
- * Provides a dropdown menu for navigation items with children.
- * Handles open/close state and click outside behavior.
+ * Dropdown menu for navigation items
+ * Handles open/close state and click outside detection
  */
-const NavDropdown: React.FC<NavDropdownProps> = ({ 
-  triggerText, 
-  isOpen, 
+const NavDropdown: React.FC<NavDropdownProps> = ({
+  triggerText,
+  isOpen,
   onOpenChange,
-  children 
+  children
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   
-  // Close dropdown when clicking outside
+  // Handle click outside to close dropdown
   useOnClickOutside(dropdownRef, () => {
     if (isOpen) {
       onOpenChange(false);
     }
   });
-
-  const toggleDropdown = () => {
-    onOpenChange(!isOpen);
-  };
-
+  
   return (
     <div className="relative" ref={dropdownRef}>
       <button
-        onClick={toggleDropdown}
-        className="flex items-center px-3 py-2 text-sm font-medium transition-colors"
+        className="flex items-center text-sm font-medium hover:text-[#FBB03B] transition-colors"
+        onClick={() => onOpenChange(!isOpen)}
         aria-expanded={isOpen}
       >
         {triggerText}
-        <ChevronDown
-          className={`ml-1 h-4 w-4 transition-transform ${
-            isOpen ? "rotate-180" : ""
-          }`}
-        />
+        {isOpen ? (
+          <ChevronUp className="ml-1 h-4 w-4" />
+        ) : (
+          <ChevronDown className="ml-1 h-4 w-4" />
+        )}
       </button>
-
+      
       {isOpen && (
-        <div className="absolute left-0 z-10 mt-1 w-48 origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-800">
-          <div className="py-1">{children}</div>
+        <div className="absolute top-full right-0 mt-1 w-48 bg-white rounded-md shadow-lg overflow-hidden z-20">
+          <div className="py-1">
+            {children}
+          </div>
         </div>
       )}
     </div>

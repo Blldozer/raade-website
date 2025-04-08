@@ -1,27 +1,34 @@
 
 import React from "react";
-import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 export interface NavDropdownItemProps {
   to: string;
-  onClick?: () => void;
+  onClick: () => void;
   children: React.ReactNode;
 }
 
 /**
  * NavDropdownItem Component
  * 
- * Represents a single item within a navigation dropdown menu.
+ * Individual item inside a dropdown menu
+ * Handles active state based on current route
  */
 const NavDropdownItem: React.FC<NavDropdownItemProps> = ({ to, onClick, children }) => {
+  const location = useLocation();
+  const isActive = location.pathname === to;
+  
   return (
-    <Link
-      to={to}
-      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700 transition-colors duration-150"
+    <button
+      className={`block w-full text-left px-4 py-2 text-sm transition-colors ${
+        isActive
+          ? "bg-blue-50 text-[#FBB03B]"
+          : "text-gray-700 hover:bg-gray-50 hover:text-[#FBB03B]"
+      }`}
       onClick={onClick}
     >
       {children}
-    </Link>
+    </button>
   );
 };
 

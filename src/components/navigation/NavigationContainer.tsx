@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { NavigationProvider } from "./context/NavigationContext";
@@ -50,7 +51,8 @@ const NavigationContainer: React.FC<NavigationContainerProps> = ({
         instanceId,
         isHeroPage: isHeroPageValue,
         forceDarkMode: forceDarkModeValue,
-        useShortFormLogo: useShortFormLogoValue
+        useShortFormLogo: useShortFormLogoValue,
+        isLightBackground: false
       }}
     >
       <NavigationContent>

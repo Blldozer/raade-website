@@ -71,7 +71,7 @@ const DesktopNav: React.FC<DesktopNavProps> = ({
             />
             
             <div className="ml-4">
-              <JoinButton />
+              <JoinButton buttonStyles="bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white" />
             </div>
           </div>
         </div>

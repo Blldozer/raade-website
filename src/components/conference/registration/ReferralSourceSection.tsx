@@ -1,27 +1,25 @@
+
 import React from "react";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { UseFormRegister, Control, UseFormSetValue } from "react-hook-form";
-import { REFERRAL_SOURCES } from "../RegistrationFormTypes";
+import { Control, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
+import { RegistrationFormData } from "../RegistrationFormTypes";
 
-/**
- * Props for the ReferralSourceSection component
- */
+// Extended interface to include all required props
 export interface ReferralSourceSectionProps {
-  register: UseFormRegister<any>;
+  register: UseFormRegister<RegistrationFormData>;
   errors: any;
-  control: Control<any>;
-  watch: any;
-  setValue: UseFormSetValue<any>;
+  control: Control<RegistrationFormData>;
+  watch: UseFormWatch<RegistrationFormData>;
+  setValue: UseFormSetValue<RegistrationFormData>;
 }
 
 /**
  * ReferralSourceSection Component
  * 
- * Handles the referral source section of the conference registration form
- * with radio buttons for standard sources and a text input for "Other"
+ * Collects information about how attendees heard about the conference
+ * Provides a radio group with common options plus "Other" with a text field
  */
 const ReferralSourceSection: React.FC<ReferralSourceSectionProps> = ({
   register,
@@ -30,14 +28,12 @@ const ReferralSourceSection: React.FC<ReferralSourceSectionProps> = ({
   watch,
   setValue
 }) => {
-  const referralSource = watch("referralSource");
-  const isOtherSelected = referralSource === "Other";
+  const watchReferralSource = watch("referralSource");
+  const isOtherSelected = watchReferralSource === "Other";
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-medium dark:text-white">
-        How did you hear about us?
-      </h3>
+    <div className="space-y-3">
+      <h3 className="text-lg font-medium">How did you hear about us?</h3>
       
       <FormField
         control={control}
@@ -48,41 +44,40 @@ const ReferralSourceSection: React.FC<ReferralSourceSectionProps> = ({
               <RadioGroup
                 onValueChange={field.onChange}
                 defaultValue={field.value}
-                className="flex flex-col space-y-2"
+                className="space-y-2"
               >
-                {REFERRAL_SOURCES.map((source) => (
-                  <div key={source} className="flex items-center space-x-2">
-                    <RadioGroupItem value={source} id={`referral-${source.toLowerCase().replace(/\s+/g, '-')}`} />
-                    <Label htmlFor={`referral-${source.toLowerCase().replace(/\s+/g, '-')}`}>{source}</Label>
-                  </div>
+                {["Friends", "University ASA", "LinkedIn", "Instagram", "No Bystanders", "RAADE Outreach Team", "Other"].map((source) => (
+                  <FormItem
+                    key={source}
+                    className="flex items-center space-x-3 space-y-0"
+                  >
+                    <FormControl>
+                      <RadioGroupItem value={source} />
+                    </FormControl>
+                    <FormLabel className="font-normal">{source}</FormLabel>
+                  </FormItem>
                 ))}
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="Other" id="referral-other" />
-                  <Label htmlFor="referral-other">Other</Label>
-                </div>
               </RadioGroup>
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-
+      
       {isOtherSelected && (
-        <div>
-          <FormItem className="mt-2">
-            <FormLabel htmlFor="referralSourceOther">Please specify</FormLabel>
-            <FormControl>
-              <Input
-                id="referralSourceOther"
-                placeholder="Where did you hear about us?"
-                {...register("referralSourceOther")}
-              />
-            </FormControl>
-            {errors.referralSourceOther && (
-              <FormMessage>{errors.referralSourceOther.message}</FormMessage>
-            )}
-          </FormItem>
-        </div>
+        <FormItem className="space-y-1">
+          <FormLabel htmlFor="otherReferralSource">Please specify:</FormLabel>
+          <FormControl>
+            <Input
+              id="otherReferralSource"
+              placeholder="How did you hear about us?"
+              {...register("otherReferralSource")}
+            />
+          </FormControl>
+          {errors.otherReferralSource && (
+            <FormMessage>{errors.otherReferralSource.message}</FormMessage>
+          )}
+        </FormItem>
       )}
     </div>
   );

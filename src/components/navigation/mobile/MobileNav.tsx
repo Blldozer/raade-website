@@ -62,7 +62,7 @@ const MobileNav = ({
     try {
       // Use the navigation context to get styling info
       const { state } = useNavigation();
-      useDarkMode = state.isLightBackground;
+      useDarkMode = forceDarkMode || state.forceDarkMode;
     } catch (error) {
       // Fallback if navigation context isn't available
       console.warn("MobileNav: Navigation context unavailable, using fallback styling");
@@ -75,6 +75,7 @@ const MobileNav = ({
         <MobileNavButton 
           onClick={toggleMenu} 
           forceDarkMode={useDarkMode} 
+          isOpen={isOpen}
         />
 
         {/* Full Screen Menu Overlay */}

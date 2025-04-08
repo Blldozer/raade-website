@@ -1,6 +1,7 @@
+
 import React from 'react';
 import './App.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import AppProviders from './components/app/AppProviders';
 import NavigationWrapper from './components/app/NavigationWrapper';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -29,34 +30,29 @@ import Donate from './pages/Donate';
  */
 function App() {
   return (
-    <ErrorBoundary fallback={(props: { error: Error }) => <GlobalErrorFallback error={props.error} />}>
-      <AppProviders>
-        <Router>
-          <ScrollToTop />
-          <NavigationWrapper>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/about" element={<About />} />
-              
-              <Route path="/conference" element={<Conference />} />
-              <Route path="/conference/registration" element={<ConferenceRegistration />} />
-              <Route path="/conference/confirmation" element={<RegistrationSuccess />} />
-              <Route path="/conference/speakers/:speakerId" element={<SpeakerProfile />} />
-              
-              <Route path="/innovation-studios" element={<InnovationStudios />} />
-              <Route path="/projects/:projectId" element={<ProjectDetail />} />
-              
-              <Route path="/partner-application" element={<PartnerApplication />} />
-              <Route path="/student-application" element={<StudentApplication />} />
-              
-              <Route path="/donate" element={<Donate />} />
-              
-              <Route path="/coming-soon" element={<ComingSoon />} />
-              <Route path="*" element={<ComingSoon />} />
-            </Routes>
-          </NavigationWrapper>
-        </Router>
-      </AppProviders>
+    <ErrorBoundary fallback={(error) => <GlobalErrorFallback error={error} />}>
+      <ScrollToTop />
+      <NavigationWrapper />
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/about" element={<About />} />
+        
+        <Route path="/conference" element={<Conference />} />
+        <Route path="/conference/registration" element={<ConferenceRegistration />} />
+        <Route path="/conference/confirmation" element={<RegistrationSuccess />} />
+        <Route path="/conference/speakers/:speakerId" element={<SpeakerProfile />} />
+        
+        <Route path="/innovation-studios" element={<InnovationStudios />} />
+        <Route path="/projects/:projectId" element={<ProjectDetail />} />
+        
+        <Route path="/partner-application" element={<PartnerApplication />} />
+        <Route path="/student-application" element={<StudentApplication />} />
+        
+        <Route path="/donate" element={<Donate />} />
+        
+        <Route path="/coming-soon" element={<ComingSoon />} />
+        <Route path="*" element={<ComingSoon />} />
+      </Routes>
     </ErrorBoundary>
   );
 }

@@ -1,12 +1,11 @@
 
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { useNavigation } from "@/hooks/navigation/useNavigation";
 import NavDropdown from "./NavDropdown";
 import NavDropdownItem from "./NavDropdownItem";
-import { useNavigation } from "./context/useNavigation";
 
 interface NavLinksProps {
-  className?: string;
   isDropdownOpen?: Record<string, boolean>;
   onDropdownChange?: (key: string, isOpen: boolean) => void;
   onClickLink?: () => void;
@@ -15,96 +14,124 @@ interface NavLinksProps {
 /**
  * NavLinks Component
  * 
- * Contains all navigation links and dropdowns for the site.
+ * Main navigation links for the site header
+ * Includes dropdown menus and active state handling
  */
 const NavLinks: React.FC<NavLinksProps> = ({
-  className = "",
   isDropdownOpen = {},
   onDropdownChange,
-  onClickLink,
+  onClickLink
 }) => {
   const location = useLocation();
-  const { state } = useNavigation();
+  const { handleNavigation } = useNavigation();
   
-  const [localDropdownState, setLocalDropdownState] = useState<Record<string, boolean>>({});
+  // Track dropdown states internally if not controlled from parent
+  const [dropdownStates, setDropdownStates] = useState<Record<string, boolean>>({});
   
-  // Use provided dropdown state or fall back to local state
-  const dropdownState = isDropdownOpen || localDropdownState;
-  
-  const handleDropdownChange = (key: string, isOpen: boolean) => {
+  // Handle dropdown toggle with callback to parent
+  const handleDropdownToggle = (key: string, isOpen: boolean) => {
     if (onDropdownChange) {
       onDropdownChange(key, isOpen);
     } else {
-      setLocalDropdownState(prev => ({ ...prev, [key]: isOpen }));
-    }
-  };
-
-  const handleClickLink = () => {
-    if (onClickLink) {
-      onClickLink();
+      setDropdownStates(prev => ({
+        ...prev,
+        [key]: isOpen
+      }));
     }
   };
   
-  const linkBaseClasses = "font-medium transition-colors duration-200";
-  const linkClasses = state.isLightBackground
-    ? `${linkBaseClasses} text-gray-900 hover:text-[#274675]`
-    : state.isScrolled
-    ? `${linkBaseClasses} text-gray-900 hover:text-[#274675]`
-    : `${linkBaseClasses} text-white hover:text-[#FBB03B]`;
-
+  // Determine active states based on current path
+  const isAboutActive = location.pathname === "/about";
+  const isStudiosActive = location.pathname.includes("/innovation-studios") ||
+                          location.pathname.includes("/studios");
+  const isConferenceActive = location.pathname.includes("/conference");
+  const isDonateActive = location.pathname.includes("/donate");
+  
+  // Get dropdown state, either from props or internal state
+  const getDropdownState = (key: string) => {
+    return isDropdownOpen[key] !== undefined ? isDropdownOpen[key] : dropdownStates[key];
+  };
+  
+  // Handle navigation with callback to parent
+  const handleClick = (path: string) => {
+    if (onClickLink) {
+      onClickLink();
+    }
+    handleNavigation(path);
+  };
+  
   return (
-    <nav className={`flex items-center space-x-8 ${className}`}>
-      <Link to="/" className={linkClasses} onClick={handleClickLink}>
-        Home
-      </Link>
+    <nav className="flex items-center space-x-6">
+      <div className="relative">
+        <button
+          className={`text-sm font-medium transition-colors ${
+            isAboutActive ? "text-[#FBB03B]" : ""
+          } hover:text-[#FBB03B]`}
+          onClick={() => handleClick("/about")}
+        >
+          About
+        </button>
+      </div>
       
-      <Link to="/about" className={linkClasses} onClick={handleClickLink}>
-        About
-      </Link>
-      
-      <NavDropdown 
-        triggerText="What We Do" 
-        isOpen={dropdownState["whatWeDo"] || false}
-        onOpenChange={(open) => handleDropdownChange("whatWeDo", open)}
-      >
-        <NavDropdownItem to="/innovation-studios" onClick={handleClickLink}>
+      <div className="relative">
+        <button
+          className={`text-sm font-medium transition-colors ${
+            isStudiosActive ? "text-[#FBB03B]" : ""
+          } hover:text-[#FBB03B]`}
+          onClick={() => handleClick("/studios")}
+        >
           Innovation Studios
-        </NavDropdownItem>
-        <NavDropdownItem to="/conference" onClick={handleClickLink}>
-          Annual Conference
-        </NavDropdownItem>
-        <NavDropdownItem to="/coming-soon" onClick={handleClickLink}>
-          Past Projects
-        </NavDropdownItem>
-      </NavDropdown>
+        </button>
+      </div>
       
-      <NavDropdown 
-        triggerText="Get Involved" 
-        isOpen={dropdownState["getInvolved"] || false}
-        onOpenChange={(open) => handleDropdownChange("getInvolved", open)}
-      >
-        <NavDropdownItem to="/student-application" onClick={handleClickLink}>
-          Students
-        </NavDropdownItem>
-        <NavDropdownItem to="/partner-application" onClick={handleClickLink}>
-          Partners
-        </NavDropdownItem>
-        <NavDropdownItem to="/donate" onClick={handleClickLink}>
+      <div className="relative">
+        <button
+          className={`text-sm font-medium transition-colors ${
+            isConferenceActive ? "text-[#FBB03B]" : ""
+          } hover:text-[#FBB03B]`}
+          onClick={() => handleClick("/conference")}
+        >
+          Conference
+        </button>
+      </div>
+      
+      <div className="relative">
+        <NavDropdown
+          triggerText="Get Involved"
+          isOpen={getDropdownState("getInvolved")}
+          onOpenChange={(open) => handleDropdownToggle("getInvolved", open)}
+        >
+          <NavDropdownItem 
+            to="/apply/student" 
+            onClick={() => handleClick("/apply/student")}
+          >
+            Apply as Student
+          </NavDropdownItem>
+          <NavDropdownItem 
+            to="/apply/partner" 
+            onClick={() => handleClick("/apply/partner")}
+          >
+            Partner with Us
+          </NavDropdownItem>
+          <NavDropdownItem 
+            to="/donate" 
+            onClick={() => handleClick("/donate")}
+          >
+            Donate
+          </NavDropdownItem>
+        </NavDropdown>
+      </div>
+      
+      <div className="relative">
+        <button
+          className={`text-sm font-medium transition-colors ${
+            isDonateActive ? "text-[#FBB03B]" : ""
+          } hover:text-[#FBB03B]`}
+          onClick={() => handleClick("/donate")}
+        >
           Donate
-        </NavDropdownItem>
-      </NavDropdown>
-
-      <Link to="/donate" className={`${linkClasses} hidden lg:block`} onClick={handleClickLink}>
-        Donate
-      </Link>
-      
-      <Link 
-        to="/conference/registration" 
-        className="bg-[#FBB03B] text-white px-4 py-2 rounded-md font-medium hover:bg-[#FBB03B]/90 transition-colors"
-        onClick={handleClickLink}
-      >
-        Register
-      </Link>
+        </button>
+      </div>
     </nav>
   );
 };

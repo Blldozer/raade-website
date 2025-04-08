@@ -1,40 +1,38 @@
 
-import { useEffect, useState } from 'react';
-import { useNavigation } from '@/components/navigation/context/useNavigation';
+import { useNavigation } from "@/components/navigation/context/useNavigation";
 
 /**
  * useNavBackgroundStyle Hook
  * 
- * Determines the navigation background styling based on:
- * - Current scroll position
- * - Whether we're in dark mode
- * - Whether we're on the hero page
+ * Determines the appropriate background style for the navigation based on:
+ * - Scroll position
+ * - Page type (hero or not)
+ * - Forced dark mode setting
+ * - Light/dark mode preference
+ * 
+ * Returns the CSS classes to apply to the navigation element
  */
 export const useNavBackgroundStyle = () => {
   const { state } = useNavigation();
-  const [bgClass, setBgClass] = useState('');
+  const { isScrolled, isHeroPage, forceDarkMode, isLightBackground } = state;
   
-  useEffect(() => {
-    const { isScrolled, isHeroPage, isDarkBackground, forceDarkMode } = state;
-    let newBgClass = '';
-    
-    if (isScrolled) {
-      // Scrolled state - solid background
-      newBgClass = isDarkBackground || forceDarkMode
-        ? 'bg-[#274675]/95 text-white'
-        : 'bg-white/95 text-[#274675] shadow-sm';
-    } else if (isHeroPage) {
-      // Hero page - transparent with white text
-      newBgClass = 'bg-transparent text-white';
-    } else {
-      // Default state - depends on background
-      newBgClass = isDarkBackground || forceDarkMode
-        ? 'bg-transparent text-white'
-        : 'bg-white/95 text-[#274675] shadow-sm';
-    }
-    
-    setBgClass(newBgClass);
-  }, [state]);
+  // Not scrolled on hero page = transparent
+  if (isHeroPage && !isScrolled) {
+    return "bg-transparent";
+  }
   
-  return bgClass;
+  // Force dark mode = dark background
+  if (forceDarkMode) {
+    return "bg-[#274675] text-white";
+  }
+  
+  // Determine by light/dark background
+  if (isLightBackground === false) {
+    return "bg-[#274675] text-white";
+  }
+  
+  // Default scrolled state
+  return "bg-white/95 backdrop-blur-md shadow-sm";
 };
+
+export default useNavBackgroundStyle;
