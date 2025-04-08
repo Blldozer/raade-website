@@ -29,6 +29,14 @@ export const isSaleActive = (): boolean => {
   return new Date() < SALE_END_DATE;
 };
 
+// Coupon data type definition
+export interface CouponData {
+  code: string;
+  discount_type: 'percentage' | 'fixed' | 'full';
+  discount_amount: number;
+  description?: string;
+}
+
 // Create a Zod schema for the registration form
 export const registrationFormSchema = z.object({
   fullName: z.string().min(2, "Full name is required"),
@@ -44,7 +52,8 @@ export const registrationFormSchema = z.object({
       value: z.string().email("Invalid email address")
     }).or(z.string().email("Invalid email address")).nullable()
   ).optional(),
-  specialRequests: z.string().optional()
+  specialRequests: z.string().optional(),
+  couponCode: z.string().optional()
 });
 
 // Alias for backward compatibility
@@ -64,7 +73,8 @@ export const defaultFormValues: RegistrationFormData = {
   groupSize: undefined,
   groupEmails: [],
   specialRequests: "",
-  referralSource: undefined
+  referralSource: undefined,
+  couponCode: undefined
 };
 
 /**
@@ -85,6 +95,29 @@ export const getTicketPrice = (ticketType: typeof TICKET_TYPES[number]): number 
       return saleActive ? 20 : 30; // Sale: $20, Regular: $30 per person
     default:
       return saleActive ? 25 : 35; // Default to student price
+  }
+};
+
+/**
+ * Calculate the price after applying a coupon discount
+ * 
+ * @param basePrice Original price before discount
+ * @param coupon Coupon data with discount information
+ * @returns The discounted price (0 for full discount)
+ */
+export const getDiscountedPrice = (basePrice: number, coupon: CouponData | null): number => {
+  if (!coupon) return basePrice;
+  
+  switch (coupon.discount_type) {
+    case 'full':
+      return 0; // Free ticket
+    case 'percentage':
+      const discountAmount = (basePrice * coupon.discount_amount) / 100;
+      return Math.max(0, basePrice - discountAmount);
+    case 'fixed':
+      return Math.max(0, basePrice - coupon.discount_amount);
+    default:
+      return basePrice;
   }
 };
 
@@ -123,15 +156,22 @@ export const getTicketPriceText = (ticketType: typeof TICKET_TYPES[number]): str
  */
 export const calculateTotalPrice = (
   ticketType: typeof TICKET_TYPES[number],
-  groupSize?: number
+  groupSize?: number,
+  coupon?: CouponData | null
 ): number => {
   const basePrice = getTicketPrice(ticketType);
   
+  let totalPrice = basePrice;
   if (ticketType === TICKET_TYPES_ENUM.STUDENT_GROUP && groupSize) {
-    return basePrice * groupSize;
+    totalPrice = basePrice * groupSize;
   }
   
-  return basePrice;
+  // Apply coupon discount if available
+  if (coupon) {
+    return getDiscountedPrice(totalPrice, coupon);
+  }
+  
+  return totalPrice;
 };
 
 /**

@@ -11,6 +11,8 @@ interface RegistrationData {
   referralSource?: string;
   groupSize?: number;
   groupEmails?: string[];
+  couponCode?: string;
+  paymentMethod?: string;
   paymentComplete: boolean;
 }
 
@@ -35,7 +37,9 @@ export const useRegistrationStorage = () => {
         fullName: data.fullName,
         ticketType: data.ticketType,
         paymentComplete: data.paymentComplete,
-        hasGroupData: data.groupSize && data.groupSize > 0
+        hasGroupData: data.groupSize && data.groupSize > 0,
+        couponCode: data.couponCode || 'none',
+        paymentMethod: data.paymentMethod || 'stripe'
       });
       
       // Generate a tracking ID for this request
