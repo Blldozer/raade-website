@@ -58,9 +58,10 @@ const SimpleStripeProvider = ({
   const [requestId, setRequestId] = useState<string | null>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [intentError, setIntentError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState<number>(0);
   const { toast } = useToast();
 
-  // Create payment intent when component mounts
+  // Create payment intent when component mounts or when retry is attempted
   useEffect(() => {
     const createIntent = async () => {
       setIsLoadingIntent(true);
@@ -74,8 +75,15 @@ const SimpleStripeProvider = ({
         console.log(`Creating payment intent (${reqId}):`, {
           ticketType,
           email,
-          couponCode: couponCode || 'none'
+          couponCode: couponCode || 'none',
+          retryCount
         });
+        
+        // Clear any previous client secret from the window object
+        if ((window as any).__stripeClientSecret) {
+          console.log(`Clearing previous client secret before creating new intent (${reqId})`);
+          (window as any).__stripeClientSecret = null;
+        }
         
         const { data, error } = await supabase.functions.invoke("create-payment-intent", {
           body: {
@@ -104,7 +112,8 @@ const SimpleStripeProvider = ({
         console.log(`Payment intent response received (${reqId}):`, {
           amount: data.amount,
           freeRegistration: data.freeRegistration || false,
-          hasClientSecret: !!data.clientSecret
+          hasClientSecret: !!data.clientSecret,
+          responseTime: data.responseTime
         });
         
         // Save client secret state
@@ -112,6 +121,13 @@ const SimpleStripeProvider = ({
           setClientSecret(data.clientSecret);
           // Also save in window object for the payment confirmation process to use
           (window as any).__stripeClientSecret = data.clientSecret;
+          
+          // Verify the client secret was set correctly in the window object
+          console.log(`Client secret set in window object: ${!!(window as any).__stripeClientSecret}`);
+        } else if (data.freeRegistration) {
+          console.log(`Free registration detected, no client secret needed (${reqId})`);
+        } else {
+          console.warn(`No client secret in response (${reqId})`);
         }
         
         // Set amount, currency and other details from the response
@@ -144,7 +160,12 @@ const SimpleStripeProvider = ({
     };
     
     createIntent();
-  }, [ticketType, email, fullName, groupSize, couponCode, onError, toast]);
+  }, [ticketType, email, fullName, groupSize, couponCode, onError, toast, retryCount]);
+
+  // Function to retry payment intent creation
+  const handleRetry = () => {
+    setRetryCount(prev => prev + 1);
+  };
 
   // Loading state while creating payment intent
   if (isLoadingIntent) {
@@ -170,7 +191,7 @@ const SimpleStripeProvider = ({
         </div>
         <p>{intentError}</p>
         <button 
-          onClick={() => window.location.reload()}
+          onClick={handleRetry}
           className="mt-3 px-4 py-2 bg-white dark:bg-slate-800 border border-red-300 dark:border-red-700 rounded-md text-sm"
         >
           Try Again
@@ -189,7 +210,7 @@ const SimpleStripeProvider = ({
         </div>
         <p>The payment system returned an invalid response. Unable to create payment session.</p>
         <button 
-          onClick={() => window.location.reload()}
+          onClick={handleRetry}
           className="mt-3 px-4 py-2 bg-white dark:bg-slate-800 border border-red-300 dark:border-red-700 rounded-md text-sm"
         >
           Try Again
@@ -198,8 +219,25 @@ const SimpleStripeProvider = ({
     );
   }
 
+  // Check if client secret is properly set in window object
+  if (clientSecret && !(window as any).__stripeClientSecret) {
+    console.error("Client secret mismatch: present in state but missing from window object");
+    (window as any).__stripeClientSecret = clientSecret;
+  }
+
   return (
-    <Elements stripe={stripePromise}>
+    <Elements 
+      stripe={stripePromise}
+      options={{
+        clientSecret,
+        appearance: {
+          theme: 'stripe',
+          variables: {
+            colorPrimary: '#274675',
+          }
+        }
+      }}
+    >
       <PaymentForm
         email={email}
         onSuccess={onSuccess}

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import { StripeElementsOptions, loadStripe } from "@stripe/stripe-js";
-import { Alert, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react"; // Fixed import, using AlertCircle instead of Alert
 
 // Initialize Stripe with the publishable key - using a singleton pattern
 const getStripePromise = (() => {

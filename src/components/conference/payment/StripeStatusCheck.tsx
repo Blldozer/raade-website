@@ -1,169 +1,111 @@
 
-import React, { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { AlertCircle, CheckCircle, Loader2, ExternalLink } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { AlertCircle, CheckCircle, RefreshCw } from "lucide-react";
 
 /**
  * StripeStatusCheck Component
  * 
- * Verifies that Stripe payment processing is available
- * - Shows loading state while checking
- * - Displays connection status
- * - Provides a retry button if connection fails
- * - Shows troubleshooting information for common errors
+ * This component checks if the Stripe integration is working properly.
+ * It shows a warning if there are issues connecting to Stripe.
  */
 const StripeStatusCheck = () => {
-  const [status, setStatus] = useState<'checking' | 'connected' | 'error'>('checking');
+  const [status, setStatus] = useState<'checking' | 'error' | 'success' | 'idle'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isChecking, setIsChecking] = useState(true);
-  const [checkCount, setCheckCount] = useState(0);
-  const [browserInfo, setBrowserInfo] = useState<string | null>(null);
-  
-  useEffect(() => {
-    // Check for Content Security Policy issues
-    const checkCSP = () => {
-      try {
-        // Check if we can detect CSP errors in console
-        const scripts = document.querySelectorAll('script');
-        let stripeScriptsFound = false;
-        
-        scripts.forEach(script => {
-          if (script.src && script.src.includes('stripe')) {
-            stripeScriptsFound = true;
-          }
-        });
-        
-        // Try to determine browser info
-        const userAgent = navigator.userAgent;
-        const browserName = userAgent.includes('Chrome') ? 'Chrome' : 
-                            userAgent.includes('Firefox') ? 'Firefox' : 
-                            userAgent.includes('Safari') ? 'Safari' : 
-                            userAgent.includes('Edge') ? 'Edge' : 'Unknown';
-        
-        setBrowserInfo(`${browserName} - ${window.innerWidth}x${window.innerHeight}`);
-        
-        return stripeScriptsFound ? 'found' : 'missing';
-      } catch (e) {
-        console.error('Error checking CSP:', e);
-        return 'error';
-      }
-    };
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+
+  const checkStripeStatus = async () => {
+    if (status === 'checking') return;
     
-    // Check Stripe scripts
-    const stripeScriptStatus = checkCSP();
-    console.log('Stripe script status:', stripeScriptStatus);
-  }, []);
-  
-  const checkStripeConnection = async () => {
-    setIsChecking(true);
     setStatus('checking');
-    setCheckCount(prev => prev + 1);
+    setErrorMessage(null);
     
     try {
-      console.log(`Checking Stripe connection (attempt ${checkCount + 1})`);
+      console.log("Checking Stripe connection status...");
       
-      // Call the create-payment-intent function with checkOnly flag
       const { data, error } = await supabase.functions.invoke('create-payment-intent', {
-        body: { checkOnly: true }
+        body: {
+          checkOnly: true
+        }
       });
       
       if (error) {
-        console.error('Stripe connection check failed:', error);
+        console.error("Stripe status check failed:", error);
         setStatus('error');
-        setErrorMessage(error.message || 'Could not connect to Stripe payment service');
+        setErrorMessage(error.message || "Unable to connect to Stripe payment service");
+        setIsVisible(true);
       } else if (data?.success) {
-        console.log('Stripe connection verified successfully');
-        setStatus('connected');
-        setErrorMessage(null);
+        console.log("Stripe connection check successful");
+        setStatus('success');
+        setIsVisible(false);
+        
+        // Hide success message after 3 seconds
+        setTimeout(() => {
+          setIsVisible(false);
+        }, 3000);
       } else {
-        console.error('Stripe connection check returned invalid response:', data);
+        console.warn("Unexpected response from Stripe check:", data);
         setStatus('error');
-        setErrorMessage('Invalid response from payment service');
+        setErrorMessage("Received unexpected response from payment service");
+        setIsVisible(true);
       }
     } catch (err) {
-      console.error('Unexpected error checking Stripe connection:', err);
+      console.error("Error checking Stripe status:", err);
       setStatus('error');
-      setErrorMessage(err instanceof Error ? err.message : 'Unknown error');
-    } finally {
-      setIsChecking(false);
+      setErrorMessage(err instanceof Error ? err.message : "Unknown error checking payment status");
+      setIsVisible(true);
     }
   };
-  
-  // Check connection status on component mount
+
+  // Check status on component mount
   useEffect(() => {
-    checkStripeConnection();
+    const timer = setTimeout(() => {
+      checkStripeStatus();
+    }, 500); // Small delay to avoid competing with page load
+    
+    return () => clearTimeout(timer);
   }, []);
-  
-  // Don't show anything if connection is successful to avoid cluttering the UI
-  if (status === 'connected' && !isChecking) {
-    return null;
-  }
-  
-  // If we've checked multiple times and still have an error, show more detailed help
-  const showDetailedHelp = status === 'error' && checkCount > 1;
-  
-  return (
-    <div className={`mb-4 p-3 rounded-md text-sm ${
-      status === 'checking' ? 'bg-blue-50 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300' :
-      status === 'error' ? 'bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-300' :
-      'bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-300'
-    }`}>
-      <div className="flex items-center">
-        {status === 'checking' && (
-          <>
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            <span>Checking payment system connection...</span>
-          </>
-        )}
-        
-        {status === 'error' && (
-          <>
-            <AlertCircle className="h-4 w-4 mr-2 flex-shrink-0" />
-            <div className="flex-1">
-              <span>Payment system unavailable: {errorMessage}</span>
-              
-              {showDetailedHelp && (
-                <div className="mt-2 text-xs">
-                  <p className="font-medium">Troubleshooting tips:</p>
-                  <ul className="list-disc ml-5 mt-1 space-y-1">
-                    <li>Check your network connection</li>
-                    <li>Try disabling browser extensions</li>
-                    <li>Clear browser cache and cookies</li>
-                    <li>Try a different browser</li>
-                    {browserInfo && <li>Browser info: {browserInfo}</li>}
-                  </ul>
-                </div>
-              )}
-              
-              <div className="mt-2">
-                <button 
-                  onClick={checkStripeConnection}
-                  disabled={isChecking}
-                  className="mr-3 text-xs px-2 py-1 bg-white dark:bg-slate-700 border border-red-300 dark:border-red-700 rounded"
-                >
-                  {isChecking ? (
-                    <>
-                      <Loader2 className="h-3 w-3 mr-1 inline animate-spin" />
-                      Checking...
-                    </>
-                  ) : (
-                    <>Retry Connection</>
-                  )}
-                </button>
-              </div>
-            </div>
-          </>
-        )}
-        
-        {status === 'connected' && (
-          <>
-            <CheckCircle className="h-4 w-4 mr-2" />
-            <span>Payment system connected</span>
-          </>
-        )}
+
+  if (!isVisible) return null;
+
+  if (status === 'checking') {
+    return (
+      <div className="p-3 bg-blue-50 text-blue-700 rounded-md flex items-center space-x-2 mb-4 dark:bg-blue-900/20 dark:text-blue-300">
+        <RefreshCw className="h-4 w-4 animate-spin" />
+        <p className="text-sm">Checking payment system status...</p>
       </div>
-    </div>
-  );
+    );
+  }
+
+  if (status === 'error') {
+    return (
+      <div className="p-3 bg-amber-50 text-amber-700 rounded-md flex space-x-2 mb-4 dark:bg-amber-900/20 dark:text-amber-300">
+        <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+        <div className="space-y-1">
+          <p className="text-sm font-medium">Payment System Warning</p>
+          <p className="text-xs">{errorMessage || "There might be issues with the payment system. You can continue, but you may encounter problems during checkout."}</p>
+          <button 
+            onClick={checkStripeStatus} 
+            className="text-xs underline flex items-center space-x-1 mt-1"
+          >
+            <RefreshCw className="h-3 w-3" />
+            <span>Check Again</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === 'success') {
+    return (
+      <div className="p-3 bg-green-50 text-green-700 rounded-md flex items-center space-x-2 mb-4 dark:bg-green-900/20 dark:text-green-300">
+        <CheckCircle className="h-4 w-4" />
+        <p className="text-sm">Payment system connected and working properly.</p>
+      </div>
+    );
+  }
+
+  return null;
 };
 
 export default StripeStatusCheck;

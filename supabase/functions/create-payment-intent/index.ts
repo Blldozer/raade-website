@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.1";
@@ -28,6 +27,9 @@ serve(async (req) => {
     timeouts: new Set<number>()
   };
   
+  // Log every request with the request ID for tracing
+  console.log(`[${requestContext.id}] Payment intent request received (${new Date().toISOString()})`);
+  
   // Set up automatic cleanup when request is aborted or completed
   const cleanupContext = () => {
     // Clear all timeouts associated with this request
@@ -42,9 +44,15 @@ serve(async (req) => {
     console.log(`[${requestContext.id}] Request context cleaned up after ${Date.now() - requestContext.startTime}ms`);
   };
   
+  // Add additional CORS headers to make sure Stripe works
+  const enhancedCorsHeaders = {
+    ...corsHeaders,
+    'Content-Security-Policy': "default-src 'self' https://*.stripe.com; frame-src https://*.stripe.com; script-src 'self' https://*.stripe.com; connect-src https://*.stripe.com",
+  };
+  
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: enhancedCorsHeaders });
   }
 
   try {
@@ -73,14 +81,14 @@ serve(async (req) => {
       
       // Create a timeout with cleanup function
       const { promise: timeoutPromise, cleanup: cleanupTimeout } = createTimeout(
-        5000, 
+        10000, // Increased timeout to 10 seconds 
         "Request body parsing timed out"
       );
       
       // Add cleanup function to this request's timeouts
       const timeoutId = setTimeout(() => {
         console.error(`[${requestContext.id}] Request body parsing timed out`);
-      }, 5000);
+      }, 10000);
       requestContext.timeouts.add(timeoutId);
       
       try {
@@ -134,7 +142,7 @@ serve(async (req) => {
             success: true, 
             message: "Stripe connection verified successfully",
             requestId: requestContext.id
-          });
+          }, enhancedCorsHeaders);
         } catch (error) {
           console.error(`[${requestContext.id}] Stripe connection check failed:`, error);
           return createErrorResponse(
@@ -268,6 +276,17 @@ serve(async (req) => {
           const responseTime = Date.now() - requestContext.startTime;
           console.log(`[${requestContext.id}] Payment intent created successfully in ${responseTime}ms:`, paymentIntent.id);
 
+          // Verify the client secret exists before returning it
+          if (!paymentIntent.client_secret) {
+            console.error(`[${requestContext.id}] Payment intent missing client secret:`, paymentIntent.id);
+            return createErrorResponse(
+              "Payment intent missing client secret", 
+              "An error occurred during payment setup. Please try again.", 
+              500, 
+              requestContext.id
+            );
+          }
+
           // Return the payment intent client secret with detailed information
           return createResponse({ 
             clientSecret: paymentIntent.client_secret,
@@ -279,7 +298,7 @@ serve(async (req) => {
             perPersonCost: isGroupRegistration ? 30 : (ticketType === "student" ? 35 : 60),
             requestId: requestContext.id,
             responseTime
-          });
+          }, enhancedCorsHeaders);
         } else {
           const errorMessage = lastError?.message || "Unknown error creating payment intent";
           console.error(`[${requestContext.id}] Failed to create payment intent after ${MAX_RETRIES} attempts:`, errorMessage);

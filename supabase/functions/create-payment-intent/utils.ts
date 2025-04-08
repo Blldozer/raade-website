@@ -10,14 +10,16 @@ export const corsHeaders = {
  * Create success response with payload
  * 
  * @param data - Response data
+ * @param additionalHeaders - Optional additional headers to include
  * @returns Response object
  */
-export const createResponse = (data: any) => {
+export const createResponse = (data: any, additionalHeaders = {}) => {
   return new Response(
     JSON.stringify(data),
     {
       headers: {
         ...corsHeaders,
+        ...additionalHeaders,
         'Content-Type': 'application/json',
       },
       status: 200,

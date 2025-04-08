@@ -67,6 +67,18 @@ const PaymentForm = ({
       console.log(`Payment form initialized with client secret (${requestId || 'unknown'})`);
     } else {
       console.error(`Missing client secret in payment form (${requestId || 'unknown'})`);
+      
+      // Check if we can recover the client secret from the URL (Stripe redirect flow)
+      const urlParams = new URLSearchParams(window.location.search);
+      const paymentIntentParam = urlParams.get('payment_intent');
+      const clientSecretParam = urlParams.get('payment_intent_client_secret');
+      
+      if (paymentIntentParam && clientSecretParam) {
+        console.log(`Recovered client secret from URL parameters (${requestId || 'unknown'})`);
+        (window as any).__stripeClientSecret = clientSecretParam;
+        return;
+      }
+      
       if (!errorCalledRef.current) {
         errorCalledRef.current = true;
         onError("Payment system configuration error. Please try again.");
@@ -159,6 +171,7 @@ const PaymentForm = ({
           <h3 className="font-medium">Payment System Error</h3>
         </div>
         <p>The payment system could not be initialized. Missing payment authorization.</p>
+        <p className="mt-2 text-sm">This could be due to browser security restrictions. Try using a different browser or disabling extensions.</p>
         <button 
           onClick={() => window.location.reload()}
           className="mt-3 px-4 py-2 bg-white dark:bg-slate-800 border border-red-300 dark:border-red-700 rounded-md text-sm"
