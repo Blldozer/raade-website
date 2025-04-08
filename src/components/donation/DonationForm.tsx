@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { createClient } from "@supabase/supabase-js";
-import { createSupabaseClient } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 
 // Define form schema for validation
 const donationFormSchema = z.object({
@@ -46,7 +45,6 @@ const DonationForm = ({ selectedAmount, setSelectedAmount }: DonationFormProps) 
   const [isCustomAmount, setIsCustomAmount] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  const supabase = createSupabaseClient();
 
   const {
     register,
