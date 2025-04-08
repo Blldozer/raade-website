@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import PaymentForm from "../PaymentForm";
@@ -58,7 +57,7 @@ const SimpleStripeProvider = ({
   const { toast } = useToast();
 
   // Create payment intent when component mounts
-  useState(() => {
+  useEffect(() => {
     const createIntent = async () => {
       setIsLoadingIntent(true);
       setRequestId(`req-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`);
@@ -106,7 +105,7 @@ const SimpleStripeProvider = ({
     };
     
     createIntent();
-  }, []);
+  }, [ticketType, email, fullName, groupSize, couponCode, onError, toast]);
 
   // Loading state while creating payment intent
   if (isLoadingIntent) {

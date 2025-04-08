@@ -60,16 +60,17 @@ const CouponManagement = () => {
     setIsLoading(true);
     
     try {
+      // Use raw queries with limited type safety as a workaround
+      // Since the database types haven't been generated yet
       const { data, error } = await supabase
-        .from('coupon_codes')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .rpc('get_coupon_codes')
+        .select();
       
       if (error) {
         throw error;
       }
       
-      setCoupons(data || []);
+      setCoupons(data as CouponCode[] || []);
     } catch (error) {
       console.error("Error fetching coupons:", error);
       toast({
@@ -139,11 +140,17 @@ const CouponManagement = () => {
         expires_at: newCoupon.expires_at ? new Date(newCoupon.expires_at).toISOString() : null
       };
       
+      // Use the custom function to create a new coupon
       const { data, error } = await supabase
-        .from('coupon_codes')
-        .insert(couponData)
-        .select()
-        .single();
+        .rpc('create_coupon_code', {
+          p_code: couponData.code,
+          p_description: couponData.description,
+          p_discount_type: couponData.discount_type,
+          p_discount_amount: couponData.discount_amount,
+          p_max_uses: couponData.max_uses,
+          p_is_active: couponData.is_active,
+          p_expires_at: couponData.expires_at
+        });
       
       if (error) {
         if (error.code === '23505') { // Unique violation
@@ -191,9 +198,7 @@ const CouponManagement = () => {
     
     try {
       const { error } = await supabase
-        .from('coupon_codes')
-        .delete()
-        .eq('id', id);
+        .rpc('delete_coupon_code', { p_id: id });
       
       if (error) {
         throw error;
@@ -221,9 +226,10 @@ const CouponManagement = () => {
   const toggleCouponStatus = async (id: string, currentStatus: boolean, code: string) => {
     try {
       const { error } = await supabase
-        .from('coupon_codes')
-        .update({ is_active: !currentStatus })
-        .eq('id', id);
+        .rpc('toggle_coupon_status', { 
+          p_id: id,
+          p_is_active: !currentStatus 
+        });
       
       if (error) {
         throw error;

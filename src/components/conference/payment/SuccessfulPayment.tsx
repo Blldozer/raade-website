@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
 import { RegistrationFormData } from "../RegistrationFormTypes";
-import { useEmailConfirmation } from "./EmailConfirmationSender";
+import { useEmailConfirmation } from "./hooks/useEmailConfirmation";
 import { useEffect, useState } from "react";
 
 interface SuccessfulPaymentProps {
@@ -27,7 +27,7 @@ const SuccessfulPayment = ({
   isFreeRegistration = false
 }: SuccessfulPaymentProps) => {
   const [emailSent, setEmailSent] = useState(false);
-  const { sendEmailConfirmation, isLoading } = useEmailConfirmation();
+  const { sendEmailConfirmation, isLoading, emailSent: hookEmailSent } = useEmailConfirmation();
   
   // Send email confirmation when component mounts
   useEffect(() => {
