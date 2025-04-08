@@ -1,47 +1,33 @@
 
-/**
- * StepIndicator Component
- * 
- * Shows the current step in the registration process
- * Provides a visual indication of progress
- * 
- * @param currentStep - The current step in the registration process
- */
+import { Check } from "lucide-react";
+
 interface StepIndicatorProps {
   currentStep: 'registration' | 'payment';
 }
 
 const StepIndicator = ({ currentStep }: StepIndicatorProps) => {
   return (
-    <div className="flex items-center justify-center mb-6">
+    <div className="flex items-center justify-center mb-8">
       <div className="flex items-center">
-        <div className={`rounded-full h-10 w-10 flex items-center justify-center ${
-          currentStep === 'registration' 
-            ? 'bg-[#FBB03B] text-white' 
-            : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
-        }`}>
-          1
+        <div className="flex items-center">
+          <div className={`rounded-full h-8 w-8 flex items-center justify-center ${
+            currentStep === 'payment' ? 'bg-green-500 text-white' : 'bg-[#FBB03B] text-white'
+          }`}>
+            {currentStep === 'payment' ? <Check className="h-5 w-5" /> : '1'}
+          </div>
+          <span className="ml-2 font-lora">Registration</span>
         </div>
-        <div className={`h-1 w-12 ${
-          currentStep === 'payment' 
-            ? 'bg-[#FBB03B]' 
-            : 'bg-gray-200 dark:bg-gray-700'
-        }`}></div>
-        <div className={`rounded-full h-10 w-10 flex items-center justify-center ${
-          currentStep === 'payment' 
-            ? 'bg-[#FBB03B] text-white' 
-            : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
-        }`}>
-          2
+        <div className={`h-px w-12 mx-4 ${
+          currentStep === 'payment' ? 'bg-green-500' : 'bg-gray-300'
+        }`} />
+        <div className="flex items-center">
+          <div className={`rounded-full h-8 w-8 flex items-center justify-center ${
+            currentStep === 'payment' ? 'bg-[#FBB03B] text-white' : 'bg-gray-300 text-gray-600'
+          }`}>
+            2
+          </div>
+          <span className="ml-2 font-lora">Payment</span>
         </div>
-      </div>
-      <div className="flex text-sm ml-4">
-        <span className={`mr-12 ${currentStep === 'registration' ? 'font-bold text-[#FBB03B]' : ''}`}>
-          Registration
-        </span>
-        <span className={currentStep === 'payment' ? 'font-bold text-[#FBB03B]' : ''}>
-          Payment
-        </span>
       </div>
     </div>
   );

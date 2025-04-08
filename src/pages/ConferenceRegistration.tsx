@@ -20,7 +20,6 @@ import { isSaleActive } from "@/components/conference/RegistrationFormTypes";
  * - Smooth animations for an engaging UI
  * - Enhanced session cleanup to prevent payment issues
  * - Added sale countdown timer that only shows during active sales
- * - Stripe status check to inform users of payment system issues
  */
 const ConferenceRegistration = () => {
   const navigate = useNavigate();

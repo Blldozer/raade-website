@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.1";
 import { corsHeaders, createResponse, createErrorResponse, createTimeout } from "./utils.ts";
 import { validateStripeKey, validateRequestData } from "./validation.ts";
 import { calculatePaymentAmount } from "../_shared/pricing.ts";
@@ -27,9 +26,6 @@ serve(async (req) => {
     timeouts: new Set<number>()
   };
   
-  // Log every request with the request ID for tracing
-  console.log(`[${requestContext.id}] Payment intent request received (${new Date().toISOString()})`);
-  
   // Set up automatic cleanup when request is aborted or completed
   const cleanupContext = () => {
     // Clear all timeouts associated with this request
@@ -44,15 +40,9 @@ serve(async (req) => {
     console.log(`[${requestContext.id}] Request context cleaned up after ${Date.now() - requestContext.startTime}ms`);
   };
   
-  // Add additional CORS headers to make sure Stripe works
-  const enhancedCorsHeaders = {
-    ...corsHeaders,
-    'Content-Security-Policy': "default-src 'self' https://*.stripe.com; frame-src https://*.stripe.com; script-src 'self' https://*.stripe.com; connect-src https://*.stripe.com",
-  };
-  
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: enhancedCorsHeaders });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
@@ -76,19 +66,18 @@ serve(async (req) => {
     // Parse the request body with timeout
     let requestData;
     try {
-      // Parse request body
       const bodyTextPromise = req.text();
       
       // Create a timeout with cleanup function
       const { promise: timeoutPromise, cleanup: cleanupTimeout } = createTimeout(
-        10000, // Increased timeout to 10 seconds 
+        5000, 
         "Request body parsing timed out"
       );
       
       // Add cleanup function to this request's timeouts
       const timeoutId = setTimeout(() => {
         console.error(`[${requestContext.id}] Request body parsing timed out`);
-      }, 10000);
+      }, 5000);
       requestContext.timeouts.add(timeoutId);
       
       try {
@@ -142,7 +131,7 @@ serve(async (req) => {
             success: true, 
             message: "Stripe connection verified successfully",
             requestId: requestContext.id
-          }, enhancedCorsHeaders);
+          });
         } catch (error) {
           console.error(`[${requestContext.id}] Stripe connection check failed:`, error);
           return createErrorResponse(
@@ -155,15 +144,14 @@ serve(async (req) => {
       }
       
       // Extract and validate request data
-      const { ticketType, email, fullName, groupSize, couponCode } = requestData;
+      const { ticketType, email, fullName, groupSize } = requestData;
       
       // Log request for debugging
       console.log(`[${requestContext.id}] Received payment intent request:`, JSON.stringify({
         ticketType,
         email,
         fullName,
-        groupSize: groupSize || "N/A",
-        hasCoupon: !!couponCode
+        groupSize: groupSize || "N/A"
       }));
       
       // Use the existing validation logic
@@ -171,91 +159,8 @@ serve(async (req) => {
       if (validationError) return validationError;
       
       try {
-        // Initialize Supabase client to validate coupon if provided
-        let discountPercentage = 0;
-        let discountFixed = 0;
-        let isFreeRegistration = false;
-        
-        if (couponCode) {
-          console.log(`[${requestContext.id}] Validating coupon code: ${couponCode}`);
-          
-          const supabaseUrl = Deno.env.get("SUPABASE_URL");
-          const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-          
-          if (supabaseUrl && supabaseServiceRoleKey) {
-            const supabaseAdmin = createClient(
-              supabaseUrl,
-              supabaseServiceRoleKey,
-              {
-                auth: {
-                  persistSession: false,
-                }
-              }
-            );
-            
-            // Look up the coupon code
-            const { data: coupon, error } = await supabaseAdmin
-              .from('coupon_codes')
-              .select('*')
-              .eq('code', couponCode.trim().toUpperCase())
-              .eq('is_active', true)
-              .maybeSingle();
-            
-            if (error) {
-              console.error(`[${requestContext.id}] Database error during coupon validation:`, error);
-              // Continue without applying discount if error occurs
-            } else if (coupon) {
-              console.log(`[${requestContext.id}] Valid coupon found:`, {
-                code: coupon.code,
-                type: coupon.discount_type,
-                amount: coupon.discount_amount
-              });
-              
-              // Apply the appropriate discount based on the coupon type
-              if (coupon.discount_type === 'percentage') {
-                discountPercentage = coupon.discount_amount;
-              } else if (coupon.discount_type === 'fixed') {
-                discountFixed = coupon.discount_amount;
-              } else if (coupon.discount_type === 'full') {
-                isFreeRegistration = true;
-              }
-            } else {
-              console.log(`[${requestContext.id}] Coupon not found or inactive: ${couponCode}`);
-              // Continue without applying discount
-            }
-          }
-        }
-        
-        // If it's a free registration with a valid coupon, we don't need to create a payment intent
-        if (isFreeRegistration) {
-          return createResponse({ 
-            amount: 0,
-            currency: "USD",
-            isGroupRegistration: ticketType === "student-group",
-            groupSize: ticketType === "student-group" ? Math.max(groupSize || 5, 5) : undefined,
-            ticketType,
-            perPersonCost: 0,
-            freeRegistration: true,
-            requestId: requestContext.id
-          });
-        }
-        
         // Calculate payment amount based on ticket type
-        let { amount, description, isGroupRegistration } = calculatePaymentAmount(ticketType, groupSize);
-        
-        // Apply percentage discount if applicable
-        if (discountPercentage > 0) {
-          const discountAmount = Math.round(amount * (discountPercentage / 100));
-          amount = Math.max(0, amount - discountAmount);
-          description += ` (${discountPercentage}% discount applied)`;
-        }
-        
-        // Apply fixed discount if applicable
-        if (discountFixed > 0) {
-          const discountAmount = discountFixed * 100; // Convert to cents
-          amount = Math.max(0, amount - discountAmount);
-          description += ` ($${discountFixed} discount applied)`;
-        }
+        const { amount, description, isGroupRegistration } = calculatePaymentAmount(ticketType, groupSize);
         
         // Create payment intent using the request-specific Stripe instance
         const { paymentIntent, lastError } = await createPaymentIntentWithRetry(
@@ -276,17 +181,6 @@ serve(async (req) => {
           const responseTime = Date.now() - requestContext.startTime;
           console.log(`[${requestContext.id}] Payment intent created successfully in ${responseTime}ms:`, paymentIntent.id);
 
-          // Verify the client secret exists before returning it
-          if (!paymentIntent.client_secret) {
-            console.error(`[${requestContext.id}] Payment intent missing client secret:`, paymentIntent.id);
-            return createErrorResponse(
-              "Payment intent missing client secret", 
-              "An error occurred during payment setup. Please try again.", 
-              500, 
-              requestContext.id
-            );
-          }
-
           // Return the payment intent client secret with detailed information
           return createResponse({ 
             clientSecret: paymentIntent.client_secret,
@@ -298,7 +192,7 @@ serve(async (req) => {
             perPersonCost: isGroupRegistration ? 30 : (ticketType === "student" ? 35 : 60),
             requestId: requestContext.id,
             responseTime
-          }, enhancedCorsHeaders);
+          });
         } else {
           const errorMessage = lastError?.message || "Unknown error creating payment intent";
           console.error(`[${requestContext.id}] Failed to create payment intent after ${MAX_RETRIES} attempts:`, errorMessage);

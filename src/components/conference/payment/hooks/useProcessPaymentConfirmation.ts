@@ -13,7 +13,6 @@ interface UseProcessPaymentConfirmationProps {
   stripe: Stripe | null;
   elements: StripeElements | null;
   email: string;
-  getClientSecret: () => string | null;
 }
 
 /**
@@ -25,8 +24,7 @@ interface UseProcessPaymentConfirmationProps {
 export const useProcessPaymentConfirmation = ({
   stripe,
   elements,
-  email,
-  getClientSecret
+  email
 }: UseProcessPaymentConfirmationProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
   
@@ -36,44 +34,29 @@ export const useProcessPaymentConfirmation = ({
    */
   const processPaymentConfirmation = async (): Promise<PaymentConfirmationResult> => {
     if (!stripe || !elements) {
-      console.error("Stripe or elements not loaded", { stripe: !!stripe, elements: !!elements });
+      console.error("Stripe or elements not loaded");
       return { success: false, reason: "stripe-not-loaded" };
     }
     
     setIsProcessing(true);
     
     try {
-      console.log("Starting payment confirmation with Stripe");
-      
-      // Get the current card element
-      const cardElement = elements.getElement("card");
-      if (!cardElement) {
-        console.error("Card element not found in the form");
-        return { success: false, reason: "card-element-missing" };
-      }
-      
-      // Get the client secret from the provided function
-      const clientSecret = getClientSecret();
-      
-      if (!clientSecret) {
-        console.error("Client secret is missing");
-        return { success: false, reason: "client-secret-missing" };
-      }
-      
-      console.log("Using client secret to confirm payment:", clientSecret.substring(0, 10) + "...");
+      console.log("Starting payment confirmation process");
       
       // Try to confirm payment with optimized settings to reduce rate limiting issues
-      const { error, paymentIntent } = await stripe.confirmCardPayment(
-        clientSecret,
-        {
-          payment_method: {
-            card: cardElement,
-            billing_details: {
-              email: email
-            }
-          }
-        }
-      );
+      const { error, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/conference/confirmation`,
+          receipt_email: email,
+          payment_method_data: {
+            billing_details: { email }
+          },
+          // Disable any unnecessary fields to reduce API load
+          setup_future_usage: undefined
+        },
+        redirect: "if_required"
+      });
       
       // Handle errors
       if (error) {
@@ -86,7 +69,7 @@ export const useProcessPaymentConfirmation = ({
           return { 
             success: false, 
             reason: "rate-limited",
-            error: error as unknown as Error
+            error: error as unknown as Error // Type assertion to resolve the error
           };
         }
         
@@ -100,8 +83,6 @@ export const useProcessPaymentConfirmation = ({
       
       // Handle payment intent
       if (paymentIntent) {
-        console.log(`Payment intent status: ${paymentIntent.status}`);
-        
         switch (paymentIntent.status) {
           case "succeeded":
             console.log("Payment succeeded");

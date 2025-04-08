@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import RegistrationFormFields from "./RegistrationFormFields";
 import PaymentSection from "./PaymentSection";
@@ -9,13 +9,12 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { clearExistingSessionData, detectBackNavigation, getSessionDiagnostics } from "./payment/services/sessionManagement";
-import { CouponData } from "./RegistrationFormTypes";
 
 /**
  * ConferenceRegistrationForm Component
  * 
  * Displays the main registration form for the conference:
- * - Now with coupon code support for free registrations
+ * - Now using standardized Stripe Checkout Sessions only
  * - Enhanced session management and cleanup
  * - Better error recovery after payment failures
  * - Improved user experience with clear status messages
@@ -34,7 +33,6 @@ const ConferenceRegistrationForm = () => {
     watchTicketType
   } = useRegistrationForm();
 
-  const [couponData, setCouponData] = useState<CouponData | null>(null);
   const { toast } = useToast();
 
   // When ticket type changes, ensure any checkout sessions are cleared
@@ -105,7 +103,6 @@ const ConferenceRegistrationForm = () => {
   const handlePaymentSuccess = () => {
     form.reset();
     setShowPayment(false);
-    setCouponData(null);
   };
 
   const handlePaymentError = (errorMessage: string) => {
@@ -144,11 +141,6 @@ const ConferenceRegistrationForm = () => {
     });
   };
 
-  // Handle coupon code changes
-  const handleCouponChange = (data: CouponData | null) => {
-    setCouponData(data);
-  };
-
   return (
     <Card className="shadow-lg border-[#FBB03B]/10 dark:border-[#FBB03B]/20 dark:bg-gray-900 transition-colors duration-200">
       <CardHeader>
@@ -167,7 +159,6 @@ const ConferenceRegistrationForm = () => {
               watch={form.watch}
               control={form.control}
               onEmailValidation={handleEmailValidation}
-              onCouponChange={handleCouponChange}
             />
             
             <Button
@@ -190,7 +181,6 @@ const ConferenceRegistrationForm = () => {
         ) : (
           <PaymentSection 
             registrationData={registrationData!}
-            couponData={couponData}
             isSubmitting={isSubmitting}
             onPaymentSuccess={handlePaymentSuccess}
             onPaymentError={handlePaymentError}

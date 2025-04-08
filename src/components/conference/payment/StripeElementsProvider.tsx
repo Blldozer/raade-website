@@ -1,8 +1,6 @@
-
 import React, { useState, useEffect } from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import { StripeElementsOptions, loadStripe } from "@stripe/stripe-js";
-import { AlertCircle } from "lucide-react"; // Fixed import, using AlertCircle instead of Alert
 
 // Initialize Stripe with the publishable key - using a singleton pattern
 const getStripePromise = (() => {
@@ -68,7 +66,6 @@ const StripeElementsProvider: React.FC<StripeElementsProviderProps> = ({
   const [isInitializing, setIsInitializing] = useState(true);
   const [initError, setInitError] = useState<Error | null>(null);
   const [retryCount, setRetryCount] = useState(0);
-  const [clientSecretError, setClientSecretError] = useState<boolean>(false);
   
   // Enforce HTTPS in production environments
   useEffect(() => {
@@ -83,16 +80,6 @@ const StripeElementsProvider: React.FC<StripeElementsProviderProps> = ({
       window.location.href = window.location.href.replace('http:', 'https:');
     }
   }, []);
-  
-  // Validate client secret
-  useEffect(() => {
-    if (!clientSecret) {
-      console.error("Missing client secret in StripeElementsProvider");
-      setClientSecretError(true);
-    } else {
-      setClientSecretError(false);
-    }
-  }, [clientSecret]);
   
   // Handle Stripe initialization and retry logic
   useEffect(() => {
@@ -146,27 +133,11 @@ const StripeElementsProvider: React.FC<StripeElementsProviderProps> = ({
       hasClientSecret: !!clientSecret,
       clientSecretStart: clientSecret ? `${clientSecret.substring(0, 5)}...` : "missing"
     });
+    
+    if (!clientSecret) {
+      console.error("Missing client secret in StripeElementsProvider");
+    }
   }, [clientSecret, isInitializing, initError, stripePromise]);
-
-  // Handle critical errors - missing client secret
-  if (clientSecretError) {
-    return (
-      <div className="p-4 border rounded bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-300">
-        <div className="flex items-center space-x-2 mb-2">
-          <AlertCircle className="h-5 w-5" />
-          <h3 className="font-medium">Payment System Error</h3>
-        </div>
-        <p>The payment system encountered a configuration error. Unable to create payment session.</p>
-        <p className="mt-2 text-sm">Please try refreshing the page or contact support if the problem persists.</p>
-        <button 
-          onClick={() => window.location.reload()}
-          className="mt-3 px-4 py-2 bg-white dark:bg-slate-800 border border-red-300 dark:border-red-700 rounded-md text-sm"
-        >
-          Refresh Page
-        </button>
-      </div>
-    );
-  }
 
   // Configure Stripe Elements options with RAADE branding
   const options: StripeElementsOptions = {
@@ -189,7 +160,7 @@ const StripeElementsProvider: React.FC<StripeElementsProviderProps> = ({
   // Handle different states of Stripe initialization
   if (isInitializing) {
     return (
-      <div className="p-4 border rounded bg-gray-50 dark:bg-gray-800 dark:text-gray-200">
+      <div className="p-4 border rounded bg-gray-50">
         <div className="flex items-center space-x-2">
           <div className="w-4 h-4 rounded-full bg-blue-500 animate-pulse"></div>
           <p>Initializing payment system...</p>
@@ -200,12 +171,12 @@ const StripeElementsProvider: React.FC<StripeElementsProviderProps> = ({
   
   if (initError || !stripePromise) {
     return (
-      <div className="p-4 border rounded bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-300">
+      <div className="p-4 border rounded bg-red-50 text-red-800">
         <p className="font-medium">Payment system initialization failed</p>
         <p className="text-sm mt-1">{initError?.message || 'Unable to load Stripe'}</p>
         <button 
           onClick={() => setRetryCount(prev => prev + 1)}
-          className="mt-2 px-3 py-1 bg-white dark:bg-slate-800 border border-red-300 dark:border-red-700 rounded-md text-sm"
+          className="mt-2 px-3 py-1 bg-white border border-red-300 rounded-md text-sm"
         >
           Retry
         </button>

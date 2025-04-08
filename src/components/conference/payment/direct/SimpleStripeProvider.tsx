@@ -1,29 +1,33 @@
 
-import { useEffect, useState } from "react";
 import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
-import PaymentForm from "../PaymentForm";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { TICKET_TYPES_ENUM, calculateTotalPrice } from "../../RegistrationFormTypes";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { loadStripe, Stripe } from "@stripe/stripe-js";
+import { useEffect, useState } from "react";
+import SimpleStripeCheckout from "./SimpleStripeCheckout";
 
-// Initialize Stripe with the production publishable key
-const stripePromise = loadStripe(
-  "pk_live_51QzaGsJCmIJg645X8x5sPqhMAiH4pXBh2e6mbgdxxwgqqsCfM8N7SiOvv98N2l5kVeoAlJj3ab08VG4c6PtgVg4d004QXy2W3m"
-);
+// Get the Stripe key from environment variables instead of hardcoding
+const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 
+  "pk_live_51QzaGsJCmIJg645X8x5sPqhMAiH4pXBh2e6mbgdxxwgqqsCfM8N7SiOvv98N2l5kVeoAlJj3ab08VG4c6PtgVg4d004QXy2W3m";
+
+// Initialize Stripe with error handling
+const getStripe = () => {
+  try {
+    return loadStripe(STRIPE_PUBLISHABLE_KEY);
+  } catch (error) {
+    console.error("Failed to initialize Stripe:", error);
+    return null;
+  }
+};
 
 interface SimpleStripeProviderProps {
   ticketType: string;
   email: string;
   fullName: string;
   groupSize?: number;
-  groupEmails?: string[];
+  groupEmails?: Array<string | { value: string } | null>;
   organization?: string;
   role?: string;
   specialRequests?: string;
   referralSource?: string;
-  couponCode?: string;
   onSuccess: () => void;
   onError: (error: string) => void;
 }
@@ -31,223 +35,83 @@ interface SimpleStripeProviderProps {
 /**
  * SimpleStripeProvider Component
  * 
- * Provides a simplified Stripe payment integration:
- * - Sets up Stripe Elements context
- * - Creates payment intent with appropriate amount
- * - Handles payment intent creation errors
- * - Includes coupon code information in payment intent
+ * Provides Stripe context for the checkout component:
+ * - Initializes Stripe with publishable key
+ * - Sets up the Stripe Elements provider
+ * - Configures appearance settings for Stripe Elements
+ * - Now with improved error handling and fallbacks
  */
-const SimpleStripeProvider = ({
-  ticketType,
-  email,
-  fullName,
-  groupSize,
-  groupEmails = [],
-  organization,
-  role,
-  specialRequests,
-  referralSource,
-  couponCode,
-  onSuccess,
-  onError
-}: SimpleStripeProviderProps) => {
-  const [amount, setAmount] = useState<number>(0);
-  const [currency, setCurrency] = useState<string>("usd");
-  const [isGroupRegistration, setIsGroupRegistration] = useState<boolean>(false);
-  const [isLoadingIntent, setIsLoadingIntent] = useState<boolean>(true);
-  const [requestId, setRequestId] = useState<string | null>(null);
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
-  const [intentError, setIntentError] = useState<string | null>(null);
-  const [retryCount, setRetryCount] = useState<number>(0);
-  const { toast } = useToast();
+const SimpleStripeProvider = (props: SimpleStripeProviderProps) => {
+  const [stripePromise, setStripePromise] = useState<Promise<Stripe | null> | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // Create payment intent when component mounts or when retry is attempted
   useEffect(() => {
-    const createIntent = async () => {
-      setIsLoadingIntent(true);
-      setIntentError(null);
-      
-      // Generate a unique request ID for tracking
-      const reqId = `req-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
-      setRequestId(reqId);
-      
+    const initializeStripe = () => {
       try {
-        console.log(`Creating payment intent (${reqId}):`, {
-          ticketType,
-          email,
-          couponCode: couponCode || 'none',
-          retryCount
-        });
-        
-        // Clear any previous client secret from the window object
-        if ((window as any).__stripeClientSecret) {
-          console.log(`Clearing previous client secret before creating new intent (${reqId})`);
-          (window as any).__stripeClientSecret = null;
-        }
-        
-        const { data, error } = await supabase.functions.invoke("create-payment-intent", {
-          body: {
-            ticketType,
-            email,
-            fullName,
-            groupSize: ticketType === TICKET_TYPES_ENUM.STUDENT_GROUP ? groupSize : undefined,
-            couponCode,
-            requestId: reqId
-          }
-        });
-        
-        if (error) {
-          console.error(`Payment intent creation error (${reqId}):`, error);
-          setIntentError(error.message || "Failed to create payment intent");
-          throw new Error(error.message || "Failed to create payment intent");
-        }
-        
-        // Check for client secret in the response for standard payments
-        if (!data?.clientSecret && !data?.freeRegistration) {
-          console.error(`Invalid payment intent response (${reqId}):`, data);
-          setIntentError("Invalid payment intent response from server");
-          throw new Error("Invalid payment intent response from server");
-        }
-        
-        console.log(`Payment intent response received (${reqId}):`, {
-          amount: data.amount,
-          freeRegistration: data.freeRegistration || false,
-          hasClientSecret: !!data.clientSecret,
-          responseTime: data.responseTime
-        });
-        
-        // Save client secret state
-        if (data.clientSecret) {
-          setClientSecret(data.clientSecret);
-          // Also save in window object for the payment confirmation process to use
-          (window as any).__stripeClientSecret = data.clientSecret;
-          
-          // Verify the client secret was set correctly in the window object
-          console.log(`Client secret set in window object: ${!!(window as any).__stripeClientSecret}`);
-        } else if (data.freeRegistration) {
-          console.log(`Free registration detected, no client secret needed (${reqId})`);
-        } else {
-          console.warn(`No client secret in response (${reqId})`);
-        }
-        
-        // Set amount, currency and other details from the response
-        setAmount(data.amount);
-        setCurrency(data.currency || "usd");
-        setIsGroupRegistration(data.isGroupRegistration);
-        
-        setIsLoadingIntent(false);
+        // loadStripe returns a Promise<Stripe|null>, so we set that directly to the state
+        const promise = getStripe();
+        setStripePromise(promise);
+        // Flag successful initialization
+        setIsInitialized(true);
       } catch (err) {
-        console.error(`Payment intent creation failed (${reqId}):`, err);
-        setIsLoadingIntent(false);
-        
-        // Format a user-friendly error message
-        const errorMessage = err instanceof Error 
-          ? err.message 
-          : "An unknown error occurred while setting up payment";
-        
-        setIntentError(errorMessage);
-        
-        // Show error toast
-        toast({
-          title: "Payment setup failed",
-          description: errorMessage,
-          variant: "destructive",
-        });
-        
-        // Call error callback
-        onError(errorMessage);
+        const errorMessage = err instanceof Error ? err.message : "Unknown error initializing payment system";
+        console.error("Stripe initialization error:", errorMessage);
+        setError("Failed to initialize payment system");
+        props.onError("Payment system initialization failed");
       }
     };
-    
-    createIntent();
-  }, [ticketType, email, fullName, groupSize, couponCode, onError, toast, retryCount]);
 
-  // Function to retry payment intent creation
-  const handleRetry = () => {
-    setRetryCount(prev => prev + 1);
+    initializeStripe();
+  }, [props.onError]);
+
+  const options = {
+    appearance: {
+      theme: 'stripe' as const,
+      variables: {
+        colorPrimary: '#274675', // RAADE navy
+        colorBackground: '#ffffff',
+        colorText: '#30313d',
+        colorDanger: '#df1b41',
+        fontFamily: 'Merriweather, system-ui, sans-serif',
+        borderRadius: '4px',
+      }
+    },
   };
 
-  // Loading state while creating payment intent
-  if (isLoadingIntent) {
+  // Fail gracefully if we can't initialize Stripe
+  if (error) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <div className="animate-pulse text-gray-500 dark:text-gray-400 text-center">
-          <Loader2
-            className="animate-spin h-8 w-8 text-[#FBB03B] mx-auto mb-2"
-          />
-          <p>Setting up payment...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Error state
-  if (intentError) {
-    return (
-      <div className="p-4 border rounded bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-300">
-        <div className="flex items-center space-x-2 mb-2">
-          <AlertCircle className="h-5 w-5" />
-          <h3 className="font-medium">Payment Setup Failed</h3>
-        </div>
-        <p>{intentError}</p>
-        <button 
-          onClick={handleRetry}
-          className="mt-3 px-4 py-2 bg-white dark:bg-slate-800 border border-red-300 dark:border-red-700 rounded-md text-sm"
-        >
+      <div className="text-red-500 p-6 border border-red-300 rounded bg-red-50 dark:bg-red-900/20 dark:border-red-800 flex flex-col items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <h3 className="text-lg font-bold text-red-700 dark:text-red-300 mb-2">Payment System Error</h3>
+        <p className="text-center mb-4">{error}</p>
+        <button onClick={() => window.location.reload()} className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded">
           Try Again
         </button>
       </div>
     );
   }
 
-  // Success state but with no client secret (should not happen)
-  if (!clientSecret && !intentError) {
+  // Show a nice loading state while Stripe initializes
+  if (!stripePromise || !isInitialized) {
     return (
-      <div className="p-4 border rounded bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-300">
-        <div className="flex items-center space-x-2 mb-2">
-          <AlertCircle className="h-5 w-5" />
-          <h3 className="font-medium">Payment System Error</h3>
+      <div className="p-6 text-center">
+        <div className="animate-pulse flex flex-col items-center">
+          <div className="rounded-full bg-gray-200 dark:bg-gray-700 h-12 w-12 mb-4"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
         </div>
-        <p>The payment system returned an invalid response. Unable to create payment session.</p>
-        <button 
-          onClick={handleRetry}
-          className="mt-3 px-4 py-2 bg-white dark:bg-slate-800 border border-red-300 dark:border-red-700 rounded-md text-sm"
-        >
-          Try Again
-        </button>
+        <p className="mt-4 text-gray-600 dark:text-gray-400">Loading payment system...</p>
       </div>
     );
-  }
-
-  // Check if client secret is properly set in window object
-  if (clientSecret && !(window as any).__stripeClientSecret) {
-    console.error("Client secret mismatch: present in state but missing from window object");
-    (window as any).__stripeClientSecret = clientSecret;
   }
 
   return (
-    <Elements 
-      stripe={stripePromise}
-      options={{
-        clientSecret,
-        appearance: {
-          theme: 'stripe',
-          variables: {
-            colorPrimary: '#274675',
-          }
-        }
-      }}
-    >
-      <PaymentForm
-        email={email}
-        onSuccess={onSuccess}
-        onError={onError}
-        amount={amount}
-        currency={currency}
-        isGroupRegistration={isGroupRegistration}
-        groupSize={groupSize}
-        requestId={requestId}
-      />
+    <Elements stripe={stripePromise} options={options}>
+      <SimpleStripeCheckout {...props} />
     </Elements>
   );
 };

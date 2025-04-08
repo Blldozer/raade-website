@@ -3,18 +3,13 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/hooks/use-toast";
-import { 
-  registrationFormSchema, 
-  RegistrationFormData, 
-  TICKET_TYPES_ENUM 
-} from "../RegistrationFormTypes";
+import { registrationFormSchema, RegistrationFormData, TICKET_TYPES_ENUM } from "../RegistrationFormTypes";
 
 export const useRegistrationForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [registrationData, setRegistrationData] = useState<RegistrationFormData | null>(null);
   const [emailValidated, setEmailValidated] = useState(false);
-  const [submitAttempts, setSubmitAttempts] = useState(0);
 
   // Initialize form with zod schema validation
   const form = useForm<RegistrationFormData>({
@@ -52,26 +47,10 @@ export const useRegistrationForm = () => {
     }
     
     setIsSubmitting(true);
-    setSubmitAttempts(prev => prev + 1);
-    
     try {
-      console.log(`Form submitted (attempt ${submitAttempts + 1})`, data);
-      
       // Store the registration data for payment processing
       setRegistrationData(data);
       setShowPayment(true);
-      
-      // Record form submission time for debugging
-      const timestamp = new Date().toISOString();
-      console.log(`Form submission successful at ${timestamp}`);
-      
-      // Force clear existing checkout session data
-      if (sessionStorage.getItem("checkoutSessionId")) {
-        console.log("Clearing existing checkout session before payment");
-        sessionStorage.removeItem("checkoutSessionId");
-        sessionStorage.removeItem("registrationEmail");
-      }
-      
     } catch (error) {
       console.error("Registration error:", error);
       toast({
@@ -79,10 +58,6 @@ export const useRegistrationForm = () => {
         description: "There was an error processing your registration. Please try again.",
         variant: "destructive",
       });
-      
-      // Reset the form
-      setShowPayment(false);
-      setRegistrationData(null);
     } finally {
       setIsSubmitting(false);
     }
@@ -93,7 +68,6 @@ export const useRegistrationForm = () => {
   const resetForm = () => {
     setShowPayment(false);
     setRegistrationData(null);
-    setSubmitAttempts(0);
     form.reset({
       ticketType: TICKET_TYPES_ENUM.STUDENT,
       fullName: "",
@@ -114,7 +88,6 @@ export const useRegistrationForm = () => {
     registrationData,
     emailValidated,
     watchTicketType,
-    submitAttempts,
     handleEmailValidation,
     handleInitialSubmit,
     setShowPayment,
