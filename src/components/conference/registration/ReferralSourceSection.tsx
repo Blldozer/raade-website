@@ -1,107 +1,87 @@
 
-import { useEffect } from "react";
-import { Control, UseFormSetValue, useWatch } from "react-hook-form";
-import { 
-  FormControl, 
-  FormDescription, 
-  FormField, 
-  FormItem, 
-  FormLabel,
-  FormMessage 
-} from "@/components/ui/form";
+import React from "react";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { RegistrationFormData } from "../RegistrationFormTypes";
+import { UseFormRegister, Control } from "react-hook-form";
+import { REFERRAL_SOURCES } from "../RegistrationFormTypes";
 
-interface ReferralSourceSectionProps {
-  control: Control<RegistrationFormData>;
-  setValue: UseFormSetValue<RegistrationFormData>;
+/**
+ * Props for the ReferralSourceSection component
+ */
+export interface ReferralSourceSectionProps {
+  register: UseFormRegister<any>;
+  errors: any;
+  control: Control<any>;
+  watch: any;
 }
-
-const REFERRAL_OPTIONS = [
-  { value: "Friends", label: "Friends or Colleagues" },
-  { value: "University ASA", label: "University African Student Association" },
-  { value: "LinkedIn", label: "LinkedIn" },
-  { value: "Instagram", label: "Instagram" },
-  { value: "No Bystanders", label: "No Bystanders Organization" },
-  { value: "RAADE Outreach Team", label: "RAADE Outreach Team" },
-  { value: "Other", label: "Other" },
-];
 
 /**
  * ReferralSourceSection Component
  * 
- * Collects information about how the user heard about the conference
- * with support for "Other" custom input
- * 
- * @param control - React Hook Form control object
- * @param setValue - React Hook Form setValue function
+ * Handles the referral source section of the conference registration form
+ * with radio buttons for standard sources and a text input for "Other"
  */
-const ReferralSourceSection = ({ control, setValue }: ReferralSourceSectionProps) => {
-  const referralSource = useWatch({
-    control,
-    name: "referralSource",
-  });
-
+const ReferralSourceSection: React.FC<ReferralSourceSectionProps> = ({
+  register,
+  errors,
+  control,
+  watch
+}) => {
+  const referralSource = watch("referralSource");
   const isOtherSelected = referralSource === "Other";
-
-  // Reset the custom referral source when "Other" is not selected
-  useEffect(() => {
-    if (!isOtherSelected) {
-      // If you need to store the other value, you'd need to add a field to the schema
-      // This would typically be otherReferralSource in the form data
-    }
-  }, [isOtherSelected, setValue]);
 
   return (
     <div className="space-y-4">
+      <h3 className="text-lg font-medium dark:text-white">
+        How did you hear about us?
+      </h3>
+      
       <FormField
         control={control}
         name="referralSource"
         render={({ field }) => (
-          <FormItem>
-            <FormLabel>How did you hear about us?</FormLabel>
-            <Select
-              onValueChange={field.onChange}
-              defaultValue={field.value}
-            >
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select how you heard about us" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {REFERRAL_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
+          <FormItem className="space-y-3">
+            <FormControl>
+              <RadioGroup
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                className="flex flex-col space-y-2"
+              >
+                {REFERRAL_SOURCES.map((source) => (
+                  <div key={source} className="flex items-center space-x-2">
+                    <RadioGroupItem value={source} id={`referral-${source.toLowerCase().replace(/\s+/g, '-')}`} />
+                    <Label htmlFor={`referral-${source.toLowerCase().replace(/\s+/g, '-')}`}>{source}</Label>
+                  </div>
                 ))}
-              </SelectContent>
-            </Select>
-            <FormDescription>
-              This helps us understand how people find our conference.
-            </FormDescription>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="Other" id="referral-other" />
+                  <Label htmlFor="referral-other">Other</Label>
+                </div>
+              </RadioGroup>
+            </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
 
       {isOtherSelected && (
-        <FormItem>
-          <FormLabel>Please specify</FormLabel>
-          <FormControl>
-            <Input 
-              placeholder="Please let us know how you heard about us"
-              onChange={(e) => {
-                // You might want to store this in a separate field in your form state
-                // This is where you'd use setValue("otherReferralSource", e.target.value)
-                // For now, we're just logging it
-                console.log("Other referral source:", e.target.value);
-              }}
-            />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
+        <div>
+          <FormItem className="mt-2">
+            <FormLabel htmlFor="referralSourceOther">Please specify</FormLabel>
+            <FormControl>
+              <Input
+                id="referralSourceOther"
+                placeholder="Where did you hear about us?"
+                {...register("referralSourceOther")}
+              />
+            </FormControl>
+            {errors.referralSourceOther && (
+              <FormMessage>{errors.referralSourceOther.message}</FormMessage>
+            )}
+          </FormItem>
+        </div>
       )}
     </div>
   );

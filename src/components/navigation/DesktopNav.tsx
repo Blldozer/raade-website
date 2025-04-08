@@ -8,6 +8,9 @@ interface DesktopNavProps {
   isHeroPage?: boolean;
   className?: string;
   forceDarkMode?: boolean;
+  isDropdownOpen?: Record<string, boolean>;
+  onDropdownChange?: (key: string, isOpen: boolean) => void;
+  onClickLink?: () => void;
 }
 
 /**
@@ -25,7 +28,10 @@ const DesktopNav = ({
   isScrolled = false, 
   isHeroPage = false, 
   className = "", 
-  forceDarkMode = false 
+  forceDarkMode = false,
+  isDropdownOpen,
+  onDropdownChange,
+  onClickLink
 }: DesktopNavProps) => {
   // Use the navigation context for styling
   const { state } = useNavigation();
@@ -41,9 +47,9 @@ const DesktopNav = ({
   return (
     <div className={`hidden md:flex items-center space-x-8 ${className}`}>
       <NavLinks 
-        isScrolled={actualIsScrolled} 
-        isHeroPage={actualIsHeroPage} 
-        forceDarkMode={actualForceDarkMode} 
+        isDropdownOpen={isDropdownOpen}
+        onDropdownChange={onDropdownChange}
+        onClickLink={onClickLink}
       />
     </div>
   );

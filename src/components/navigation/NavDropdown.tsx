@@ -1,113 +1,82 @@
-import React, { useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown } from "lucide-react";
-import NavDropdownItem from "./NavDropdownItem";
-import { useNavigation } from "@/hooks/navigation/useNavigation";
 
-interface NavDropdownProps {
-  name: string;
-  href: string;
-  dropdownItems: {
-    name: string;
-    href: string;
-  }[];
-  textColor?: string;
-  onClick?: () => void;
+import React, { useState, useRef } from "react";
+import { usePopper } from "react-popper";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { useOnClickOutside } from "@/hooks/use-click-outside";
+import { useNavigation } from "./context/useNavigation";
+
+export interface NavDropdownProps {
+  triggerText: string;
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  children: React.ReactNode;
 }
 
 /**
- * NavDropdown Component - For navigation items with dropdown menus
+ * NavDropdown Component
  * 
- * Features:
- * - Custom dropdown positioning to ensure it appears beneath its parent
- * - Opens on both hover and click for better usability
- * - Properly handles client-side navigation
- * - Supports closing mobile menus when clicked
- * - Smooth animations for better user experience
+ * Provides a dropdown menu for navigation items with proper positioning
+ * and accessibility features.
  */
-const NavDropdown = ({ name, href, dropdownItems, textColor = "text-white", onClick }: NavDropdownProps) => {
-  const { handleNavigation } = useNavigation();
-  const [isOpen, setIsOpen] = useState(false);
+const NavDropdown: React.FC<NavDropdownProps> = ({ 
+  triggerText, 
+  isOpen, 
+  onOpenChange, 
+  children 
+}) => {
+  const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null);
+  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   
-  // Handle navigation when clicking the main button
-  const handleMainClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    if (onClick) onClick();
-    handleNavigation(href);
-  };
+  const { state } = useNavigation();
   
-  // Toggle dropdown visibility on click
-  const toggleDropdown = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsOpen(!isOpen);
-  };
-
-  // Handle clicking outside to close dropdown
-  React.useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
+  const { styles, attributes } = usePopper(referenceElement, popperElement, {
+    placement: 'bottom-start',
+    modifiers: [
+      { name: 'offset', options: { offset: [0, 8] } },
+      { name: 'preventOverflow', options: { padding: 8 } }
+    ],
+  });
+  
+  useOnClickOutside(dropdownRef, () => {
+    if (isOpen) onOpenChange(false);
+  });
+  
+  const linkBaseClasses = "font-medium transition-colors duration-200 flex items-center";
+  const linkClasses = state.isLightBackground
+    ? `${linkBaseClasses} text-gray-900 hover:text-[#274675]`
+    : state.isScrolled
+    ? `${linkBaseClasses} text-gray-900 hover:text-[#274675]`
+    : `${linkBaseClasses} text-white hover:text-[#FBB03B]`;
+  
   return (
-    <div 
-      className="relative"
-      ref={dropdownRef}
-      onMouseEnter={() => setIsOpen(true)}
-      onMouseLeave={() => setIsOpen(false)}
-    >
-      <button
-        className={`${textColor} flex items-center text-lg font-alegreyasans font-bold transition-colors duration-300`}
-        onClick={toggleDropdown}
+    <div ref={dropdownRef}>
+      <button 
+        type="button"
+        ref={setReferenceElement}
+        className={`${linkClasses} gap-1`}
+        onClick={() => onOpenChange(!isOpen)}
         aria-expanded={isOpen}
+        aria-haspopup="true"
       >
-        <span 
-          onClick={handleMainClick}
-          className="cursor-pointer"
-        >
-          {name}
-        </span>
-        <ChevronDown 
-          className={`ml-1 h-4 w-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-        />
+        {triggerText}
+        {isOpen ? (
+          <ChevronUp className="h-4 w-4 mt-0.5" />
+        ) : (
+          <ChevronDown className="h-4 w-4 mt-0.5" />
+        )}
       </button>
       
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            className="absolute left-0 top-full z-50 min-w-[180px] mt-1 bg-white rounded-md shadow-md overflow-hidden"
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -5 }}
-            transition={{ duration: 0.15 }}
-          >
-            <ul className="py-1">
-              {dropdownItems.map((item) => (
-                <NavDropdownItem
-                  key={item.name}
-                  name={item.name}
-                  href={item.href}
-                  onClick={() => {
-                    setIsOpen(false);
-                    if (onClick) onClick();
-                  }}
-                />
-              ))}
-            </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {isOpen && (
+        <div
+          ref={setPopperElement}
+          style={styles.popper}
+          {...attributes.popper}
+          className="z-50 bg-white rounded-md shadow-lg py-2 min-w-[180px] dark:bg-gray-800 border border-gray-100 dark:border-gray-700"
+        >
+          {children}
+        </div>
+      )}
     </div>
   );
 };

@@ -1,180 +1,167 @@
 
 import { supabase } from "@/integrations/supabase/client";
 
+/**
+ * CouponCode Type Definition
+ * 
+ * Represents the structure of a coupon code in the database
+ */
 export interface CouponCode {
   id: string;
   code: string;
-  description?: string;
-  discount_type: "percentage" | "fixed";
+  discount_type: 'percentage' | 'fixed';
   discount_amount: number;
   is_active: boolean;
+  max_uses: number | null;
   current_uses: number;
-  max_uses?: number;
-  expires_at?: string;
+  valid_until: string | null;
   created_at: string;
 }
 
+/**
+ * CouponValidationResult Type Definition
+ * 
+ * Represents the result of validating a coupon code
+ */
 export interface CouponValidationResult {
-  isValid: boolean;
+  valid: boolean;
   message: string;
   discountAmount?: number;
-  discountType?: "percentage" | "fixed";
-  originalCode?: string;
+  discountType?: 'percentage' | 'fixed';
+  code?: string;
 }
 
 /**
- * Validates a coupon code
+ * Get a coupon by its code
  * 
- * Checks if the coupon exists, is active, hasn't expired,
- * and hasn't reached its maximum usage limit
+ * @param code - The coupon code to retrieve
+ * @returns The coupon if found, null otherwise
+ */
+export const getCouponByCode = async (code: string): Promise<CouponCode | null> => {
+  try {
+    // We need to manually specify the table type to avoid type issues
+    const { data, error } = await supabase
+      .from('coupon_codes')
+      .select('*')
+      .eq('code', code)
+      .single();
+
+    if (error) {
+      console.error('Error fetching coupon:', error);
+      return null;
+    }
+
+    // Safely type cast the result
+    return data as unknown as CouponCode;
+  } catch (error) {
+    console.error('Exception fetching coupon:', error);
+    return null;
+  }
+};
+
+/**
+ * Validate a coupon code
  * 
  * @param code - The coupon code to validate
- * @returns Validation result with discount info if valid
+ * @returns A validation result object
  */
-export const validateCouponCode = async (
-  code: string
-): Promise<CouponValidationResult> => {
-  if (!code || code.trim() === "") {
+export const validateCoupon = async (code: string): Promise<CouponValidationResult> => {
+  if (!code || code.trim() === '') {
     return {
-      isValid: false,
-      message: "No coupon code provided",
+      valid: false,
+      message: 'Please enter a coupon code',
     };
   }
 
-  try {
-    // Convert code to uppercase for case-insensitive matching
-    const normalizedCode = code.trim().toUpperCase();
+  const coupon = await getCouponByCode(code);
 
-    // Fetch the coupon from the database
-    const { data: coupons, error } = await supabase
-      .from("coupon_codes")
-      .select("*")
-      .ilike("code", normalizedCode)
-      .limit(1);
-
-    if (error) {
-      console.error("Error validating coupon:", error);
-      return {
-        isValid: false,
-        message: "Error validating coupon code",
-      };
-    }
-
-    if (!coupons || coupons.length === 0) {
-      return {
-        isValid: false,
-        message: "Invalid coupon code",
-        originalCode: code,
-      };
-    }
-
-    const coupon = coupons[0] as CouponCode;
-
-    // Check if the coupon is active
-    if (!coupon.is_active) {
-      return {
-        isValid: false,
-        message: "This coupon code is no longer active",
-        originalCode: code,
-      };
-    }
-
-    // Check if the coupon has expired
-    if (coupon.expires_at && new Date(coupon.expires_at) < new Date()) {
-      return {
-        isValid: false,
-        message: "This coupon code has expired",
-        originalCode: code,
-      };
-    }
-
-    // Check if the coupon has reached its maximum usage limit
-    if (
-      coupon.max_uses !== null &&
-      coupon.max_uses !== undefined &&
-      coupon.current_uses >= coupon.max_uses
-    ) {
-      return {
-        isValid: false,
-        message: "This coupon code has reached its usage limit",
-        originalCode: code,
-      };
-    }
-
-    // Coupon is valid
+  if (!coupon) {
     return {
-      isValid: true,
-      message: `Coupon applied: ${
-        coupon.discount_type === "percentage"
-          ? `${coupon.discount_amount}% off`
-          : `$${coupon.discount_amount} off`
-      }`,
-      discountAmount: coupon.discount_amount,
-      discountType: coupon.discount_type,
-      originalCode: code,
-    };
-  } catch (error) {
-    console.error("Error in coupon validation:", error);
-    return {
-      isValid: false,
-      message: "An error occurred while validating your coupon code",
-      originalCode: code,
+      valid: false,
+      message: 'Invalid coupon code',
     };
   }
+
+  if (!coupon.is_active) {
+    return {
+      valid: false,
+      message: 'This coupon code is no longer active',
+    };
+  }
+
+  if (coupon.valid_until && new Date(coupon.valid_until) < new Date()) {
+    return {
+      valid: false,
+      message: 'This coupon code has expired',
+    };
+  }
+
+  if (coupon.max_uses !== null && coupon.current_uses >= coupon.max_uses) {
+    return {
+      valid: false,
+      message: 'This coupon code has reached its usage limit',
+    };
+  }
+
+  return {
+    valid: true,
+    message: 'Coupon applied successfully',
+    discountAmount: coupon.discount_amount,
+    discountType: coupon.discount_type,
+    code: coupon.code,
+  };
 };
 
 /**
- * Increments the usage count for a coupon code
+ * Increment the usage count for a coupon
  * 
  * @param code - The coupon code to increment
- * @returns Updated usage count or undefined if error
+ * @returns The new usage count, or 0 if there was an error
  */
-export const incrementCouponUsage = async (
-  code: string
-): Promise<number | undefined> => {
-  if (!code) return undefined;
-
+export const incrementCouponUsage = async (code: string): Promise<number> => {
   try {
-    // Call the database function to increment coupon usage
-    const { data, error } = await supabase
-      .rpc("increment_coupon_usage", { coupon_code_param: code.trim().toUpperCase() });
+    // Call the custom function using rpc
+    const { data, error } = await supabase.rpc(
+      'increment_coupon_usage',
+      { coupon_code_param: code }
+    );
 
     if (error) {
-      console.error("Error incrementing coupon usage:", error);
-      return undefined;
-    }
-
-    return data as number;
-  } catch (error) {
-    console.error("Error in incrementCouponUsage:", error);
-    return undefined;
-  }
-};
-
-/**
- * Gets the current usage count for a coupon code
- * 
- * @param code - The coupon code to check
- * @returns Current usage count or 0 if error
- */
-export const getCouponUsageCount = async (
-  code: string
-): Promise<number> => {
-  if (!code) return 0;
-
-  try {
-    // Call the database function to get coupon usage
-    const { data, error } = await supabase
-      .rpc("get_current_uses", { coupon_code_param: code.trim().toUpperCase() });
-
-    if (error) {
-      console.error("Error getting coupon usage:", error);
+      console.error('Error incrementing coupon usage:', error);
       return 0;
     }
 
+    // The function returns the new usage count as a number
     return data as number;
   } catch (error) {
-    console.error("Error in getCouponUsageCount:", error);
+    console.error('Exception incrementing coupon usage:', error);
+    return 0;
+  }
+};
+
+/**
+ * Get the current usage count for a coupon
+ * 
+ * @param code - The coupon code to check
+ * @returns The current usage count, or 0 if there was an error
+ */
+export const getCurrentCouponUses = async (code: string): Promise<number> => {
+  try {
+    // Call the custom function using rpc
+    const { data, error } = await supabase.rpc(
+      'get_current_uses',
+      { coupon_code_param: code }
+    );
+
+    if (error) {
+      console.error('Error getting coupon usage:', error);
+      return 0;
+    }
+
+    // The function returns the current usage count as a number
+    return data as number;
+  } catch (error) {
+    console.error('Exception getting coupon usage:', error);
     return 0;
   }
 };
