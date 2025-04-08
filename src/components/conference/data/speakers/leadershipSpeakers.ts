@@ -60,24 +60,5 @@ export const leadershipSpeakers: Speaker[] = [
       time: "3:00 PM - 4:00 PM",
       date: "April 11"
     }
-  },
-  {
-    id: "rebecca-richards-kortum",
-    name: "Rebecca Richards-Kortum",
-    role: "Malcolm Gillis University Professor",
-    organization: "Rice University",
-    imagePlaceholder: "Dr. Richards-Kortum",
-    bio: "Professor focusing on developing low-cost technologies for global health in low-resource settings.",
-    fullBio: "Dr. Rebecca Richards-Kortum is the Malcolm Gillis University Professor at Rice University, where she serves as a Professor of Bioengineering and Co-Director of the Rice360 Institute for Global Health Technologies. Her research focuses on developing low-cost, high-performance technologies for low-resource settings, particularly in global health. Richards-Kortum holds a Ph.D. in Medical Physics from the Harvard-MIT Division of Health Sciences and Technology.",
-    expertise: ["Bioengineering", "Global Health", "Medical Technologies"],
-    social: {
-      website: "https://bioengineering.rice.edu/people/faculty/rebecca-richards-kortum"
-    },
-    speaking: {
-      title: "Innovation in Healthcare for African Development",
-      description: "How low-cost, high-performance technologies can address healthcare challenges in Africa.",
-      time: "9:30 AM - 10:30 AM",
-      date: "April 12"
-    }
   }
 ];

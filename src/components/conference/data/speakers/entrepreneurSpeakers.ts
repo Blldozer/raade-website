@@ -44,24 +44,5 @@ export const entrepreneurSpeakers: Speaker[] = [
       time: "1:30 PM - 2:30 PM",
       date: "April 12"
     }
-  },
-  {
-    id: "bunmi-akinyemiju",
-    name: "Bunmi Akinyemiju",
-    role: "CEO & Co-Founder",
-    organization: "Venture Garden Group",
-    imagePlaceholder: "Bunmi Akinyemiju",
-    bio: "Serial entrepreneur and investor focusing on innovative technology companies.",
-    fullBio: "Bunmi Akinyemiju is a serial entrepreneur, technology innovator, and investor. He is the CEO and Co-Founder of Venture Garden Group, a technology investment holding company, and a Founding Partner at GreenHouse Capital. Akinyemiju has over 23 years of experience in entrepreneurship and venture capital, focusing on innovative technology companies. He holds a degree in Computer Science from Michigan State University.",
-    expertise: ["Technology Innovation", "Entrepreneurship", "Venture Capital"],
-    social: {
-      linkedin: "https://linkedin.com/in/bunmi-akinyemiju"
-    },
-    speaking: {
-      title: "Technology Entrepreneurship in African Markets",
-      description: "Strategies for building successful technology ventures in Africa's emerging markets.",
-      time: "3:00 PM - 4:00 PM",
-      date: "April 12"
-    }
   }
 ];
