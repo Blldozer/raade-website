@@ -8,7 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client"; // Import the existing Supabase client
 import { Loader2 } from "lucide-react";
 
 // Define preset donation amounts
@@ -41,10 +41,6 @@ interface DonationFormProps {
 const DonationForm = ({ selectedAmount, setSelectedAmount }: DonationFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  const supabase = createClient(
-    import.meta.env.VITE_SUPABASE_URL || "",
-    import.meta.env.VITE_SUPABASE_ANON_KEY || ""
-  );
   
   // Initialize form with react-hook-form
   const form = useForm<DonationFormValues>({
