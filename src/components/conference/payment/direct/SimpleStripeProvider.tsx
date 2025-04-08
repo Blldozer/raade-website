@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
@@ -7,9 +6,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { TICKET_TYPES_ENUM, calculateTotalPrice } from "../../RegistrationFormTypes";
 
-// Initialize Stripe with the publishable key
+// Initialize Stripe with the production publishable key
 const stripePromise = loadStripe(
-  "pk_test_51OigB4EXKZmTl3KPeCVZAsmUJeJgkWVHZRF90cJHnjxjCRBazwWJhwYKLHO45Qp12wZGXPEY9LdC7C3Wl5G0rgb200b5kVNZtu"
+  "pk_live_51QzaGsJCmIJg645X8x5sPqhMAiH4pXBh2e6mbgdxxwgqqsCfM8N7SiOvv98N2l5kVeoAlJj3ab08VG4c6PtgVg4d004QXy2W3m"
 );
 
 interface SimpleStripeProviderProps {
@@ -99,6 +98,11 @@ const SimpleStripeProvider = ({
           freeRegistration: data.freeRegistration || false,
           hasClientSecret: !!data.clientSecret
         });
+        
+        // Save client secret in window object for the payment confirmation process to use
+        if (data.clientSecret) {
+          (window as any).__stripeClientSecret = data.clientSecret;
+        }
         
         // Set amount, currency and other details from the response
         setAmount(data.amount);

@@ -58,6 +58,8 @@ export const useProcessPaymentConfirmation = ({
         return { success: false, reason: "client-secret-missing" };
       }
       
+      console.log("Using client secret to confirm payment:", clientSecret.substring(0, 10) + "...");
+      
       // Try to confirm payment with optimized settings to reduce rate limiting issues
       const { error, paymentIntent } = await stripe.confirmCardPayment(
         clientSecret,

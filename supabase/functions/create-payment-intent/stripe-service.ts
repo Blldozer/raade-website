@@ -1,3 +1,4 @@
+
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createTimeout } from "./utils.ts";
 import { getBackoffDelay } from "./utils.ts";
@@ -66,9 +67,6 @@ export async function createPaymentIntentWithRetry(
         },
         receipt_email: email,
         automatic_payment_methods: { enabled: true },
-      }, {
-        // Pass the signal to the request to allow cancellation
-        signal: controller.signal
       });
       
       // Race the payment intent creation against the timeout
