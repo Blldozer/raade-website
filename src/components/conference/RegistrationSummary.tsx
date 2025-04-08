@@ -1,133 +1,96 @@
 
-import { RegistrationFormData, calculateTotalPrice, getTicketPrice, TICKET_TYPES_ENUM, CouponData } from "./RegistrationFormTypes";
+import { RegistrationFormData, calculateTotalPrice } from "./RegistrationFormTypes";
 
 interface RegistrationSummaryProps {
   registrationData: RegistrationFormData;
-  couponData?: CouponData | null;
+  couponDiscount?: number;
 }
 
 /**
- * Registration Summary Component
+ * RegistrationSummary Component
  * 
- * Displays a summary of registration details before payment:
- * - Ticket type and pricing information
- * - Attendee details
- * - Group registration details if applicable
- * - Coupon discount information if applicable
- * 
- * @param registrationData - Form data from the registration form
- * @param couponData - Applied coupon code data (if any)
+ * Displays a summary of the registration information:
+ * - Shows personal and ticket details
+ * - Calculates and displays pricing information
+ * - Handles group registrations with multiple attendees
+ * - Now supports coupon discount display
  */
-const RegistrationSummary = ({ registrationData, couponData }: RegistrationSummaryProps) => {
-  const { fullName, email, organization, role, ticketType, groupSize } = registrationData;
+const RegistrationSummary = ({ 
+  registrationData,
+  couponDiscount = 0
+}: RegistrationSummaryProps) => {
+  const isGroupRegistration = registrationData.ticketType === "student-group";
+  const basePrice = calculateTotalPrice(registrationData.ticketType, registrationData.groupSize);
   
-  // Calculate ticket pricing
-  const basePrice = getTicketPrice(ticketType);
-  const isGroupRegistration = ticketType === TICKET_TYPES_ENUM.STUDENT_GROUP;
-  const totalBeforeDiscount = isGroupRegistration && groupSize 
-    ? basePrice * groupSize 
-    : basePrice;
-  
-  // Calculate discounted price if coupon is applied
-  const finalPrice = calculateTotalPrice(ticketType, groupSize, couponData);
-  const discountAmount = totalBeforeDiscount - finalPrice;
-  const hasDiscount = discountAmount > 0;
-  
-  // Determine if this is a free registration (100% discount)
-  const isFreeRegistration = couponData?.discount_type === 'full' || finalPrice === 0;
+  // Calculate the discounted price if a coupon is applied
+  const discountAmount = basePrice * (couponDiscount / 100);
+  const finalPrice = Math.max(basePrice - discountAmount, 0);
   
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-medium text-gray-900 dark:text-white font-simula">Registration Summary</h3>
+    <div className="p-4 border border-gray-200 rounded-md mb-6 dark:border-gray-700">
+      <h3 className="font-bold text-lg mb-4 font-simula">Registration Summary</h3>
       
-      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-md">
-        <div className="grid gap-2">
-          <div className="grid grid-cols-2">
-            <span className="text-gray-600 dark:text-gray-400">Name:</span>
-            <span className="text-gray-900 dark:text-white font-medium">{fullName}</span>
-          </div>
-          
-          <div className="grid grid-cols-2">
-            <span className="text-gray-600 dark:text-gray-400">Email:</span>
-            <span className="text-gray-900 dark:text-white font-medium">{email}</span>
-          </div>
-          
-          <div className="grid grid-cols-2">
-            <span className="text-gray-600 dark:text-gray-400">Organization:</span>
-            <span className="text-gray-900 dark:text-white font-medium">{organization}</span>
-          </div>
-          
-          <div className="grid grid-cols-2">
-            <span className="text-gray-600 dark:text-gray-400">Role:</span>
-            <span className="text-gray-900 dark:text-white font-medium">{role}</span>
-          </div>
-          
-          <div className="grid grid-cols-2">
-            <span className="text-gray-600 dark:text-gray-400">Ticket Type:</span>
-            <span className="text-gray-900 dark:text-white font-medium">
-              {ticketType === TICKET_TYPES_ENUM.STUDENT && "Student"}
-              {ticketType === TICKET_TYPES_ENUM.PROFESSIONAL && "Professional"}
-              {ticketType === TICKET_TYPES_ENUM.STUDENT_GROUP && "Student Group"}
-            </span>
-          </div>
-          
-          {isGroupRegistration && groupSize && (
-            <div className="grid grid-cols-2">
-              <span className="text-gray-600 dark:text-gray-400">Group Size:</span>
-              <span className="text-gray-900 dark:text-white font-medium">{groupSize} students</span>
-            </div>
-          )}
-          
-          {/* Show coupon code if applied */}
-          {couponData && (
-            <div className="grid grid-cols-2">
-              <span className="text-gray-600 dark:text-gray-400">Coupon Code:</span>
-              <span className="text-green-600 dark:text-green-400 font-medium">{couponData.code}</span>
-            </div>
-          )}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <h4 className="font-medium text-gray-700 dark:text-gray-300">Personal Information</h4>
+          <ul className="mt-2 space-y-1 text-sm">
+            <li><span className="font-medium">Name:</span> {registrationData.fullName}</li>
+            <li><span className="font-medium">Email:</span> {registrationData.email}</li>
+            <li><span className="font-medium">Organization:</span> {registrationData.organization}</li>
+            <li><span className="font-medium">Role:</span> {registrationData.role}</li>
+          </ul>
         </div>
-      </div>
-      
-      {/* Payment summary with pricing */}
-      <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
-        <h4 className="text-md font-medium text-gray-900 dark:text-white mb-2">Payment Summary</h4>
         
-        <div className="space-y-1">
-          {/* Base price */}
-          <div className="flex justify-between">
-            <span className="text-gray-600 dark:text-gray-400">
-              {isGroupRegistration 
-                ? `Group Registration (${groupSize} × $${basePrice})` 
-                : `${ticketType === TICKET_TYPES_ENUM.STUDENT ? 'Student' : 'Professional'} Ticket`}
-            </span>
-            <span className="text-gray-900 dark:text-white">${totalBeforeDiscount}</span>
-          </div>
-          
-          {/* Show discount if applied */}
-          {hasDiscount && (
-            <div className="flex justify-between">
-              <span className="text-green-600 dark:text-green-400">
-                Discount ({couponData?.discount_type === 'percentage' 
-                  ? `${couponData.discount_amount}%` 
-                  : couponData?.discount_type === 'full' 
-                    ? '100%' 
-                    : `$${couponData?.discount_amount}`})
-              </span>
-              <span className="text-green-600 dark:text-green-400">-${discountAmount}</span>
-            </div>
-          )}
-          
-          {/* Total */}
-          <div className="flex justify-between border-t border-gray-200 dark:border-gray-700 pt-2 font-medium text-lg">
-            <span className="text-gray-900 dark:text-white">Total</span>
-            {isFreeRegistration ? (
-              <span className="text-green-600 dark:text-green-400">FREE</span>
-            ) : (
-              <span className="text-gray-900 dark:text-white">${finalPrice}</span>
+        <div>
+          <h4 className="font-medium text-gray-700 dark:text-gray-300">Ticket Details</h4>
+          <ul className="mt-2 space-y-1 text-sm">
+            <li>
+              <span className="font-medium">Ticket Type:</span> {
+                registrationData.ticketType === "student" ? "Student" :
+                registrationData.ticketType === "professional" ? "Professional" :
+                "Student Group"
+              }
+            </li>
+            {isGroupRegistration && registrationData.groupSize && (
+              <li><span className="font-medium">Group Size:</span> {registrationData.groupSize} people</li>
             )}
-          </div>
+            {registrationData.referralSource && (
+              <li><span className="font-medium">Referred By:</span> {registrationData.referralSource}</li>
+            )}
+          </ul>
         </div>
       </div>
+      
+      <div className="border-t pt-4 mt-4">
+        <h4 className="font-medium text-gray-700 dark:text-gray-300">Payment Details</h4>
+        <div className="mt-2 space-y-1 text-sm">
+          <p><span className="font-medium">Base Price:</span> ${basePrice.toFixed(2)}</p>
+          
+          {couponDiscount > 0 && (
+            <>
+              <p className="text-green-600 dark:text-green-400">
+                <span className="font-medium">Coupon Discount:</span> {couponDiscount}% (-${discountAmount.toFixed(2)})
+              </p>
+              <p className="font-bold">
+                <span className="font-medium">Final Price:</span> ${finalPrice.toFixed(2)}
+              </p>
+            </>
+          )}
+          
+          {couponDiscount === 100 && (
+            <p className="text-green-600 dark:text-green-400 font-bold mt-2">
+              Your registration is free with this coupon!
+            </p>
+          )}
+        </div>
+      </div>
+      
+      {registrationData.specialRequests && (
+        <div className="border-t pt-4 mt-4">
+          <h4 className="font-medium text-gray-700 dark:text-gray-300">Special Requests</h4>
+          <p className="mt-2 text-sm">{registrationData.specialRequests}</p>
+        </div>
+      )}
     </div>
   );
 };

@@ -46,8 +46,6 @@ serve(async (req) => {
       groupEmails,
       specialRequests,
       referralSource,
-      couponCode,           // Added coupon code parameter
-      paymentMethod = 'stripe', // Default to stripe for backward compatibility
       paymentComplete = false
     } = requestData;
     
@@ -113,20 +111,6 @@ serve(async (req) => {
     // Process based on existing data or create new record
     let result;
     
-    // If the coupon code is provided, update the coupon usage counter
-    if (couponCode) {
-      console.log(`[${requestId}] Updating usage count for coupon: ${couponCode}`);
-      const { error: couponUpdateError } = await supabaseAdmin
-        .from('coupon_codes')
-        .update({ current_uses: supabaseAdmin.rpc('increment', { row_id: 'current_uses' }) })
-        .eq('code', couponCode);
-      
-      if (couponUpdateError) {
-        console.error(`[${requestId}] Error updating coupon usage:`, couponUpdateError);
-        // Continue processing even if coupon update fails
-      }
-    }
-    
     if (existingRegistration) {
       // Update the existing record
       console.log(`[${requestId}] Updating existing registration for ${email}`);
@@ -141,9 +125,7 @@ serve(async (req) => {
           special_requests: specialRequests || null,
           status: paymentComplete ? 'confirmed' : 'pending',
           updated_at: new Date().toISOString(),
-          verification_method: referralSource || null,
-          coupon_code: couponCode || null,
-          payment_method: paymentMethod
+          verification_method: referralSource || null
         })
         .eq('id', existingRegistration.id)
         .select();
@@ -183,9 +165,7 @@ serve(async (req) => {
           special_requests: specialRequests || null,
           status: paymentComplete ? 'confirmed' : 'pending',
           verification_method: referralSource || null,
-          email_verified: emailVerified,
-          coupon_code: couponCode || null,
-          payment_method: paymentMethod
+          email_verified: emailVerified
         })
         .select();
         

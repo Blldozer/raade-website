@@ -1,27 +1,35 @@
-import { useEffect, useState } from "react";
-import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
-import PaymentForm from "../PaymentForm";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { TICKET_TYPES_ENUM, calculateTotalPrice } from "../../RegistrationFormTypes";
 
-// Initialize Stripe with the publishable key
-const stripePromise = loadStripe(
-  "pk_test_51OigB4EXKZmTl3KPeCVZAsmUJeJgkWVHZRF90cJHnjxjCRBazwWJhwYKLHO45Qp12wZGXPEY9LdC7C3Wl5G0rgb200b5kVNZtu"
-);
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe, Stripe } from "@stripe/stripe-js";
+import { useEffect, useState } from "react";
+import SimpleStripeCheckout from "./SimpleStripeCheckout";
+
+// Get the Stripe key from environment variables instead of hardcoding
+const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 
+  "pk_live_51QzaGsJCmIJg645X8x5sPqhMAiH4pXBh2e6mbgdxxwgqqsCfM8N7SiOvv98N2l5kVeoAlJj3ab08VG4c6PtgVg4d004QXy2W3m";
+
+// Initialize Stripe with error handling
+const getStripe = () => {
+  try {
+    return loadStripe(STRIPE_PUBLISHABLE_KEY);
+  } catch (error) {
+    console.error("Failed to initialize Stripe:", error);
+    return null;
+  }
+};
 
 interface SimpleStripeProviderProps {
   ticketType: string;
   email: string;
   fullName: string;
   groupSize?: number;
-  groupEmails?: string[];
+  groupEmails?: Array<string | { value: string } | null>;
   organization?: string;
   role?: string;
   specialRequests?: string;
   referralSource?: string;
   couponCode?: string;
+  couponDiscount?: number;
   onSuccess: () => void;
   onError: (error: string) => void;
 }
@@ -29,127 +37,84 @@ interface SimpleStripeProviderProps {
 /**
  * SimpleStripeProvider Component
  * 
- * Provides a simplified Stripe payment integration:
- * - Sets up Stripe Elements context
- * - Creates payment intent with appropriate amount
- * - Handles payment intent creation errors
- * - Includes coupon code information in payment intent
+ * Provides Stripe context for the checkout component:
+ * - Initializes Stripe with publishable key
+ * - Sets up the Stripe Elements provider
+ * - Configures appearance settings for Stripe Elements
+ * - Now with improved error handling and fallbacks
+ * - Supports coupon code discounts
  */
-const SimpleStripeProvider = ({
-  ticketType,
-  email,
-  fullName,
-  groupSize,
-  groupEmails = [],
-  organization,
-  role,
-  specialRequests,
-  referralSource,
-  couponCode,
-  onSuccess,
-  onError
-}: SimpleStripeProviderProps) => {
-  const [amount, setAmount] = useState<number>(0);
-  const [currency, setCurrency] = useState<string>("usd");
-  const [isGroupRegistration, setIsGroupRegistration] = useState<boolean>(false);
-  const [isLoadingIntent, setIsLoadingIntent] = useState<boolean>(true);
-  const [requestId, setRequestId] = useState<string | null>(null);
-  const { toast } = useToast();
+const SimpleStripeProvider = (props: SimpleStripeProviderProps) => {
+  const [stripePromise, setStripePromise] = useState<Promise<Stripe | null> | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // Create payment intent when component mounts
   useEffect(() => {
-    const createIntent = async () => {
-      setIsLoadingIntent(true);
-      setRequestId(`req-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`);
-      
+    const initializeStripe = () => {
       try {
-        const { data, error } = await supabase.functions.invoke("create-payment-intent", {
-          body: {
-            ticketType,
-            email,
-            fullName,
-            groupSize: ticketType === TICKET_TYPES_ENUM.STUDENT_GROUP ? groupSize : undefined,
-            couponCode
-          }
-        });
-        
-        if (error) {
-          console.error("Payment intent creation error:", error);
-          throw new Error(error.message || "Failed to create payment intent");
-        }
-        
-        if (!data || !data.clientSecret) {
-          throw new Error("No client secret returned");
-        }
-        
-        // Set amount, currency and other details from the response
-        setAmount(data.amount);
-        setCurrency(data.currency);
-        setIsGroupRegistration(data.isGroupRegistration);
-        
-        setIsLoadingIntent(false);
+        // loadStripe returns a Promise<Stripe|null>, so we set that directly to the state
+        const promise = getStripe();
+        setStripePromise(promise);
+        // Flag successful initialization
+        setIsInitialized(true);
       } catch (err) {
-        console.error("Failed to create payment intent:", err);
-        setIsLoadingIntent(false);
-        
-        // Show error toast
-        toast({
-          title: "Payment setup failed",
-          description: err instanceof Error ? err.message : "Failed to set up payment",
-          variant: "destructive",
-        });
-        
-        // Call error callback
-        onError(err instanceof Error ? err.message : "Failed to set up payment");
+        const errorMessage = err instanceof Error ? err.message : "Unknown error initializing payment system";
+        console.error("Stripe initialization error:", errorMessage);
+        setError("Failed to initialize payment system");
+        props.onError("Payment system initialization failed");
       }
     };
-    
-    createIntent();
-  }, [ticketType, email, fullName, groupSize, couponCode, onError, toast]);
 
-  // Loading state while creating payment intent
-  if (isLoadingIntent) {
+    initializeStripe();
+  }, [props.onError]);
+
+  const options = {
+    appearance: {
+      theme: 'stripe' as const,
+      variables: {
+        colorPrimary: '#274675', // RAADE navy
+        colorBackground: '#ffffff',
+        colorText: '#30313d',
+        colorDanger: '#df1b41',
+        fontFamily: 'Merriweather, system-ui, sans-serif',
+        borderRadius: '4px',
+      }
+    },
+  };
+
+  // Fail gracefully if we can't initialize Stripe
+  if (error) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <div className="animate-pulse text-gray-500 dark:text-gray-400 text-center">
-          <svg
-            className="animate-spin h-8 w-8 text-[#FBB03B] mx-auto mb-2"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
-          <p>Setting up payment...</p>
+      <div className="text-red-500 p-6 border border-red-300 rounded bg-red-50 dark:bg-red-900/20 dark:border-red-800 flex flex-col items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <h3 className="text-lg font-bold text-red-700 dark:text-red-300 mb-2">Payment System Error</h3>
+        <p className="text-center mb-4">{error}</p>
+        <button onClick={() => window.location.reload()} className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded">
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
+  // Show a nice loading state while Stripe initializes
+  if (!stripePromise || !isInitialized) {
+    return (
+      <div className="p-6 text-center">
+        <div className="animate-pulse flex flex-col items-center">
+          <div className="rounded-full bg-gray-200 dark:bg-gray-700 h-12 w-12 mb-4"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
         </div>
+        <p className="mt-4 text-gray-600 dark:text-gray-400">Loading payment system...</p>
       </div>
     );
   }
 
   return (
-    <Elements stripe={stripePromise}>
-      <PaymentForm
-        email={email}
-        onSuccess={onSuccess}
-        onError={onError}
-        amount={amount}
-        currency={currency}
-        isGroupRegistration={isGroupRegistration}
-        groupSize={groupSize}
-        requestId={requestId}
-      />
+    <Elements stripe={stripePromise} options={options}>
+      <SimpleStripeCheckout {...props} />
     </Elements>
   );
 };

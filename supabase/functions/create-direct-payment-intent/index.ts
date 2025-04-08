@@ -13,6 +13,7 @@ import { calculatePaymentAmount } from "../_shared/pricing.ts";
  * - Returning the client secret directly to be used with Stripe.js
  * - Including necessary metadata for tracking and reporting
  * - Now properly respects the sale pricing period (April 7-8, 2025)
+ * - Supports coupon code discounts
  */
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -50,7 +51,10 @@ serve(async (req) => {
       role,
       specialRequests,
       referralSource,
-      groupEmails = []
+      groupEmails = [],
+      couponCode,
+      couponDiscount = 0,
+      trackingId
     } = requestData;
     
     // Validate required fields
@@ -68,9 +72,18 @@ serve(async (req) => {
     // This ensures pricing consistency between all payment methods
     const paymentInfo = calculatePaymentAmount(ticketType, groupSize);
     
-    const amount = paymentInfo.amount;
+    let amount = paymentInfo.amount;
     const description = paymentInfo.description;
     const isGroupRegistration = paymentInfo.isGroupRegistration;
+    
+    // Apply coupon discount if valid
+    if (couponDiscount > 0) {
+      // Calculate discount amount (amount is in cents)
+      const discountAmount = Math.round(amount * (couponDiscount / 100));
+      amount = Math.max(amount - discountAmount, 0);
+      
+      console.log(`Applied ${couponDiscount}% discount. Original amount: ${paymentInfo.amount}, New amount: ${amount}`);
+    }
     
     // Format group emails for metadata storage
     const formattedGroupEmails = Array.isArray(groupEmails) 
@@ -82,7 +95,9 @@ serve(async (req) => {
       const paymentIntent = await stripe.paymentIntents.create({
         amount,
         currency: "usd",
-        description,
+        description: couponDiscount > 0 
+          ? `${description} (${couponDiscount}% discount applied)` 
+          : description,
         receipt_email: email,
         metadata: {
           email,
@@ -94,7 +109,10 @@ serve(async (req) => {
           role: role || "",
           specialRequests: specialRequests || "",
           referralSource: referralSource || "",
-          groupEmails: formattedGroupEmails
+          groupEmails: formattedGroupEmails,
+          couponCode: couponCode || "",
+          couponDiscount: couponDiscount.toString() || "0",
+          trackingId: trackingId || ""
         },
         automatic_payment_methods: {
           enabled: true,
@@ -104,10 +122,11 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({
           clientSecret: paymentIntent.client_secret,
-          amount,
+          amount: amount / 100, // Convert cents to dollars for display
           currency: "usd",
           isGroupRegistration,
-          ticketType
+          ticketType,
+          couponApplied: couponDiscount > 0
         }),
         { 
           headers: { ...corsHeaders, "Content-Type": "application/json" },

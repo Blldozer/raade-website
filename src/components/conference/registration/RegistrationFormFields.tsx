@@ -53,18 +53,15 @@ const RegistrationFormFields = ({
       />
       
       <TicketTypeSelection 
-        register={register}
         watch={watch} 
         setValue={setValue} 
         errors={errors} 
       />
       
       <GroupRegistrationSection
-        register={register}
         watch={watch}
         setValue={setValue}
         control={control}
-        errors={errors}
       />
 
       <ReferralSourceSection 

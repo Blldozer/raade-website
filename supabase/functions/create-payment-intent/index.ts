@@ -66,7 +66,6 @@ serve(async (req) => {
     // Parse the request body with timeout
     let requestData;
     try {
-      // Parse request body
       const bodyTextPromise = req.text();
       
       // Create a timeout with cleanup function
@@ -145,15 +144,14 @@ serve(async (req) => {
       }
       
       // Extract and validate request data
-      const { ticketType, email, fullName, groupSize, couponCode } = requestData;
+      const { ticketType, email, fullName, groupSize } = requestData;
       
       // Log request for debugging
       console.log(`[${requestContext.id}] Received payment intent request:`, JSON.stringify({
         ticketType,
         email,
         fullName,
-        groupSize: groupSize || "N/A",
-        hasCoupon: !!couponCode
+        groupSize: groupSize || "N/A"
       }));
       
       // Use the existing validation logic
@@ -161,91 +159,8 @@ serve(async (req) => {
       if (validationError) return validationError;
       
       try {
-        // Initialize Supabase client to validate coupon if provided
-        let discountPercentage = 0;
-        let discountFixed = 0;
-        let isFreeRegistration = false;
-        
-        if (couponCode) {
-          console.log(`[${requestContext.id}] Validating coupon code: ${couponCode}`);
-          
-          const supabaseUrl = Deno.env.get("SUPABASE_URL");
-          const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-          
-          if (supabaseUrl && supabaseServiceRoleKey) {
-            const supabaseAdmin = createClient(
-              supabaseUrl,
-              supabaseServiceRoleKey,
-              {
-                auth: {
-                  persistSession: false,
-                }
-              }
-            );
-            
-            // Look up the coupon code
-            const { data: coupon, error } = await supabaseAdmin
-              .from('coupon_codes')
-              .select('*')
-              .eq('code', couponCode.trim().toUpperCase())
-              .eq('is_active', true)
-              .maybeSingle();
-            
-            if (error) {
-              console.error(`[${requestContext.id}] Database error during coupon validation:`, error);
-              // Continue without applying discount if error occurs
-            } else if (coupon) {
-              console.log(`[${requestContext.id}] Valid coupon found:`, {
-                code: coupon.code,
-                type: coupon.discount_type,
-                amount: coupon.discount_amount
-              });
-              
-              // Apply the appropriate discount based on the coupon type
-              if (coupon.discount_type === 'percentage') {
-                discountPercentage = coupon.discount_amount;
-              } else if (coupon.discount_type === 'fixed') {
-                discountFixed = coupon.discount_amount;
-              } else if (coupon.discount_type === 'full') {
-                isFreeRegistration = true;
-              }
-            } else {
-              console.log(`[${requestContext.id}] Coupon not found or inactive: ${couponCode}`);
-              // Continue without applying discount
-            }
-          }
-        }
-        
-        // If it's a free registration with a valid coupon, we don't need to create a payment intent
-        if (isFreeRegistration) {
-          return createResponse({ 
-            amount: 0,
-            currency: "USD",
-            isGroupRegistration: ticketType === "student-group",
-            groupSize: ticketType === "student-group" ? Math.max(groupSize || 5, 5) : undefined,
-            ticketType,
-            perPersonCost: 0,
-            freeRegistration: true,
-            requestId: requestContext.id
-          });
-        }
-        
         // Calculate payment amount based on ticket type
-        let { amount, description, isGroupRegistration } = calculatePaymentAmount(ticketType, groupSize);
-        
-        // Apply percentage discount if applicable
-        if (discountPercentage > 0) {
-          const discountAmount = Math.round(amount * (discountPercentage / 100));
-          amount = Math.max(0, amount - discountAmount);
-          description += ` (${discountPercentage}% discount applied)`;
-        }
-        
-        // Apply fixed discount if applicable
-        if (discountFixed > 0) {
-          const discountAmount = discountFixed * 100; // Convert to cents
-          amount = Math.max(0, amount - discountAmount);
-          description += ` ($${discountFixed} discount applied)`;
-        }
+        const { amount, description, isGroupRegistration } = calculatePaymentAmount(ticketType, groupSize);
         
         // Create payment intent using the request-specific Stripe instance
         const { paymentIntent, lastError } = await createPaymentIntentWithRetry(

@@ -1,129 +1,54 @@
 
-import { supabase } from "@/integrations/supabase/client";
-import { RegistrationFormData } from "../../RegistrationFormTypes";
+import { RegistrationFormData, TicketType } from "../../RegistrationFormTypes";
 
 /**
- * Registration Data Storage Service
+ * Processes registration data for API submission
  * 
- * Handles storing conference registration data in Supabase:
- * - Processes group emails to ensure proper format
- * - Implements retry logic with exponential backoff
- * - Handles timeouts and network errors gracefully
+ * Takes the form data and formats it for the backend API
+ * - Ensures all required fields are present
+ * - Processes group information correctly
+ * - Performs email validation if needed
+ * 
+ * @param data The registration form data
+ * @returns A clean, API-ready registration data object
  */
-export const storeRegistrationData = async (
-  registrationData: RegistrationFormData,
-  maxRetries = 3
-): Promise<boolean> => {
-  let retryCount = 0;
+export const processRegistrationData = (data: RegistrationFormData) => {
+  // Ensure all required fields have values
+  if (!data.fullName || !data.email || !data.organization || !data.role || !data.ticketType) {
+    throw new Error("Missing required fields in registration data");
+  }
   
-  const attemptStoreData = async (): Promise<boolean> => {
-    try {
-      // Process group emails to a clean format
-      let processedGroupEmails = [];
-      if (registrationData.groupEmails && Array.isArray(registrationData.groupEmails)) {
-        processedGroupEmails = registrationData.groupEmails
-          .filter(Boolean)
-          .map(email => {
-            if (typeof email === 'object' && email !== null && 'value' in email) {
-              return email.value;
-            }
-            return String(email || '');
-          })
-          .filter(email => email.length > 0);
-      }
-      
-      // Build request data
-      const requestData = {
-        fullName: registrationData.fullName,
-        email: registrationData.email,
-        organization: registrationData.organization || "",
-        role: registrationData.role || "",
-        ticketType: registrationData.ticketType,
-        specialRequests: registrationData.specialRequests || "",
-        referralSource: registrationData.referralSource || "",
-        groupSize: registrationData.groupSize,
-        groupEmails: processedGroupEmails,
-        paymentComplete: true // Registration is being stored after successful payment
-      };
-      
-      console.log("Storing registration data in Supabase:", requestData);
-      
-      // Set a timeout for the data storage request
-      const STORAGE_TIMEOUT = 10000; // 10 seconds
-      
-      // Create a timeout promise
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => {
-          reject(new Error(`Registration storage timed out after ${STORAGE_TIMEOUT}ms`));
-        }, STORAGE_TIMEOUT);
-      });
-      
-      // Create the storage request promise
-      const storagePromise = supabase.functions.invoke('store-registration', {
-        body: requestData
-      });
-      
-      // Race the timeout against the actual request
-      const { data, error } = await Promise.race([
-        storagePromise,
-        timeoutPromise
-      ]);
-      
-      if (error) {
-        console.error("Error storing registration data:", error);
-        
-        if (retryCount < maxRetries) {
-          const backoffTime = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s
-          console.log(`Will retry storing data in ${backoffTime}ms`);
-          
-          await new Promise(resolve => setTimeout(resolve, backoffTime));
-          
-          retryCount++;
-          return attemptStoreData();
-        }
-        
-        return false;
-      } else {
-        if (data?.success) {
-          console.log("Registration data stored successfully:", data);
-          return true;
-        } else {
-          console.error("Registration storage returned an error:", data);
-          
-          if (retryCount < maxRetries) {
-            const backoffTime = Math.pow(2, retryCount) * 1000;
-            await new Promise(resolve => setTimeout(resolve, backoffTime));
-            
-            retryCount++;
-            return attemptStoreData();
-          }
-          
-          return false;
-        }
-      }
-    } catch (error) {
-      console.error("Error invoking store-registration function:", error);
-      
-      // If we have retries left and it's a timeout or network error
-      const typedError = error as Error;
-      const isRetryableError = 
-        typedError.message?.includes('timeout') || 
-        typedError.message?.includes('network') ||
-        (error as { code?: string }).code === 'AbortError';
-        
-      if (isRetryableError && retryCount < maxRetries) {
-        const backoffTime = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s
-        console.log(`Will retry storing data in ${backoffTime}ms due to: ${typedError.message}`);
-        
-        await new Promise(resolve => setTimeout(resolve, backoffTime));
-        
-        retryCount++;
-        return attemptStoreData();
-      }
-      
-      return false;
+  // Extract only the email strings from any group email objects
+  let processedGroupEmails: string[] = [];
+  
+  if (data.ticketType === "student-group" && data.groupEmails) {
+    processedGroupEmails = data.groupEmails
+      .filter(emailObj => emailObj && typeof emailObj === 'object' && 'email' in emailObj)
+      .map(emailObj => emailObj.email)
+      .filter(email => email && email.trim() !== '');
+  }
+  
+  // Verify that we have the right number of valid emails for groups
+  if (data.ticketType === "student-group" && data.groupSize) {
+    const emailCount = Array.isArray(processedGroupEmails) ? processedGroupEmails.length : 0;
+    
+    // For group registrations, we should have emails matching the group size
+    if (emailCount < data.groupSize - 1) { // -1 because the main registrant is included in the group
+      console.warn(`Group size is ${data.groupSize} but only ${emailCount} additional emails were provided.`);
     }
-  };
+  }
   
-  return attemptStoreData();
+  // Format data for API submission
+  return {
+    fullName: data.fullName,
+    email: data.email,
+    organization: data.organization,
+    role: data.role,
+    ticketType: data.ticketType as TicketType,
+    referralSource: data.referralSource,
+    specialRequests: data.specialRequests,
+    groupSize: data.ticketType === "student-group" ? data.groupSize : undefined,
+    groupEmails: data.ticketType === "student-group" ? processedGroupEmails : undefined,
+    couponCode: data.couponCode && data.couponCode.trim() !== "" ? data.couponCode : undefined
+  };
 };

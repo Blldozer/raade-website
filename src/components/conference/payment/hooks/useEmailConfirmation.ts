@@ -1,69 +1,178 @@
 
-import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState, useRef, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { RegistrationFormData } from "../../RegistrationFormTypes";
+import { storeRegistrationData } from "../services/registrationDataService";
+import { sendConfirmationEmail } from "../services/emailConfirmationService";
 
 /**
- * Custom hook to handle email confirmation process
+ * Custom hook for managing email confirmation process
  * 
- * Manages the state and logic for sending confirmation emails
- * after successful payment or registration
+ * This hook abstracts the email confirmation workflow:
+ * - Tracks sending state for UI feedback
+ * - Manages component lifecycle to prevent state updates after unmount
+ * - Implements exponential backoff for retries
+ * - Provides toast notifications for user feedback
+ * - Handles completion callback for navigation
  */
-export const useEmailConfirmation = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  /**
-   * Send email confirmation to the user
-   * 
-   * @param email - User's email address
-   * @param fullName - User's full name
-   * @param ticketType - Type of ticket purchased
-   * @returns Promise indicating if email was sent successfully
-   */
-  const sendEmailConfirmation = async (
-    email: string,
-    fullName: string,
-    ticketType: string
-  ): Promise<boolean> => {
-    if (!email) {
-      setError("Email address is required");
-      return false;
-    }
-
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      const { error } = await supabase.functions.invoke("send-confirmation-email", {
-        body: {
-          email,
-          fullName,
-          ticketType
-        }
-      });
+export const useEmailConfirmation = (
+  registrationData: RegistrationFormData, 
+  onComplete: () => void
+) => {
+  const [sendingEmail, setSendingEmail] = useState<boolean>(false);
+  const [emailSent, setEmailSent] = useState<boolean>(false);
+  const [retryCount, setRetryCount] = useState<number>(0);
+  const { toast } = useToast();
+  
+  // Track component mount state to prevent state updates after unmount
+  const isMountedRef = useRef<boolean>(true);
+  // Track if onComplete has been called
+  const completeCalledRef = useRef<boolean>(false);
+  // Track if toast notification has been shown
+  const toastCalledRef = useRef<boolean>(false);
+  // Maximum retry attempts
+  const MAX_RETRIES = 3;
+  
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+  
+  const sendConfirmationEmailWithRetry = async () => {
+    // If email has already been sent, don't send it again
+    if (emailSent) {
+      console.log("Email already sent, skipping");
       
-      if (error) {
-        console.error("Error sending confirmation email:", error);
-        setError(error.message);
-        return false;
+      // Ensure onComplete is called
+      if (!completeCalledRef.current) {
+        completeCalledRef.current = true;
+        onComplete();
       }
       
-      setEmailSent(true);
-      return true;
-    } catch (err) {
-      console.error("Failed to send confirmation email:", err);
-      setError(err instanceof Error ? err.message : "Unknown error");
-      return false;
+      return;
+    }
+    
+    try {
+      if (isMountedRef.current) {
+        setSendingEmail(true);
+      }
+      
+      // First, store the registration data silently
+      const dataStorageResult = await storeRegistrationData(registrationData);
+      
+      if (!dataStorageResult) {
+        console.warn("Failed to store registration data, but will still try to send email");
+      }
+      
+      if (!isMountedRef.current) return;
+      
+      // Send the confirmation email
+      const { success, error } = await sendConfirmationEmail(
+        registrationData, 
+        retryCount
+      );
+      
+      if (!isMountedRef.current) return;
+      
+      if (!success) {
+        // If we have retries left, try again with exponential backoff
+        if (retryCount < MAX_RETRIES) {
+          const backoffTime = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s
+          console.log(`Will retry sending email in ${backoffTime}ms`);
+          
+          setTimeout(() => {
+            if (isMountedRef.current) {
+              setRetryCount(prev => prev + 1);
+              setSendingEmail(false);
+              sendConfirmationEmailWithRetry();
+            }
+          }, backoffTime);
+          
+          return;
+        }
+        
+        // Only show error toast once, on final failure
+        if (!toastCalledRef.current) {
+          toastCalledRef.current = true;
+          toast({
+            title: "Confirmation email could not be sent",
+            description: "We'll still send you conference details via email later.",
+            variant: "destructive"
+          });
+        }
+      } else {
+        if (isMountedRef.current) {
+          setEmailSent(true);
+        }
+        
+        // Only show success toast once
+        if (!toastCalledRef.current) {
+          toastCalledRef.current = true;
+          toast({
+            title: "Conference confirmation sent",
+            description: "Check your email for registration details.",
+            variant: "default"
+          });
+        }
+      }
+    } catch (error) {
+      if (!isMountedRef.current) return;
+      
+      const typedError = error as Error;
+      console.error("Error in email confirmation process:", typedError);
+      
+      // If we have retries left and it's a timeout or network error
+      const isRetryableError = 
+        typedError.message?.includes('timeout') || 
+        typedError.message?.includes('network') ||
+        (error as { code?: string }).code === 'AbortError';
+        
+      if (isRetryableError && retryCount < MAX_RETRIES) {
+        const backoffTime = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s
+        console.log(`Will retry sending email in ${backoffTime}ms due to: ${typedError.message}`);
+        
+        setTimeout(() => {
+          if (isMountedRef.current) {
+            setRetryCount(prev => prev + 1);
+            setSendingEmail(false);
+            sendConfirmationEmailWithRetry();
+          }
+        }, backoffTime);
+        
+        return;
+      }
+      
+      // Only show error toast once
+      if (!toastCalledRef.current) {
+        toastCalledRef.current = true;
+        toast({
+          title: "Confirmation email could not be sent",
+          description: "We'll still send you conference details via email later.",
+          variant: "destructive"
+        });
+      }
     } finally {
-      setIsLoading(false);
+      if (isMountedRef.current) {
+        setSendingEmail(false);
+      }
+      
+      // Delay the onComplete callback to allow the user to see the confirmation
+      // Only call onComplete if it hasn't been called yet
+      if (!completeCalledRef.current) {
+        completeCalledRef.current = true;
+        
+        setTimeout(() => {
+          onComplete();
+        }, 3000); // Reduced from 5 seconds to 3 seconds for a better UX
+      }
     }
   };
-
-  return {
-    sendEmailConfirmation,
-    isLoading,
+  
+  return { 
+    sendingEmail, 
     emailSent,
-    error
+    sendConfirmationEmail: sendConfirmationEmailWithRetry 
   };
 };
