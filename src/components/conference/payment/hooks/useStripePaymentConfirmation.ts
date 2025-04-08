@@ -89,6 +89,7 @@ export const useStripePaymentConfirmation = ({
    */
   const handleConfirmPayment = async () => {
     if (!stripe || !elements) {
+      console.error('Stripe not initialized!', { stripe: !!stripe, elements: !!elements });
       return { success: false, reason: "stripe-not-loaded" };
     }
 
@@ -97,6 +98,7 @@ export const useStripePaymentConfirmation = ({
       return { success: false, reason: "already-processing" };
     }
 
+    console.log(`Starting payment confirmation process (${requestId || 'unknown'})`);
     startTimeout();
 
     try {
@@ -105,19 +107,26 @@ export const useStripePaymentConfirmation = ({
       // Clear the timeout since we got a response
       clearTimeout();
       
-      if (!isMountedRef.current) return { success: false, reason: "unmounted" };
+      if (!isMountedRef.current) {
+        console.log('Component unmounted during payment processing, abandoning');
+        return { success: false, reason: "unmounted" };
+      }
 
       // Handle the result based on its success status
       if (result.success && result.paymentIntent) {
+        console.log(`Payment confirmation successful (${requestId || 'unknown'})`);
         handleSuccess(result.paymentIntent);
         return result;
       } else {
         // Handle different error cases
         if (result.reason === "payment-error" && result.error) {
+          console.error(`Payment error (${requestId || 'unknown'}):`, result.error);
           handleError(result.error);
         } else if (result.reason === "requires-action" && result.paymentIntent) {
+          console.log(`Payment requires action (${requestId || 'unknown'}):`, result.paymentIntent.status);
           handlePaymentStatus(result.paymentIntent.status || "unknown");
         } else {
+          console.error(`Payment failed (${requestId || 'unknown'}):`, result.reason);
           setMessage("Something went wrong with your payment. Please try again.");
           reportError("Payment failed: " + (result.reason || "Unknown reason"));
         }
@@ -128,12 +137,16 @@ export const useStripePaymentConfirmation = ({
       // Clear the timeout
       clearTimeout();
       
-      if (!isMountedRef.current) return { success: false, reason: "unmounted" };
+      if (!isMountedRef.current) {
+        console.log('Component unmounted during error handling, abandoning');
+        return { success: false, reason: "unmounted" };
+      }
       
       const error = unexpectedError instanceof Error ? 
         unexpectedError : 
         new Error(String(unexpectedError));
-        
+      
+      console.error(`Unexpected payment error (${requestId || 'unknown'}):`, error);  
       handleError(error);
       
       return { 
@@ -148,6 +161,7 @@ export const useStripePaymentConfirmation = ({
   useEffect(() => {
     return () => {
       isMountedRef.current = false;
+      console.log(`Payment confirmation component unmounting (${requestId || 'unknown'})`);
     };
   }, []);
 

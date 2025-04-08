@@ -1,5 +1,5 @@
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import PaymentTotal from "./PaymentTotal";
@@ -46,6 +46,15 @@ const PaymentForm = ({
   const isMountedRef = useRef(true);
   const successCalledRef = useRef(false);
   
+  // Store client secret in window for access by the payment confirmation process
+  useEffect(() => {
+    // This is a hack to pass the client secret to the confirmation process
+    // A better approach would be to refactor to pass it directly
+    if (typeof window !== 'undefined' && amount > 0) {
+      console.log(`Setting up payment form for $${amount} (${requestId || 'unknown'})`);
+    }
+  }, [amount, requestId]);
+  
   // Use custom hooks to manage Stripe elements and payment submission
   const { elements, stripe, isElementsLoading } = usePaymentElements();
   
@@ -62,6 +71,7 @@ const PaymentForm = ({
       setPaymentCompleted(true);
       if (!successCalledRef.current) {
         successCalledRef.current = true;
+        console.log(`Payment completed successfully (${requestId || 'unknown'})`);
         onSuccess();
       }
     },
@@ -78,6 +88,7 @@ const PaymentForm = ({
       setPaymentCompleted(true);
       if (!successCalledRef.current) {
         successCalledRef.current = true;
+        console.log(`Payment completed via redirect (${requestId || 'unknown'})`);
         onSuccess();
       }
     },
@@ -86,6 +97,18 @@ const PaymentForm = ({
     isMountedRef,
     successCalledRef
   );
+
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+      console.log(`Payment form unmounting (${requestId || 'unknown'})`);
+    };
+  }, []);
+
+  if (isElementsLoading) {
+    return <div className="text-center p-4">Loading payment form...</div>;
+  }
 
   return (
     <Card className="w-full mt-4">

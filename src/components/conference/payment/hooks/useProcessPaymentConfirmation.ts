@@ -34,29 +34,35 @@ export const useProcessPaymentConfirmation = ({
    */
   const processPaymentConfirmation = async (): Promise<PaymentConfirmationResult> => {
     if (!stripe || !elements) {
-      console.error("Stripe or elements not loaded");
+      console.error("Stripe or elements not loaded", { stripe: !!stripe, elements: !!elements });
       return { success: false, reason: "stripe-not-loaded" };
     }
     
     setIsProcessing(true);
     
     try {
-      console.log("Starting payment confirmation process");
+      console.log("Starting payment confirmation with Stripe");
+      
+      // Get the current card element
+      const cardElement = elements.getElement("card");
+      if (!cardElement) {
+        console.error("Card element not found in the form");
+        return { success: false, reason: "card-element-missing" };
+      }
       
       // Try to confirm payment with optimized settings to reduce rate limiting issues
-      const { error, paymentIntent } = await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: `${window.location.origin}/conference/confirmation`,
-          receipt_email: email,
-          payment_method_data: {
-            billing_details: { email }
-          },
-          // Disable any unnecessary fields to reduce API load
-          setup_future_usage: undefined
-        },
-        redirect: "if_required"
-      });
+      const { error, paymentIntent } = await stripe.confirmCardPayment(
+        // Using clientSecret directly here - the call with Elements wasn't working
+        (window as any).__stripeClientSecret || "",
+        {
+          payment_method: {
+            card: cardElement,
+            billing_details: {
+              email: email
+            }
+          }
+        }
+      );
       
       // Handle errors
       if (error) {
@@ -69,7 +75,7 @@ export const useProcessPaymentConfirmation = ({
           return { 
             success: false, 
             reason: "rate-limited",
-            error: error as unknown as Error // Type assertion to resolve the error
+            error: error as unknown as Error
           };
         }
         
@@ -83,6 +89,8 @@ export const useProcessPaymentConfirmation = ({
       
       // Handle payment intent
       if (paymentIntent) {
+        console.log(`Payment intent status: ${paymentIntent.status}`);
+        
         switch (paymentIntent.status) {
           case "succeeded":
             console.log("Payment succeeded");

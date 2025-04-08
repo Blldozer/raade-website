@@ -1,5 +1,7 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.1";
 import { corsHeaders, createResponse, createErrorResponse, createTimeout } from "./utils.ts";
 import { validateStripeKey, validateRequestData } from "./validation.ts";
 import { calculatePaymentAmount } from "../_shared/pricing.ts";

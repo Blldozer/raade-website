@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
@@ -60,47 +61,69 @@ const SimpleStripeProvider = ({
   useEffect(() => {
     const createIntent = async () => {
       setIsLoadingIntent(true);
-      setRequestId(`req-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`);
+      // Generate a unique request ID for tracking
+      const reqId = `req-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+      setRequestId(reqId);
       
       try {
+        console.log(`Creating payment intent (${reqId}):`, {
+          ticketType,
+          email,
+          couponCode: couponCode || 'none'
+        });
+        
         const { data, error } = await supabase.functions.invoke("create-payment-intent", {
           body: {
             ticketType,
             email,
             fullName,
             groupSize: ticketType === TICKET_TYPES_ENUM.STUDENT_GROUP ? groupSize : undefined,
-            couponCode
+            couponCode,
+            requestId: reqId
           }
         });
         
         if (error) {
-          console.error("Payment intent creation error:", error);
+          console.error(`Payment intent creation error (${reqId}):`, error);
           throw new Error(error.message || "Failed to create payment intent");
         }
         
-        if (!data || !data.clientSecret) {
-          throw new Error("No client secret returned");
+        // Check for client secret in the response for standard payments
+        if (!data?.clientSecret && !data?.freeRegistration) {
+          console.error(`Invalid payment intent response (${reqId}):`, data);
+          throw new Error("Invalid payment intent response from server");
         }
+        
+        console.log(`Payment intent response received (${reqId}):`, {
+          amount: data.amount,
+          freeRegistration: data.freeRegistration || false,
+          hasClientSecret: !!data.clientSecret
+        });
         
         // Set amount, currency and other details from the response
         setAmount(data.amount);
-        setCurrency(data.currency);
+        setCurrency(data.currency || "usd");
         setIsGroupRegistration(data.isGroupRegistration);
         
         setIsLoadingIntent(false);
       } catch (err) {
-        console.error("Failed to create payment intent:", err);
+        console.error(`Payment intent creation failed (${reqId}):`, err);
         setIsLoadingIntent(false);
+        
+        // Format a user-friendly error message
+        const errorMessage = err instanceof Error 
+          ? err.message 
+          : "An unknown error occurred while setting up payment";
         
         // Show error toast
         toast({
           title: "Payment setup failed",
-          description: err instanceof Error ? err.message : "Failed to set up payment",
+          description: errorMessage,
           variant: "destructive",
         });
         
         // Call error callback
-        onError(err instanceof Error ? err.message : "Failed to set up payment");
+        onError(errorMessage);
       }
     };
     
