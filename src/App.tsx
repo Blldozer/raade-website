@@ -1,4 +1,3 @@
-
 import React from 'react';
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
@@ -30,7 +29,7 @@ import Donate from './pages/Donate';
  */
 function App() {
   return (
-    <ErrorBoundary fallback={({ error }) => <GlobalErrorFallback error={error} />}>
+    <ErrorBoundary fallback={(props: { error: Error }) => <GlobalErrorFallback error={props.error} />}>
       <AppProviders>
         <Router>
           <ScrollToTop />

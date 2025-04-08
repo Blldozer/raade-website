@@ -1,10 +1,9 @@
-
 import React from "react";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { UseFormRegister, Control } from "react-hook-form";
+import { UseFormRegister, Control, UseFormSetValue } from "react-hook-form";
 import { REFERRAL_SOURCES } from "../RegistrationFormTypes";
 
 /**
@@ -15,6 +14,7 @@ export interface ReferralSourceSectionProps {
   errors: any;
   control: Control<any>;
   watch: any;
+  setValue: UseFormSetValue<any>;
 }
 
 /**
@@ -27,7 +27,8 @@ const ReferralSourceSection: React.FC<ReferralSourceSectionProps> = ({
   register,
   errors,
   control,
-  watch
+  watch,
+  setValue
 }) => {
   const referralSource = watch("referralSource");
   const isOtherSelected = referralSource === "Other";
