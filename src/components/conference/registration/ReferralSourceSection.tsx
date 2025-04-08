@@ -59,7 +59,13 @@ const ReferralSourceSection = ({ register, setValue, watch }: ReferralSourceSect
             id="otherReferralSource"
             placeholder="Please specify how you heard about us"
             className="mt-1"
-            {...register("otherReferralSource")}
+            // Remove the register for otherReferralSource as it's not in the form schema
+            // We'll use the referralSource field instead
+            onChange={(e) => {
+              if (e.target.value) {
+                setValue("specialRequests", `Referral Source: ${e.target.value}\n${watch("specialRequests") || ""}`);
+              }
+            }}
           />
         </div>
       )}

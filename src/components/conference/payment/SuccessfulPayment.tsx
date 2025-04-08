@@ -5,7 +5,7 @@ import { Check } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RegistrationFormData } from "../RegistrationFormTypes";
-import { useEmailConfirmation } from "./EmailConfirmationSender";
+import { useEmailConfirmation } from "./hooks/useEmailConfirmation";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface SuccessfulPaymentProps {
@@ -31,22 +31,19 @@ const SuccessfulPayment = ({
   const [isTransitioning, setIsTransitioning] = useState(false);
   
   // Use email confirmation hook to handle sending confirmation email
-  // and storing registration data
   const { 
-    sendingEmail, 
-    emailSent, 
-    sendConfirmationEmail 
-  } = useEmailConfirmation(
-    registrationData,
-    onContinue
-  );
+    sendConfirmation,
+    isLoading,
+    isSuccess,
+    errorMessage
+  } = useEmailConfirmation();
   
   // Send confirmation email when component mounts
   useEffect(() => {
     // Small delay before starting animations and processes
     const startupDelay = setTimeout(() => {
       setExploding(true);
-      sendConfirmationEmail();
+      sendConfirmation(registrationData);
     }, 100);
     
     // Set confetti to stop after 3 seconds
@@ -58,7 +55,7 @@ const SuccessfulPayment = ({
       clearTimeout(startupDelay);
       clearTimeout(confettiTimer);
     };
-  }, [sendConfirmationEmail]);
+  }, [sendConfirmation, registrationData]);
 
   const handleContinueClick = () => {
     if (isTransitioning) return;
@@ -145,11 +142,14 @@ const SuccessfulPayment = ({
                 
                 {/* Email status - Only showing email confirmation status now */}
                 <div className="mt-4 space-y-1 min-h-[1.75rem]">
-                  {sendingEmail && (
+                  {isLoading && (
                     <p className="text-blue-500 italic">Sending confirmation email...</p>
                   )}
-                  {emailSent && (
+                  {isSuccess && (
                     <p className="text-green-500 italic">Confirmation email sent!</p>
+                  )}
+                  {errorMessage && (
+                    <p className="text-red-500 italic">{errorMessage}</p>
                   )}
                 </div>
               </motion.div>

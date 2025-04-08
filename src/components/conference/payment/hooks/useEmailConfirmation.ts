@@ -18,10 +18,13 @@ export const useEmailConfirmation = () => {
     try {
       const result = await processRegistrationData(registrationData);
       
-      if (result.success) {
+      // Check if the result has a success property
+      if (result && 'success' in result && result.success) {
         setIsSuccess(true);
       } else {
-        setErrorMessage(result.message || "Failed to send confirmation email");
+        // If there's a message in the result, use it, otherwise use a default message
+        const errorMsg = result && 'message' in result ? result.message : "Failed to send confirmation email";
+        setErrorMessage(errorMsg as string);
       }
     } catch (error) {
       console.error("Email confirmation error:", error);
