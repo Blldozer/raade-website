@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
  * @param register - React Hook Form register function
  * @param setValue - React Hook Form setValue function
  * @param watch - React Hook Form watch function
+ * @param errors - Form validation errors
  */
 interface TicketTypeSelectionProps {
   register: UseFormRegister<RegistrationFormData>;

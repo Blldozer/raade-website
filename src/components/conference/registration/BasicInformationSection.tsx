@@ -1,5 +1,5 @@
 
-import { UseFormRegister } from "react-hook-form";
+import { UseFormRegister, UseFormWatch } from "react-hook-form";
 import { RegistrationFormData } from "../RegistrationFormTypes";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -15,13 +15,22 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
  * 
  * @param register - React Hook Form register function
  * @param errors - Form validation errors
+ * @param watch - React Hook Form watch function
+ * @param onEmailValidation - Callback for email validation results
  */
 interface BasicInformationSectionProps {
   register: UseFormRegister<RegistrationFormData>;
   errors: any;
+  watch?: UseFormWatch<RegistrationFormData>;
+  onEmailValidation?: (result: { isValid: boolean; message?: string }) => void;
 }
 
-const BasicInformationSection = ({ register, errors }: BasicInformationSectionProps) => {
+const BasicInformationSection = ({ 
+  register, 
+  errors, 
+  watch, 
+  onEmailValidation 
+}: BasicInformationSectionProps) => {
   return (
     <div className="space-y-4">
       <div>
