@@ -45,6 +45,7 @@ const PaymentForm = ({
   const [paymentCompleted, setPaymentCompleted] = useState(false);
   const isMountedRef = useRef(true);
   const successCalledRef = useRef(false);
+  const errorCalledRef = useRef(false); // Track if error callback has been called
   
   // Store client secret in window for access by the payment confirmation process
   useEffect(() => {
@@ -75,7 +76,17 @@ const PaymentForm = ({
         onSuccess();
       }
     },
-    onError,
+    onError: (errorMsg) => {
+      if (!errorCalledRef.current) {
+        errorCalledRef.current = true;
+        console.error(`Payment error (${requestId || 'unknown'}): ${errorMsg}`);
+        onError(errorMsg);
+        // Reset error called flag after a short delay to allow retries
+        setTimeout(() => {
+          errorCalledRef.current = false;
+        }, 2000);
+      }
+    },
     setMessage,
     requestId
   });
@@ -93,7 +104,18 @@ const PaymentForm = ({
       }
     },
     () => setMessage("Your payment is processing."),
-    (errorMsg) => setMessage(errorMsg),
+    (errorMsg) => {
+      setMessage(errorMsg);
+      if (!errorCalledRef.current) {
+        errorCalledRef.current = true;
+        console.error(`Payment error from redirect (${requestId || 'unknown'}): ${errorMsg}`);
+        onError(errorMsg);
+        // Reset error called flag after a short delay
+        setTimeout(() => {
+          errorCalledRef.current = false;
+        }, 2000);
+      }
+    },
     isMountedRef,
     successCalledRef
   );

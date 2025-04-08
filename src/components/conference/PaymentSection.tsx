@@ -8,6 +8,7 @@ import SuccessfulPayment from "./payment/SuccessfulPayment";
 import { useRegistrationStorage } from "./payment/direct/hooks/useRegistrationStorage";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
 interface PaymentSectionProps {
   registrationData: RegistrationFormData;
@@ -75,6 +76,10 @@ const PaymentSection = ({
     setProcessingFreeRegistration(true);
     
     try {
+      // Generate a request ID for tracking
+      const requestId = `free-reg-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+      console.log(`Processing free registration with coupon (${requestId})`);
+      
       // Store the registration data directly without payment
       const success = await storeRegistrationData({
         fullName: registrationData.fullName,
@@ -155,7 +160,10 @@ const PaymentSection = ({
               transition-colors duration-300"
           >
             {processingFreeRegistration ? (
-              <>Processing...</>
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processing...
+              </>
             ) : (
               <>Complete Free Registration</>
             )}

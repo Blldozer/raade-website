@@ -50,10 +50,17 @@ export const useProcessPaymentConfirmation = ({
         return { success: false, reason: "card-element-missing" };
       }
       
+      // Get the client secret from window object
+      const clientSecret = (window as any).__stripeClientSecret;
+      
+      if (!clientSecret) {
+        console.error("Client secret is missing from window object");
+        return { success: false, reason: "client-secret-missing" };
+      }
+      
       // Try to confirm payment with optimized settings to reduce rate limiting issues
       const { error, paymentIntent } = await stripe.confirmCardPayment(
-        // Using clientSecret directly here - the call with Elements wasn't working
-        (window as any).__stripeClientSecret || "",
+        clientSecret,
         {
           payment_method: {
             card: cardElement,
