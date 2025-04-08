@@ -24,3 +24,22 @@ export interface NewCouponFormData {
   is_active: boolean;
   expires_at: string; // YYYY-MM-DD format
 }
+
+// Helper type for Supabase response mapping
+export type RawCouponCodeData = {
+  id: string;
+  code: string;
+  description: string | null;
+  discount_type: string; // This is the difference - database returns string
+  discount_amount: number;
+  is_active: boolean;
+  max_uses: number | null;
+  current_uses: number;
+  created_at: string;
+  expires_at: string | null;
+};
+
+// Type guard to validate discount_type values
+export function isValidDiscountType(type: string): type is 'percentage' | 'fixed' | 'full' {
+  return ['percentage', 'fixed', 'full'].includes(type);
+}
