@@ -1,114 +1,131 @@
 
 import { useState } from "react";
-import { UseFormRegister } from "react-hook-form";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { UseFormRegister, FieldErrors, UseFormWatch } from "react-hook-form";
 import { RegistrationFormData } from "../RegistrationFormTypes";
-import { InfoIcon } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Loader2 } from "lucide-react";
 
 interface BasicInformationSectionProps {
   register: UseFormRegister<RegistrationFormData>;
-  errors: any;
+  errors: FieldErrors<RegistrationFormData>;
+  watch: UseFormWatch<RegistrationFormData>;
   onEmailValidation?: (result: { isValid: boolean; message?: string }) => void;
 }
 
 /**
  * BasicInformationSection Component
  * 
- * Renders the basic user information form fields:
- * - Name
- * - Email
- * - Organization
- * - Role
- * 
- * Includes real-time validation for required fields
+ * Collects basic attendee information for conference registration
+ * - Name, email, organization, and role fields
+ * - Includes field validation and error display
+ * - Provides live email validation
  */
 const BasicInformationSection = ({
   register,
   errors,
+  watch,
   onEmailValidation
 }: BasicInformationSectionProps) => {
   const [isValidatingEmail, setIsValidatingEmail] = useState(false);
-
-  const handleEmailBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
-    const email = e.target.value;
-    if (!email || !email.includes('@')) return;
-    
-    // For demo purposes - just validate the format
-    // In a real app, you might do more validation
-    if (onEmailValidation) {
-      onEmailValidation({
-        isValid: true,
-        message: "Email looks valid"
-      });
+  const email = watch("email");
+  
+  const handleEmailBlur = async () => {
+    if (!email || email.trim() === "" || !email.includes("@")) {
+      return;
     }
+    
+    setIsValidatingEmail(true);
+    
+    // Simple email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isValidFormat = emailRegex.test(email);
+    
+    if (!isValidFormat) {
+      setIsValidatingEmail(false);
+      if (onEmailValidation) {
+        onEmailValidation({
+          isValid: false,
+          message: "Please enter a valid email address"
+        });
+      }
+      return;
+    }
+    
+    // Just a short delay to simulate checking (in a real app, this would be an API call)
+    setTimeout(() => {
+      setIsValidatingEmail(false);
+      if (onEmailValidation) {
+        onEmailValidation({
+          isValid: true
+        });
+      }
+    }, 300);
   };
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-medium">Personal Information</h3>
+    <div className="grid gap-5">
+      <div>
+        <Label htmlFor="fullName" className="font-lora">Full Name</Label>
+        <Input
+          id="fullName"
+          placeholder="Enter your full name"
+          className="mt-1"
+          {...register("fullName")}
+        />
+        {errors.fullName && (
+          <p className="text-red-500 text-sm mt-1">{errors.fullName.message}</p>
+        )}
+      </div>
       
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor="fullName" className="font-lora">Full Name</Label>
-          <Input
-            id="fullName"
-            placeholder="Your full name"
-            {...register("fullName")}
-            className={errors.fullName ? "border-red-500" : ""}
-          />
-          {errors.fullName && (
-            <p className="text-sm text-red-500">{errors.fullName.message}</p>
-          )}
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="email" className="font-lora">Email Address</Label>
+      <div>
+        <Label htmlFor="email" className="font-lora">Email</Label>
+        <div className="relative mt-1">
           <Input
             id="email"
             type="email"
-            placeholder="your.email@example.com"
+            placeholder="Enter your email address"
+            className={`pr-9 ${errors.email ? 'border-red-500' : ''}`}
             {...register("email")}
             onBlur={handleEmailBlur}
-            className={errors.email ? "border-red-500" : ""}
           />
-          {errors.email && (
-            <p className="text-sm text-red-500">{errors.email.message}</p>
+          {isValidatingEmail && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+              <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+            </div>
           )}
         </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="organization" className="font-lora">Organization/University</Label>
-          <Input
-            id="organization"
-            placeholder="Your organization or university"
-            {...register("organization")}
-            className={errors.organization ? "border-red-500" : ""}
-          />
-          {errors.organization && (
-            <p className="text-sm text-red-500">{errors.organization.message}</p>
-          )}
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="role" className="font-lora">Role/Major</Label>
-          <Input
-            id="role"
-            placeholder="Your professional role or major"
-            {...register("role")}
-            className={errors.role ? "border-red-500" : ""}
-          />
-          {errors.role && (
-            <p className="text-sm text-red-500">{errors.role.message}</p>
-          )}
-        </div>
+        {errors.email && (
+          <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+        )}
       </div>
       
-      <div className="text-sm text-gray-500 flex items-start gap-2">
-        <InfoIcon className="h-4 w-4 mt-0.5 flex-shrink-0" />
-        <p>
-          Your personal information is only used for conference communication and won't be shared with third parties.
-        </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-5">
+        <div>
+          <Label htmlFor="organization" className="font-lora">Organization</Label>
+          <Input
+            id="organization"
+            placeholder="University or company name"
+            className="mt-1"
+            {...register("organization")}
+          />
+          {errors.organization && (
+            <p className="text-red-500 text-sm mt-1">{errors.organization.message}</p>
+          )}
+        </div>
+        
+        <div>
+          <Label htmlFor="role" className="font-lora">Role</Label>
+          <Input
+            id="role"
+            placeholder="Student, Professor, Professional, etc."
+            className="mt-1"
+            {...register("role")}
+          />
+          {errors.role && (
+            <p className="text-red-500 text-sm mt-1">{errors.role.message}</p>
+          )}
+        </div>
       </div>
     </div>
   );

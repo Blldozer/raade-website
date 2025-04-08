@@ -1,13 +1,13 @@
 
 import { UseFormRegister, FormState, UseFormSetValue, UseFormWatch, Control } from "react-hook-form";
-import { RegistrationFormData } from "./RegistrationFormTypes";
-import TicketTypeSelection from "./registration/TicketTypeSelection";
-import SpecialRequests from "./registration/SpecialRequests";
-import BasicInformationSection from "./registration/BasicInformationSection";
-import GroupRegistrationSection from "./registration/GroupRegistrationSection";
-import ReferralSourceSection from "./registration/ReferralSourceSection";
-import CouponCodeInput from "./registration/CouponCodeInput";
-import { useGroupSizeReset } from "./registration/useGroupSizeReset";
+import { RegistrationFormData } from "../RegistrationFormTypes";
+import TicketTypeSelection from "./TicketTypeSelection";
+import SpecialRequests from "./SpecialRequests";
+import BasicInformationSection from "./BasicInformationSection";
+import GroupRegistrationSection from "./GroupRegistrationSection";
+import ReferralSourceSection from "./ReferralSourceSection";
+import CouponCodeInput from "./CouponCodeInput";
+import { useGroupSizeReset } from "./useGroupSizeReset";
 
 interface RegistrationFormFieldsProps {
   register: UseFormRegister<RegistrationFormData>;
@@ -55,6 +55,7 @@ const RegistrationFormFields = ({
       <TicketTypeSelection 
         watch={watch} 
         setValue={setValue} 
+        register={register}
         errors={errors} 
       />
       
@@ -62,6 +63,8 @@ const RegistrationFormFields = ({
         watch={watch}
         setValue={setValue}
         control={control}
+        register={register}
+        errors={errors}
       />
 
       <ReferralSourceSection 

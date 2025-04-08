@@ -1,121 +1,140 @@
 
-import { useState } from "react";
-import { UseFormRegister, UseFormSetValue, UseFormWatch, Control, useFieldArray } from "react-hook-form";
+import { useEffect } from "react";
+import { Control, UseFormWatch, UseFormSetValue } from "react-hook-form";
+import { RegistrationFormData, TICKET_TYPES_ENUM } from "../RegistrationFormTypes";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { RegistrationFormData, TICKET_TYPES_ENUM } from "../RegistrationFormTypes";
-import { PlusCircle, Trash2, UserIcon } from "lucide-react";
+import { Controller } from "react-hook-form";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
+import { X } from "lucide-react";
 
 interface GroupRegistrationSectionProps {
-  register: UseFormRegister<RegistrationFormData>;
   watch: UseFormWatch<RegistrationFormData>;
   setValue: UseFormSetValue<RegistrationFormData>;
   control: Control<RegistrationFormData>;
-  errors: any;
+  register: UseFormWatch<RegistrationFormData>;
+  errors: FieldErrors<RegistrationFormData>;
 }
 
 /**
  * GroupRegistrationSection Component
  * 
- * Handles the collection of email addresses for group registrations:
- * - Dynamically adds input fields based on group size
- * - Validates email formats
- * - Allows removal of individual emails
- * - Only displays when group ticket type is selected
+ * Handles group registration for conference attendance:
+ * - Collects group size and member email addresses
+ * - Shows only for student-group ticket type
+ * - Dynamically manages email input fields based on group size
+ * - Validates group member email addresses
  */
 const GroupRegistrationSection = ({
-  register,
   watch,
   setValue,
-  control,
-  errors
+  control
 }: GroupRegistrationSectionProps) => {
   const ticketType = watch("ticketType");
   const groupSize = watch("groupSize");
+  const groupEmails = watch("groupEmails") || [];
   
-  // Use field array to handle dynamic group email inputs
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "groupEmails",
-  });
-  
-  // Only show group registration section for student-group ticket type
-  if (ticketType !== TICKET_TYPES_ENUM.STUDENT_GROUP || !groupSize || groupSize < 3) {
+  // Only show for student group ticket type
+  if (ticketType !== TICKET_TYPES_ENUM.STUDENT_GROUP) {
     return null;
   }
   
-  // Calculate how many additional members needed (excluding the registrant)
-  const additionalMembersNeeded = groupSize - 1;
-  const currentMemberCount = fields.length;
-  
-  // Add empty inputs if needed based on group size
-  if (currentMemberCount < additionalMembersNeeded) {
-    const missingCount = additionalMembersNeeded - currentMemberCount;
-    for (let i = 0; i < missingCount; i++) {
-      append({ email: "" });
+  // Update the group email array when group size changes
+  useEffect(() => {
+    if (groupSize && groupSize > 0) {
+      // Get the current emails array
+      const currentEmails = groupEmails || [];
+      
+      // If group size is increased, add empty slots
+      if (currentEmails.length < groupSize - 1) {
+        const newEmails = [...currentEmails];
+        
+        // Add empty slots until we have group size - 1 (one for the main registrant)
+        for (let i = currentEmails.length; i < groupSize - 1; i++) {
+          newEmails.push({ email: "" });
+        }
+        
+        setValue("groupEmails", newEmails);
+      } 
+      // If group size is decreased, remove excess slots
+      else if (currentEmails.length > groupSize - 1 && groupSize > 1) {
+        setValue("groupEmails", currentEmails.slice(0, groupSize - 1));
+      }
     }
-  }
-  
+  }, [groupSize, setValue, groupEmails]);
+
   return (
-    <div className="space-y-4 p-4 border border-blue-100 bg-blue-50 rounded-md dark:border-blue-900 dark:bg-blue-900/20">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-medium">Group Member Information</h3>
-        <span className="text-sm text-gray-500">
-          {fields.length} of {additionalMembersNeeded} members added
-        </span>
-      </div>
-      
-      <p className="text-sm text-gray-600 dark:text-gray-300">
-        Please provide the email addresses of all group members. Each member will receive their own registration confirmation.
-      </p>
-      
-      <div className="space-y-3">
-        {fields.map((field, index) => (
-          <div key={field.id} className="flex items-center gap-2">
-            <div className="w-6 text-gray-400 text-right">
-              {index + 1}.
-            </div>
-            <div className="flex-1">
-              <Input
-                placeholder={`Group member ${index + 1} email`}
-                type="email"
-                {...register(`groupEmails.${index}.email` as const)}
-                className={
-                  errors.groupEmails?.[index]?.email ? "border-red-500" : ""
-                }
-              />
-              {errors.groupEmails?.[index]?.email && (
-                <p className="text-sm text-red-500 mt-1">
-                  {errors.groupEmails[index].email.message}
-                </p>
+    <Card className="bg-gray-50 dark:bg-gray-800/50">
+      <CardContent className="pt-6">
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold mb-2">Group Registration Details</h3>
+          
+          <div>
+            <Label htmlFor="groupSize" className="font-lora mb-1 block">Group Size</Label>
+            <Controller
+              name="groupSize"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  value={field.value?.toString() || "5"}
+                  onValueChange={(value) => field.onChange(parseInt(value))}
+                >
+                  <SelectTrigger id="groupSize" className="w-full md:w-40">
+                    <SelectValue placeholder="Select size" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: 16 }, (_, i) => i + 5).map((num) => (
+                      <SelectItem key={num} value={num.toString()}>
+                        {num} people
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               )}
-            </div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                remove(index);
-                // Append a new empty email at the end to maintain the count
-                append({ email: "" });
-              }}
-              aria-label={`Remove member ${index + 1}`}
-            >
-              <Trash2 className="h-4 w-4 text-gray-500" />
-            </Button>
+            />
           </div>
-        ))}
-      </div>
-      
-      <div className="text-sm text-gray-500 flex items-start gap-2 mt-2">
-        <UserIcon className="h-4 w-4 mt-0.5 flex-shrink-0" />
-        <p>
-          You are included as the group leader and will be the main contact for this registration.
-        </p>
-      </div>
-    </div>
+          
+          {groupSize && groupSize > 1 && (
+            <div className="space-y-3">
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
+                Please provide the email addresses of all group members. You'll be the group leader.
+              </p>
+              
+              {Array.from({ length: groupSize - 1 }, (_, index) => (
+                <div key={index} className="relative">
+                  <Label htmlFor={`groupEmail-${index}`} className="sr-only">
+                    Group Member {index + 1} Email
+                  </Label>
+                  <Controller
+                    name={`groupEmails.${index}.email`}
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        id={`groupEmail-${index}`}
+                        type="email"
+                        placeholder={`Member ${index + 1} email address`}
+                        {...field}
+                      />
+                    )}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
+
+// Import the missing FieldErrors type
+import { FieldErrors } from "react-hook-form";
 
 export default GroupRegistrationSection;

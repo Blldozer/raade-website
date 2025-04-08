@@ -1,162 +1,128 @@
 
-import { CouponValidationResult } from "../../RegistrationFormTypes";
 import { supabase } from "@/integrations/supabase/client";
 
 /**
- * Validates a coupon code against the database
+ * Interface for coupon validation result
+ */
+export interface CouponValidationResult {
+  isValid: boolean;
+  message?: string;
+  discountAmount?: number;
+  discountType?: "fixed" | "percentage";
+}
+
+/**
+ * Coupon Service
  * 
- * Checks if:
- * - The coupon exists
- * - It's not expired
- * - It hasn't reached its usage limit
- * - It's applicable to the current sale
- * 
- * @param code - The coupon code to validate
- * @returns A validation result object with status and details
+ * Handles coupon code validation and usage tracking:
+ * - Validates coupon codes against database
+ * - Checks expiration and usage limits
+ * - Calculates discount values based on coupon type
+ * - Updates coupon usage count after successful payments
  */
 export const validateCouponCode = async (code: string): Promise<CouponValidationResult> => {
-  // Handle empty codes
   if (!code || code.trim() === "") {
     return {
       isValid: false,
-      message: "Please enter a coupon code"
+      message: "Please enter a valid coupon code"
     };
   }
-  
-  try {
-    // Format code for consistent validation (uppercase, trimmed)
-    const formattedCode = code.trim().toUpperCase();
-    
-    // Check against hardcoded coupon codes for testing/demo
-    if (formattedCode === "RAADE2025") {
-      return {
-        isValid: true,
-        message: "15% discount applied!",
-        discountAmount: 15,
-        discountType: "percentage"
-      };
-    }
-    
-    if (formattedCode === "EARLYBIRD") {
-      return {
-        isValid: true,
-        message: "20% early bird discount applied!",
-        discountAmount: 20,
-        discountType: "percentage"
-      };
-    }
-    
-    if (formattedCode === "VIP100") {
-      return {
-        isValid: true,
-        message: "You've received a free registration!",
-        discountAmount: 100,
-        discountType: "percentage"
-      };
-    }
-    
-    // For demo/testing - all other codes that start with TEST are valid with 10% off
-    if (formattedCode.startsWith("TEST")) {
-      return {
-        isValid: true,
-        message: "Test coupon applied (10% off)",
-        discountAmount: 10,
-        discountType: "percentage"
-      };
-    }
 
-    // Query the database for the coupon code
+  try {
+    // Query the coupons table for the provided code
     const { data: coupon, error } = await supabase
-      .from('coupon_codes')
-      .select('*')
-      .eq('code', formattedCode)
+      .from("coupons")
+      .select("*")
+      .eq("code", code.trim().toUpperCase())
       .single();
-      
+
     if (error) {
-      console.error("Error checking coupon:", error);
+      console.error("Error validating coupon:", error);
       return {
         isValid: false,
         message: "Invalid coupon code"
       };
     }
-    
+
     if (!coupon) {
       return {
         isValid: false,
         message: "Coupon not found"
       };
     }
-    
-    // Check if coupon is expired
-    const now = new Date();
-    if (coupon.expiry_date && new Date(coupon.expiry_date) < now) {
+
+    // Check if the coupon is active
+    if (!coupon.is_active) {
       return {
         isValid: false,
-        message: "This coupon has expired"
+        message: "This coupon is no longer active"
       };
     }
-    
-    // Check if max uses is exceeded
-    if (coupon.max_uses && coupon.uses >= coupon.max_uses) {
+
+    // Check if the coupon has expired
+    if (coupon.expires_at) {
+      const expiryDate = new Date(coupon.expires_at);
+      if (expiryDate < new Date()) {
+        return {
+          isValid: false,
+          message: "This coupon has expired"
+        };
+      }
+    }
+
+    // Check if the coupon has reached its usage limit
+    if (coupon.max_uses && coupon.current_uses >= coupon.max_uses) {
       return {
         isValid: false,
         message: "This coupon has reached its usage limit"
       };
     }
+
+    // Process the discount amount based on the type
+    const discountType = coupon.discount_type as "fixed" | "percentage";
+    let discountAmount = coupon.discount_amount;
+
+    // For percentage discounts, return the percentage value directly
+    // The frontend will apply it to the appropriate price
     
-    // Valid coupon!
     return {
       isValid: true,
-      message: coupon.description || `${coupon.discount_amount}% discount applied!`,
-      discountAmount: coupon.discount_amount,
-      discountType: coupon.discount_type || "percentage"
+      discountAmount,
+      discountType
     };
-    
   } catch (error) {
     console.error("Error validating coupon:", error);
     return {
       isValid: false,
-      message: "Failed to validate coupon"
+      message: "An error occurred while validating your coupon"
     };
   }
 };
 
 /**
- * Increments the usage count for a coupon code
+ * Increments the usage count for a coupon
  * 
- * @param code - The coupon code that was used
- * @returns Success status
+ * Called after successful payment to track coupon usage
+ * 
+ * @param code The coupon code to increment usage for
+ * @returns A boolean indicating success or failure
  */
 export const incrementCouponUsage = async (code: string): Promise<boolean> => {
   if (!code || code.trim() === "") {
     return false;
   }
-  
+
   try {
-    // Format code for consistent tracking
-    const formattedCode = code.trim().toUpperCase();
-    
-    // For hardcoded test coupons, just return success
-    if (
-      formattedCode === "RAADE2025" || 
-      formattedCode === "EARLYBIRD" || 
-      formattedCode === "VIP100" || 
-      formattedCode.startsWith("TEST")
-    ) {
-      console.log(`Usage for test coupon ${formattedCode} would be incremented`);
-      return true;
-    }
-    
-    // For real coupons, update the database
-    const { data, error } = await supabase.rpc('increment_coupon_usage', { 
-      coupon_code: formattedCode 
+    // Call the RPC function to increment the coupon usage
+    const { error } = await supabase.rpc("increment_coupon_usage", {
+      code_param: code.trim().toUpperCase()
     });
-    
+
     if (error) {
       console.error("Error incrementing coupon usage:", error);
       return false;
     }
-    
+
     return true;
   } catch (error) {
     console.error("Error incrementing coupon usage:", error);
