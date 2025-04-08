@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Clock } from 'lucide-react';
 import { useCountdown } from '../countdown/useCountdown';
 import { formatTimeUnit } from '../countdown/timerUtils';
@@ -17,7 +16,8 @@ import { formatTimeUnit } from '../countdown/timerUtils';
  */
 const SaleCountdown = () => {
   // Fixed end date: April 8, 2025, 4:00 PM CST
-  const SALE_END_DATE = new Date('2025-04-08T16:00:00-05:00'); // CST is UTC-5
+  // Using useMemo to prevent creating a new Date object on every render
+  const SALE_END_DATE = useMemo(() => new Date('2025-04-08T16:00:00-05:00'), []); // CST is UTC-5
 
   // Use our existing countdown hook to get the time remaining
   const timeLeft = useCountdown(SALE_END_DATE);

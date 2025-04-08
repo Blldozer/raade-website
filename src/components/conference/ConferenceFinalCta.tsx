@@ -45,7 +45,7 @@ const ConferenceFinalCta = () => {
                 
                 <div className="bg-white/10 p-4 rounded-lg border-l-4 border-[#FBB03B] mt-4">
                   <p className="font-bold text-[#FBB03B]">Limited seats available!</p>
-                  <p className="text-white/80">Early bird registration closes in 3 weeks.</p>
+                  <p className="text-white/80">Tickets currently on sale</p>
                 </div>
               </div>
               
