@@ -1,5 +1,5 @@
 
-import { RegistrationFormData, calculateTotalPrice } from "./RegistrationFormTypes";
+import { RegistrationFormData } from "./RegistrationFormTypes";
 
 interface RegistrationSummaryProps {
   registrationData: RegistrationFormData;
@@ -20,7 +20,21 @@ const RegistrationSummary = ({
   couponDiscount = 0
 }: RegistrationSummaryProps) => {
   const isGroupRegistration = registrationData.ticketType === "student-group";
-  const basePrice = calculateTotalPrice(registrationData.ticketType, registrationData.groupSize);
+  
+  // Calculate the base price based on registration data
+  const getBasePrice = () => {
+    const ticketPrice = 
+      registrationData.ticketType === "student" ? 25 :
+      registrationData.ticketType === "professional" ? 50 : 20;
+    
+    if (isGroupRegistration && registrationData.groupSize) {
+      return ticketPrice * registrationData.groupSize;
+    }
+    
+    return ticketPrice;
+  };
+  
+  const basePrice = getBasePrice();
   
   // Calculate the discounted price if a coupon is applied
   const discountAmount = basePrice * (couponDiscount / 100);

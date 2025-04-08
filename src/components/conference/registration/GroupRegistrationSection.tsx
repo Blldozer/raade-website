@@ -1,6 +1,6 @@
 
 import { useEffect } from "react";
-import { Control, UseFormWatch, UseFormSetValue } from "react-hook-form";
+import { Control, UseFormWatch, UseFormSetValue, UseFormRegister, FieldErrors } from "react-hook-form";
 import { RegistrationFormData, TICKET_TYPES_ENUM } from "../RegistrationFormTypes";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -19,7 +19,7 @@ interface GroupRegistrationSectionProps {
   watch: UseFormWatch<RegistrationFormData>;
   setValue: UseFormSetValue<RegistrationFormData>;
   control: Control<RegistrationFormData>;
-  register: UseFormWatch<RegistrationFormData>;
+  register: UseFormRegister<RegistrationFormData>;
   errors: FieldErrors<RegistrationFormData>;
 }
 
@@ -35,7 +35,9 @@ interface GroupRegistrationSectionProps {
 const GroupRegistrationSection = ({
   watch,
   setValue,
-  control
+  control,
+  register,
+  errors
 }: GroupRegistrationSectionProps) => {
   const ticketType = watch("ticketType");
   const groupSize = watch("groupSize");
@@ -133,8 +135,5 @@ const GroupRegistrationSection = ({
     </Card>
   );
 };
-
-// Import the missing FieldErrors type
-import { FieldErrors } from "react-hook-form";
 
 export default GroupRegistrationSection;

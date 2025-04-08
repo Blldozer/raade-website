@@ -1,13 +1,13 @@
 
 import { UseFormRegister, FormState, UseFormSetValue, UseFormWatch, Control } from "react-hook-form";
-import { RegistrationFormData } from "@/components/conference/RegistrationFormTypes";
-import TicketTypeSelection from "@/components/conference/registration/TicketTypeSelection";
-import SpecialRequests from "@/components/conference/registration/SpecialRequests";
-import BasicInformationSection from "@/components/conference/registration/BasicInformationSection";
-import GroupRegistrationSection from "@/components/conference/registration/GroupRegistrationSection";
-import ReferralSourceSection from "@/components/conference/registration/ReferralSourceSection";
-import CouponCodeInput from "@/components/conference/registration/CouponCodeInput";
-import { useGroupSizeReset } from "@/components/conference/registration/useGroupSizeReset";
+import { RegistrationFormData } from "./RegistrationFormTypes";
+import TicketTypeSelection from "./registration/TicketTypeSelection";
+import SpecialRequests from "./registration/SpecialRequests";
+import BasicInformationSection from "./registration/BasicInformationSection";
+import GroupRegistrationSection from "./registration/GroupRegistrationSection";
+import ReferralSourceSection from "./registration/ReferralSourceSection";
+import CouponCodeInput from "./registration/CouponCodeInput";
+import { useGroupSizeReset } from "./registration/useGroupSizeReset";
 
 interface RegistrationFormFieldsProps {
   register: UseFormRegister<RegistrationFormData>;
@@ -48,6 +48,7 @@ const RegistrationFormFields = ({
       <BasicInformationSection 
         register={register} 
         errors={errors} 
+        watch={watch}
         onEmailValidation={onEmailValidation}
       />
       

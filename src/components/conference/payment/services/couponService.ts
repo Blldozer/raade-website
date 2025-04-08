@@ -1,5 +1,5 @@
 
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 
 /**
  * Interface for coupon validation result
@@ -29,9 +29,9 @@ export const validateCouponCode = async (code: string): Promise<CouponValidation
   }
 
   try {
-    // Query the coupons table for the provided code
+    // Query the coupon_codes table for the provided code
     const { data: coupon, error } = await supabase
-      .from("coupons")
+      .from("coupon_codes")
       .select("*")
       .eq("code", code.trim().toUpperCase())
       .single();
@@ -113,10 +113,11 @@ export const incrementCouponUsage = async (code: string): Promise<boolean> => {
   }
 
   try {
-    // Call the RPC function to increment the coupon usage
-    const { error } = await supabase.rpc("increment_coupon_usage", {
-      code_param: code.trim().toUpperCase()
-    });
+    // Update the coupon usage directly with SQL
+    const { error } = await supabase
+      .from('coupon_codes')
+      .update({ current_uses: supabase.rpc('get_current_uses', { code_param: code }) + 1 })
+      .eq('code', code.trim().toUpperCase());
 
     if (error) {
       console.error("Error incrementing coupon usage:", error);
