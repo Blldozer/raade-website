@@ -1,13 +1,14 @@
 
+import { UseFormWatch, UseFormSetValue } from "react-hook-form";
 import { useEffect } from "react";
-import { UseFormSetValue, UseFormWatch } from "react-hook-form";
-import { RegistrationFormData, TICKET_TYPES_ENUM } from "../RegistrationFormTypes";
+import { RegistrationFormData } from "../RegistrationFormTypes";
 
 /**
- * Custom hook to manage group size reset logic
+ * Custom hook to handle group size logic
  * 
- * Resets group size and emails when ticket type changes
- * Sets default group size when selecting student group ticket
+ * This hook ensures that:
+ * - When ticket type is not "student-group", groupSize is undefined
+ * - Group emails array size matches the selected group size
  * 
  * @param watch - React Hook Form watch function
  * @param setValue - React Hook Form setValue function
@@ -16,18 +17,14 @@ export const useGroupSizeReset = (
   watch: UseFormWatch<RegistrationFormData>,
   setValue: UseFormSetValue<RegistrationFormData>
 ) => {
-  const watchTicketType = watch("ticketType");
-  const isStudentGroup = watchTicketType === TICKET_TYPES_ENUM.STUDENT_GROUP;
+  const ticketType = watch("ticketType");
+  const groupSize = watch("groupSize");
   
   useEffect(() => {
-    // Reset group size when ticket type changes
-    if (!isStudentGroup) {
+    // If ticket type is not student-group, reset group size
+    if (ticketType !== "student-group" && groupSize !== undefined) {
       setValue("groupSize", undefined);
       setValue("groupEmails", []);
-    } else if (!watch("groupSize")) {
-      setValue("groupSize", 5); // Default group size
     }
-  }, [watchTicketType, setValue, isStudentGroup, watch]);
-
-  return { isStudentGroup };
+  }, [ticketType, groupSize, setValue]);
 };

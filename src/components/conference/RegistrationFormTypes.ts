@@ -1,3 +1,4 @@
+
 import { z } from "zod";
 
 // Define the allowed ticket types

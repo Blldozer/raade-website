@@ -119,15 +119,29 @@ export const incrementCouponUsage = async (code: string): Promise<boolean> => {
   if (!code) return false;
   
   try {
-    // Instead of using RPC, we'll do a direct update since the function doesn't exist
-    const { data, error } = await supabase
+    // Use simple update with incremented value instead of RPC since that's causing type errors
+    const { data: couponData, error: fetchError } = await supabase
       .from("coupon_codes")
-      .update({ current_uses: supabase.rpc('increment', { column_name: 'current_uses' }) })
+      .select("current_uses")
       .eq("code", code.trim().toUpperCase())
-      .select("current_uses");
+      .single();
+      
+    if (fetchError) {
+      console.error("Error fetching coupon for update:", fetchError);
+      return false;
+    }
     
-    if (error) {
-      console.error("Error incrementing coupon usage:", error);
+    // Calculate new usage count
+    const newUsageCount = (couponData?.current_uses || 0) + 1;
+    
+    // Update with the new count
+    const { error: updateError } = await supabase
+      .from("coupon_codes")
+      .update({ current_uses: newUsageCount })
+      .eq("code", code.trim().toUpperCase());
+      
+    if (updateError) {
+      console.error("Error incrementing coupon usage:", updateError);
       return false;
     }
     
@@ -137,4 +151,3 @@ export const incrementCouponUsage = async (code: string): Promise<boolean> => {
     return false;
   }
 };
-

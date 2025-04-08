@@ -167,7 +167,7 @@ export const useCardPayment = (
           groupSize: paymentData.groupSize,
           groupEmails: processedGroupEmails,
           paymentComplete: true,
-          // Add these new properties, but make sure storeRegistrationData supports them
+          // Add these new properties for coupon handling
           couponApplied: !!paymentData.couponCode,
           couponCode: paymentData.couponCode,
           couponDiscount: paymentData.couponDiscount
