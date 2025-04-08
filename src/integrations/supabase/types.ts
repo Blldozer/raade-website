@@ -29,6 +29,7 @@ export type Database = {
       }
       conference_registrations: {
         Row: {
+          coupon_code: string | null
           created_at: string
           dietary_requirements: string | null
           email: string
@@ -37,6 +38,7 @@ export type Database = {
           full_name: string
           id: string
           organization: string
+          payment_method: string | null
           role: string
           special_requests: string | null
           status: string
@@ -45,6 +47,7 @@ export type Database = {
           verification_method: string | null
         }
         Insert: {
+          coupon_code?: string | null
           created_at?: string
           dietary_requirements?: string | null
           email: string
@@ -53,6 +56,7 @@ export type Database = {
           full_name: string
           id?: string
           organization: string
+          payment_method?: string | null
           role: string
           special_requests?: string | null
           status?: string
@@ -61,6 +65,7 @@ export type Database = {
           verification_method?: string | null
         }
         Update: {
+          coupon_code?: string | null
           created_at?: string
           dietary_requirements?: string | null
           email?: string
@@ -69,12 +74,100 @@ export type Database = {
           full_name?: string
           id?: string
           organization?: string
+          payment_method?: string | null
           role?: string
           special_requests?: string | null
           status?: string
           ticket_type?: string
           updated_at?: string
           verification_method?: string | null
+        }
+        Relationships: []
+      }
+      coupon_codes: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          current_uses: number
+          description: string | null
+          discount_amount: number | null
+          discount_type: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          max_uses: number | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          current_uses?: number
+          description?: string | null
+          discount_amount?: number | null
+          discount_type: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          current_uses?: number
+          description?: string | null
+          discount_amount?: number | null
+          discount_type?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+        }
+        Relationships: []
+      }
+      donations: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          donation_type: string
+          donor_email: string | null
+          donor_name: string | null
+          id: string
+          is_anonymous: boolean
+          message: string | null
+          payment_intent_id: string | null
+          payment_status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          donation_type: string
+          donor_email?: string | null
+          donor_name?: string | null
+          id?: string
+          is_anonymous?: boolean
+          message?: string | null
+          payment_intent_id?: string | null
+          payment_status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          donation_type?: string
+          donor_email?: string | null
+          donor_name?: string | null
+          id?: string
+          is_anonymous?: boolean
+          message?: string | null
+          payment_intent_id?: string | null
+          payment_status?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -328,9 +421,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_current_uses: {
+        Args: { coupon_code_param: string }
+        Returns: number
+      }
       has_role: {
         Args: { _role: Database["public"]["Enums"]["app_role"] }
         Returns: boolean
+      }
+      increment_coupon_usage: {
+        Args: { coupon_code_param: string }
+        Returns: number
       }
       is_admin: {
         Args: Record<PropertyKey, never>
