@@ -4,232 +4,251 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client"; // Import the existing Supabase client
+import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { createClient } from "@supabase/supabase-js";
+import { createSupabaseClient } from "@/integrations/supabase/client";
 
-// Define preset donation amounts
-const DONATION_PRESETS = [25, 50, 100, 250, 500];
-
-// Create validation schema for donation form
-const donationSchema = z.object({
-  fullName: z.string().min(2, "Full name is required"),
-  email: z.string().email("Please enter a valid email address"),
-  amount: z.coerce.number().min(1, "Donation amount must be at least $1"),
+// Define form schema for validation
+const donationFormSchema = z.object({
+  fullName: z.string().min(2, "Please enter your name"),
+  email: z.string().email("Please enter a valid email"),
+  amount: z.number().min(1, "Amount must be at least $1"),
   message: z.string().optional(),
 });
 
-type DonationFormValues = z.infer<typeof donationSchema>;
+type DonationFormValues = z.infer<typeof donationFormSchema>;
+
+// Predefined donation amounts
+const DONATION_AMOUNTS = [25, 50, 100, 250, 500, 1000];
 
 interface DonationFormProps {
   selectedAmount: number | null;
-  setSelectedAmount: React.Dispatch<React.SetStateAction<number | null>>;
+  setSelectedAmount: (amount: number | null) => void;
 }
 
 /**
  * DonationForm Component
  * 
- * Provides a form for users to make donations with preset amounts
- * and custom amount options
+ * A form for collecting donation information:
+ * - Allows selection of predefined amounts or custom amount
+ * - Collects donor information
+ * - Handles form validation and submission
+ * - Updated with $1000 donation option
+ * - Processes payment via Stripe
  * 
  * @param selectedAmount - Currently selected donation amount
- * @param setSelectedAmount - Function to update selected amount
+ * @param setSelectedAmount - Function to update the selected amount
  */
 const DonationForm = ({ selectedAmount, setSelectedAmount }: DonationFormProps) => {
+  const [isCustomAmount, setIsCustomAmount] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  
-  // Initialize form with react-hook-form
-  const form = useForm<DonationFormValues>({
-    resolver: zodResolver(donationSchema),
+  const supabase = createSupabaseClient();
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<DonationFormValues>({
+    resolver: zodResolver(donationFormSchema),
     defaultValues: {
-      fullName: "",
-      email: "",
-      amount: selectedAmount || 50,
-      message: "",
+      amount: selectedAmount || undefined,
     },
   });
-  
-  // Update amount in form when preset amount is selected
+
+  // Helper function to handle amount selection
   const handleAmountSelect = (amount: number) => {
     setSelectedAmount(amount);
-    form.setValue("amount", amount);
+    setValue("amount", amount);
+    setIsCustomAmount(false);
   };
-  
+
+  // Helper function to toggle custom amount input
+  const handleCustomAmount = () => {
+    setIsCustomAmount(true);
+    setValue("amount", undefined);
+    setSelectedAmount(null);
+  };
+
   // Handle form submission
   const onSubmit = async (data: DonationFormValues) => {
     setIsSubmitting(true);
-    
+
     try {
-      // Call the Supabase Edge Function to create a Stripe checkout session
-      const { data: checkoutData, error } = await supabase.functions.invoke('create-donation-session', {
-        body: { 
+      // Call the Edge Function to create a Stripe checkout session
+      const { data: sessionData, error } = await supabase.functions.invoke("create-donation-session", {
+        body: {
           amount: data.amount,
           fullName: data.fullName,
           email: data.email,
-          message: data.message || ""
-        }
+          message: data.message || "",
+        },
       });
-      
+
       if (error) {
         throw new Error(error.message);
       }
-      
-      // Redirect to Stripe Checkout
-      if (checkoutData?.url) {
-        window.location.href = checkoutData.url;
-      } else {
-        throw new Error("No checkout URL received");
+
+      if (!sessionData?.url) {
+        throw new Error("Failed to create checkout session");
       }
-    } catch (error: any) {
+
+      // Redirect to Stripe Checkout
+      window.location.href = sessionData.url;
+    } catch (error) {
       console.error("Donation error:", error);
       toast({
-        title: "Error processing donation",
-        description: error.message || "Please try again later",
+        title: "Error",
+        description: error.message || "Failed to process donation. Please try again.",
         variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
     }
   };
-  
+
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
-      <h3 className="text-2xl font-simula text-[#274675] mb-6">Make a Donation</h3>
-      
-      {/* Donation amount presets */}
+    <form onSubmit={handleSubmit(onSubmit)} className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm h-full flex flex-col">
+      <h3 className="text-2xl font-simula mb-4 text-gray-900">Make a Donation</h3>
+
+      {/* Donation amount selection */}
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <Label htmlFor="amount" className="block mb-2 font-medium">
           Select Amount
-        </label>
-        <div className="grid grid-cols-3 gap-2">
-          {DONATION_PRESETS.map((amount) => (
+        </Label>
+        <div className="grid grid-cols-3 gap-2 mb-2">
+          {DONATION_AMOUNTS.map((amount) => (
             <Button
               key={amount}
               type="button"
-              variant={selectedAmount === amount ? "default" : "outline"}
+              variant={selectedAmount === amount && !isCustomAmount ? "default" : "outline"}
               className={`${
-                selectedAmount === amount
-                  ? "bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white"
+                selectedAmount === amount && !isCustomAmount
+                  ? "bg-[#274675] hover:bg-[#274675]/90 text-white"
                   : "border-[#274675] text-[#274675] hover:bg-[#274675]/10"
-              } font-lora transition-all duration-200`}
+              }`}
               onClick={() => handleAmountSelect(amount)}
             >
               ${amount}
             </Button>
           ))}
-          <Button
-            type="button"
-            variant={!DONATION_PRESETS.includes(selectedAmount || 0) ? "default" : "outline"}
-            className={`${
-              !DONATION_PRESETS.includes(selectedAmount || 0)
-                ? "bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white"
-                : "border-[#274675] text-[#274675] hover:bg-[#274675]/10"
-            } font-lora col-span-3 transition-all duration-200`}
-          >
-            Custom Amount
-          </Button>
+        </div>
+        <Button
+          type="button"
+          variant={isCustomAmount ? "default" : "outline"}
+          className={`w-full mt-2 ${
+            isCustomAmount
+              ? "bg-[#274675] hover:bg-[#274675]/90 text-white"
+              : "border-[#274675] text-[#274675] hover:bg-[#274675]/10"
+          }`}
+          onClick={handleCustomAmount}
+        >
+          Custom Amount
+        </Button>
+        
+        {isCustomAmount && (
+          <div className="mt-3">
+            <Label htmlFor="custom-amount" className="sr-only">
+              Custom Amount
+            </Label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span className="text-gray-500 sm:text-sm">$</span>
+              </div>
+              <Input
+                id="custom-amount"
+                type="number"
+                min="1"
+                step="any"
+                className="pl-7 pr-12"
+                placeholder="Enter amount"
+                {...register("amount", { valueAsNumber: true })}
+                onChange={(e) => {
+                  const value = parseFloat(e.target.value);
+                  if (!isNaN(value)) {
+                    setSelectedAmount(value);
+                  } else {
+                    setSelectedAmount(null);
+                  }
+                }}
+              />
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <span className="text-gray-500 sm:text-sm">USD</span>
+              </div>
+            </div>
+            {errors.amount && (
+              <p className="mt-1 text-sm text-red-600">{errors.amount.message}</p>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Personal information */}
+      <div className="space-y-4">
+        <div>
+          <Label htmlFor="fullName" className="block mb-2 font-medium">
+            Full Name
+          </Label>
+          <Input
+            id="fullName"
+            type="text"
+            {...register("fullName")}
+          />
+          {errors.fullName && (
+            <p className="mt-1 text-sm text-red-600">{errors.fullName.message}</p>
+          )}
+        </div>
+
+        <div>
+          <Label htmlFor="email" className="block mb-2 font-medium">
+            Email Address
+          </Label>
+          <Input
+            id="email"
+            type="email"
+            {...register("email")}
+          />
+          {errors.email && (
+            <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+          )}
+        </div>
+
+        <div>
+          <Label htmlFor="message" className="block mb-2 font-medium">
+            Message (Optional)
+          </Label>
+          <Input
+            id="message"
+            type="text"
+            {...register("message")}
+            placeholder="What inspired your donation?"
+          />
         </div>
       </div>
-      
-      {/* Donation form */}
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="fullName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Full Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Your name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input placeholder="Your email address" type="email" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="amount"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Donation Amount ($)</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="number" 
-                    min={1} 
-                    placeholder="Amount in USD" 
-                    {...field}
-                    onChange={(e) => {
-                      field.onChange(e);
-                      const value = parseFloat(e.target.value);
-                      if (!isNaN(value)) {
-                        setSelectedAmount(value);
-                      }
-                    }} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="message"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Message (Optional)</FormLabel>
-                <FormControl>
-                  <Textarea 
-                    placeholder="Share why you're supporting our mission" 
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <Button 
-            type="submit" 
-            className="w-full bg-[#274675] hover:bg-[#274675]/90 text-white font-lora py-6"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              "Donate Now"
-            )}
-          </Button>
-        </form>
-      </Form>
-      
-      <div className="mt-4 text-xs text-gray-500 text-center">
-        Secure payment processed by Stripe. Your information is encrypted and secure.
+
+      <div className="mt-auto pt-6">
+        <Button
+          type="submit"
+          className="w-full bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white shadow-sm"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...
+            </>
+          ) : (
+            <>Donate ${selectedAmount || 0}</>
+          )}
+        </Button>
+        <p className="mt-2 text-xs text-gray-500 text-center">
+          Your donation is secure. You'll be redirected to Stripe to complete your payment.
+        </p>
       </div>
-    </div>
+    </form>
   );
 };
 

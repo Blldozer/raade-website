@@ -11,6 +11,7 @@ interface DonationImpactProps {
  * 
  * Displays the impact of different donation amounts to motivate donors
  * Shows different impact messages based on the selected donation amount
+ * Updated with more specific conference-related impacts for each tier
  * 
  * @param selectedAmount - Currently selected donation amount
  */
@@ -21,42 +22,63 @@ const DonationImpact = ({ selectedAmount }: DonationImpactProps) => {
     
     if (selectedAmount < 50) {
       return {
-        title: "Program Support",
-        description: "Your donation helps provide essential resources for our Innovation Studios program, supporting student teams working on development challenges.",
+        title: "Conference Supporter",
+        description: "Your $25 donation contributes to the essential elements of our conference experience.",
         items: [
-          "Provides materials for student teams",
-          "Supports virtual collaboration tools",
-          "Helps fund educational resources"
+          "Fund a welcome packet for a conference attendee",
+          "Support technical equipment needed for one speaker's presentation",
+          "Help provide name badges for multiple participants"
         ]
       };
     } else if (selectedAmount < 100) {
       return {
-        title: "Innovation Catalyst",
-        description: "Your contribution enables us to expand our reach and connect more student innovators with African partners.",
+        title: "Conference Contributor",
+        description: "Your $50 donation helps enhance the conference experience for attendees and speakers.",
         items: [
-          "Supports outreach to new partner organizations",
-          "Helps fund student project grants",
-          "Enables knowledge sharing sessions"
+          "Cover breakfast for two conference attendees",
+          "Fund transportation for a speaker from their hotel to the conference venue",
+          "Support the printing of conference materials for multiple participants"
         ]
       };
     } else if (selectedAmount < 250) {
       return {
-        title: "Development Champion",
-        description: "As a Development Champion, your donation makes a significant impact on our ability to support sustainable solutions.",
+        title: "Conference Sponsor",
+        description: "Your $100 donation makes a meaningful impact on our conference programming and documentation.",
         items: [
-          "Funds prototype development for promising solutions",
-          "Supports implementation testing in real environments",
-          "Helps scale successful projects"
+          "Provide dinner for four conference attendees",
+          "Fund a portion of the documentation costs (photography/videography)",
+          "Support youth participation in RAADE's programs"
+        ]
+      };
+    } else if (selectedAmount < 500) {
+      return {
+        title: "Development Advocate",
+        description: "Your $250 donation helps us create a high-quality conference experience for all participants.",
+        items: [
+          "Sponsor a speaker's honorarium",
+          "Fund part of the conference venue rental costs",
+          "Support the creation of essential conference materials including recognition plaques"
+        ]
+      };
+    } else if (selectedAmount < 1000) {
+      return {
+        title: "Leadership Patron",
+        description: "Your $500 donation enables significant aspects of our programming and African participation.",
+        items: [
+          "Fund a half-day workshop for African entrepreneurs",
+          "Sponsor multiple regional attendees' participation",
+          "Support an Innovation Studio project with mentoring and resources"
         ]
       };
     } else {
       return {
         title: "Transformation Leader",
-        description: "Your generous contribution enables transformative change through our programs and initiatives.",
+        description: "Your generous donation of $1,000 or more enables transformative impact across our entire initiative.",
         items: [
-          "Sponsors conference scholarships for African participants",
-          "Funds implementation of solutions in partner communities",
-          "Enables long-term impact measurement and research"
+          "Sponsor a complete Studio Innovation project tackling a specific challenge",
+          "Fund travel and accommodation for international speakers",
+          "Support multiple aspects of the conference including venue, meals, and documentation",
+          "Help establish sustainable partnerships between Rice University and African organizations"
         ]
       };
     }
