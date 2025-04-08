@@ -54,6 +54,7 @@ export const NavigationProvider = ({
     const [isDarkBackground, setIsDarkBackground] = useState(
       initialProps.forceDarkMode !== true
     );
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     
     // Track if this component is still mounted
     const [isMounted, setIsMounted] = useState(true);
@@ -179,7 +180,8 @@ export const NavigationProvider = ({
       currentSection,
       currentSectionId,
       isLightBackground,
-      forceDarkMode
+      forceDarkMode,
+      isMobileMenuOpen
     };
     
     return (

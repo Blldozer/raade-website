@@ -1,6 +1,6 @@
 
-import { Control, FieldErrors, UseFormRegister, UseFormWatch } from "react-hook-form";
-import { RegistrationFormData } from "../RegistrationFormTypes";
+import { Control, FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
+import { RegistrationFormData, ReferralSource } from "../RegistrationFormTypes";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -11,6 +11,7 @@ interface ReferralSourceSectionProps {
   errors: FieldErrors<RegistrationFormData>;
   control: Control<RegistrationFormData>;
   watch: UseFormWatch<RegistrationFormData>;
+  setValue: UseFormSetValue<RegistrationFormData>;
 }
 
 /**
@@ -23,12 +24,14 @@ interface ReferralSourceSectionProps {
  * @param errors - Form validation errors
  * @param control - React Hook Form control object
  * @param watch - React Hook Form watch function
+ * @param setValue - React Hook Form setValue function
  */
 const ReferralSourceSection = ({
   register,
   errors,
   control,
-  watch
+  watch,
+  setValue
 }: ReferralSourceSectionProps) => {
   const watchReferralSource = watch("referralSource");
   const [showOtherField, setShowOtherField] = useState(false);

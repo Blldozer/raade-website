@@ -67,9 +67,14 @@ const RegistrationFormFields = ({
         register={register}
         setValue={setValue}
         watch={watch}
+        control={control}
+        errors={errors}
       />
 
-      <SpecialRequests register={register} />
+      <SpecialRequests 
+        register={register} 
+        errors={errors}
+      />
     </div>
   );
 };

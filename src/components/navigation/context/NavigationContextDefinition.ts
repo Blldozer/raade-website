@@ -52,8 +52,7 @@ export type NavigationAction =
 export interface NavigationContextType {
   state: NavigationState;
   setIsDarkBackground: (isDark: boolean) => void;
-  dispatch: React.Dispatch<NavigationAction>;
 }
 
-// Create the context with a default undefined value
+// Create the context with undefined as default value
 export const NavigationContext = createContext<NavigationContextType | undefined>(undefined);

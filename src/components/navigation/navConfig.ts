@@ -1,4 +1,10 @@
 
+export interface NavItem {
+  name: string;
+  href: string;
+  dropdownItems?: { name: string; href: string }[];
+}
+
 const navConfig = {
   mainNavItems: [
     {
@@ -36,6 +42,22 @@ const navConfig = {
       ],
     },
   ],
+  
+  // Add footer navigation items
+  footerNavItems: [
+    {
+      name: "Contact",
+      href: "/contact",
+    },
+    {
+      name: "Donate",
+      href: "/donate",
+    },
+    {
+      name: "Privacy Policy",
+      href: "/privacy",
+    }
+  ]
 };
 
 export default navConfig;
