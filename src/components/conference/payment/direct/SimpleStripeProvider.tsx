@@ -28,8 +28,6 @@ interface SimpleStripeProviderProps {
   role?: string;
   specialRequests?: string;
   referralSource?: string;
-  couponCode?: string;
-  couponDiscount?: number;
   onSuccess: () => void;
   onError: (error: string) => void;
 }
@@ -42,7 +40,6 @@ interface SimpleStripeProviderProps {
  * - Sets up the Stripe Elements provider
  * - Configures appearance settings for Stripe Elements
  * - Now with improved error handling and fallbacks
- * - Supports coupon code discounts
  */
 const SimpleStripeProvider = (props: SimpleStripeProviderProps) => {
   const [stripePromise, setStripePromise] = useState<Promise<Stripe | null> | null>(null);

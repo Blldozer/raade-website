@@ -1,134 +1,129 @@
 
-import { RegistrationFormData, TicketType } from "../../RegistrationFormTypes";
 import { supabase } from "@/integrations/supabase/client";
+import { RegistrationFormData } from "../../RegistrationFormTypes";
 
 /**
- * Process registration data response interface
- */
-export interface ProcessRegistrationResponse {
-  success: boolean;
-  message?: string;
-}
-
-/**
- * Processes registration data for API submission
+ * Registration Data Storage Service
  * 
- * Takes the form data and formats it for the backend API
- * - Ensures all required fields are present
- * - Processes group information correctly
- * - Performs email validation if needed
- * 
- * @param data The registration form data
- * @returns A clean, API-ready registration data object with success/error status
+ * Handles storing conference registration data in Supabase:
+ * - Processes group emails to ensure proper format
+ * - Implements retry logic with exponential backoff
+ * - Handles timeouts and network errors gracefully
  */
-export const processRegistrationData = async (data: RegistrationFormData): Promise<ProcessRegistrationResponse> => {
-  // Ensure all required fields have values
-  if (!data.fullName || !data.email || !data.organization || !data.role || !data.ticketType) {
-    return {
-      success: false,
-      message: "Missing required fields in registration data"
-    };
-  }
+export const storeRegistrationData = async (
+  registrationData: RegistrationFormData,
+  maxRetries = 3
+): Promise<boolean> => {
+  let retryCount = 0;
   
-  // Extract only the email strings from any group email objects
-  let processedGroupEmails: string[] = [];
-  
-  if (data.ticketType === "student-group" && data.groupEmails) {
-    processedGroupEmails = data.groupEmails
-      .filter(emailObj => emailObj && (typeof emailObj === 'string' || (typeof emailObj === 'object' && emailObj !== null)))
-      .map(emailObj => {
-        if (typeof emailObj === 'string') return emailObj;
-        if (typeof emailObj === 'object' && emailObj !== null) {
-          if ('value' in emailObj) return String(emailObj.value || '');
-          if ('email' in emailObj) return String(emailObj.email || '');
-        }
-        return '';
-      })
-      .filter(email => email && email.trim() !== '');
-  }
-  
-  // Verify that we have the right number of valid emails for groups
-  if (data.ticketType === "student-group" && data.groupSize) {
-    const emailCount = Array.isArray(processedGroupEmails) ? processedGroupEmails.length : 0;
-    
-    // For group registrations, we should have emails matching the group size
-    if (emailCount < data.groupSize - 1) { // -1 because the main registrant is included in the group
-      console.warn(`Group size is ${data.groupSize} but only ${emailCount} additional emails were provided.`);
-    }
-  }
-  
-  try {
-    // Make API call or store data in database
-    const { error } = await supabase.from('conference_registrations').insert({
-      full_name: data.fullName,
-      email: data.email,
-      organization: data.organization,
-      role: data.role,
-      ticket_type: data.ticketType,
-      special_requests: data.specialRequests,
-      status: 'paid', // Since this is called after payment
-      coupon_code: data.couponCode
-    });
-    
-    if (error) {
-      console.error("Error storing registration data:", error);
-      return {
-        success: false,
-        message: "Failed to save your registration. Please contact support."
+  const attemptStoreData = async (): Promise<boolean> => {
+    try {
+      // Process group emails to a clean format
+      let processedGroupEmails = [];
+      if (registrationData.groupEmails && Array.isArray(registrationData.groupEmails)) {
+        processedGroupEmails = registrationData.groupEmails
+          .filter(Boolean)
+          .map(email => {
+            if (typeof email === 'object' && email !== null && 'value' in email) {
+              return email.value;
+            }
+            return String(email || '');
+          })
+          .filter(email => email.length > 0);
+      }
+      
+      // Build request data
+      const requestData = {
+        fullName: registrationData.fullName,
+        email: registrationData.email,
+        organization: registrationData.organization || "",
+        role: registrationData.role || "",
+        ticketType: registrationData.ticketType,
+        specialRequests: registrationData.specialRequests || "",
+        referralSource: registrationData.referralSource || "",
+        groupSize: registrationData.groupSize,
+        groupEmails: processedGroupEmails,
+        paymentComplete: true // Registration is being stored after successful payment
       };
-    }
-    
-    // If it's a group registration, store the group members
-    if (data.ticketType === "student-group" && processedGroupEmails.length > 0) {
-      // First create the group
-      const { data: groupData, error: groupError } = await supabase.from('group_registrations').insert({
-        lead_name: data.fullName,
-        lead_email: data.email,
-        lead_organization: data.organization,
-        group_size: data.groupSize || processedGroupEmails.length + 1,
-        ticket_type: data.ticketType,
-        payment_completed: true,
-        completed: true
-      }).select('id').single();
       
-      if (groupError || !groupData) {
-        console.error("Error creating group registration:", groupError);
-        return {
-          success: true, // Main registration succeeded, just the group tracking failed
-          message: "Your registration was successful, but there was an issue saving group details."
-        };
+      console.log("Storing registration data in Supabase:", requestData);
+      
+      // Set a timeout for the data storage request
+      const STORAGE_TIMEOUT = 10000; // 10 seconds
+      
+      // Create a timeout promise
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => {
+          reject(new Error(`Registration storage timed out after ${STORAGE_TIMEOUT}ms`));
+        }, STORAGE_TIMEOUT);
+      });
+      
+      // Create the storage request promise
+      const storagePromise = supabase.functions.invoke('store-registration', {
+        body: requestData
+      });
+      
+      // Race the timeout against the actual request
+      const { data, error } = await Promise.race([
+        storagePromise,
+        timeoutPromise
+      ]);
+      
+      if (error) {
+        console.error("Error storing registration data:", error);
+        
+        if (retryCount < maxRetries) {
+          const backoffTime = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s
+          console.log(`Will retry storing data in ${backoffTime}ms`);
+          
+          await new Promise(resolve => setTimeout(resolve, backoffTime));
+          
+          retryCount++;
+          return attemptStoreData();
+        }
+        
+        return false;
+      } else {
+        if (data?.success) {
+          console.log("Registration data stored successfully:", data);
+          return true;
+        } else {
+          console.error("Registration storage returned an error:", data);
+          
+          if (retryCount < maxRetries) {
+            const backoffTime = Math.pow(2, retryCount) * 1000;
+            await new Promise(resolve => setTimeout(resolve, backoffTime));
+            
+            retryCount++;
+            return attemptStoreData();
+          }
+          
+          return false;
+        }
+      }
+    } catch (error) {
+      console.error("Error invoking store-registration function:", error);
+      
+      // If we have retries left and it's a timeout or network error
+      const typedError = error as Error;
+      const isRetryableError = 
+        typedError.message?.includes('timeout') || 
+        typedError.message?.includes('network') ||
+        (error as { code?: string }).code === 'AbortError';
+        
+      if (isRetryableError && retryCount < maxRetries) {
+        const backoffTime = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s
+        console.log(`Will retry storing data in ${backoffTime}ms due to: ${typedError.message}`);
+        
+        await new Promise(resolve => setTimeout(resolve, backoffTime));
+        
+        retryCount++;
+        return attemptStoreData();
       }
       
-      // Now insert all group members
-      const groupMemberInserts = processedGroupEmails.map(email => ({
-        email,
-        group_id: groupData.id,
-        email_verified: false, // They'll need to verify later
-      }));
-      
-      const { error: membersError } = await supabase
-        .from('group_registration_members')
-        .insert(groupMemberInserts);
-      
-      if (membersError) {
-        console.error("Error saving group members:", membersError);
-        return {
-          success: true, // Main registration succeeded
-          message: "Registration successful, but there was an issue saving all group member details."
-        };
-      }
+      return false;
     }
-    
-    // Success
-    return {
-      success: true,
-      message: "Registration completed successfully!"
-    };
-  } catch (error) {
-    console.error("Registration processing error:", error);
-    return {
-      success: false,
-      message: "An unexpected error occurred processing your registration."
-    };
-  }
+  };
+  
+  return attemptStoreData();
 };

@@ -15,8 +15,6 @@ interface PaymentData {
   role?: string;
   specialRequests?: string;
   referralSource?: string;
-  couponCode?: string;
-  couponDiscount?: number;
 }
 
 /**
@@ -27,7 +25,6 @@ interface PaymentData {
  * - Confirming card payment
  * - Storing registration data
  * - Error handling
- * - Now supports coupon code discounts
  */
 export const useCardPayment = (
   paymentData: PaymentData,
@@ -159,18 +156,14 @@ export const useCardPayment = (
         const registrationSuccess = await storeRegistrationData({
           fullName: paymentData.fullName,
           email: paymentData.email,
-          organization: paymentData.organization || "",
-          role: paymentData.role || "",
+          organization: paymentData.organization,
+          role: paymentData.role,
           ticketType: paymentData.ticketType,
           specialRequests: paymentData.specialRequests,
           referralSource: paymentData.referralSource,
           groupSize: paymentData.groupSize,
           groupEmails: processedGroupEmails,
-          paymentComplete: true,
-          // Add these new properties for coupon handling
-          couponApplied: !!paymentData.couponCode,
-          couponCode: paymentData.couponCode,
-          couponDiscount: paymentData.couponDiscount
+          paymentComplete: true
         });
         
         if (registrationSuccess) {

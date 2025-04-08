@@ -1,158 +1,67 @@
 
-import { UseFormRegister, UseFormSetValue, UseFormWatch, FieldErrors } from "react-hook-form";
-import { RegistrationFormData, TICKET_TYPES_ENUM, getTicketPrice, getRegularTicketPrice, isSaleActive } from "../RegistrationFormTypes";
+import { UseFormWatch, UseFormSetValue, FieldErrors } from "react-hook-form";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  RegistrationFormData,
+  getTicketPriceText,
+  TICKET_TYPES_ENUM
+} from "../RegistrationFormTypes";
 
+/**
+ * TicketTypeSelection Component
+ * 
+ * Displays ticket type dropdown for conference registration.
+ * Shows appropriate price information based on ticket type.
+ * Includes proper name attributes for improved form accessibility and autofill.
+ * 
+ * @param watch - React Hook Form watch function to observe field changes
+ * @param setValue - React Hook Form setValue function to update form values
+ * @param errors - Form validation errors object
+ */
 interface TicketTypeSelectionProps {
-  register: UseFormRegister<RegistrationFormData>;
   watch: UseFormWatch<RegistrationFormData>;
   setValue: UseFormSetValue<RegistrationFormData>;
   errors: FieldErrors<RegistrationFormData>;
 }
 
-/**
- * TicketTypeSelection Component
- * 
- * Displays available ticket types for the conference:
- * - Student, Professional, and Student Group options
- * - Shows regular and sale prices when applicable
- * - Handles selection of ticket type
- * - Provides visual feedback for selected option
- */
 const TicketTypeSelection = ({
-  register,
   watch,
   setValue,
   errors
 }: TicketTypeSelectionProps) => {
-  const selectedTicketType = watch("ticketType");
-  const saleActive = isSaleActive();
-
-  // Handle ticket type change
-  const handleTicketTypeChange = (value: string) => {
-    setValue("ticketType", value as RegistrationFormData["ticketType"]);
-    
-    // Reset group size if switching from group ticket
-    if (value !== TICKET_TYPES_ENUM.STUDENT_GROUP && watch("groupSize")) {
-      setValue("groupSize", undefined);
-      setValue("groupEmails", []);
-    }
-  };
+  const watchTicketType = watch("ticketType");
   
   return (
-    <div className="space-y-4">
-      <div>
-        <Label className="text-base font-lora">Ticket Type</Label>
-        <p className="text-sm text-gray-500 mb-2">Select the ticket type that best fits your situation.</p>
-      </div>
-      
-      <RadioGroup
-        value={selectedTicketType}
-        onValueChange={handleTicketTypeChange}
-        className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+    <div>
+      <Label htmlFor="ticketType">Ticket Type</Label>
+      <Select 
+        onValueChange={(value: typeof TICKET_TYPES_ENUM[keyof typeof TICKET_TYPES_ENUM]) => setValue("ticketType", value)}
+        value={watchTicketType}
       >
-        {/* Student Ticket */}
-        <div>
-          <RadioGroupItem
-            id="student"
-            value={TICKET_TYPES_ENUM.STUDENT}
-            className="sr-only"
-            {...register("ticketType")}
-          />
-          <Label
-            htmlFor="student"
-            className={`flex flex-col h-full p-4 rounded-md border-2 cursor-pointer transition-colors
-              ${selectedTicketType === TICKET_TYPES_ENUM.STUDENT ? 'border-[#FBB03B] bg-[#FBB03B]/10' : 'border-gray-200 hover:border-[#FBB03B]/50 dark:border-gray-700'}
-            `}
-          >
-            <div className="flex justify-between items-start">
-              <span className="font-semibold text-lg">Student</span>
-              {saleActive && <Badge className="bg-red-500">SALE!</Badge>}
-            </div>
-            <div className="mt-2 flex items-end gap-2">
-              <span className="font-bold text-xl">${getTicketPrice(TICKET_TYPES_ENUM.STUDENT)}</span>
-              {saleActive && (
-                <span className="text-gray-500 line-through text-sm">
-                  ${getRegularTicketPrice(TICKET_TYPES_ENUM.STUDENT)}
-                </span>
-              )}
-            </div>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              For all students with valid .edu email
-            </p>
-          </Label>
-        </div>
-        
-        {/* Professional Ticket */}
-        <div>
-          <RadioGroupItem
-            id="professional"
-            value={TICKET_TYPES_ENUM.PROFESSIONAL}
-            className="sr-only"
-            {...register("ticketType")}
-          />
-          <Label
-            htmlFor="professional"
-            className={`flex flex-col h-full p-4 rounded-md border-2 cursor-pointer transition-colors
-              ${selectedTicketType === TICKET_TYPES_ENUM.PROFESSIONAL ? 'border-[#FBB03B] bg-[#FBB03B]/10' : 'border-gray-200 hover:border-[#FBB03B]/50 dark:border-gray-700'}
-            `}
-          >
-            <div className="flex justify-between items-start">
-              <span className="font-semibold text-lg">Professional</span>
-              {saleActive && <Badge className="bg-red-500">SALE!</Badge>}
-            </div>
-            <div className="mt-2 flex items-end gap-2">
-              <span className="font-bold text-xl">${getTicketPrice(TICKET_TYPES_ENUM.PROFESSIONAL)}</span>
-              {saleActive && (
-                <span className="text-gray-500 line-through text-sm">
-                  ${getRegularTicketPrice(TICKET_TYPES_ENUM.PROFESSIONAL)}
-                </span>
-              )}
-            </div>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              For industry professionals and faculty
-            </p>
-          </Label>
-        </div>
-        
-        {/* Student Group Ticket */}
-        <div>
-          <RadioGroupItem
-            id="student-group"
-            value={TICKET_TYPES_ENUM.STUDENT_GROUP}
-            className="sr-only"
-            {...register("ticketType")}
-          />
-          <Label
-            htmlFor="student-group"
-            className={`flex flex-col h-full p-4 rounded-md border-2 cursor-pointer transition-colors
-              ${selectedTicketType === TICKET_TYPES_ENUM.STUDENT_GROUP ? 'border-[#FBB03B] bg-[#FBB03B]/10' : 'border-gray-200 hover:border-[#FBB03B]/50 dark:border-gray-700'}
-            `}
-          >
-            <div className="flex justify-between items-start">
-              <span className="font-semibold text-lg">Student Group</span>
-              {saleActive && <Badge className="bg-red-500">SALE!</Badge>}
-            </div>
-            <div className="mt-2 flex items-end gap-2">
-              <span className="font-bold text-xl">${getTicketPrice(TICKET_TYPES_ENUM.STUDENT_GROUP)}/person</span>
-              {saleActive && (
-                <span className="text-gray-500 line-through text-sm">
-                  ${getRegularTicketPrice(TICKET_TYPES_ENUM.STUDENT_GROUP)}/person
-                </span>
-              )}
-            </div>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              For student groups of 3 or more
-            </p>
-          </Label>
-        </div>
-      </RadioGroup>
-      
+        <SelectTrigger id="ticketType" name="ticketType">
+          <SelectValue placeholder="Select ticket type" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={TICKET_TYPES_ENUM.STUDENT}>Student {getTicketPriceText(TICKET_TYPES_ENUM.STUDENT)}</SelectItem>
+          <SelectItem value={TICKET_TYPES_ENUM.PROFESSIONAL}>Professional {getTicketPriceText(TICKET_TYPES_ENUM.PROFESSIONAL)}</SelectItem>
+          <SelectItem value={TICKET_TYPES_ENUM.STUDENT_GROUP}>Student Group {getTicketPriceText(TICKET_TYPES_ENUM.STUDENT_GROUP)}</SelectItem>
+        </SelectContent>
+      </Select>
       {errors.ticketType && (
-        <p className="text-red-500 text-sm">{errors.ticketType.message}</p>
+        <p className="text-red-500 text-sm mt-1">{errors.ticketType.message}</p>
+      )}
+      
+      {watchTicketType === TICKET_TYPES_ENUM.STUDENT && (
+        <p className="text-gray-600 text-sm mt-1">
+          Student tickets require a valid .edu email address.
+        </p>
       )}
     </div>
   );

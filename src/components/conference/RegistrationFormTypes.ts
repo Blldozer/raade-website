@@ -1,147 +1,161 @@
 
 import { z } from "zod";
 
-/**
- * Ticket types enum
- */
+// Define the allowed ticket types
+export const TICKET_TYPES = ["student", "professional", "student-group"] as const;
+
+// Define constants for easier reference (to avoid string literals)
 export const TICKET_TYPES_ENUM = {
   STUDENT: "student",
   PROFESSIONAL: "professional",
   STUDENT_GROUP: "student-group"
 } as const;
 
-/**
- * Referral sources
- */
+// Define the allowed referral sources
 export const REFERRAL_SOURCES = [
-  "Social Media",
-  "Friend/Colleague",
-  "Email",
-  "Poster/Flyer",
-  "Professor/Class",
-  "Rice Website",
-  "Other"
+  "Friends",
+  "University ASA",
+  "LinkedIn",
+  "Instagram",
+  "No Bystanders",
+  "RAADE Outreach Team"
 ] as const;
 
-export type ReferralSource = typeof REFERRAL_SOURCES[number];
-export type TicketType = "student" | "professional" | "student-group";
+// Define the sale end date (April 8, 2025, 4:00 PM CST)
+export const SALE_END_DATE = new Date('2025-04-08T16:00:00-05:00');
 
-/**
- * Group email interface
- */
-export interface GroupEmail {
-  email: string;
-}
-
-/**
- * Form data interface
- */
-export interface RegistrationFormData {
-  fullName: string;
-  email: string;
-  organization: string;
-  role: string;
-  ticketType: TicketType;
-  referralSource?: ReferralSource;
-  specialRequests?: string;
-  groupSize?: number;
-  groupEmails?: any[]; // Accept various formats for group emails
-  couponCode?: string;
-  otherReferralSource?: string; // Optional field for "Other" referral source
-}
-
-/**
- * Sale start and end dates
- */
-export const SALE_START_DATE = new Date('2025-03-01T00:00:00Z');
-export const SALE_END_DATE = new Date('2025-04-01T23:59:59Z');
-
-/**
- * Check if the sale is currently active
- */
+// Function to check if the sale is still active
 export const isSaleActive = (): boolean => {
-  const now = new Date();
-  return now >= SALE_START_DATE && now <= SALE_END_DATE;
+  return new Date() < SALE_END_DATE;
+};
+
+// Create a Zod schema for the registration form
+export const registrationFormSchema = z.object({
+  fullName: z.string().min(2, "Full name is required"),
+  email: z.string().email("Invalid email address"),
+  organization: z.string().min(2, "Organization is required"),
+  role: z.string().min(2, "Role is required"),
+  ticketType: z.enum(TICKET_TYPES),
+  referralSource: z.enum(REFERRAL_SOURCES).optional(),
+  isUniversityOrAffiliate: z.boolean().optional(),
+  groupSize: z.number().optional(),
+  groupEmails: z.array(
+    z.object({
+      value: z.string().email("Invalid email address")
+    }).or(z.string().email("Invalid email address")).nullable()
+  ).optional(),
+  specialRequests: z.string().optional()
+});
+
+// Alias for backward compatibility
+export const registrationSchema = registrationFormSchema;
+
+// Infer the TypeScript type from the Zod schema
+export type RegistrationFormData = z.infer<typeof registrationFormSchema>;
+
+// Export the default values for the form
+export const defaultFormValues: RegistrationFormData = {
+  fullName: "",
+  email: "",
+  organization: "",
+  role: "",
+  ticketType: TICKET_TYPES_ENUM.STUDENT,
+  isUniversityOrAffiliate: false,
+  groupSize: undefined,
+  groupEmails: [],
+  specialRequests: "",
+  referralSource: undefined
 };
 
 /**
- * Get ticket price based on ticket type
+ * Get the ticket price based on ticket type
+ * Automatically accounts for whether the sale is active
+ * @param ticketType The type of ticket
+ * @returns The price of the ticket in USD
  */
-export const getTicketPrice = (ticketType: TicketType, groupSize?: number): number => {
-  const isOnSale = isSaleActive();
-
+export const getTicketPrice = (ticketType: typeof TICKET_TYPES[number]): number => {
+  const saleActive = isSaleActive();
+  
   switch (ticketType) {
     case TICKET_TYPES_ENUM.STUDENT:
-      return isOnSale ? 35 : 50;
+      return saleActive ? 25 : 35; // Sale: $25, Regular: $35
     case TICKET_TYPES_ENUM.PROFESSIONAL:
-      return isOnSale ? 60 : 80;
+      return saleActive ? 50 : 60; // Sale: $50, Regular: $60
     case TICKET_TYPES_ENUM.STUDENT_GROUP:
-      if (!groupSize || groupSize < 5) {
-        return isOnSale ? 150 : 200; // Minimum 5 people
-      }
-      return isOnSale ? 30 * groupSize : 40 * groupSize;
+      return saleActive ? 20 : 30; // Sale: $20, Regular: $30 per person
     default:
-      return 0;
+      return saleActive ? 25 : 35; // Default to student price
   }
 };
 
 /**
- * Get the regular ticket price (without sale)
+ * Get the regular (non-sale) ticket price 
+ * @param ticketType The type of ticket
+ * @returns The regular price of the ticket in USD
  */
-export const getRegularTicketPrice = (ticketType: TicketType, groupSize?: number): number => {
+export const getRegularTicketPrice = (ticketType: typeof TICKET_TYPES[number]): number => {
   switch (ticketType) {
     case TICKET_TYPES_ENUM.STUDENT:
-      return 50;
+      return 35; // Regular price
     case TICKET_TYPES_ENUM.PROFESSIONAL:
-      return 80;
+      return 60; // Regular price
     case TICKET_TYPES_ENUM.STUDENT_GROUP:
-      if (!groupSize || groupSize < 5) {
-        return 200; // Minimum 5 people
-      }
-      return 40 * groupSize;
+      return 30; // Regular price per person
     default:
-      return 0;
+      return 35; // Default to student price
   }
 };
 
 /**
- * Calculate total price with discount
+ * Get the ticket price as a formatted text
+ * @param ticketType The type of ticket
+ * @returns Formatted price text with dollar sign
+ */
+export const getTicketPriceText = (ticketType: typeof TICKET_TYPES[number]): string => {
+  return `($${getTicketPrice(ticketType)})`;
+};
+
+/**
+ * Calculate the total price based on ticket type and group size
+ * @param ticketType The type of ticket
+ * @param groupSize Optional group size for group tickets
+ * @returns The total price in USD
  */
 export const calculateTotalPrice = (
-  ticketType: TicketType, 
-  groupSize?: number, 
-  couponDiscount: number = 0
+  ticketType: typeof TICKET_TYPES[number],
+  groupSize?: number
 ): number => {
-  const basePrice = getTicketPrice(ticketType, groupSize);
+  const basePrice = getTicketPrice(ticketType);
   
-  // Apply discount (as percentage)
-  if (couponDiscount > 0) {
-    if (couponDiscount >= 100) {
-      return 0; // Free with 100% discount
-    }
-    return basePrice * (1 - couponDiscount / 100);
+  if (ticketType === TICKET_TYPES_ENUM.STUDENT_GROUP && groupSize) {
+    return basePrice * groupSize;
   }
   
   return basePrice;
 };
 
 /**
- * Form validation schema
+ * Validate if an email domain is appropriate for the selected ticket type
+ * @param email The email address to validate
+ * @param ticketType The selected ticket type
+ * @returns Validation result object
  */
-export const registrationFormSchema = z.object({
-  fullName: z.string().min(2, { message: "Name must be at least 2 characters" }),
-  email: z.string().email({ message: "Invalid email address" }),
-  organization: z.string().min(2, { message: "Organization is required" }),
-  role: z.string().min(2, { message: "Role is required" }),
-  ticketType: z.enum([
-    TICKET_TYPES_ENUM.STUDENT, 
-    TICKET_TYPES_ENUM.PROFESSIONAL, 
-    TICKET_TYPES_ENUM.STUDENT_GROUP
-  ]),
-  referralSource: z.enum(REFERRAL_SOURCES).optional(),
-  specialRequests: z.string().optional(),
-  groupSize: z.number().min(5).optional(),
-  groupEmails: z.array(z.any()).optional(), // Make more flexible for various formats
-  couponCode: z.string().optional(),
-  otherReferralSource: z.string().optional()
-});
+export const validateTicketEmailDomain = (
+  email: string,
+  ticketType: string
+): { isValid: boolean; message?: string } => {
+  if (!email || !email.includes('@')) {
+    return { isValid: false, message: "Please enter a valid email address" };
+  }
+
+  // For student tickets, validate .edu domain
+  if ((ticketType === TICKET_TYPES_ENUM.STUDENT || ticketType === TICKET_TYPES_ENUM.STUDENT_GROUP) && 
+      !email.toLowerCase().endsWith('.edu')) {
+    return { 
+      isValid: false, 
+      message: "Student tickets require an .edu email address" 
+    };
+  }
+
+  return { isValid: true };
+};

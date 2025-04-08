@@ -29,7 +29,6 @@ export type Database = {
       }
       conference_registrations: {
         Row: {
-          coupon_code: string | null
           created_at: string
           dietary_requirements: string | null
           email: string
@@ -38,7 +37,6 @@ export type Database = {
           full_name: string
           id: string
           organization: string
-          payment_method: string | null
           role: string
           special_requests: string | null
           status: string
@@ -47,7 +45,6 @@ export type Database = {
           verification_method: string | null
         }
         Insert: {
-          coupon_code?: string | null
           created_at?: string
           dietary_requirements?: string | null
           email: string
@@ -56,7 +53,6 @@ export type Database = {
           full_name: string
           id?: string
           organization: string
-          payment_method?: string | null
           role: string
           special_requests?: string | null
           status?: string
@@ -65,7 +61,6 @@ export type Database = {
           verification_method?: string | null
         }
         Update: {
-          coupon_code?: string | null
           created_at?: string
           dietary_requirements?: string | null
           email?: string
@@ -74,55 +69,12 @@ export type Database = {
           full_name?: string
           id?: string
           organization?: string
-          payment_method?: string | null
           role?: string
           special_requests?: string | null
           status?: string
           ticket_type?: string
           updated_at?: string
           verification_method?: string | null
-        }
-        Relationships: []
-      }
-      coupon_codes: {
-        Row: {
-          code: string
-          created_at: string
-          created_by: string | null
-          current_uses: number
-          description: string | null
-          discount_amount: number | null
-          discount_type: string
-          expires_at: string | null
-          id: string
-          is_active: boolean
-          max_uses: number | null
-        }
-        Insert: {
-          code: string
-          created_at?: string
-          created_by?: string | null
-          current_uses?: number
-          description?: string | null
-          discount_amount?: number | null
-          discount_type: string
-          expires_at?: string | null
-          id?: string
-          is_active?: boolean
-          max_uses?: number | null
-        }
-        Update: {
-          code?: string
-          created_at?: string
-          created_by?: string | null
-          current_uses?: number
-          description?: string | null
-          discount_amount?: number | null
-          discount_type?: string
-          expires_at?: string | null
-          id?: string
-          is_active?: boolean
-          max_uses?: number | null
         }
         Relationships: []
       }

@@ -115,7 +115,7 @@ const GroupRegistration = ({ watch, setValue, control, errors }: GroupRegistrati
               id={`groupEmail${index + 1}`}
               type="email"
               autoComplete={index === 0 ? "email" : `email-${index + 1}`}
-              {...control.register(`groupEmails.${index}.email`)}
+              {...control.register(`groupEmails.${index}.value` as const)}
               aria-label={`Email address for group member ${index + 1}`}
             />
             <Button
@@ -135,7 +135,7 @@ const GroupRegistration = ({ watch, setValue, control, errors }: GroupRegistrati
             type="button"
             variant="outline"
             className="w-full"
-            onClick={() => append({ email: "" })}
+            onClick={() => append({ value: "" })}
           >
             <Plus className="h-4 w-4 mr-2" />
             Add Group Member

@@ -1,8 +1,8 @@
 
 import { UseFormRegister } from "react-hook-form";
-import { RegistrationFormData } from "../RegistrationFormTypes";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { RegistrationFormData } from "../RegistrationFormTypes";
 
 interface SpecialRequestsProps {
   register: UseFormRegister<RegistrationFormData>;
@@ -11,23 +11,23 @@ interface SpecialRequestsProps {
 /**
  * SpecialRequests Component
  * 
- * Collects any special requests or accommodations needed by attendees
- * - Accessible textarea with proper labeling
- * - Optional field with helpful placeholder text
+ * Provides a textarea for users to enter special requests or accommodations
+ * for their conference registration. Includes proper name and id attributes
+ * for accessibility and form submissions.
+ * 
+ * @param register - React Hook Form register function
  */
 const SpecialRequests = ({ register }: SpecialRequestsProps) => {
   return (
-    <div className="space-y-2">
-      <Label htmlFor="specialRequests" className="font-lora">Special Requests (Optional)</Label>
+    <div>
+      <Label htmlFor="specialRequests">Special Requests</Label>
       <Textarea
         id="specialRequests"
-        placeholder="Please let us know if you have any dietary restrictions, accessibility needs, or other special requests."
-        className="h-24 resize-none"
+        name="specialRequests"
+        placeholder="Any special requests or accommodations (optional)"
+        autoComplete="off"
         {...register("specialRequests")}
       />
-      <p className="text-sm text-gray-500">
-        We'll do our best to accommodate your needs.
-      </p>
     </div>
   );
 };
