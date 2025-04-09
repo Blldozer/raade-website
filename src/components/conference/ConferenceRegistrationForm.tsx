@@ -17,6 +17,7 @@ import { clearExistingSessionData, detectBackNavigation, getSessionDiagnostics }
  * 
  * Displays the main registration form for the conference:
  * - Now with support for coupon codes including 100% off coupons
+ * - Shows payment summary for all coupon users before completing registration
  * - Skips payment flow for free registrations (100% discount)
  * - Enhanced session management and cleanup
  * - Better error recovery after payment failures
@@ -31,6 +32,7 @@ const ConferenceRegistrationForm = () => {
     registrationData,
     handleEmailValidation,
     handleInitialSubmit,
+    handleDirectRegistration,
     setShowPayment,
     resetForm,
     watchTicketType,
@@ -162,6 +164,13 @@ const ConferenceRegistrationForm = () => {
     return calculateDiscountedPrice(originalPrice, couponDiscount);
   };
 
+  // Handle completion of free registration
+  const handleFreeRegistrationComplete = () => {
+    if (registrationData && isFullDiscount) {
+      handleDirectRegistration(registrationData);
+    }
+  };
+
   return (
     <Card className="shadow-lg border-[#FBB03B]/10 dark:border-[#FBB03B]/20 dark:bg-gray-900 transition-colors duration-200">
       <CardHeader>
@@ -200,9 +209,21 @@ const ConferenceRegistrationForm = () => {
                     Processing...
                   </>
                 ) : (
-                  isFullDiscount ? 'Complete Free Registration' : 'Continue to Payment'
+                  'Continue to Review'
                 )}
               </Button>
+
+              {couponCode && couponDiscount && (
+                <div className={`text-sm text-center ${isFullDiscount ? 'text-green-600' : 'text-blue-600'}`}>
+                  {isFullDiscount ? (
+                    <p>Free registration code applied!</p>
+                  ) : (
+                    <p>Coupon code applied: {couponDiscount.type === 'percentage' ? 
+                      `${couponDiscount.amount}% off` : 
+                      `$${couponDiscount.amount} off`}</p>
+                  )}
+                </div>
+              )}
             </form>
           </Form>
         ) : (
@@ -218,6 +239,8 @@ const ConferenceRegistrationForm = () => {
             }}
             couponDiscount={couponDiscount}
             totalPrice={getTotalPrice()}
+            isFullDiscount={isFullDiscount}
+            onFreeRegistration={handleFreeRegistrationComplete}
           />
         )}
       </CardContent>

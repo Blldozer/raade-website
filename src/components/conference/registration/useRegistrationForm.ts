@@ -55,20 +55,25 @@ export const useRegistrationForm = () => {
     
     setIsSubmitting(true);
     try {
-      // If this is a 100% discount coupon, add the coupon code to the registration data
-      if (isFullDiscount && couponCode) {
+      // If this is a coupon code submission, add the coupon code to the registration data
+      if (couponCode) {
         data.couponCode = couponCode;
       }
       
       // Store the registration data for payment processing or direct submission
       setRegistrationData(data);
       
-      // If we have a 100% discount coupon, skip payment and proceed directly to registration
-      if (isFullDiscount && couponCode) {
-        // Create a registration record directly without payment
-        await handleDirectRegistration(data);
+      // For any discount coupon (partial or full), we show the payment section with summary
+      if (couponCode) {
+        if (isFullDiscount) {
+          // For 100% discount, we still show the summary, but skip the actual payment
+          setShowPayment(true);
+        } else {
+          // For partial discounts, show payment section with discounted price
+          setShowPayment(true);
+        }
       } else {
-        // Otherwise, show the payment section
+        // Regular flow without coupon
         setShowPayment(true);
       }
     } catch (error) {
@@ -89,7 +94,7 @@ export const useRegistrationForm = () => {
       console.log("Processing free registration with coupon code:", couponCode);
       
       // Submit registration data with coupon info to store-registration function
-      const { error } = await supabase.functions.invoke('store-registration', {
+      const { data: responseData, error } = await supabase.functions.invoke('store-registration', {
         body: {
           fullName: data.fullName,
           email: data.email,
@@ -173,6 +178,7 @@ export const useRegistrationForm = () => {
     isFullDiscount,
     handleEmailValidation,
     handleInitialSubmit,
+    handleDirectRegistration,
     setCouponCode,
     setCouponDiscount,
     setIsFullDiscount,

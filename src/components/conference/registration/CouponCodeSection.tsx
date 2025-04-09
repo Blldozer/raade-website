@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, CheckCircle, XCircle } from "lucide-react";
+import { Loader2, CheckCircle, XCircle, Tag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface CouponCodeSectionProps {
@@ -19,6 +19,7 @@ interface CouponCodeSectionProps {
  * - Shows coupon discount information
  * - Displays validation state with clear feedback
  * - Handles various coupon validation errors
+ * - Improved visual feedback for successful coupon application
  * 
  * @param setCouponCode - Function to update coupon code in parent component
  * @param setCouponDiscount - Function to update coupon discount details
@@ -115,13 +116,16 @@ const CouponCodeSection = ({
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium text-[#274675]">Apply Coupon Code</h3>
+      <h3 className="text-lg font-medium text-[#274675] flex items-center">
+        <Tag className="h-5 w-5 mr-2" />
+        Apply Coupon Code
+      </h3>
       
       <div className="flex gap-2">
         <Input
           placeholder="Enter coupon code"
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={(e) => setInputValue(e.target.value.toUpperCase())}
           className="flex-grow"
           disabled={isValidating || (validationResult?.isValid ?? false)}
         />
@@ -147,13 +151,28 @@ const CouponCodeSection = ({
       </div>
       
       {validationResult && (
-        <div className={`flex items-center gap-2 text-sm ${validationResult.isValid ? 'text-green-600' : 'text-red-500'}`}>
+        <div className={`flex items-center gap-2 text-sm p-2 rounded-md ${
+          validationResult.isValid 
+            ? 'text-green-600 bg-green-50 dark:bg-green-900/20 dark:text-green-400' 
+            : 'text-red-500 bg-red-50 dark:bg-red-900/20 dark:text-red-400'
+        }`}>
           {validationResult.isValid ? (
-            <CheckCircle className="h-4 w-4" />
+            <CheckCircle className="h-4 w-4 flex-shrink-0" />
           ) : (
-            <XCircle className="h-4 w-4" />
+            <XCircle className="h-4 w-4 flex-shrink-0" />
           )}
           <span>{validationResult.message}</span>
+        </div>
+      )}
+      
+      {validationResult?.isValid && validationResult.discount && (
+        <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p className="italic">
+            This discount will be applied at checkout.
+            {validationResult.discount.type === 'percentage' && validationResult.discount.amount === 100 
+              ? ' Your registration will be free.' 
+              : ''}
+          </p>
         </div>
       )}
     </div>

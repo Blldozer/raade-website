@@ -5,6 +5,7 @@ import { RegistrationFormData } from "./RegistrationFormTypes";
 import RegistrationSummary from "./RegistrationSummary";
 import { useState } from "react";
 import SuccessfulPayment from "./payment/SuccessfulPayment";
+import { useNavigate } from "react-router-dom";
 
 interface PaymentSectionProps {
   registrationData: RegistrationFormData;
@@ -14,6 +15,8 @@ interface PaymentSectionProps {
   onBackClick: () => void;
   couponDiscount?: { type: 'percentage' | 'fixed'; amount: number } | null;
   totalPrice?: number;
+  isFullDiscount?: boolean;
+  onFreeRegistration?: () => void;
 }
 
 /**
@@ -25,6 +28,7 @@ interface PaymentSectionProps {
  * - Uses our simplified direct Stripe integration
  * - Provides consistent back button functionality
  * - Shows payment confirmation screen on success
+ * - Handles both partial and full discount coupons
  * 
  * @param registrationData - Form data from the registration form
  * @param isSubmitting - Loading state for the form
@@ -33,6 +37,8 @@ interface PaymentSectionProps {
  * @param onBackClick - Callback to go back to the registration form
  * @param couponDiscount - Applied coupon discount information
  * @param totalPrice - Total price after discounts
+ * @param isFullDiscount - Whether the coupon provides 100% discount
+ * @param onFreeRegistration - Callback for free registration (100% discount)
  */
 const PaymentSection = ({
   registrationData,
@@ -41,9 +47,12 @@ const PaymentSection = ({
   onPaymentError,
   onBackClick,
   couponDiscount,
-  totalPrice
+  totalPrice,
+  isFullDiscount,
+  onFreeRegistration
 }: PaymentSectionProps) => {
   const [paymentComplete, setPaymentComplete] = useState(false);
+  const navigate = useNavigate();
   
   // Process raw form data into a clean array of emails
   const processedGroupEmails = Array.isArray(registrationData.groupEmails) 
@@ -63,6 +72,16 @@ const PaymentSection = ({
     setPaymentComplete(true);
   };
 
+  const handleCompleteFreeRegistration = () => {
+    if (onFreeRegistration) {
+      onFreeRegistration();
+    } else {
+      // Fallback if no callback is provided
+      sessionStorage.setItem("registrationEmail", registrationData.email);
+      navigate("/conference/success");
+    }
+  };
+
   if (paymentComplete) {
     return (
       <SuccessfulPayment 
@@ -80,21 +99,37 @@ const PaymentSection = ({
         totalPrice={totalPrice}
       />
       
-      <SimpleStripeProvider 
-        ticketType={registrationData.ticketType}
-        email={registrationData.email}
-        fullName={registrationData.fullName}
-        groupSize={registrationData.groupSize}
-        groupEmails={processedGroupEmails}
-        organization={registrationData.organization}
-        role={registrationData.role}
-        specialRequests={registrationData.specialRequests}
-        referralSource={registrationData.referralSource}
-        couponCode={registrationData.couponCode}
-        couponDiscount={couponDiscount}
-        onSuccess={handlePaymentSuccess}
-        onError={onPaymentError}
-      />
+      {isFullDiscount ? (
+        <div className="mt-6">
+          <Button
+            onClick={handleCompleteFreeRegistration}
+            className="w-full bg-green-600 hover:bg-green-700 text-white font-lora
+              transition-colors duration-300"
+            disabled={isSubmitting}
+          >
+            Complete Free Registration
+          </Button>
+          <p className="text-center text-sm text-green-600 mt-2">
+            Your registration is free with the applied coupon code.
+          </p>
+        </div>
+      ) : (
+        <SimpleStripeProvider 
+          ticketType={registrationData.ticketType}
+          email={registrationData.email}
+          fullName={registrationData.fullName}
+          groupSize={registrationData.groupSize}
+          groupEmails={processedGroupEmails}
+          organization={registrationData.organization}
+          role={registrationData.role}
+          specialRequests={registrationData.specialRequests}
+          referralSource={registrationData.referralSource}
+          couponCode={registrationData.couponCode}
+          couponDiscount={couponDiscount}
+          onSuccess={handlePaymentSuccess}
+          onError={onPaymentError}
+        />
+      )}
       
       <Button 
         variant="outline" 
