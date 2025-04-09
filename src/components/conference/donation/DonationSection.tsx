@@ -1,3 +1,4 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 import DonationForm from "./DonationForm";
@@ -190,21 +191,7 @@ const DonationSection = () => {
                     />
                   </div>
                   
-                  <div className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                    <input
-                      type="checkbox"
-                      className="h-4 w-4 mt-1"
-                      {...form.register("makeAnonymous")}
-                    />
-                    <div className="space-y-1 leading-none">
-                      <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                        Make this donation anonymous
-                      </label>
-                      <p className="text-sm text-gray-500">
-                        Your name will not be displayed publicly
-                      </p>
-                    </div>
-                  </div>
+                  {/* Removed the anonymous donation checkbox section */}
                 </div>
                 
                 {/* Submit button */}

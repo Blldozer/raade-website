@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,7 +14,7 @@ const formSchema = z.object({
   fullName: z.string().min(2, "Please enter your full name"),
   email: z.string().email("Please enter a valid email address"),
   message: z.string().optional(),
-  makeAnonymous: z.boolean().optional().default(false),
+  // Removed makeAnonymous field
 });
 
 // Create type from schema and export it
@@ -26,7 +27,7 @@ interface SubmittedValues {
   fullName: string;
   email: string;
   message?: string;
-  makeAnonymous?: boolean;
+  // Removed makeAnonymous field
 }
 
 export const useDonationForm = () => {
@@ -45,7 +46,7 @@ export const useDonationForm = () => {
       fullName: "",
       email: "",
       message: "",
-      makeAnonymous: false,
+      // Removed makeAnonymous default value
     },
   });
   
@@ -86,7 +87,7 @@ export const useDonationForm = () => {
         fullName: values.fullName,
         email: values.email,
         message: values.message,
-        makeAnonymous: values.makeAnonymous
+        // Removed makeAnonymous from the submitted values
       });
       
       setShowConfirmation(true);

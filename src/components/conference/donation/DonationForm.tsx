@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Form } from "@/components/ui/form";
 import DonationConfirmation from "./DonationConfirmation";
@@ -220,28 +221,7 @@ const DonationFormContent = () => {
                   )}
                 />
                 
-                <FormField
-                  control={form.control}
-                  name="makeAnonymous"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                      <FormControl>
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 mt-1"
-                          checked={field.value}
-                          onChange={field.onChange}
-                        />
-                      </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel>Make this donation anonymous</FormLabel>
-                        <p className="text-sm text-gray-500">
-                          Your name will not be displayed publicly
-                        </p>
-                      </div>
-                    </FormItem>
-                  )}
-                />
+                {/* Anonymous donation checkbox removed */}
               </div>
               
               {/* Submit button */}
