@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.1";
 
@@ -423,5 +424,13 @@ serve(async (req) => {
         timestamp: new Date().toISOString()
       }, 500);
     }
+  } catch (error) {
+    // Catch all for any unexpected errors
+    console.error("Critical error in store-registration function:", error);
+    return createResponse({
+      success: false,
+      message: "A critical error occurred while processing the registration",
+      error: String(error)
+    }, 500);
   }
 });
