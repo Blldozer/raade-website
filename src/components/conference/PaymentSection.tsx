@@ -53,6 +53,7 @@ const PaymentSection = ({
   onFreeRegistration
 }: PaymentSectionProps) => {
   const [paymentComplete, setPaymentComplete] = useState(false);
+  const [processingFreeRegistration, setProcessingFreeRegistration] = useState(false);
   const navigate = useNavigate();
   
   // Process raw form data into a clean array of emails
@@ -74,12 +75,22 @@ const PaymentSection = ({
   };
 
   const handleCompleteFreeRegistration = () => {
-    if (onFreeRegistration) {
-      onFreeRegistration();
-    } else {
-      // Fallback if no callback is provided
+    if (!onFreeRegistration) {
+      console.error("Missing onFreeRegistration callback");
+      return;
+    }
+    
+    setProcessingFreeRegistration(true);
+    
+    try {
+      // Store registration email before navigating
       sessionStorage.setItem("registrationEmail", registrationData.email);
-      navigate("/conference/success");
+      
+      // Call the free registration handler
+      onFreeRegistration();
+    } catch (error) {
+      console.error("Error during free registration:", error);
+      setProcessingFreeRegistration(false);
     }
   };
 
@@ -106,9 +117,9 @@ const PaymentSection = ({
             onClick={handleCompleteFreeRegistration}
             className="w-full bg-green-600 hover:bg-green-700 text-white font-lora
               transition-colors duration-300"
-            disabled={isSubmitting}
+            disabled={isSubmitting || processingFreeRegistration}
           >
-            {isSubmitting ? (
+            {isSubmitting || processingFreeRegistration ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Processing Registration...
@@ -145,7 +156,7 @@ const PaymentSection = ({
         className="w-full border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-lora
           dark:border-[#FBB03B] dark:text-[#FBB03B] dark:hover:bg-[#FBB03B] dark:hover:text-white
           transition-colors duration-300"
-        disabled={isSubmitting}
+        disabled={isSubmitting || processingFreeRegistration}
       >
         Back to Registration Form
       </Button>

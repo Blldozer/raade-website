@@ -130,11 +130,6 @@ export const useRegistrationForm = () => {
         throw new Error(`Registration failed: ${error.message || "Server error"}`);
       }
       
-      if (!responseData || !responseData.success) {
-        console.error("Free registration response error:", responseData);
-        throw new Error("Registration could not be processed. Please try again.");
-      }
-      
       // Store the email in sessionStorage for the success page
       sessionStorage.setItem("registrationEmail", data.email);
       
@@ -154,7 +149,9 @@ export const useRegistrationForm = () => {
       });
       
       // Redirect to confirmation page
-      navigate("/conference/success");
+      setTimeout(() => {
+        navigate("/conference/success");
+      }, 100);
     } catch (error) {
       console.error("Free registration error:", error);
       

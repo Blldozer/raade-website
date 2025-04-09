@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form"; // Import Form from shadcn/ui
@@ -167,6 +166,7 @@ const ConferenceRegistrationForm = () => {
   // Handle completion of free registration
   const handleFreeRegistrationComplete = () => {
     if (registrationData && isFullDiscount) {
+      // This will process the registration and navigate to success page
       handleDirectRegistration(registrationData);
     }
   };
