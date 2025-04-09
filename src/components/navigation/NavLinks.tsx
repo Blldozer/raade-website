@@ -1,9 +1,9 @@
-
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import NavDropdown from "./NavDropdown";
 import JoinButton from "./JoinButton";
-import navConfig from "./navConfig"; // Change from named import to default import
+import DonateButton from "./DonateButton";
+import navConfig from "./navConfig"; 
 import { useNavigation as useNavigationContext } from "./context/useNavigation";
 import { useNavigation as useNavigationHook } from "@/hooks/navigation/useNavigation";
 import { useNavBackgroundStyle } from "@/hooks/navigation/useNavBackgroundStyle";
@@ -104,6 +104,12 @@ const NavLinks = ({ className = "", onClick, isScrolled = false, isHeroPage = fa
             )}
           </li>
         ))}
+        <li>
+          <DonateButton 
+            buttonStyles={getButtonStyles()} 
+            onClick={onClick}
+          />
+        </li>
         <li>
           <JoinButton 
             buttonStyles={getButtonStyles()} 
