@@ -116,7 +116,7 @@ const CouponCodeSection = ({
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium text-[#274675] flex items-center">
+      <h3 className="text-lg font-medium text-[#274675] flex items-center dark:text-[#FBB03B]">
         <Tag className="h-5 w-5 mr-2" />
         Apply Coupon Code
       </h3>

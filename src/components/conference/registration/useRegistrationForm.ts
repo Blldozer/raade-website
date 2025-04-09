@@ -91,7 +91,22 @@ export const useRegistrationForm = () => {
   // Direct registration function for 100% off coupons
   const handleDirectRegistration = async (data: RegistrationFormData) => {
     try {
+      setIsSubmitting(true);
       console.log("Processing free registration with coupon code:", couponCode);
+      
+      // Process group emails consistently
+      let processedGroupEmails = [];
+      if (data.groupEmails && Array.isArray(data.groupEmails)) {
+        processedGroupEmails = data.groupEmails
+          .filter(Boolean)
+          .map(email => {
+            if (typeof email === 'object' && email !== null && 'value' in email) {
+              return typeof email.value === 'string' ? email.value : '';
+            }
+            return String(email || '');
+          })
+          .filter(email => email.length > 0);
+      }
       
       // Submit registration data with coupon info to store-registration function
       const { data: responseData, error } = await supabase.functions.invoke('store-registration', {
@@ -102,7 +117,7 @@ export const useRegistrationForm = () => {
           role: data.role || "",
           ticketType: data.ticketType,
           groupSize: data.groupSize,
-          groupEmails: data.groupEmails,
+          groupEmails: processedGroupEmails,
           specialRequests: data.specialRequests || "",
           referralSource: data.referralSource || "",
           couponCode: couponCode,
@@ -111,7 +126,13 @@ export const useRegistrationForm = () => {
       });
       
       if (error) {
-        throw new Error(`Registration failed: ${error.message}`);
+        console.error("Free registration edge function error:", error);
+        throw new Error(`Registration failed: ${error.message || "Server error"}`);
+      }
+      
+      if (!responseData || !responseData.success) {
+        console.error("Free registration response error:", responseData);
+        throw new Error("Registration could not be processed. Please try again.");
       }
       
       // Store the email in sessionStorage for the success page
@@ -136,11 +157,18 @@ export const useRegistrationForm = () => {
       navigate("/conference/success");
     } catch (error) {
       console.error("Free registration error:", error);
+      
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "Registration failed. Please try again later.";
+      
       toast({
         title: "Registration failed",
-        description: "There was an error processing your registration. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

@@ -6,6 +6,7 @@ import RegistrationSummary from "./RegistrationSummary";
 import { useState } from "react";
 import SuccessfulPayment from "./payment/SuccessfulPayment";
 import { useNavigate } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 
 interface PaymentSectionProps {
   registrationData: RegistrationFormData;
@@ -107,7 +108,14 @@ const PaymentSection = ({
               transition-colors duration-300"
             disabled={isSubmitting}
           >
-            Complete Free Registration
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processing Registration...
+              </>
+            ) : (
+              'Complete Free Registration'
+            )}
           </Button>
           <p className="text-center text-sm text-green-600 mt-2">
             Your registration is free with the applied coupon code.
