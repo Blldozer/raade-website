@@ -15,6 +15,7 @@ const corsHeaders = {
  * - Creates payment intent with Stripe
  * - Returns client secret for frontend processing
  * - Handles CORS for browser requests
+ * - Now with enhanced error logging
  */
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -23,18 +24,29 @@ serve(async (req) => {
   }
 
   try {
+    console.log("Process donation function called");
+    
+    // Get Stripe secret key from environment
+    const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeSecretKey) {
+      console.error("STRIPE_SECRET_KEY is not set in environment variables");
+      throw new Error("Server configuration error: Stripe key not set");
+    }
+    
     // Initialize Stripe with the secret key
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
+    const stripe = new Stripe(stripeSecretKey, {
       apiVersion: "2022-11-15",
     });
     
     // Parse the request body
     const requestData = await req.json();
+    console.log("Request data:", JSON.stringify(requestData));
     
     // Validate required fields
     const { amount, email, fullName, makeAnonymous, message } = requestData;
     
     if (!amount || !email || !fullName) {
+      console.error("Missing required fields:", { amount, email, fullName });
       return new Response(
         JSON.stringify({
           error: "Missing required fields: amount, email, or fullName",
@@ -48,6 +60,7 @@ serve(async (req) => {
     
     // Validate amount
     if (isNaN(amount) || amount < 100) { // Minimum $1 donation (100 cents)
+      console.error("Invalid amount:", amount);
       return new Response(
         JSON.stringify({
           error: "Invalid amount. Minimum donation is $1.",
@@ -63,6 +76,7 @@ serve(async (req) => {
     
     try {
       // Create a payment intent with Stripe
+      console.log("Creating payment intent with Stripe");
       const paymentIntent = await stripe.paymentIntents.create({
         amount,
         currency: "usd",
@@ -97,6 +111,7 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({
           error: stripeError.message || "Error processing payment with Stripe",
+          details: JSON.stringify(stripeError),
         }),
         {
           status: 422,
@@ -110,6 +125,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         error: error.message || "Unknown error occurred",
+        stack: error.stack || "No stack trace available",
       }),
       {
         status: 500,

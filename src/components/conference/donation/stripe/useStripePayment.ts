@@ -19,6 +19,7 @@ interface StripePaymentHookProps {
  * - Processes card payment with Stripe
  * - Handles loading states and errors
  * - Returns payment status and actions
+ * - Enhanced with better error handling and logging
  */
 export const useStripePayment = ({
   donationAmount,
@@ -71,10 +72,17 @@ export const useStripePayment = ({
         }
       });
 
-      if (intentError || !data || !data.clientSecret) {
-        console.error("Payment intent creation failed:", intentError || "No client secret returned");
+      if (intentError) {
+        console.error("Payment intent creation failed:", intentError);
         throw new Error(intentError?.message || "Failed to initialize payment. Please try again.");
       }
+      
+      if (!data || !data.clientSecret) {
+        console.error("No client secret returned:", data);
+        throw new Error("Payment system error: No payment details returned. Please try again.");
+      }
+
+      console.log("Payment intent created successfully", { data });
 
       // 2. Confirm the card payment with Stripe
       const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(
@@ -96,6 +104,7 @@ export const useStripePayment = ({
       }
 
       if (paymentIntent?.status !== "succeeded") {
+        console.warn(`Payment ${paymentIntent?.status || "failed"}:`, paymentIntent);
         throw new Error(`Payment ${paymentIntent?.status || "failed"}. Please try again.`);
       }
 

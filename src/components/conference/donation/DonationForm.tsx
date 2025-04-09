@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Form } from "@/components/ui/form";
 import DonationConfirmation from "./DonationConfirmation";
@@ -17,6 +18,10 @@ import { useStripePayment } from "./stripe/useStripePayment";
 import DonationStepIndicator from "./DonationStepIndicator";
 import DonationSummary from "./DonationSummary";
 
+interface DonationFormProps {
+  onPaymentError?: () => void;
+}
+
 /**
  * DonationForm Component
  * 
@@ -27,8 +32,9 @@ import DonationSummary from "./DonationSummary";
  * - Stripe payment processing integration
  * - Mobile responsive design
  * - Confirmation screen after successful payment
+ * - Enhanced error handling and reporting
  */
-const DonationForm = () => {
+const DonationForm: React.FC<DonationFormProps> = ({ onPaymentError }) => {
   const {
     form,
     isSubmitting,
@@ -46,6 +52,13 @@ const DonationForm = () => {
     handlePaymentError,
     handleBackToForm
   } = useDonationForm();
+  
+  // Forward critical payment errors to parent component
+  React.useEffect(() => {
+    if (paymentError && paymentError.includes("system error") && onPaymentError) {
+      onPaymentError();
+    }
+  }, [paymentError, onPaymentError]);
   
   // Show confirmation screen after successful submission
   if (showConfirmation && submittedValues) {
@@ -329,9 +342,16 @@ const DonationForm = () => {
                       {/* Donate button */}
                       <Button 
                         onClick={async () => {
-                          const success = await stripePaymentProps.processPayment();
-                          if (success) {
-                            handlePaymentSuccess();
+                          try {
+                            const success = await stripePaymentProps.processPayment();
+                            if (success) {
+                              handlePaymentSuccess();
+                            } else if (stripePaymentProps.error) {
+                              handlePaymentError(stripePaymentProps.error);
+                            }
+                          } catch (error) {
+                            const message = error instanceof Error ? error.message : "Payment processing failed";
+                            handlePaymentError(message);
                           }
                         }}
                         disabled={stripePaymentProps.isLoading || isSubmitting}

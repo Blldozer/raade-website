@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -79,23 +78,19 @@ export const useDonationForm = () => {
     return parseInt(selectedAmount);
   };
   
-  // Get numeric donation amount in cents for Stripe
-  const getDonationAmountInCents = (): number => {
-    if (selectedAmount === "custom" && form.watch("customAmount")) {
-      return Math.round(parseFloat(form.watch("customAmount")) * 100);
-    }
-    return parseInt(selectedAmount) * 100;
-  };
-  
   // Initial form submission handler - validates form and shows card payment
   const onSubmit = async (values: DonationFormValues) => {
+    console.log("Form submitted with values:", values);
     setPaymentError(null);
+    setIsSubmitting(true);
     
     try {
-      // Calculate donation amount in cents for Stripe
-      const amountInCents = getDonationAmountInCents();
+      // Calculate donation amount
+      const amountValue = selectedAmount === "custom" && values.customAmount 
+        ? parseFloat(values.customAmount) 
+        : parseInt(selectedAmount);
       
-      if (isNaN(amountInCents) || amountInCents < 100) {
+      if (isNaN(amountValue) || amountValue < 1) {
         throw new Error("Invalid donation amount. Minimum donation is $1.");
       }
       
@@ -109,12 +104,21 @@ export const useDonationForm = () => {
         makeAnonymous: values.makeAnonymous
       });
       
+      console.log("Moving to payment step with amount:", amountValue);
+      
       // Show the payment form
       setShowCardPayment(true);
+      
+      // Show success toast for form submission
+      toast({
+        title: "Information Submitted",
+        description: "Please complete your donation by providing payment details.",
+        variant: "default",
+      });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
       setPaymentError(errorMessage);
-      console.error("Donation error:", error);
+      console.error("Donation form error:", error);
       
       // Show error toast
       toast({
@@ -122,6 +126,8 @@ export const useDonationForm = () => {
         description: errorMessage,
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
   
@@ -205,6 +211,7 @@ export const useDonationForm = () => {
   // Go back to form from payment screen
   const handleBackToForm = () => {
     setShowCardPayment(false);
+    setPaymentError(null);
   };
   
   return {
