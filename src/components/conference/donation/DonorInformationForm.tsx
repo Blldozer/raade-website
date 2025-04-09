@@ -64,7 +64,7 @@ const DonorInformationForm: React.FC<DonorInformationFormProps> = ({ form }) => 
             <FormControl>
               <Textarea
                 placeholder="Share why you're supporting RAADE..."
-                className="resize-none h-24"
+                className="resize-none"
                 {...field}
               />
             </FormControl>
@@ -72,6 +72,8 @@ const DonorInformationForm: React.FC<DonorInformationFormProps> = ({ form }) => 
           </FormItem>
         )}
       />
+      
+      {/* Anonymous donation checkbox removed */}
     </div>
   );
 };
