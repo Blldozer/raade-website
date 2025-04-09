@@ -1,7 +1,6 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, Heart } from "lucide-react";
+import { Loader2, Heart, Lock } from "lucide-react";
 
 interface DonationFormSubmitProps {
   isSubmitting: boolean;
@@ -39,6 +38,13 @@ const DonationFormSubmit: React.FC<DonationFormSubmitProps> = ({
           </>
         )}
       </Button>
+      
+      <div className="flex items-center justify-center mt-2 mb-2">
+        <Lock className="h-3 w-3 text-gray-500 mr-1" />
+        <span className="text-xs text-gray-500 flex items-center">
+          Secured by <span className="font-semibold ml-1">Stripe</span>
+        </span>
+      </div>
       
       <p className="text-xs text-gray-500 text-center">
         Your donation helps support RAADE's work in pioneering innovative approaches to 
