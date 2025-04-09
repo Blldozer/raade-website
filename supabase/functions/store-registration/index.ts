@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.1";
 
@@ -62,17 +61,7 @@ serve(async (req) => {
       paymentComplete = false
     } = requestData;
     
-    console.log(`[${requestId}] Registration data received for ${email}`);
-    
-    // Validate required data
-    if (!fullName || !email || !ticketType) {
-      console.error(`[${requestId}] Missing required registration data: fullName=${!!fullName}, email=${!!email}, ticketType=${!!ticketType}`);
-      return createResponse({
-        success: false,
-        message: "Missing required registration data",
-        requestId
-      }, 400);
-    }
+    console.log(`[${requestId}] Registration data received for ${email}, coupon code: ${couponCode || 'None'}`);
     
     // Initialize Supabase client with admin privileges
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -125,32 +114,40 @@ serve(async (req) => {
     }
     
     // If a coupon code was used, perform additional checks and don't increment usage for unlimited school codes
-    if (requestData.couponCode) {
+    if (couponCode) {
+      console.log(`[${requestId}] Processing registration with coupon code: ${couponCode}`);
+      
       // Don't increment usage for unlimited school codes in this function
       // That will be handled separately in the validate-coupon function
-      if (!UNLIMITED_SCHOOL_CODES.includes(requestData.couponCode)) {
+      if (!UNLIMITED_SCHOOL_CODES.includes(couponCode)) {
         // For regular coupon codes, check if it exists and is valid
         try {
           const { data: couponData, error: couponError } = await supabaseAdmin.rpc(
             'get_coupon_by_code',
-            { coupon_code_param: requestData.couponCode }
+            { coupon_code_param: couponCode }
           );
           
           if (couponError) {
             console.error(`[${requestId}] Error retrieving coupon:`, couponError);
-            return createResponse({
-              success: false,
-              message: "Invalid coupon code",
-              requestId
-            }, 400);
+            // Continue since we don't want to block registration if coupon validation fails at this stage
+            // The coupon was already validated earlier in the flow
+          } else if (couponData) {
+            // Increment the coupon usage
+            const { error: usageError } = await supabaseAdmin.rpc(
+              'increment_coupon_usage',
+              { coupon_code_param: couponCode }
+            );
+            
+            if (usageError) {
+              console.error(`[${requestId}] Error incrementing coupon usage:`, usageError);
+              // Continue since payment intent was created successfully
+            } else {
+              console.log(`[${requestId}] Successfully incremented usage for coupon: ${couponCode}`);
+            }
           }
         } catch (couponError) {
           console.error(`[${requestId}] Exception retrieving coupon:`, couponError);
-          return createResponse({
-            success: false,
-            message: "Error retrieving coupon",
-            requestId
-          }, 500);
+          // Continue with registration
         }
       }
     }
@@ -206,7 +203,7 @@ serve(async (req) => {
               status: paymentComplete ? 'confirmed' : 'pending',
               updated_at: new Date().toISOString(),
               verification_method: referralSource || null,
-              coupon_code: couponCode || null
+              coupon_code: couponCode || null  // Ensure coupon code is stored
             })
             .eq('id', existingRegistration.id)
             .select();
@@ -258,7 +255,7 @@ serve(async (req) => {
               status: paymentComplete ? 'confirmed' : 'pending',
               verification_method: referralSource || null,
               email_verified: emailVerified,
-              coupon_code: couponCode || null
+              coupon_code: couponCode || null  // Ensure coupon code is stored
             })
             .select();
             

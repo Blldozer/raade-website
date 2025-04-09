@@ -1,6 +1,7 @@
 
 import { useState } from "react";
-import { useStripe, useElements, StripeCardElementChangeEvent } from "@stripe/react-stripe-js";
+import { useStripe, useElements } from "@stripe/react-stripe-js";
+import { StripeCardElementChangeEvent } from "@stripe/stripe-js";
 import { supabase } from "@/integrations/supabase/client";
 
 interface UseCardPaymentProps {

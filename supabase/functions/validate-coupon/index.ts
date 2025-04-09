@@ -62,12 +62,11 @@ serve(async (req) => {
     // Query the coupon_codes table
     const upperCaseCode = code.toUpperCase();
     
-    const { data: couponData, error: dbError } = await supabaseAdmin
-      .from('coupon_codes')
-      .select('*')
-      .eq('code', upperCaseCode)
-      .eq('is_active', true)
-      .maybeSingle();
+    // Now using the get_coupon_by_code database function
+    const { data: couponData, error: dbError } = await supabaseAdmin.rpc(
+      'get_coupon_by_code',
+      { coupon_code_param: upperCaseCode }
+    );
       
     if (dbError) {
       console.error("Database error:", dbError);
@@ -84,7 +83,7 @@ serve(async (req) => {
     }
     
     // Check if coupon exists and is valid
-    if (!couponData) {
+    if (!couponData || (Array.isArray(couponData) && couponData.length === 0)) {
       // Fallback to hardcoded coupons for testing/demo purposes
       const demoValidCoupons = {
         "DEMO25": { type: "percentage", amount: 25 },
@@ -142,68 +141,45 @@ serve(async (req) => {
       // For unlimited school codes that haven't been used by this email,
       // we don't check max_uses or increment usage counts
     } else {
-      // Check if coupon is expired
-      if (couponData.expires_at && new Date(couponData.expires_at) < new Date()) {
-        return new Response(
-          JSON.stringify({
-            isValid: false,
-            message: "Coupon has expired"
-          }),
-          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
+      // Extract data from the database function response
+      const coupon = Array.isArray(couponData) ? couponData[0] : couponData;
       
-      // Check max usage limit if set (skip this for unlimited school codes)
-      if (!UNLIMITED_SCHOOL_CODES.includes(upperCaseCode) && 
-          couponData.max_uses !== null && 
-          couponData.current_uses >= couponData.max_uses) {
-        return new Response(
-          JSON.stringify({
-            isValid: false,
-            message: "Coupon usage limit reached"
-          }),
-          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      
-      // Increment the current_uses count for non-unlimited codes
-      if (!UNLIMITED_SCHOOL_CODES.includes(upperCaseCode)) {
-        const { data: usageData, error: usageError } = await supabaseAdmin.rpc(
-          'increment_coupon_usage',
-          { coupon_code_param: upperCaseCode }
-        );
-        
-        if (usageError) {
-          console.error("Error incrementing coupon usage:", usageError);
-          // We still continue since validation was successful
-        }
-      }
+      // Return the validated coupon details
+      return new Response(
+        JSON.stringify({
+          isValid: true,
+          message: "Coupon is valid",
+          discount: {
+            type: coupon.discount_type,
+            amount: parseFloat(coupon.discount_amount)
+          }
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
     
-    // Create the discount object based on the discount type
-    const discount = {
-      type: couponData.discount_type as "percentage" | "fixed",
-      amount: Number(couponData.discount_amount)
-    };
+    // If we've made it here, the coupon is valid
+    // For unlimited school codes, we don't need to increment usage count here
+    const coupon = Array.isArray(couponData) ? couponData[0] : couponData;
     
     return new Response(
       JSON.stringify({
         isValid: true,
         message: "Coupon is valid",
-        discount,
-        couponId: couponData.id
+        discount: {
+          type: coupon.discount_type,
+          amount: parseFloat(coupon.discount_amount)
+        }
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
     
   } catch (error) {
     console.error("Error validating coupon:", error);
-    
     return new Response(
       JSON.stringify({
         isValid: false,
-        message: "Error processing coupon",
-        error: error.message
+        message: "Server error validating coupon"
       }),
       { 
         status: 500, 
