@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 // Define form schema with validation
 const formSchema = z.object({
@@ -117,16 +118,58 @@ export const useDonationForm = () => {
   };
   
   // Handle payment success
-  const handlePaymentSuccess = () => {
-    setShowConfirmation(true);
-    setShowCardPayment(false);
+  const handlePaymentSuccess = async () => {
+    setIsSubmitting(true);
     
-    // Show success toast
-    toast({
-      title: "Donation Successful",
-      description: `Thank you for your donation of ${getDonationAmount()}!`,
-      variant: "default",
-    });
+    try {
+      if (!submittedValues) {
+        throw new Error("No donation information found");
+      }
+      
+      // Calculate donation amount
+      const amount = submittedValues.amount === "custom" && submittedValues.customAmount
+        ? parseFloat(submittedValues.customAmount)
+        : parseFloat(submittedValues.amount);
+      
+      // Store donation in Supabase
+      const { error } = await supabase.from('donations').insert({
+        donor_name: submittedValues.makeAnonymous ? null : submittedValues.fullName,
+        donor_email: submittedValues.email,
+        amount,
+        message: submittedValues.message || null,
+        is_anonymous: submittedValues.makeAnonymous || false,
+        payment_status: 'succeeded', // For now, we're assuming success
+        donation_type: 'conference-support'
+      });
+      
+      if (error) {
+        console.error("Error storing donation:", error);
+        throw new Error("Failed to record your donation. Please try again.");
+      }
+      
+      // Show success confirmation
+      setShowConfirmation(true);
+      setShowCardPayment(false);
+      
+      // Show success toast
+      toast({
+        title: "Donation Successful",
+        description: `Thank you for your donation of ${getDonationAmount()}!`,
+        variant: "default",
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+      setPaymentError(errorMessage);
+      
+      // Show error toast
+      toast({
+        title: "Payment Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   // Handle payment error

@@ -12,7 +12,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import DynamicDonationImpact from "./DynamicDonationImpact";
 import { Toaster } from "@/components/ui/toaster";
-import StripeCheckoutProvider from "./stripe/StripeCheckout";
+import StripeWrapper from "./stripe/StripeWrapper";
+import StripePaymentForm from "./stripe/StripePaymentForm";
 
 /**
  * DonationForm Component
@@ -305,11 +306,30 @@ const DonationForm = () => {
               </div>
               
               {submittedValues && (
-                <StripeCheckoutProvider
-                  donationValues={submittedValues}
-                  onPaymentSuccess={handlePaymentSuccess}
-                  onPaymentError={handlePaymentError}
-                />
+                <StripeWrapper>
+                  <StripePaymentForm
+                    isSubmitting={isSubmitting}
+                    error={paymentError}
+                  />
+                  
+                  {/* Donate button */}
+                  <Button 
+                    onClick={() => handlePaymentSuccess()}
+                    disabled={isSubmitting}
+                    className="w-full mt-4 bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      `Donate ${submittedValues.amount === "custom" && submittedValues.customAmount 
+                        ? `$${parseFloat(submittedValues.customAmount).toFixed(2)}` 
+                        : `$${submittedValues.amount}`}`
+                    )}
+                  </Button>
+                </StripeWrapper>
               )}
             </>
           )}
