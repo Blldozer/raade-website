@@ -2,51 +2,46 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { toast } from "@/hooks/use-toast";
-import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import { createClient } from "@supabase/supabase-js";
+import * as z from "zod";
 
-/**
- * DonationForm schema with validation
- */
-export const donationFormSchema = z.object({
-  amount: z.string().min(1, "Please select or enter an amount"),
-  customAmount: z.string().optional(),
+// Define form schema with validation
+const formSchema = z.object({
+  amount: z.string().min(1, "Please select a donation amount"),
+  customAmount: z.string().optional().refine(
+    (val) => !val || parseFloat(val) >= 1, 
+    { message: "Custom amount must be at least $1" }
+  ),
   fullName: z.string().min(2, "Please enter your full name"),
   email: z.string().email("Please enter a valid email address"),
   message: z.string().optional(),
-  makeAnonymous: z.boolean().optional(),
+  makeAnonymous: z.boolean().optional().default(false),
 });
 
-export type DonationFormValues = z.infer<typeof donationFormSchema>;
+// Create type from schema
+type DonationFormValues = z.infer<typeof formSchema>;
 
-/**
- * Custom hook to manage donation form state and submission logic
- * 
- * Handles:
- * - Form validation with zod
- * - Amount selection state
- * - Stripe payment processing
- * - Form submission and error handling
- * - Confirmation state management
- */
+// Define the return values for submittedValues to ensure they're not optional
+interface SubmittedValues {
+  amount: string;
+  customAmount?: string;
+  fullName: string;
+  email: string;
+  message?: string;
+  makeAnonymous?: boolean;
+}
+
 export const useDonationForm = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedAmount, setSelectedAmount] = useState("50");
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [selectedAmount, setSelectedAmount] = useState("25");
-  const [submittedValues, setSubmittedValues] = useState<DonationFormValues | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submittedValues, setSubmittedValues] = useState<SubmittedValues | null>(null);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   
-  // Stripe hooks
-  const stripe = useStripe();
-  const elements = useElements();
-  
-  // Initialize form with zod schema validation and proper default values
+  // Initialize form with react-hook-form
   const form = useForm<DonationFormValues>({
-    resolver: zodResolver(donationFormSchema),
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      amount: "25", // This ensures amount is not optional but has a default value
+      amount: "50",
       customAmount: "",
       fullName: "",
       email: "",
@@ -55,140 +50,56 @@ export const useDonationForm = () => {
     },
   });
   
-  // Create Supabase client for edge function calls
-  const supabase = createClient(
-    "https://dermbucktbegnbkjzobs.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlcm1idWNrdGJlZ25ia2p6b2JzIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTU5MjI5OTYsImV4cCI6MjAxMTQ5ODk5Nn0.QxlM0zc1SkJlnZzbI9-i9U0fYW0KAGRkBNF0OiGEEes"
-  );
-  
-  // Calculate the actual donation amount based on form values
-  const calculateDonationAmount = (): number => {
-    const amount = form.watch("amount");
-    const customAmount = form.watch("customAmount");
-    
-    if (amount === "custom" && customAmount) {
-      return parseFloat(customAmount) * 100; // Convert to cents for Stripe
-    }
-    
-    return parseInt(amount) * 100; // Convert to cents for Stripe
+  // Handle amount selection to determine if custom amount field should be shown
+  const handleAmountSelect = (value: string) => {
+    setSelectedAmount(value);
   };
   
-  // Handle form submission
-  const onSubmit = async (data: DonationFormValues) => {
-    if (!stripe || !elements) {
-      setPaymentError("Stripe has not initialized. Please refresh the page and try again.");
-      return;
+  // Get formatted donation amount for display
+  const getDonationAmount = () => {
+    if (selectedAmount === "custom" && form.watch("customAmount")) {
+      return `$${parseFloat(form.watch("customAmount")).toFixed(2)}`;
     }
-    
-    const cardElement = elements.getElement(CardElement);
-    
-    if (!cardElement) {
-      setPaymentError("Card element not found. Please refresh the page and try again.");
-      return;
-    }
-    
+    return `$${selectedAmount}`;
+  };
+  
+  // Form submission handler
+  const onSubmit = async (values: DonationFormValues) => {
     setIsSubmitting(true);
     setPaymentError(null);
     
     try {
-      // Step 1: Create a payment intent on the server
-      const { data: paymentIntent, error: intentError } = await supabase.functions.invoke('process-donation', {
-        body: {
-          amount: calculateDonationAmount(),
-          email: data.email,
-          fullName: data.fullName,
-          makeAnonymous: data.makeAnonymous || false,
-          message: data.message || "",
-        }
-      });
+      // Simulate payment processing with a delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
-      if (intentError || !paymentIntent || !paymentIntent.clientSecret) {
-        throw new Error(intentError?.message || "Could not create payment intent");
-      }
+      // Here you would integrate with actual payment processing
+      // For now, we'll just simulate success
       
-      // Step 2: Confirm the payment with Stripe.js
-      const { error: stripeError } = await stripe.confirmCardPayment(paymentIntent.clientSecret, {
-        payment_method: {
-          card: cardElement,
-          billing_details: {
-            name: data.fullName,
-            email: data.email,
-          },
-        },
-      });
-      
-      if (stripeError) {
-        throw new Error(stripeError.message || "Payment failed");
-      }
-      
-      // Step 3: Payment successful, update UI
-      // Ensure all required fields are explicitly set to satisfy TypeScript
+      // Ensure all required fields are set when updating submittedValues
       setSubmittedValues({
-        amount: data.amount,
-        fullName: data.fullName,
-        email: data.email,
-        customAmount: data.customAmount || "",
-        message: data.message || "",
-        makeAnonymous: data.makeAnonymous || false,
+        amount: values.amount,
+        customAmount: values.customAmount,
+        fullName: values.fullName,
+        email: values.email,
+        message: values.message,
+        makeAnonymous: values.makeAnonymous
       });
       
-      // Show success state
       setShowConfirmation(true);
-      toast({
-        title: "Donation Successful",
-        description: "Thank you for your generous support!",
-        variant: "default",
-      });
-      
     } catch (error) {
+      setPaymentError("There was an error processing your donation. Please try again.");
       console.error("Donation error:", error);
-      setPaymentError(error instanceof Error ? error.message : "An unexpected error occurred");
-      
-      toast({
-        title: "Donation failed",
-        description: error instanceof Error ? error.message : "There was an error processing your donation. Please try again.",
-        variant: "destructive",
-      });
     } finally {
       setIsSubmitting(false);
     }
   };
   
-  // Handle amount selection
-  const handleAmountSelect = (value: string) => {
-    setSelectedAmount(value);
-    form.setValue("amount", value);
-    
-    // If selecting a preset amount, clear any custom amount
-    if (value !== "custom") {
-      form.setValue("customAmount", "");
-    }
-  };
-  
-  // Calculate the final donation amount for display
-  const getDonationAmount = () => {
-    const amount = form.watch("amount");
-    const customAmount = form.watch("customAmount");
-    
-    if (amount === "custom" && customAmount) {
-      return `$${parseFloat(customAmount).toFixed(2)}`;
-    }
-    
-    return `$${amount}`;
-  };
-  
-  // Reset form and confirmation state
+  // Reset form to donate again
   const handleDonateAgain = () => {
-    form.reset({
-      amount: "25",
-      customAmount: "",
-      fullName: "",
-      email: "",
-      message: "",
-      makeAnonymous: false,
-    });
+    form.reset();
+    setSelectedAmount("50");
     setShowConfirmation(false);
-    setSelectedAmount("25");
+    setSubmittedValues(null);
     setPaymentError(null);
   };
   
@@ -202,6 +113,6 @@ export const useDonationForm = () => {
     onSubmit: form.handleSubmit(onSubmit),
     handleAmountSelect,
     getDonationAmount,
-    handleDonateAgain,
+    handleDonateAgain
   };
 };
