@@ -1,3 +1,4 @@
+
 import { UseFormRegister, FormState, UseFormSetValue, UseFormWatch, Control } from "react-hook-form";
 import { RegistrationFormData } from "./RegistrationFormTypes";
 import TicketTypeSelection from "./registration/TicketTypeSelection";
@@ -56,6 +57,7 @@ const RegistrationFormFields = ({
   
   // Get the current email value for coupon validation
   const currentEmail = watch("email");
+  const ticketType = watch("ticketType");
 
   return (
     <div className="space-y-8">
@@ -80,13 +82,14 @@ const RegistrationFormFields = ({
         control={control}
       />
       
-      {/* Coupon Code Section (now with email) */}
+      {/* Coupon Code Section (now with email and ticket type) */}
       <div className="p-4 border border-gray-200 rounded-lg bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <CouponCodeSection 
           setCouponCode={setCouponCode}
           setCouponDiscount={setCouponDiscount}
           setIsFullDiscount={setIsFullDiscount}
-          email={currentEmail} // Pass the current email
+          email={currentEmail}
+          ticketType={ticketType}
         />
       </div>
 

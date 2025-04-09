@@ -53,7 +53,7 @@ const CouponCodeSection = ({
 
   // Check if this is a group ticket - discounts don't apply to groups
   const isGroupTicket = ticketType === TICKET_TYPES_ENUM.STUDENT_GROUP;
-
+  
   // List of special school codes that need email verification
   const SCHOOL_CODES = ['PVAMU', 'TEXAS', 'TULANE'];
   
