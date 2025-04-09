@@ -9,8 +9,17 @@ import AppProviders from "@/components/app/AppProviders";
 // Set global flag to indicate React is initialized
 // Do this FIRST before any React components are mounted
 if (typeof window !== 'undefined') {
-  window.__REACT_INITIALIZED = true;
-  console.log("React initialization flag set in main.tsx");
+  try {
+    window.__REACT_INITIALIZED = true;
+    console.log("React initialization flag set in main.tsx");
+    
+    // Also check if React is properly loaded
+    if (!React || !React.createContext) {
+      console.error("React or React.createContext is not available!");
+    }
+  } catch (e) {
+    console.error("Failed to set React initialization flag:", e);
+  }
 }
 
 // Initialize React when DOM is ready

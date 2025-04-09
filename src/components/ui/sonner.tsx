@@ -1,5 +1,5 @@
 
-import { useTheme } from "next-themes"
+import { useTheme as useNextTheme } from "next-themes"
 import { Toaster as SonnerToaster, ToasterProps } from "sonner"
 
 /**
@@ -12,11 +12,12 @@ import { Toaster as SonnerToaster, ToasterProps } from "sonner"
  * - Provides rich colors for different status types
  */
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
+  // Add safe fallback for theme to prevent runtime errors
+  const { theme = "system", resolvedTheme } = useNextTheme() || { theme: "system", resolvedTheme: undefined };
 
   return (
     <SonnerToaster
-      theme={theme as ToasterProps["theme"]}
+      theme={(theme as ToasterProps["theme"]) || "system"}
       className="toaster group"
       richColors
       closeButton
