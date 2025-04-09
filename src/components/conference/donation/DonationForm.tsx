@@ -6,6 +6,8 @@ import DonationAmountSelector from "./DonationAmountSelector";
 import DonorInformationForm from "./DonorInformationForm";
 import DonationFormSubmit from "./DonationFormSubmit";
 import { useDonationForm } from "./useDonationForm";
+import StripeWrapper from "./stripe/StripeWrapper";
+import StripePaymentForm from "./stripe/StripePaymentForm";
 
 /**
  * DonationForm Component
@@ -13,6 +15,7 @@ import { useDonationForm } from "./useDonationForm";
  * Interactive donation form with:
  * - Preset donation amounts with custom option
  * - Donor information collection
+ * - Stripe payment integration
  * - Optional message field
  * - Anonymous donation option
  * - Success state with confirmation
@@ -22,12 +25,26 @@ import { useDonationForm } from "./useDonationForm";
  * for better maintainability and code organization.
  */
 const DonationForm = () => {
+  return (
+    <StripeWrapper>
+      <DonationFormContent />
+    </StripeWrapper>
+  );
+};
+
+/**
+ * DonationFormContent Component
+ * 
+ * Contains the actual form content that needs to be wrapped in the Stripe context
+ */
+const DonationFormContent = () => {
   const {
     form,
     isSubmitting,
     showConfirmation,
     selectedAmount,
     submittedValues,
+    paymentError,
     onSubmit,
     handleAmountSelect,
     getDonationAmount,
@@ -59,6 +76,12 @@ const DonationForm = () => {
           
           {/* Donor information section */}
           <DonorInformationForm form={form} />
+          
+          {/* Stripe payment form */}
+          <StripePaymentForm 
+            isSubmitting={isSubmitting}
+            error={paymentError}
+          />
           
           {/* Submit button and footer text */}
           <DonationFormSubmit 
