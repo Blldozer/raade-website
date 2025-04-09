@@ -1,4 +1,3 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { useNavigation } from "@/hooks/navigation/useNavigation";
@@ -35,25 +34,45 @@ const MobileNavFooter = ({ onLinkClick }: MobileNavFooterProps) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.4 }}
     >
-      {/* Main CTA Button - Explicitly links to join section */}
-      <motion.div 
-        className="p-5"
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-      >
-        <motion.a
-          href="/#join"
-          className="block w-full py-3.5 px-6 bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-[#274675] text-center rounded-md font-alegreyasans font-bold text-lg transition-colors shadow-md hover:shadow-lg"
-          onClick={(e) => handleClick(e, "/#join")}
-          whileHover={{ y: -2 }}
-          initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.3, delay: 0.5 }}
+      {/* Two-column layout for buttons */}
+      <div className="p-5 grid grid-cols-2 gap-4">
+        {/* Donate Button */}
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
         >
-          Join Us
-        </motion.a>
-      </motion.div>
-      
+          <motion.a
+            href="/conference#donation"
+            className="block w-full py-3.5 px-4 bg-white text-[#FBB03B] border-2 border-[#FBB03B] text-center rounded-md font-alegreyasans font-bold text-lg transition-colors shadow-md hover:shadow-lg hover:bg-[#FBB03B]/10"
+            onClick={(e) => handleClick(e, "/conference#donation")}
+            whileHover={{ y: -2 }}
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.5 }}
+          >
+            Donate
+          </motion.a>
+        </motion.div>
+
+        {/* Join Us Button */}
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <motion.a
+            href="/#join"
+            className="block w-full py-3.5 px-4 bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-[#274675] text-center rounded-md font-alegreyasans font-bold text-lg transition-colors shadow-md hover:shadow-lg"
+            onClick={(e) => handleClick(e, "/#join")}
+            whileHover={{ y: -2 }}
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.5 }}
+          >
+            Join Us
+          </motion.a>
+        </motion.div>
+      </div>
+
       {/* Copyright or other info */}
       <motion.div 
         className="border-t border-white/10 p-4 text-center"
