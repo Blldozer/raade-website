@@ -20,17 +20,23 @@ interface DonorInformationFormProps {
  */
 const DonorInformationForm: React.FC<DonorInformationFormProps> = ({ form }) => {
   return (
-    <div className="space-y-4">
-      <h4 className="text-lg font-medium text-gray-700">Your Information</h4>
+    <div className="space-y-6">
+      <h4 className="text-lg font-medium text-[#274675] mb-3">Your Information</h4>
       
       <FormField
         control={form.control}
         name="fullName"
         render={({ field }) => (
-          <FormItem>
-            <FormLabel>Full Name</FormLabel>
+          <FormItem className="space-y-2">
+            <FormLabel className="text-sm font-medium text-gray-700">Full Name</FormLabel>
             <FormControl>
-              <Input placeholder="Your full name" {...field} />
+              <div className="relative">
+                <Input
+                  placeholder="Jane Doe"
+                  className="rounded-lg border-gray-300 py-6 transition-shadow focus:ring-2 focus:ring-[#FBB03B] focus:border-transparent"
+                  {...field}
+                />
+              </div>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -41,14 +47,17 @@ const DonorInformationForm: React.FC<DonorInformationFormProps> = ({ form }) => 
         control={form.control}
         name="email"
         render={({ field }) => (
-          <FormItem>
-            <FormLabel>Email</FormLabel>
+          <FormItem className="space-y-2">
+            <FormLabel className="text-sm font-medium text-gray-700">Email Address</FormLabel>
             <FormControl>
-              <Input 
-                type="email" 
-                placeholder="your.email@example.com" 
-                {...field} 
-              />
+              <div className="relative">
+                <Input
+                  type="email"
+                  placeholder="jane@example.com"
+                  className="rounded-lg border-gray-300 py-6 transition-shadow focus:ring-2 focus:ring-[#FBB03B] focus:border-transparent"
+                  {...field}
+                />
+              </div>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -59,12 +68,12 @@ const DonorInformationForm: React.FC<DonorInformationFormProps> = ({ form }) => 
         control={form.control}
         name="message"
         render={({ field }) => (
-          <FormItem>
-            <FormLabel>Message (Optional)</FormLabel>
+          <FormItem className="space-y-2">
+            <FormLabel className="text-sm font-medium text-gray-700">Message (Optional)</FormLabel>
             <FormControl>
               <Textarea
                 placeholder="Share why you're supporting RAADE..."
-                className="resize-none"
+                className="min-h-28 rounded-lg border-gray-300 transition-shadow focus:ring-2 focus:ring-[#FBB03B] focus:border-transparent resize-y"
                 {...field}
               />
             </FormControl>
