@@ -28,10 +28,6 @@ const DonationSection = () => {
             transition={{ duration: 0.6 }}
             className="lg:w-[39%] mb-6 lg:mb-0"
           >
-            <div className="inline-block mb-4 px-4 py-2 bg-yellow-100 rounded-full">
-              <p className="text-[#FBB03B] font-bold">Donation</p>
-            </div>
-            
             <h2 className="text-4xl md:text-5xl font-bold text-raade-navy mb-4 font-simula">
               Support Our Mission
             </h2>
