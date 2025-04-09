@@ -17,6 +17,8 @@ interface SimpleStripeCheckoutProps {
   role?: string;
   specialRequests?: string;
   referralSource?: string;
+  couponCode?: string;  // Add the couponCode prop
+  couponDiscount?: { type: 'percentage' | 'fixed'; amount: number } | null;  // Add the couponDiscount prop
   onSuccess: () => void;
   onError: (error: string) => void;
 }
@@ -40,6 +42,8 @@ const SimpleStripeCheckout = ({
   role = "",
   specialRequests = "",
   referralSource = "",
+  couponCode = "",  // Add default value
+  couponDiscount = null,  // Add default value
   onSuccess,
   onError
 }: SimpleStripeCheckoutProps) => {
@@ -72,6 +76,8 @@ const SimpleStripeCheckout = ({
     role,
     specialRequests,
     referralSource,
+    couponCode,  // Pass couponCode to useCardPayment
+    couponDiscount,  // Pass couponDiscount to useCardPayment
     onSuccess,
     onError: setErrorMessage,
     attemptId

@@ -49,3 +49,6 @@ verify_jwt = false
 
 [functions.validate-coupon]
 verify_jwt = false
+
+[functions.create-direct-payment-intent]
+verify_jwt = false
