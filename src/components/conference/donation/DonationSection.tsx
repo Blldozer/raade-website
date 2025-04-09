@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import DonationForm from "./DonationForm";
@@ -34,12 +33,25 @@ const DonationSection = () => {
         transition={{ duration: 0.6 }}
         className="max-w-7xl mx-auto px-4 md:px-8"
       >
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 font-simula text-[#274675]">Support Our Mission</h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto font-lora">
-            Your donation directly supports RAADE's work in pioneering innovative approaches to African development. 
-            Help us continue making a difference by contributing today.
-          </p>
+        <div className="mb-12">
+          <div className="flex mb-4">
+            <div className="w-[39%]">
+              <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-black">
+                Support Our Mission
+              </h2>
+            </div>
+            <div className="w-[61%]"></div>
+          </div>
+          
+          <div className="flex">
+            <div className="w-[39%]"></div>
+            <div className="w-[61%]">
+              <p className="text-lg text-gray-600 font-lora">
+                Your donation directly supports RAADE's work in pioneering innovative approaches to African development. 
+                Help us continue making a difference by contributing today.
+              </p>
+            </div>
+          </div>
         </div>
         
         {hasError ? (

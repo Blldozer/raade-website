@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useDonationForm } from "./useDonationForm";
 import DonationAmountSelector from "./DonationAmountSelector";
@@ -13,6 +12,7 @@ import StripePaymentForm from "./stripe/StripePaymentForm";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useStripePayment } from "./stripe/useStripePayment";
+import DynamicDonationImpact from "./DynamicDonationImpact";
 
 interface DonationFormProps {
   onPaymentError: (error: string) => void;
@@ -87,68 +87,80 @@ const DonationForm: React.FC<DonationFormProps> = ({ onPaymentError }) => {
   }
 
   return (
-    <Card className="p-6 max-w-3xl mx-auto">
-      <DonationStepIndicator currentStep={showCardPayment ? 'payment' : 'information'} />
-      
-      {showCardPayment ? (
-        <div className="space-y-6">
-          <h3 className="text-xl font-semula mb-4 text-center">Complete Your Donation</h3>
+    <div className="w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <Card className="p-6">
+          <DonationStepIndicator currentStep={showCardPayment ? 'payment' : 'information'} />
           
-          <DonationSummary 
-            values={submittedValues!}
-            formattedAmount={getDonationAmount()}
-          />
-          
-          <div className="border-t border-gray-200 pt-6">
-            <StripePaymentForm 
-              isSubmitting={isLoading} 
-              error={paymentError} 
-            />
-            
-            <div className="flex flex-col sm:flex-row sm:justify-between gap-3 mt-6">
-              <Button
-                variant="outline"
-                onClick={handleBackToForm}
-                disabled={isLoading}
-                type="button"
-                className="flex items-center"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
-              </Button>
+          {showCardPayment ? (
+            <div className="space-y-6">
+              <h3 className="text-xl font-semula mb-4 text-center">Complete Your Donation</h3>
               
-              <Button
-                type="button"
-                className="bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white"
-                disabled={isLoading}
-                onClick={handlePaymentSubmit}
-              >
-                {isLoading ? "Processing..." : `Donate ${getDonationAmount()}`}
-              </Button>
+              <DonationSummary 
+                values={submittedValues!}
+                formattedAmount={getDonationAmount()}
+              />
+              
+              <div className="border-t border-gray-200 pt-6">
+                <StripePaymentForm 
+                  isSubmitting={isLoading} 
+                  error={paymentError} 
+                />
+                
+                <div className="flex flex-col sm:flex-row sm:justify-between gap-3 mt-6">
+                  <Button
+                    variant="outline"
+                    onClick={handleBackToForm}
+                    disabled={isLoading}
+                    type="button"
+                    className="flex items-center"
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back
+                  </Button>
+                  
+                  <Button
+                    type="button"
+                    className="bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white"
+                    disabled={isLoading}
+                    onClick={handlePaymentSubmit}
+                  >
+                    {isLoading ? "Processing..." : `Donate ${getDonationAmount()}`}
+                  </Button>
+                </div>
+              </div>
             </div>
-          </div>
+          ) : (
+            <FormProvider {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <h3 className="text-xl font-semula mb-4 text-center">Make a Donation</h3>
+                
+                <DonationAmountSelector
+                  selectedAmount={selectedAmount}
+                  handleAmountSelect={handleAmountSelect}
+                  form={form}
+                />
+                
+                <DonorInformationForm form={form} />
+                
+                <DonationFormSubmit 
+                  isSubmitting={isSubmitting} 
+                  donationAmount={getDonationAmount()}
+                />
+              </form>
+            </FormProvider>
+          )}
+        </Card>
+
+        {/* Right column - Impact Display */}
+        <div className="hidden md:block">
+          <DynamicDonationImpact 
+            selectedAmount={selectedAmount} 
+            customAmount={form.watch("customAmount")}
+          />
         </div>
-      ) : (
-        <FormProvider {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <h3 className="text-xl font-semula mb-4 text-center">Make a Donation</h3>
-            
-            <DonationAmountSelector
-              selectedAmount={selectedAmount}
-              handleAmountSelect={handleAmountSelect}
-              form={form}
-            />
-            
-            <DonorInformationForm form={form} />
-            
-            <DonationFormSubmit 
-              isSubmitting={isSubmitting} 
-              donationAmount={getDonationAmount()}
-            />
-          </form>
-        </FormProvider>
-      )}
-    </Card>
+      </div>
+    </div>
   );
 };
 

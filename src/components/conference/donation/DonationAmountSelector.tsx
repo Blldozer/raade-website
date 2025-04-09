@@ -1,4 +1,3 @@
-
 import React from "react";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -44,7 +43,7 @@ const DonationAmountSelector: React.FC<DonationAmountSelectorProps> = ({
                 defaultValue={field.value}
                 className="flex flex-wrap gap-3"
               >
-                {["25", "50", "100", "250", "custom"].map((amount) => (
+                {["25", "50", "100", "250", "500", "1000", "custom"].map((amount) => (
                   <div key={amount} className="flex items-center space-x-2">
                     <RadioGroupItem
                       value={amount}
