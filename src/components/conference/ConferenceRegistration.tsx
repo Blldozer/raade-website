@@ -1,4 +1,3 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { TICKET_TYPES_ENUM, getTicketPrice, getRegularTicketPrice, isSaleActive, SALE_END_DATE } from "./RegistrationFormTypes";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import DonationSection from "./donation/DonationSection";
 
 /**
  * ConferenceRegistration Component
@@ -211,6 +211,11 @@ const ConferenceRegistration = () => {
             Register Group
             <ChevronRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
           </Button>
+        </div>
+        
+        {/* Donation Section */}
+        <div className="mt-16">
+          <DonationSection />
         </div>
       </div>
     </section>
