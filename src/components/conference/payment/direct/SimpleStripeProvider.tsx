@@ -109,9 +109,20 @@ const SimpleStripeProvider = (props: SimpleStripeProviderProps) => {
     );
   }
 
+  // Process group emails to ensure they're all strings
+  const processedProps = {
+    ...props,
+    groupEmails: props.groupEmails?.map(email => {
+      if (typeof email === 'object' && email !== null && 'value' in email) {
+        return email.value;
+      }
+      return email ? String(email) : '';
+    }).filter(Boolean) as string[]
+  };
+
   return (
     <Elements stripe={stripePromise} options={options}>
-      <SimpleStripeCheckout {...props} />
+      <SimpleStripeCheckout {...processedProps} />
     </Elements>
   );
 };

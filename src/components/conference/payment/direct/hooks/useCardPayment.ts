@@ -1,217 +1,156 @@
 
 import { useState } from "react";
+import { StripeError } from "@stripe/stripe-js";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { useRegistrationStorage } from "./useRegistrationStorage";
 
-interface PaymentData {
+interface UseCardPaymentProps {
   ticketType: string;
   email: string;
   fullName: string;
   groupSize?: number;
-  groupEmails?: Array<string | { value: string } | null>;
+  groupEmails?: string[];
   organization?: string;
   role?: string;
   specialRequests?: string;
   referralSource?: string;
+  onSuccess: () => void;
+  onError: (message: string) => void;
+  attemptId?: string;
 }
 
 /**
- * Custom hook to handle Stripe card payment
+ * Custom hook for handling card payments
  * 
- * Manages the payment process including:
- * - Creating payment intent
- * - Confirming card payment
- * - Storing registration data
+ * Manages the card payment process including:
+ * - Payment submission
+ * - Card validation
  * - Error handling
+ * - Status updates
  */
-export const useCardPayment = (
-  paymentData: PaymentData,
-  onSuccess: () => void,
-  onError: (error: string) => void
-) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [successState, setSuccessState] = useState<boolean>(false);
+export const useCardPayment = ({
+  ticketType,
+  email,
+  fullName,
+  groupSize,
+  groupEmails,
+  organization,
+  role,
+  specialRequests,
+  referralSource,
+  onSuccess,
+  onError,
+  attemptId
+}: UseCardPaymentProps) => {
   const stripe = useStripe();
   const elements = useElements();
-  const { toast } = useToast();
-  const { storeRegistrationData } = useRegistrationStorage();
-  
-  // Process emails to handle array of objects or strings
-  const processGroupEmails = (emails: Array<string | { value: string } | null> = []): string[] => {
-    return Array.isArray(emails) 
-      ? emails
-          .filter(Boolean) // Remove nullish values
-          .map(email => {
-            if (typeof email === 'object' && email !== null && 'value' in email) {
-              return typeof email.value === 'string' ? email.value : '';
-            }
-            return String(email || '');
-          })
-          .filter(email => email.length > 0) // Remove empty strings
-      : [];
+  const [isLoading, setIsLoading] = useState(false);
+  const [successState, setSuccessState] = useState(false);
+  const [cardError, setCardError] = useState<string | null>(null);
+  const [cardComplete, setCardComplete] = useState(false);
+
+  const resetCardError = () => {
+    setCardError(null);
   };
 
   /**
-   * Handle payment form submission
-   * 
-   * @param e - Form submission event
+   * Handle card changes and validation
+   */
+  const handleCardChange = (event: any) => {
+    setCardError(event.error ? event.error.message : null);
+  };
+
+  /**
+   * Handle card payment submission
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!stripe || !elements) {
-      try {
-        toast({
-          title: "Payment system not ready",
-          description: "Please try again in a moment",
-          variant: "destructive",
-        });
-      } catch (toastError) {
-        console.error("Toast error:", toastError);
-        // Fallback alert if toast fails
-        alert("Payment system not ready. Please try again in a moment.");
-      }
+      onError("Stripe has not initialized. Please try again later.");
       return;
     }
-    
+
+    // Get CardElement
     const cardElement = elements.getElement(CardElement);
+    
     if (!cardElement) {
-      try {
-        toast({
-          title: "Card input not found",
-          description: "Please refresh the page and try again",
-          variant: "destructive",
-        });
-      } catch (toastError) {
-        console.error("Toast error:", toastError);
-        // Fallback alert if toast fails
-        alert("Card input not found. Please refresh the page and try again.");
-      }
+      onError("Card element not found. Please reload the page and try again.");
       return;
     }
     
+    // Don't allow submission if the card isn't complete
+    if (!cardComplete) {
+      setCardError("Please complete your card details");
+      return;
+    }
+
     setIsLoading(true);
-    
+    resetCardError();
+
     try {
-      // Process emails for consistency
-      const processedGroupEmails = processGroupEmails(paymentData.groupEmails);
-      
-      // Generate a unique tracking ID for this payment
-      const paymentTrackingId = `pay-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
-      console.log(`Payment process started: ${paymentTrackingId}`);
-      
-      // Step 1: Create payment intent
-      const { data: intentData, error: intentError } = await supabase.functions.invoke("create-direct-payment-intent", {
-        body: {
-          ...paymentData,
-          groupEmails: processedGroupEmails,
-          trackingId: paymentTrackingId
-        }
+      // Create payment intent via edge function
+      const createIntent = await fetch('/api/create-payment-intent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ticketType,
+          email,
+          fullName,
+          groupSize,
+          groupEmails,
+          organization,
+          role,
+          specialRequests,
+          referralSource,
+          attemptId
+        }),
       });
       
-      if (intentError || !intentData?.clientSecret) {
-        console.error(`Payment intent creation error (${paymentTrackingId}):`, intentError);
-        throw new Error(intentError?.message || "Failed to create payment intent");
+      if (!createIntent.ok) {
+        const errorData = await createIntent.json();
+        throw new Error(errorData.message || 'Failed to create payment intent');
       }
       
-      console.log(`Payment intent created (${paymentTrackingId})`);
+      const intentData = await createIntent.json();
       
-      // Step 2: Confirm card payment with proper error handling
-      const confirmResult = await stripe.confirmCardPayment(intentData.clientSecret, {
+      if (!intentData.clientSecret) {
+        throw new Error('No client secret received');
+      }
+      
+      // Use the client secret to confirm payment
+      const paymentResult = await stripe.confirmCardPayment(intentData.clientSecret, {
         payment_method: {
           card: cardElement,
           billing_details: {
-            name: paymentData.fullName,
-            email: paymentData.email,
+            name: fullName,
+            email: email,
           },
         },
-      }).catch(err => {
-        console.error(`Stripe confirmation error (${paymentTrackingId}):`, err);
-        throw new Error(err.message || "Payment confirmation failed");
       });
       
-      if (confirmResult.error) {
-        console.error(`Payment confirmation error (${paymentTrackingId}):`, confirmResult.error);
-        throw new Error(confirmResult.error.message || "Payment failed");
+      if (paymentResult.error) {
+        throw paymentResult.error;
       }
       
-      // Verify payment intent status
-      if (confirmResult.paymentIntent?.status !== 'succeeded') {
-        console.error(`Payment unsuccessful status (${paymentTrackingId}): ${confirmResult.paymentIntent?.status}`);
-        throw new Error(`Payment status: ${confirmResult.paymentIntent?.status || 'unknown'}`);
-      }
-      
-      console.log(`Payment confirmed successfully (${paymentTrackingId})`);
-      
-      // Payment is successful at this point
-      // Mark success state first before any other operations
+      // Payment succeeded
       setSuccessState(true);
-      
-      // Step 3: Store registration data in Supabase
-      console.log(`Storing registration data (${paymentTrackingId})`);
-      
-      try {
-        const registrationSuccess = await storeRegistrationData({
-          fullName: paymentData.fullName,
-          email: paymentData.email,
-          organization: paymentData.organization,
-          role: paymentData.role,
-          ticketType: paymentData.ticketType,
-          specialRequests: paymentData.specialRequests,
-          referralSource: paymentData.referralSource,
-          groupSize: paymentData.groupSize,
-          groupEmails: processedGroupEmails,
-          paymentComplete: true
-        });
-        
-        if (registrationSuccess) {
-          console.log(`Registration stored successfully (${paymentTrackingId})`);
-        } else {
-          console.error(`Registration storage failed (${paymentTrackingId})`);
-          // Continue to success flow even if registration storage fails
-          // We'll rely on the payment record instead
-        }
-      } catch (registrationError) {
-        console.error(`Registration storage error (${paymentTrackingId}):`, registrationError);
-        // Continue to success flow even if registration storage fails
-      }
-      
-      // Success notification with error handling
-      try {
-        toast({
-          title: "Payment successful!",
-          description: "Your registration is complete",
-        });
-      } catch (toastError) {
-        console.error(`Toast notification error (${paymentTrackingId}):`, toastError);
-        // Fallback if toast fails - registration is still successful
-      }
-      
-      // Call the success callback after a small delay to ensure state updates
-      setTimeout(() => {
-        onSuccess();
-        console.log(`Payment process completed successfully (${paymentTrackingId})`);
-      }, 100);
+      onSuccess();
       
     } catch (error) {
-      console.error("Payment error:", error);
-      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      console.error('Payment error:', error);
       
-      try {
-        toast({
-          title: "Payment failed",
-          description: errorMessage,
-          variant: "destructive",
-        });
-      } catch (toastError) {
-        console.error("Toast error handling payment failure:", toastError);
-        // Fallback alert if toast fails
-        alert(`Payment failed: ${errorMessage}`);
+      // Handle Stripe errors
+      if ((error as StripeError).type) {
+        const stripeError = error as StripeError;
+        setCardError(stripeError.message || 'Payment failed. Please try again.');
+      } else {
+        // Handle other errors
+        setCardError((error as Error).message || 'Something went wrong. Please try again.');
       }
       
-      onError(errorMessage);
+      onError((error as Error).message || 'Payment failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -220,6 +159,10 @@ export const useCardPayment = (
   return {
     isLoading,
     successState,
+    cardError,
+    handleCardChange,
+    setCardComplete,
+    resetCardError,
     handleSubmit
   };
 };
