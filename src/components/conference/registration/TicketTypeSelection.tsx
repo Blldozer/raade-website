@@ -1,165 +1,68 @@
 
-import { UseFormWatch, UseFormSetValue, FormState, Control } from "react-hook-form";
-import { RegistrationFormData, TICKET_TYPES_ENUM, getTicketPrice, isSaleActive, calculateDiscountedPrice } from "../RegistrationFormTypes";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { formatCurrency } from "@/lib/utils";
-
-interface TicketTypeSelectionProps {
-  watch: UseFormWatch<RegistrationFormData>;
-  setValue: UseFormSetValue<RegistrationFormData>;
-  errors: FormState<RegistrationFormData>["errors"];
-  couponDiscount: { type: 'percentage' | 'fixed'; amount: number } | null;
-  control: Control<RegistrationFormData>; // Add control prop
-}
+import { UseFormWatch, UseFormSetValue, FieldErrors } from "react-hook-form";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  RegistrationFormData,
+  getTicketPriceText,
+  TICKET_TYPES_ENUM
+} from "../RegistrationFormTypes";
 
 /**
  * TicketTypeSelection Component
  * 
- * Displays radio options for selecting conference ticket types:
- * - Student tickets
- * - Professional tickets
- * - Student group tickets
- * - Shows discounted prices when coupons are applied
+ * Displays ticket type dropdown for conference registration.
+ * Shows appropriate price information based on ticket type.
+ * Includes proper name attributes for improved form accessibility and autofill.
  * 
- * @param watch - React Hook Form watch function
- * @param setValue - React Hook Form setValue function
- * @param errors - Form validation errors
- * @param couponDiscount - Applied coupon discount information
- * @param control - React Hook Form control object
+ * @param watch - React Hook Form watch function to observe field changes
+ * @param setValue - React Hook Form setValue function to update form values
+ * @param errors - Form validation errors object
  */
-const TicketTypeSelection = ({ watch, setValue, errors, couponDiscount, control }: TicketTypeSelectionProps) => {
-  const saleActive = isSaleActive();
-  
-  // Get prices for each ticket type
-  const studentPrice = getTicketPrice(TICKET_TYPES_ENUM.STUDENT);
-  const professionalPrice = getTicketPrice(TICKET_TYPES_ENUM.PROFESSIONAL);
-  const groupPrice = getTicketPrice(TICKET_TYPES_ENUM.STUDENT_GROUP);
-  
-  // Calculate discounted prices if a coupon is applied
-  const discountedStudentPrice = calculateDiscountedPrice(studentPrice, couponDiscount);
-  const discountedProfessionalPrice = calculateDiscountedPrice(professionalPrice, couponDiscount);
-  const discountedGroupPrice = calculateDiscountedPrice(groupPrice, couponDiscount);
-  
-  // Check if prices are discounted
-  const hasStudentDiscount = discountedStudentPrice < studentPrice;
-  const hasProfessionalDiscount = discountedProfessionalPrice < professionalPrice;
-  const hasGroupDiscount = discountedGroupPrice < groupPrice;
+interface TicketTypeSelectionProps {
+  watch: UseFormWatch<RegistrationFormData>;
+  setValue: UseFormSetValue<RegistrationFormData>;
+  errors: FieldErrors<RegistrationFormData>;
+}
 
+const TicketTypeSelection = ({
+  watch,
+  setValue,
+  errors
+}: TicketTypeSelectionProps) => {
+  const watchTicketType = watch("ticketType");
+  
   return (
-    <div className="py-4">
-      <h3 className="text-lg font-medium text-[#274675] mb-3">Select Ticket Type</h3>
+    <div>
+      <Label htmlFor="ticketType">Ticket Type</Label>
+      <Select 
+        onValueChange={(value: typeof TICKET_TYPES_ENUM[keyof typeof TICKET_TYPES_ENUM]) => setValue("ticketType", value)}
+        value={watchTicketType}
+      >
+        <SelectTrigger id="ticketType" name="ticketType">
+          <SelectValue placeholder="Select ticket type" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={TICKET_TYPES_ENUM.STUDENT}>Student {getTicketPriceText(TICKET_TYPES_ENUM.STUDENT)}</SelectItem>
+          <SelectItem value={TICKET_TYPES_ENUM.PROFESSIONAL}>Professional {getTicketPriceText(TICKET_TYPES_ENUM.PROFESSIONAL)}</SelectItem>
+          <SelectItem value={TICKET_TYPES_ENUM.STUDENT_GROUP}>Student Group {getTicketPriceText(TICKET_TYPES_ENUM.STUDENT_GROUP)}</SelectItem>
+        </SelectContent>
+      </Select>
+      {errors.ticketType && (
+        <p className="text-red-500 text-sm mt-1">{errors.ticketType.message}</p>
+      )}
       
-      <FormField
-        control={control}
-        name="ticketType"
-        render={({ field }) => (
-          <FormItem className="space-y-3">
-            <RadioGroup
-              onValueChange={field.onChange}
-              defaultValue={field.value}
-              value={field.value}
-              className="space-y-3"
-            >
-              <FormItem className="flex items-center space-x-3 space-y-0">
-                <FormControl>
-                  <RadioGroupItem value={TICKET_TYPES_ENUM.STUDENT} id="ticket-student" />
-                </FormControl>
-                <FormLabel className="font-normal cursor-pointer" htmlFor="ticket-student">
-                  <div className="flex-1">
-                    <div className="font-medium text-gray-800">Student</div>
-                    <div className="text-sm text-gray-500 flex items-center">
-                      {hasStudentDiscount ? (
-                        <>
-                          <span className="line-through mr-2">{formatCurrency(studentPrice)}</span>
-                          <span className="text-green-600 font-medium">{formatCurrency(discountedStudentPrice)}</span>
-                          {couponDiscount?.type === 'percentage' && (
-                            <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
-                              {couponDiscount.amount}% off
-                            </span>
-                          )}
-                        </>
-                      ) : (
-                        <>{formatCurrency(studentPrice)}</>
-                      )}
-                      {saleActive && !hasStudentDiscount && (
-                        <span className="ml-2 bg-red-100 text-red-800 text-xs px-2 py-0.5 rounded-full">
-                          Sale!
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </FormLabel>
-              </FormItem>
-
-              <FormItem className="flex items-center space-x-3 space-y-0">
-                <FormControl>
-                  <RadioGroupItem value={TICKET_TYPES_ENUM.PROFESSIONAL} id="ticket-professional" />
-                </FormControl>
-                <FormLabel className="font-normal cursor-pointer" htmlFor="ticket-professional">
-                  <div className="flex-1">
-                    <div className="font-medium text-gray-800">Professional</div>
-                    <div className="text-sm text-gray-500 flex items-center">
-                      {hasProfessionalDiscount ? (
-                        <>
-                          <span className="line-through mr-2">{formatCurrency(professionalPrice)}</span>
-                          <span className="text-green-600 font-medium">{formatCurrency(discountedProfessionalPrice)}</span>
-                          {couponDiscount?.type === 'percentage' && (
-                            <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
-                              {couponDiscount.amount}% off
-                            </span>
-                          )}
-                        </>
-                      ) : (
-                        <>{formatCurrency(professionalPrice)}</>
-                      )}
-                      {saleActive && !hasProfessionalDiscount && (
-                        <span className="ml-2 bg-red-100 text-red-800 text-xs px-2 py-0.5 rounded-full">
-                          Sale!
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </FormLabel>
-              </FormItem>
-
-              <FormItem className="flex items-center space-x-3 space-y-0">
-                <FormControl>
-                  <RadioGroupItem value={TICKET_TYPES_ENUM.STUDENT_GROUP} id="ticket-group" />
-                </FormControl>
-                <FormLabel className="font-normal cursor-pointer" htmlFor="ticket-group">
-                  <div className="flex-1">
-                    <div className="font-medium text-gray-800">Student Group</div>
-                    <div className="text-sm text-gray-500 flex items-center">
-                      {hasGroupDiscount ? (
-                        <>
-                          <span className="line-through mr-2">{formatCurrency(groupPrice)}</span>
-                          <span className="text-green-600 font-medium">{formatCurrency(discountedGroupPrice)}</span>
-                          {couponDiscount?.type === 'percentage' && (
-                            <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
-                              {couponDiscount.amount}% off
-                            </span>
-                          )}
-                        </>
-                      ) : (
-                        <>{formatCurrency(groupPrice)}</>
-                      )}
-                      <span className="ml-1">per person</span>
-                      {saleActive && !hasGroupDiscount && (
-                        <span className="ml-2 bg-red-100 text-red-800 text-xs px-2 py-0.5 rounded-full">
-                          Sale!
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-sm text-gray-500">For student groups of 5 or more</div>
-                  </div>
-                </FormLabel>
-              </FormItem>
-            </RadioGroup>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      {watchTicketType === TICKET_TYPES_ENUM.STUDENT && (
+        <p className="text-gray-600 text-sm mt-1">
+          Student tickets require a valid .edu email address.
+        </p>
+      )}
     </div>
   );
 };

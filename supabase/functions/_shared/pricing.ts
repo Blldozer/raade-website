@@ -1,55 +1,61 @@
 
 /**
- * Calculate payment amount based on ticket type and group size
- * @param ticketType Type of ticket (student, professional, student-group)
- * @param groupSize Size of the group (for student-group tickets)
- * @returns Object with amount (in cents) and description
+ * Calculate payment amount based on ticket type, group size, and whether the sale is active
+ * 
+ * Sale period: April 7, 2025 4:00 PM CST to April 8, 2025 4:00 PM CST
+ * 
+ * @param ticketType - Type of ticket (student, professional, student-group)
+ * @param groupSize - Size of group for group registrations
+ * @returns Object with amount, description and group flag
  */
-export function calculatePaymentAmount(ticketType: string, groupSize?: number | undefined) {
-  // Define base prices in dollars
-  const STUDENT_PRICE = 35;
-  const PROFESSIONAL_PRICE = 60;
-  const STUDENT_GROUP_PRICE = 30;
+export function calculatePaymentAmount(
+  ticketType: string, 
+  groupSize?: number
+): { amount: number; description: string; isGroupRegistration: boolean } {
+  // Check if the sale is still active
+  const currentDate = new Date();
+  const saleEndDate = new Date('2025-04-08T16:00:00-05:00'); // CST is UTC-5
+  const isSaleActive = currentDate < saleEndDate;
   
-  // Define sale prices (valid until April 8, 2025)
-  const SALE_STUDENT_PRICE = 25;
-  const SALE_PROFESSIONAL_PRICE = 50;
-  const SALE_STUDENT_GROUP_PRICE = 20;
+  // Define prices in cents based on whether the sale is active
+  const STUDENT_PRICE = isSaleActive ? 2500 : 3500; // $25.00 (sale) / $35.00 (regular)
+  const PROFESSIONAL_PRICE = isSaleActive ? 5000 : 6000; // $50.00 (sale) / $60.00 (regular)
+  const GROUP_PRICE_PER_PERSON = isSaleActive ? 2000 : 3000; // $20.00 (sale) / $30.00 (regular) per person
   
-  // Check if sale is active (before April 8, 2025 at 4:00 PM CST)
-  const saleEndDate = new Date('2025-04-08T16:00:00-05:00');
-  const isSaleActive = new Date() < saleEndDate;
+  const saleSuffix = isSaleActive ? " (SALE)" : "";
   
-  let amount: number;
-  let description: string;
-  let isGroupRegistration = false;
-  
+  // Determine price based on ticket type
   switch (ticketType) {
     case "student":
-      amount = isSaleActive ? SALE_STUDENT_PRICE : STUDENT_PRICE;
-      description = "Student Ticket";
-      break;
+      return {
+        amount: STUDENT_PRICE,
+        description: `RAADE Conference 2025 - Student Registration${saleSuffix}`,
+        isGroupRegistration: false
+      };
+    
     case "professional":
-      amount = isSaleActive ? SALE_PROFESSIONAL_PRICE : PROFESSIONAL_PRICE;
-      description = "Professional Ticket";
-      break;
+      return {
+        amount: PROFESSIONAL_PRICE,
+        description: `RAADE Conference 2025 - Professional Registration${saleSuffix}`,
+        isGroupRegistration: false
+      };
+    
     case "student-group":
+      // Validate group size - minimum 3 for sale pricing
       if (!groupSize || groupSize < 3) {
-        throw new Error("Group size must be at least 3 for group tickets");
+        throw new Error("Invalid ticket type: Group registrations require at least 3 participants");
       }
       
-      amount = (isSaleActive ? SALE_STUDENT_GROUP_PRICE : STUDENT_GROUP_PRICE) * groupSize;
-      description = `Student Group (${groupSize} attendees)`;
-      isGroupRegistration = true;
-      break;
+      // Calculate total price for the group
+      const totalAmount = GROUP_PRICE_PER_PERSON * groupSize;
+      
+      return {
+        amount: totalAmount,
+        description: `RAADE Conference 2025 - Student Group Registration${saleSuffix} (${groupSize} attendees)`,
+        isGroupRegistration: true
+      };
+    
     default:
-      throw new Error("Invalid ticket type");
+      throw new Error(`Invalid ticket type: ${ticketType}`);
   }
-  
-  // Convert dollars to cents for Stripe
-  return {
-    amount: Math.round(amount * 100),
-    description,
-    isGroupRegistration
-  };
 }

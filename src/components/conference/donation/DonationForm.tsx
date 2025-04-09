@@ -154,7 +154,6 @@ const DonationForm: React.FC<DonationFormProps> = ({ onPaymentError }) => {
           )}
         </Card>
         
-        {/* Desktop Impact Display - Hidden on mobile */}
         <div className="hidden md:block">
           <div className="sticky top-24">
             <DynamicDonationImpact 
@@ -163,15 +162,6 @@ const DonationForm: React.FC<DonationFormProps> = ({ onPaymentError }) => {
             />
           </div>
         </div>
-      </div>
-      
-      {/* Mobile Impact Display - Only visible on small screens */}
-      <div className="mt-8 md:hidden">
-        <h3 className="text-xl font-semibold mb-4 text-center text-[#274675]">Your Impact</h3>
-        <DynamicDonationImpact 
-          selectedAmount={selectedAmount}
-          customAmount={form.watch("customAmount")}
-        />
       </div>
     </div>
   );
