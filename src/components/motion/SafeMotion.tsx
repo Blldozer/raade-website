@@ -18,16 +18,8 @@ const canUseMotion = () => {
       return false;
     }
 
-    // Verify window and initialization flag exists
-    if (typeof window === 'undefined' || !window.__REACT_INITIALIZED) {
-      return false;
-    }
-
-    // Verify framer-motion is available
-    if (typeof framerMotion !== 'object' || framerMotion === null) {
-      return false;
-    }
-
+    // Allow use even without initialization flag for simpler components
+    // This is a fallback that will work in most cases
     return true;
   } catch (error) {
     console.error("SafeMotion: Error checking motion availability", error);

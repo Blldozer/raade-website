@@ -5,6 +5,7 @@ import Footer from "./components/Footer";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { initializeContentsquare } from "./config/analytics-config";
 import { ThemeProvider } from "@/components/theme-provider";
+import { initializeAnimationContext } from "./utils/animationInitializer";
 
 /**
  * App Component - Main application container
@@ -16,14 +17,18 @@ import { ThemeProvider } from "@/components/theme-provider";
  * - Added explicit error boundary and suspense at app root
  * - Analytics tracking for UX insights (Contentsquare)
  * - Theme provider for light/dark mode support
+ * - Animation context initialization for framer-motion and GSAP
  */
 const App = () => {
   // Add console logging to help debug startup issues
   console.log("App: Rendering");
   
-  // Initialize analytics tracking
+  // Initialize analytics tracking and animation context
   useEffect(() => {
-    // Only initialize in production to avoid tracking during development
+    // Initialize animation context for proper React integration
+    initializeAnimationContext();
+    
+    // Only initialize analytics in production to avoid tracking during development
     if (process.env.NODE_ENV === 'production') {
       initializeContentsquare();
       console.log("Analytics: Contentsquare initialized");
