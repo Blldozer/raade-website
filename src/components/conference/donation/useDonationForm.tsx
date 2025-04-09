@@ -1,7 +1,10 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 // Define form schema with validation
 const formSchema = z.object({
@@ -67,19 +70,51 @@ export const useDonationForm = () => {
     return `$${selectedAmount}`;
   };
   
+  // Get numeric donation amount in cents for Stripe
+  const getDonationAmountInCents = (): number => {
+    if (selectedAmount === "custom" && form.watch("customAmount")) {
+      return Math.round(parseFloat(form.watch("customAmount")) * 100);
+    }
+    return parseInt(selectedAmount) * 100;
+  };
+  
   // Form submission handler
   const onSubmit = async (values: DonationFormValues) => {
     setIsSubmitting(true);
     setPaymentError(null);
     
     try {
-      // Simulate payment processing with a delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Calculate donation amount in cents for Stripe
+      const amountInCents = getDonationAmountInCents();
       
-      // Here you would integrate with actual payment processing
-      // For now, we'll just simulate success
+      if (isNaN(amountInCents) || amountInCents < 100) {
+        throw new Error("Invalid donation amount. Minimum donation is $1.");
+      }
       
-      // Ensure all required fields are set when updating submittedValues
+      // Call our Supabase edge function to create a payment intent
+      const { data, error } = await supabase.functions.invoke('process-donation', {
+        body: {
+          amount: amountInCents,
+          email: values.email,
+          fullName: values.fullName,
+          makeAnonymous: values.makeAnonymous,
+          message: values.message || "",
+        }
+      });
+      
+      if (error) {
+        console.error("Donation processing error:", error);
+        throw new Error(error.message || "Failed to process donation");
+      }
+      
+      if (!data || !data.clientSecret) {
+        throw new Error("No payment details returned from server");
+      }
+      
+      // Here you would normally redirect to Stripe for payment completion,
+      // but for this demo we'll just simulate success
+      
+      // Store submitted values for confirmation page
       setSubmittedValues({
         amount: values.amount,
         customAmount: values.customAmount,
@@ -89,10 +124,27 @@ export const useDonationForm = () => {
         makeAnonymous: values.makeAnonymous
       });
       
+      // Show the confirmation page
       setShowConfirmation(true);
+      
+      // Show success toast
+      toast({
+        title: "Donation Successful",
+        description: `Thank you for your donation of ${getDonationAmount()}!`,
+        variant: "default",
+      });
+      
     } catch (error) {
-      setPaymentError("There was an error processing your donation. Please try again.");
+      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+      setPaymentError(errorMessage);
       console.error("Donation error:", error);
+      
+      // Show error toast
+      toast({
+        title: "Donation Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -118,6 +170,6 @@ export const useDonationForm = () => {
     handleAmountSelect,
     getDonationAmount,
     handleDonateAgain,
-    amounts: ["50", "100", "250", "500", "1000", "custom"]
+    amounts: ["25", "50", "100", "250", "500", "1000"]
   };
 };

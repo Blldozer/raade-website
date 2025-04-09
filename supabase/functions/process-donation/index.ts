@@ -53,33 +53,51 @@ serve(async (req) => {
       );
     }
     
-    // Create a payment intent with Stripe
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount,
-      currency: "usd",
-      receipt_email: email,
-      description: "Donation to RAADE Conference 2025",
-      metadata: {
-        fullName,
-        email,
-        makeAnonymous: makeAnonymous ? "true" : "false",
-        message: message || "",
-        donationType: "conference-support",
-      },
-    });
+    console.log(`Processing donation: $${amount/100} from ${fullName} (${email})`);
     
-    // Return the client secret
-    return new Response(
-      JSON.stringify({
-        clientSecret: paymentIntent.client_secret,
-        amount: paymentIntent.amount,
-        status: paymentIntent.status,
-      }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    try {
+      // Create a payment intent with Stripe
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount,
+        currency: "usd",
+        receipt_email: email,
+        description: "Donation to RAADE Conference 2025",
+        metadata: {
+          fullName,
+          email,
+          makeAnonymous: makeAnonymous ? "true" : "false",
+          message: message || "",
+          donationType: "conference-support",
+        },
+      });
+      
+      console.log(`Successfully created payment intent: ${paymentIntent.id}`);
+      
+      // Return the client secret
+      return new Response(
+        JSON.stringify({
+          clientSecret: paymentIntent.client_secret,
+          amount: paymentIntent.amount,
+          status: paymentIntent.status,
+        }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    } catch (stripeError) {
+      console.error("Stripe error:", stripeError);
+      
+      return new Response(
+        JSON.stringify({
+          error: stripeError.message || "Error processing payment with Stripe",
+        }),
+        {
+          status: 422,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
   } catch (error) {
     console.error("Error processing donation:", error);
     

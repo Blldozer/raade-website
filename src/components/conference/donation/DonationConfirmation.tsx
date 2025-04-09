@@ -85,7 +85,7 @@ const DonationConfirmation: React.FC<DonationConfirmationProps> = ({
         
         <Button 
           onClick={() => window.location.href = "/conference#registration"}
-          className="bg-raade-navy hover:bg-raade-navy/90 text-white"
+          className="bg-[#274675] hover:bg-[#274675]/90 text-white"
         >
           Return to Conference
           <ArrowRight className="ml-2 h-4 w-4" />

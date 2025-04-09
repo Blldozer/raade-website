@@ -1,8 +1,8 @@
+
 import React from "react";
 import { Form } from "@/components/ui/form";
 import DonationConfirmation from "./DonationConfirmation";
 import { useDonationForm } from "./useDonationForm";
-import StripeWrapper from "./stripe/StripeWrapper";
 import { Button } from "@/components/ui/button";
 import { Loader2, Heart } from "lucide-react";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import DynamicDonationImpact from "./DynamicDonationImpact";
+import { Toaster } from "@/components/ui/toaster"; // For toast notifications
 
 /**
  * DonationForm Component
@@ -20,21 +21,9 @@ import DynamicDonationImpact from "./DynamicDonationImpact";
  * - Preset donation amounts with highlighted selection
  * - Simplified one-page layout
  * - Mobile responsive design
+ * - Stripe payment processing integration
  */
 const DonationForm = () => {
-  return (
-    <StripeWrapper>
-      <DonationFormContent />
-    </StripeWrapper>
-  );
-};
-
-/**
- * DonationFormContent Component
- * 
- * Contains the actual form content that needs to be wrapped in the Stripe context
- */
-const DonationFormContent = () => {
   const {
     form,
     isSubmitting,
@@ -60,6 +49,8 @@ const DonationFormContent = () => {
   
   return (
     <div className="w-full max-w-7xl mx-auto">
+      <Toaster /> {/* Add toast notifications */}
+      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Left column - Donation Form */}
         <div className="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-100">
@@ -243,6 +234,14 @@ const DonationFormContent = () => {
                   )}
                 />
               </div>
+              
+              {/* Display payment error if any */}
+              {paymentError && (
+                <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                  <p className="font-medium">Payment Error</p>
+                  <p>{paymentError}</p>
+                </div>
+              )}
               
               {/* Submit button */}
               <Button

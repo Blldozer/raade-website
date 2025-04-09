@@ -1,6 +1,7 @@
-import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle, Users, GraduationCap, Globe, Heart, BookOpen, FileCheck } from "lucide-react";
+
+import React, { useMemo } from "react";
+import { motion } from "framer-motion";
+import { ChevronRight, Users, GraduationCap, LightbulbIcon, GlobeIcon } from "lucide-react";
 
 interface DynamicDonationImpactProps {
   selectedAmount: string;
@@ -10,198 +11,139 @@ interface DynamicDonationImpactProps {
 /**
  * DynamicDonationImpact Component
  * 
- * Displays donation impact information that changes dynamically based on the selected donation amount:
- * - Different tier names and descriptions for each donation level
- * - Specific benefits or actions supported by the donation
- * - Consistent thank you message across all levels
+ * Shows the real-world impact of donation amounts:
+ * - Dynamically changes based on donation amount
+ * - Provides concrete examples of what each donation amount can accomplish
+ * - Helps donors visualize their impact with meaningful metrics
  */
 const DynamicDonationImpact: React.FC<DynamicDonationImpactProps> = ({ 
   selectedAmount,
-  customAmount 
+  customAmount
 }) => {
-  // Get the amount to display (handling custom amounts)
-  const amount = selectedAmount === "custom" 
-    ? (customAmount ? parseFloat(customAmount) : 0) 
-    : parseInt(selectedAmount);
+  // Calculate the actual donation amount
+  const donationAmount = useMemo(() => {
+    if (selectedAmount === "custom" && customAmount) {
+      return parseFloat(customAmount);
+    }
+    return parseInt(selectedAmount);
+  }, [selectedAmount, customAmount]);
   
-  // Define impact tiers with their corresponding information
+  // Define impact tiers based on donation amount
   const getImpactTier = () => {
-    if (selectedAmount === "custom") {
-      return {
-        title: "Innovation Partner",
-        description: "Every contribution matters! Your donation helps RAADE connect students with real-world challenges and develop solutions for sustainable development across Africa.",
-        benefits: [
-          "Support RAADE's mission to pioneer innovative approaches to development",
-          "Enable students to engage with African organizations",
-          "Help create sustainable solutions for development challenges"
-        ],
-        color: "indigo"
-      };
-    }
+    if (isNaN(donationAmount)) return "tier1";
     
-    switch (selectedAmount) {
-      case "25":
-        return {
-          title: "Knowledge Cultivator",
-          description: "Your $25 donation helps plant the seeds for impactful connections and knowledge sharing.",
-          benefits: [
-            "Fund a welcome packet for a conference attendee",
-            "Support technical equipment needed for one speaker's presentation",
-            "Help provide name badges for multiple participants"
-          ],
-          color: "green"
-        };
-        
-      case "50":
-        return {
-          title: "Connection Builder",
-          description: "Your $50 donation helps enhance the conference experience for attendees and speakers.",
-          benefits: [
-            "Cover breakfast for two conference attendees",
-            "Fund transportation for a speaker from their hotel to the conference venue",
-            "Support the printing of conference materials for multiple participants"
-          ],
-          color: "blue"
-        };
-        
-      case "100":
-        return {
-          title: "Impact Accelerator",
-          description: "Your $100 donation creates meaningful opportunities for participation and documentation.",
-          benefits: [
-            "Provide dinner for four conference attendees",
-            "Fund a portion of the documentation costs (photography/videography)",
-            "Support youth participation in RAADE's programs"
-          ],
-          color: "purple"
-        };
-        
-      case "250":
-        return {
-          title: "Vision Amplifier",
-          description: "Your $250 donation contributes significantly to the core conference activities and recognition.",
-          benefits: [
-            "Sponsor a speaker's honorarium",
-            "Fund part of the conference venue rental costs",
-            "Support the creation of essential conference materials including recognition plaques"
-          ],
-          color: "pink"
-        };
-        
-      case "500":
-        return {
-          title: "Partnership Champion",
-          description: "Your $500 donation enables significant aspects of our programming and African participation.",
-          benefits: [
-            "Fund a half-day workshop for African entrepreneurs",
-            "Sponsor multiple regional attendees' participation",
-            "Support an Innovation Studio project with mentoring and resources"
-          ],
-          color: "amber"
-        };
-        
-      case "1000":
-        return {
-          title: "Transformation Catalyst",
-          description: "Your donation of $1,000 or more enables transformative impact across our entire initiative.",
-          benefits: [
-            "Sponsor a complete Studio Innovation project tackling a specific challenge",
-            "Fund travel and accommodation for international speakers",
-            "Support multiple aspects of the conference including venue, meals, and documentation",
-            "Help establish sustainable partnerships between Rice University and African organizations"
-          ],
-          color: "orange"
-        };
-        
-      default:
-        return {
-          title: "RAADE Supporter",
-          description: "Your donation makes a difference in fostering innovative approaches to development.",
-          benefits: [
-            "Support RAADE's mission and programs",
-            "Help connect students with real-world challenges",
-            "Contribute to sustainable development across Africa"
-          ],
-          color: "gray"
-        };
-    }
+    if (donationAmount >= 500) return "tier5";
+    if (donationAmount >= 250) return "tier4";
+    if (donationAmount >= 100) return "tier3";
+    if (donationAmount >= 50) return "tier2";
+    return "tier1";
   };
   
   const impactTier = getImpactTier();
-  const getIconColor = () => {
-    const colorMap: Record<string, string> = {
-      green: "text-green-600",
-      blue: "text-blue-600",
-      purple: "text-purple-600",
-      pink: "text-pink-600",
-      amber: "text-amber-600",
-      orange: "text-orange-600",
-      indigo: "text-indigo-600",
-      gray: "text-gray-600"
-    };
-    return colorMap[impactTier.color] || "text-blue-600";
+  
+  // Impact details for each tier
+  const impactDetails = {
+    tier1: {
+      title: "Student Support",
+      icon: <Users className="h-10 w-10 text-blue-500" />,
+      description: "Your donation helps provide resources and mentorship for a Rice student in our Innovation Studios program.",
+      impacts: [
+        "Support materials for one student",
+        "Contribute to peer mentorship sessions",
+        "Help fund student project prototypes"
+      ]
+    },
+    tier2: {
+      title: "Project Resources",
+      icon: <GraduationCap className="h-10 w-10 text-blue-600" />,
+      description: "Your donation provides essential resources for student-led projects addressing real challenges in Africa.",
+      impacts: [
+        "Fund a student project team for one week",
+        "Provide research materials and resources",
+        "Support virtual collaboration with African partners",
+        "Help cover prototype testing costs"
+      ]
+    },
+    tier3: {
+      title: "Innovation Catalyst",
+      icon: <LightbulbIcon className="h-10 w-10 text-blue-700" />,
+      description: "Your donation powers breakthrough ideas and connections between Rice students and African organizations.",
+      impacts: [
+        "Sponsor a team throughout an entire project phase",
+        "Fund specialized equipment for student projects",
+        "Enable expert consultation sessions",
+        "Support virtual workshops with African partners",
+        "Help cover prototype development costs"
+      ]
+    },
+    tier4: {
+      title: "Partnership Builder",
+      icon: <GlobeIcon className="h-10 w-10 text-blue-800" />,
+      description: "Your donation strengthens partnerships between Rice University and African organizations working on critical development challenges.",
+      impacts: [
+        "Help establish a new partnership with an African organization",
+        "Support a full student project from concept to implementation",
+        "Fund advanced prototyping and testing",
+        "Enable travel for key team members",
+        "Support knowledge sharing and documentation"
+      ]
+    },
+    tier5: {
+      title: "Transformative Impact",
+      icon: <GlobeIcon className="h-10 w-10 text-blue-900" />,
+      description: "Your generous donation creates lasting change by enabling comprehensive support for our Innovation Studios program and conference.",
+      impacts: [
+        "Fund a complete student project through all development phases",
+        "Support implementation of solutions in partner communities",
+        "Enable conference participation for African partners",
+        "Provide scholarships for students to travel to partner sites",
+        "Support long-term monitoring and improvement of solutions",
+        "Help document and share successful approaches"
+      ]
+    }
   };
   
-  const getBgColor = () => {
-    const bgMap: Record<string, string> = {
-      green: "bg-green-50",
-      blue: "bg-blue-50",
-      purple: "bg-purple-50",
-      pink: "bg-pink-50",
-      amber: "bg-amber-50",
-      orange: "bg-orange-50",
-      indigo: "bg-indigo-50",
-      gray: "bg-gray-50"
-    };
-    return bgMap[impactTier.color] || "bg-blue-50";
-  };
+  const currentImpact = impactDetails[impactTier];
   
   return (
-    <div className="h-full flex flex-col">
-      <div className="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-100">
-        <h3 className="text-2xl font-bold text-gray-800 mb-3 font-simula">Your Impact</h3>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="h-full"
+    >
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 md:p-8 rounded-xl shadow-lg border border-blue-100 h-full">
+        <div className="flex items-center mb-6">
+          <div className="bg-white p-3 rounded-full shadow-sm mr-4">
+            {currentImpact.icon}
+          </div>
+          <h3 className="text-2xl font-bold text-gray-800 font-simula">{currentImpact.title}</h3>
+        </div>
         
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={selectedAmount}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-            className="mb-6"
-          >
-            <div className={`${getBgColor()} rounded-lg p-5 mb-6`}>
-              <h4 className={`font-bold text-xl ${getIconColor()}`}>{impactTier.title}</h4>
-              <p className="text-gray-700 mt-1">{impactTier.description}</p>
-            </div>
-            
-            <div>
-              <h5 className="font-medium text-gray-800 mb-3">Your donation will help:</h5>
-              <div className="space-y-3">
-                {impactTier.benefits.map((benefit, index) => (
-                  <motion.div 
-                    key={index}
-                    initial={{ opacity: 0, x: -5 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.2, delay: index * 0.1 }}
-                    className="flex items-start gap-3"
-                  >
-                    <CheckCircle className={`h-5 w-5 mt-0.5 ${getIconColor()}`} />
-                    <p className="text-gray-600">{benefit}</p>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        </AnimatePresence>
+        <div className="mb-6">
+          <p className="text-lg text-gray-700 mb-4">{currentImpact.description}</p>
+          
+          <div className="bg-white p-4 rounded-lg border border-blue-100 mb-6">
+            <p className="font-medium text-gray-800 mb-2">Your donation of ${isNaN(donationAmount) ? '25' : donationAmount} can help:</p>
+            <ul className="space-y-3">
+              {currentImpact.impacts.map((impact, index) => (
+                <li key={index} className="flex items-start">
+                  <ChevronRight className="h-5 w-5 text-[#FBB03B] mr-2 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">{impact}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
         
-        <div className="border-t border-gray-100 pt-4 mt-6">
-          <p className="text-gray-600 text-sm">
-            Thank you for supporting our mission to create sustainable solutions for African development challenges.
+        <div className="text-center p-4 bg-blue-900/5 rounded-lg">
+          <p className="text-sm text-gray-600">
+            RAADE is a registered 501(c)(3) nonprofit organization.
+            Your donation may be tax-deductible to the extent allowed by law.
           </p>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
