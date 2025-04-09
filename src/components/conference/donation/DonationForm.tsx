@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Form } from "@/components/ui/form";
 import DonationConfirmation from "./DonationConfirmation";
@@ -58,7 +57,7 @@ const DonationForm = () => {
     );
   }
 
-  // Get the Stripe payment hook when showing payment screen
+  // Only create stripePaymentProps when showing payment screen
   const stripePaymentProps = showCardPayment && submittedValues ? 
     useStripePayment({
       donationAmount: getDonationAmountValue(),
@@ -310,47 +309,49 @@ const DonationForm = () => {
                   />
                 )}
                 
-                {/* Stripe Payment Form */}
-                {submittedValues && stripePaymentProps && (
+                {/* Stripe Payment Form - Only render if we're in payment step and have values */}
+                {showCardPayment && submittedValues && stripePaymentProps && (
                   <StripeWrapper>
-                    <StripePaymentForm
-                      isSubmitting={stripePaymentProps.isLoading || isSubmitting}
-                      error={stripePaymentProps.error || paymentError}
-                    />
-                    
-                    {/* Display payment error if any */}
-                    {paymentError && (
-                      <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm mt-4">
-                        <p className="font-medium">Payment Error</p>
-                        <p>{paymentError}</p>
-                      </div>
-                    )}
-                    
-                    {/* Donate button */}
-                    <Button 
-                      onClick={async () => {
-                        const success = await stripePaymentProps.processPayment();
-                        if (success) {
-                          handlePaymentSuccess();
-                        }
-                      }}
-                      disabled={stripePaymentProps.isLoading || isSubmitting}
-                      className="w-full mt-4 bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white"
-                    >
-                      {stripePaymentProps.isLoading || isSubmitting ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Processing Payment...
-                        </>
-                      ) : (
-                        `Complete Donation of ${getDonationAmount()}`
+                    <div className="space-y-6">
+                      <StripePaymentForm
+                        isSubmitting={stripePaymentProps.isLoading || isSubmitting}
+                        error={stripePaymentProps.error || paymentError}
+                      />
+                      
+                      {/* Display payment error if any */}
+                      {paymentError && (
+                        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm mt-4">
+                          <p className="font-medium">Payment Error</p>
+                          <p>{paymentError}</p>
+                        </div>
                       )}
-                    </Button>
-                    
-                    <p className="text-xs text-gray-500 text-center mt-4">
-                      Your payment information is securely processed by Stripe.
-                      We do not store your full card details on our servers.
-                    </p>
+                      
+                      {/* Donate button */}
+                      <Button 
+                        onClick={async () => {
+                          const success = await stripePaymentProps.processPayment();
+                          if (success) {
+                            handlePaymentSuccess();
+                          }
+                        }}
+                        disabled={stripePaymentProps.isLoading || isSubmitting}
+                        className="w-full mt-4 bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white"
+                      >
+                        {stripePaymentProps.isLoading || isSubmitting ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Processing Payment...
+                          </>
+                        ) : (
+                          `Complete Donation of ${getDonationAmount()}`
+                        )}
+                      </Button>
+                      
+                      <p className="text-xs text-gray-500 text-center mt-4">
+                        Your payment information is securely processed by Stripe.
+                        We do not store your full card details on our servers.
+                      </p>
+                    </div>
                   </StripeWrapper>
                 )}
               </div>
