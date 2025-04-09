@@ -19,6 +19,7 @@ interface PaymentFormProps {
   isGroupRegistration?: boolean;
   groupSize?: number;
   requestId?: string | null;
+  saleActive?: boolean;
 }
 
 /**
@@ -30,6 +31,7 @@ interface PaymentFormProps {
  * - Handles payment submission and error reporting
  * - Implements timeouts and automatic recovery
  * - Prevents duplicate success/error callbacks
+ * - Shows sale status when applicable
  */
 const PaymentForm = ({
   email,
@@ -39,7 +41,8 @@ const PaymentForm = ({
   currency,
   isGroupRegistration,
   groupSize,
-  requestId
+  requestId,
+  saleActive
 }: PaymentFormProps) => {
   const [message, setMessage] = useState<string | null>(null);
   const [paymentCompleted, setPaymentCompleted] = useState(false);
@@ -95,6 +98,7 @@ const PaymentForm = ({
           currency={currency}
           isGroupRegistration={isGroupRegistration}
           groupSize={groupSize}
+          saleActive={saleActive}
         />
         
         <form id="payment-form" onSubmit={handleSubmit}>

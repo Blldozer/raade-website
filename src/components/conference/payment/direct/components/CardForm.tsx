@@ -12,6 +12,7 @@ interface CardFormProps {
   cardError: string | null;
   onCardChange: (event: any) => void;
   onSubmit: (e: React.FormEvent) => void;
+  saleActive?: boolean;
 }
 
 /**
@@ -22,6 +23,7 @@ interface CardFormProps {
  * - Renders card input element
  * - Handles form submission
  * - Displays loading state during payment processing
+ * - Shows sale status when applicable
  */
 const CardForm: React.FC<CardFormProps> = ({
   paymentAmount,
@@ -30,17 +32,32 @@ const CardForm: React.FC<CardFormProps> = ({
   disabled,
   cardError,
   onCardChange,
-  onSubmit
+  onSubmit,
+  saleActive
 }) => {
+  // Get readable ticket type name
+  const ticketLabel = 
+    ticketType === "student" ? "Student Ticket" : 
+    ticketType === "professional" ? "Professional Ticket" : 
+    "Group Registration";
+  
+  // Format dollar amount for display
+  const amountInDollars = (paymentAmount / 100).toFixed(2);
+
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       <div className="space-y-2">
         <h3 className="text-lg font-medium">Payment Information</h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          {ticketType === "student" ? "Student Ticket" : 
-           ticketType === "professional" ? "Professional Ticket" : 
-           "Group Registration"} - ${paymentAmount > 0 ? (paymentAmount / 100).toFixed(2) : "..."} USD
-        </p>
+        <div className="flex items-center justify-center">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            {ticketLabel} - ${amountInDollars} USD
+          </p>
+          {saleActive && (
+            <span className="ml-2 px-2 py-1 bg-red-100 text-red-600 text-xs font-medium rounded-full">
+              SALE!
+            </span>
+          )}
+        </div>
         
         <div className="p-4 border rounded-md bg-white dark:bg-gray-800">
           <CardElement 

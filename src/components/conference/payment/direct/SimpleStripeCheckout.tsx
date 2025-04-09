@@ -1,17 +1,18 @@
 
-import { useState } from "react";
-import { useStripe, useElements } from "@stripe/react-stripe-js";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Loader2 } from "lucide-react";
 import { usePaymentAmount } from "./hooks/usePaymentAmount";
-import { useCardPayment } from "./hooks/useCardPayment";
 import CardForm from "./components/CardForm";
-import PaymentSuccess from "./components/PaymentSuccess";
+import { useCardPayment } from "./hooks/useCardPayment";
+import PaymentError from "./components/PaymentError";
 
 interface SimpleStripeCheckoutProps {
   ticketType: string;
   email: string;
   fullName: string;
   groupSize?: number;
-  groupEmails?: Array<string | { value: string } | null>;
+  groupEmails?: string[];
   organization?: string;
   role?: string;
   specialRequests?: string;
@@ -23,44 +24,112 @@ interface SimpleStripeCheckoutProps {
 /**
  * SimpleStripeCheckout Component
  * 
- * A streamlined Stripe checkout that directly processes payments:
- * - Uses custom hooks for payment processing logic
- * - Separates UI components for better maintainability
- * - Handles success and error states
+ * A streamlined checkout component for direct payment processing:
+ * - Manages payment amount calculation
+ * - Handles card payment processing
+ * - Shows accurate pricing based on ticket type and sale status
+ * - Provides clear error messages and retry options
  */
-const SimpleStripeCheckout = (props: SimpleStripeCheckoutProps) => {
-  const [cardError, setCardError] = useState<string | null>(null);
-  const stripe = useStripe();
-  const elements = useElements();
+const SimpleStripeCheckout = ({
+  ticketType,
+  email,
+  fullName,
+  groupSize,
+  groupEmails = [],
+  organization = "",
+  role = "",
+  specialRequests = "",
+  referralSource = "",
+  onSuccess,
+  onError
+}: SimpleStripeCheckoutProps) => {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [attemptId] = useState<string>(`${Date.now()}-${Math.random().toString(36).substring(2, 9)}`);
   
-  // Get payment amount based on ticket type and group size
-  const { paymentAmount } = usePaymentAmount(props.ticketType, props.groupSize);
+  // Get payment amount from the edge function
+  const { 
+    paymentAmount, 
+    isLoading: isLoadingAmount, 
+    error: amountError, 
+    saleActive 
+  } = usePaymentAmount(ticketType, groupSize);
   
-  // Set up card payment processing
-  const { isLoading, successState, handleSubmit } = useCardPayment(props, props.onSuccess, props.onError);
+  // Handle card payment logic
+  const { 
+    handleSubmit, 
+    isLoading: isSubmitting, 
+    cardError, 
+    handleCardChange, 
+    setCardComplete,
+    resetCardError
+  } = useCardPayment({
+    ticketType,
+    email,
+    fullName,
+    groupSize,
+    groupEmails,
+    organization,
+    role,
+    specialRequests,
+    referralSource,
+    onSuccess,
+    onError: setErrorMessage,
+    attemptId
+  });
+  
+  // Forward error to parent component
+  useEffect(() => {
+    if (errorMessage) {
+      onError(errorMessage);
+    }
+  }, [errorMessage, onError]);
 
-  // Handle card element changes to show validation errors
-  const handleCardChange = (event: any) => {
-    setCardError(event.error ? event.error.message : null);
-  };
+  // Handle amount calculation error
+  useEffect(() => {
+    if (amountError) {
+      setErrorMessage(`Error calculating payment amount: ${amountError}`);
+    }
+  }, [amountError]);
+  
+  if (isLoadingAmount) {
+    return (
+      <div className="flex flex-col items-center justify-center p-6">
+        <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+        <p className="text-gray-500">Calculating payment amount...</p>
+      </div>
+    );
+  }
 
-  // If success state is true, show success component
-  if (successState) {
-    return <PaymentSuccess onContinue={props.onSuccess} />;
+  if (errorMessage) {
+    return (
+      <PaymentError 
+        message={errorMessage}
+        onRetry={() => {
+          resetCardError();
+          setErrorMessage(null);
+        }}
+      />
+    );
+  }
+  
+  if (paymentAmount === 0 && !isLoadingAmount && !amountError) {
+    return <div className="text-red-500 p-4">Error loading payment information. Please try again later.</div>;
   }
 
   return (
-    <div className="w-full">
-      <CardForm 
-        paymentAmount={paymentAmount}
-        ticketType={props.ticketType}
-        isLoading={isLoading}
-        disabled={!stripe || !elements || paymentAmount <= 0}
-        cardError={cardError}
-        onCardChange={handleCardChange}
-        onSubmit={handleSubmit}
-      />
-    </div>
+    <CardForm
+      paymentAmount={paymentAmount}
+      ticketType={ticketType}
+      isLoading={isSubmitting}
+      disabled={paymentAmount === 0 || isSubmitting}
+      cardError={cardError}
+      onCardChange={(e) => {
+        handleCardChange(e);
+        setCardComplete(e.complete);
+      }}
+      onSubmit={handleSubmit}
+      saleActive={saleActive}
+    />
   );
 };
 

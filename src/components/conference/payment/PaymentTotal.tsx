@@ -7,6 +7,7 @@ interface PaymentTotalProps {
   currency: string;
   isGroupRegistration?: boolean;
   groupSize?: number;
+  saleActive?: boolean;
 }
 
 /**
@@ -17,17 +18,20 @@ interface PaymentTotalProps {
  * - Group size information when applicable
  * - Total cost calculation with clear visual emphasis
  * - Formatted currency display
+ * - Sale status indicator when applicable
  * 
  * @param amount - Per-person payment amount
  * @param currency - Payment currency code
  * @param isGroupRegistration - Whether this is a group registration
  * @param groupSize - Number of people in the group
+ * @param saleActive - Whether the sale period is active
  */
 const PaymentTotal: React.FC<PaymentTotalProps> = ({ 
   amount, 
   currency,
   isGroupRegistration,
-  groupSize
+  groupSize,
+  saleActive
 }) => {
   // Calculate the total amount for group registrations
   const totalAmount = isGroupRegistration && groupSize ? amount * groupSize : amount;
@@ -40,6 +44,9 @@ const PaymentTotal: React.FC<PaymentTotalProps> = ({
   return (
     <div className="text-center mb-4">
       <h3 className="text-lg font-medium">Payment Details</h3>
+      {saleActive && (
+        <div className="text-xs text-red-500 font-semibold mb-1">SALE PRICING APPLIED!</div>
+      )}
       <p className="text-gray-500 text-sm">
         {isGroupRegistration && groupSize ? 
           <>Price: {displayAmount}</> : 

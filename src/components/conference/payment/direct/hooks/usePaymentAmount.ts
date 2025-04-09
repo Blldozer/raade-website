@@ -16,6 +16,7 @@ export const usePaymentAmount = (ticketType: string, groupSize?: number) => {
   const [paymentAmount, setPaymentAmount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [saleActive, setSaleActive] = useState(false);
 
   useEffect(() => {
     const calculateAmount = async () => {
@@ -38,6 +39,10 @@ export const usePaymentAmount = (ticketType: string, groupSize?: number) => {
         
         if (data?.amount) {
           setPaymentAmount(data.amount);
+          // If the response includes saleActive flag, save it
+          if (data.hasOwnProperty('saleActive')) {
+            setSaleActive(!!data.saleActive);
+          }
         }
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Unknown error";
@@ -51,5 +56,5 @@ export const usePaymentAmount = (ticketType: string, groupSize?: number) => {
     calculateAmount();
   }, [ticketType, groupSize]);
 
-  return { paymentAmount, isLoading, error };
+  return { paymentAmount, isLoading, error, saleActive };
 };

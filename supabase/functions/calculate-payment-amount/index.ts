@@ -8,6 +8,16 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
+/**
+ * Calculate Payment Amount Edge Function
+ * 
+ * Returns the correct pricing for conference tickets based on:
+ * - Selected ticket type
+ * - Current date (checking if sale period is active)
+ * - Group size for group registrations
+ * 
+ * Sale period: April 7, 2025 4:00 PM CST to April 8, 2025 4:00 PM CST
+ */
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -19,10 +29,17 @@ serve(async (req) => {
     const requestData = await req.json();
     const { ticketType, groupSize = 0 } = requestData;
     
-    // Define SALE prices in cents
-    const STUDENT_PRICE = 2500; // $25.00 (was $35.00)
-    const PROFESSIONAL_PRICE = 5000; // $50.00 (was $60.00)
-    const GROUP_PRICE_PER_PERSON = 2000; // $20.00 per person (was $30.00)
+    // Check if the sale is still active
+    const currentDate = new Date();
+    const saleEndDate = new Date('2025-04-08T16:00:00-05:00'); // CST is UTC-5
+    const isSaleActive = currentDate < saleEndDate;
+    
+    console.log(`Sale active: ${isSaleActive}, Current date: ${currentDate.toISOString()}, Sale end: ${saleEndDate.toISOString()}`);
+    
+    // Define prices in cents based on whether the sale is active
+    const STUDENT_PRICE = isSaleActive ? 2500 : 3500; // $25.00 (sale) / $35.00 (regular)
+    const PROFESSIONAL_PRICE = isSaleActive ? 5000 : 6000; // $50.00 (sale) / $60.00 (regular)
+    const GROUP_PRICE_PER_PERSON = isSaleActive ? 2000 : 3000; // $20.00 (sale) / $30.00 (regular) per person
     
     let amount = 0;
     
@@ -37,7 +54,7 @@ serve(async (req) => {
         break;
       
       case "student-group":
-        // Allow for groups of 3 or more now (was 5+)
+        // Allow for groups of 3 or more
         const validGroupSize = Math.max(3, parseInt(String(groupSize)) || 3);
         amount = GROUP_PRICE_PER_PERSON * validGroupSize;
         break;
@@ -57,6 +74,7 @@ serve(async (req) => {
         amount,
         currency: "usd",
         ticketType,
+        saleActive: isSaleActive,
         ...(ticketType === "student-group" ? { groupSize: Math.max(3, parseInt(String(groupSize)) || 3) } : {})
       }),
       { 
