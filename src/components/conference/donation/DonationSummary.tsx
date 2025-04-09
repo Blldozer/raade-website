@@ -1,6 +1,5 @@
 
 import { Card, CardContent } from "@/components/ui/card";
-import { DonationFormValues } from "./useDonationForm";
 
 interface DonationSummaryProps {
   values: {

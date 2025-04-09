@@ -80,23 +80,23 @@ const DonationForm: React.FC<DonationFormProps> = ({ onPaymentError }) => {
   };
 
   if (showConfirmation) {
-    return <DonationConfirmation onDonateAgain={handleDonateAgain} amount={getDonationAmount()} />;
+    return <DonationConfirmation 
+      onDonateAgain={handleDonateAgain} 
+      values={submittedValues!} 
+    />;
   }
 
   return (
     <Card className="p-6 max-w-3xl mx-auto">
-      <DonationStepIndicator currentStep={showCardPayment ? 2 : 1} />
+      <DonationStepIndicator currentStep={showCardPayment ? 'payment' : 'information'} />
       
       {showCardPayment ? (
         <div className="space-y-6">
           <h3 className="text-xl font-semula mb-4 text-center">Complete Your Donation</h3>
           
           <DonationSummary 
-            amount={getDonationAmount()}
-            name={submittedValues?.fullName || ""}
-            email={submittedValues?.email || ""}
-            isAnonymous={submittedValues?.makeAnonymous || false}
-            message={submittedValues?.message}
+            values={submittedValues!}
+            formattedAmount={getDonationAmount()}
           />
           
           <div className="border-t border-gray-200 pt-6">
@@ -135,12 +135,16 @@ const DonationForm: React.FC<DonationFormProps> = ({ onPaymentError }) => {
             
             <DonationAmountSelector
               selectedAmount={selectedAmount}
-              onSelect={handleAmountSelect}
+              handleAmountSelect={handleAmountSelect}
+              form={form}
             />
             
-            <DonorInformationForm />
+            <DonorInformationForm form={form} />
             
-            <DonationFormSubmit isSubmitting={isSubmitting} />
+            <DonationFormSubmit 
+              isSubmitting={isSubmitting} 
+              donationAmount={getDonationAmount()}
+            />
           </form>
         </FormProvider>
       )}
