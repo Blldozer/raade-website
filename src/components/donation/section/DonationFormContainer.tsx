@@ -12,8 +12,9 @@ interface DonationFormContainerProps {
 /**
  * DonationFormContainer Component
  * 
- * Renders the donation form and impact display in a responsive grid layout
- * Handles animations and layout for both form elements
+ * Provides layout for the donation form and impact display
+ * Uses responsive grid layout that adapts to different screen sizes
+ * Animates both form and impact display for better visual engagement
  * 
  * @param selectedAmount - Currently selected donation amount
  * @param setSelectedAmount - Function to update the selected amount
@@ -28,7 +29,7 @@ const DonationFormContainer = ({
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.6, delay: 0.3 }}
+        transition={{ duration: 0.5 }}
       >
         <DonationForm 
           selectedAmount={selectedAmount} 
@@ -40,7 +41,8 @@ const DonationFormContainer = ({
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.6, delay: 0.4 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="h-full"
       >
         <DonationImpact selectedAmount={selectedAmount} />
       </motion.div>
