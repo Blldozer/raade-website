@@ -1,33 +1,22 @@
 
-import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe, Stripe } from "@stripe/stripe-js";
-import { useEffect, useState } from "react";
-import SimpleStripeCheckout from "./SimpleStripeCheckout";
-
-// Get the Stripe key from environment variables instead of hardcoding
-const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 
-  "pk_live_51QzaGsJCmIJg645X8x5sPqhMAiH4pXBh2e6mbgdxxwgqqsCfM8N7SiOvv98N2l5kVeoAlJj3ab08VG4c6PtgVg4d004QXy2W3m";
-
-// Initialize Stripe with error handling
-const getStripe = () => {
-  try {
-    return loadStripe(STRIPE_PUBLISHABLE_KEY);
-  } catch (error) {
-    console.error("Failed to initialize Stripe:", error);
-    return null;
-  }
-};
+import { useState, useEffect } from "react";
+import { loadStripe } from "@stripe/stripe-js";
+import StripeCheckoutButton from "./StripeCheckoutButton";
+import { REFERRAL_SOURCES, TICKET_TYPES, calculateDiscountedPrice, calculateTotalPrice } from "../../RegistrationFormTypes";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SimpleStripeProviderProps {
-  ticketType: string;
-  email: string;
+  ticketType: typeof TICKET_TYPES[number];
   fullName: string;
+  email: string;
+  organization: string;
+  role: string;
   groupSize?: number;
-  groupEmails?: Array<string | { value: string } | null>;
-  organization?: string;
-  role?: string;
+  groupEmails?: string[];
   specialRequests?: string;
-  referralSource?: string;
+  referralSource?: typeof REFERRAL_SOURCES[number];
+  couponCode?: string;
+  couponDiscount?: { type: 'percentage' | 'fixed'; amount: number } | null;
   onSuccess: () => void;
   onError: (error: string) => void;
 }
@@ -35,95 +24,119 @@ interface SimpleStripeProviderProps {
 /**
  * SimpleStripeProvider Component
  * 
- * Provides Stripe context for the checkout component:
- * - Initializes Stripe with publishable key
- * - Sets up the Stripe Elements provider
- * - Configures appearance settings for Stripe Elements
- * - Now with improved error handling and fallbacks
+ * Provides a simplified Stripe checkout experience:
+ * - Handles both individual and group registrations
+ * - Supports coupon code discounts
+ * - Creates checkout session with appropriate metadata
+ * - Handles success and error cases with callbacks
  */
-const SimpleStripeProvider = (props: SimpleStripeProviderProps) => {
-  const [stripePromise, setStripePromise] = useState<Promise<Stripe | null> | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
-
+const SimpleStripeProvider = ({
+  ticketType,
+  fullName,
+  email,
+  organization,
+  role,
+  groupSize,
+  groupEmails = [],
+  specialRequests,
+  referralSource,
+  couponCode,
+  couponDiscount,
+  onSuccess,
+  onError
+}: SimpleStripeProviderProps) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [amount, setAmount] = useState(0);
+  
   useEffect(() => {
-    const initializeStripe = () => {
-      try {
-        // loadStripe returns a Promise<Stripe|null>, so we set that directly to the state
-        const promise = getStripe();
-        setStripePromise(promise);
-        // Flag successful initialization
-        setIsInitialized(true);
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : "Unknown error initializing payment system";
-        console.error("Stripe initialization error:", errorMessage);
-        setError("Failed to initialize payment system");
-        props.onError("Payment system initialization failed");
-      }
-    };
-
-    initializeStripe();
-  }, [props.onError]);
-
-  const options = {
-    appearance: {
-      theme: 'stripe' as const,
-      variables: {
-        colorPrimary: '#274675', // RAADE navy
-        colorBackground: '#ffffff',
-        colorText: '#30313d',
-        colorDanger: '#df1b41',
-        fontFamily: 'Merriweather, system-ui, sans-serif',
-        borderRadius: '4px',
-      }
-    },
-  };
-
-  // Fail gracefully if we can't initialize Stripe
-  if (error) {
-    return (
-      <div className="text-red-500 p-6 border border-red-300 rounded bg-red-50 dark:bg-red-900/20 dark:border-red-800 flex flex-col items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
-        <h3 className="text-lg font-bold text-red-700 dark:text-red-300 mb-2">Payment System Error</h3>
-        <p className="text-center mb-4">{error}</p>
-        <button onClick={() => window.location.reload()} className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded">
-          Try Again
-        </button>
-      </div>
+    // Calculate the total price
+    const originalPrice = calculateTotalPrice(
+      ticketType, 
+      ticketType === "student-group" ? groupSize : undefined
     );
-  }
+    
+    // Apply coupon discount if available
+    const discountedPrice = calculateDiscountedPrice(originalPrice, couponDiscount);
+    
+    setAmount(discountedPrice);
+  }, [ticketType, groupSize, couponDiscount]);
 
-  // Show a nice loading state while Stripe initializes
-  if (!stripePromise || !isInitialized) {
-    return (
-      <div className="p-6 text-center">
-        <div className="animate-pulse flex flex-col items-center">
-          <div className="rounded-full bg-gray-200 dark:bg-gray-700 h-12 w-12 mb-4"></div>
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
-          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-        </div>
-        <p className="mt-4 text-gray-600 dark:text-gray-400">Loading payment system...</p>
-      </div>
-    );
-  }
-
-  // Process group emails to ensure they're all strings
-  const processedProps = {
-    ...props,
-    groupEmails: props.groupEmails?.map(email => {
-      if (typeof email === 'object' && email !== null && 'value' in email) {
-        return email.value;
+  const handleCreateCheckoutSession = async () => {
+    setIsLoading(true);
+    try {
+      console.log("Creating checkout session for:", {
+        ticketType,
+        email,
+        fullName,
+        organization,
+        role,
+        groupSize,
+        groupEmails: groupEmails.length
+      });
+      
+      // Create the checkout session
+      const { data, error } = await supabase.functions.invoke("create-checkout-session", {
+        body: {
+          ticketType,
+          email,
+          fullName,
+          organization,
+          role,
+          groupSize,
+          groupEmails,
+          specialRequests,
+          referralSource,
+          couponCode,
+          customAmount: amount // Pass the calculated amount with discount
+        }
+      });
+      
+      if (error || !data?.sessionId) {
+        console.error("Error creating checkout session:", error || "No session ID returned");
+        const errorMessage = data?.error || error?.message || "Failed to create checkout session";
+        onError(errorMessage);
+        setIsLoading(false);
+        return;
       }
-      return email ? String(email) : '';
-    }).filter(Boolean) as string[]
+      
+      // Store the checkout session ID in session storage
+      sessionStorage.setItem("checkoutSessionId", data.sessionId);
+      sessionStorage.setItem("registrationEmail", email);
+      
+      // Redirect to the checkout page
+      setSessionId(data.sessionId);
+      
+      const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+      if (!stripe) {
+        throw new Error("Failed to load Stripe");
+      }
+      
+      const { error: redirectError } = await stripe.redirectToCheckout({
+        sessionId: data.sessionId
+      });
+      
+      if (redirectError) {
+        console.error("Error redirecting to checkout:", redirectError);
+        onError(redirectError.message);
+      }
+    } catch (err) {
+      console.error("Error in checkout process:", err);
+      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
+      onError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
-
+  
   return (
-    <Elements stripe={stripePromise} options={options}>
-      <SimpleStripeCheckout {...processedProps} />
-    </Elements>
+    <div>
+      <StripeCheckoutButton 
+        onClick={handleCreateCheckoutSession} 
+        isLoading={isLoading} 
+        amount={amount}
+      />
+    </div>
   );
 };
 

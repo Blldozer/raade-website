@@ -8,13 +8,15 @@ import { useRegistrationForm } from "./registration/useRegistrationForm";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { calculateDiscountedPrice, calculateTotalPrice } from "./RegistrationFormTypes";
 import { clearExistingSessionData, detectBackNavigation, getSessionDiagnostics } from "./payment/services/sessionManagement";
 
 /**
  * ConferenceRegistrationForm Component
  * 
  * Displays the main registration form for the conference:
- * - Now using standardized Stripe Checkout Sessions only
+ * - Now with support for coupon codes including 100% off coupons
+ * - Skips payment flow for free registrations (100% discount)
  * - Enhanced session management and cleanup
  * - Better error recovery after payment failures
  * - Improved user experience with clear status messages
@@ -30,7 +32,13 @@ const ConferenceRegistrationForm = () => {
     handleInitialSubmit,
     setShowPayment,
     resetForm,
-    watchTicketType
+    watchTicketType,
+    couponCode,
+    couponDiscount,
+    isFullDiscount,
+    setCouponCode,
+    setCouponDiscount,
+    setIsFullDiscount
   } = useRegistrationForm();
 
   const { toast } = useToast();
@@ -141,6 +149,18 @@ const ConferenceRegistrationForm = () => {
     });
   };
 
+  // Calculate the total price with discount applied
+  const getTotalPrice = () => {
+    if (!registrationData) return 0;
+    
+    const originalPrice = calculateTotalPrice(
+      registrationData.ticketType, 
+      registrationData.ticketType === "student-group" ? registrationData.groupSize : undefined
+    );
+    
+    return calculateDiscountedPrice(originalPrice, couponDiscount);
+  };
+
   return (
     <Card className="shadow-lg border-[#FBB03B]/10 dark:border-[#FBB03B]/20 dark:bg-gray-900 transition-colors duration-200">
       <CardHeader>
@@ -159,6 +179,10 @@ const ConferenceRegistrationForm = () => {
               watch={form.watch}
               control={form.control}
               onEmailValidation={handleEmailValidation}
+              setCouponCode={setCouponCode}
+              setCouponDiscount={setCouponDiscount}
+              setIsFullDiscount={setIsFullDiscount}
+              couponDiscount={couponDiscount}
             />
             
             <Button
@@ -174,7 +198,7 @@ const ConferenceRegistrationForm = () => {
                   Processing...
                 </>
               ) : (
-                <>Continue to Payment</>
+                isFullDiscount ? 'Complete Free Registration' : 'Continue to Payment'
               )}
             </Button>
           </form>
@@ -189,6 +213,8 @@ const ConferenceRegistrationForm = () => {
               clearExistingSessionData();
               setShowPayment(false);
             }}
+            couponDiscount={couponDiscount}
+            totalPrice={getTotalPrice()}
           />
         )}
       </CardContent>

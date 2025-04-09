@@ -7,6 +7,7 @@ import BasicInformationSection from "./registration/BasicInformationSection";
 import GroupRegistrationSection from "./registration/GroupRegistrationSection";
 import ReferralSourceSection from "./registration/ReferralSourceSection";
 import { useGroupSizeReset } from "./registration/useGroupSizeReset";
+import CouponCodeSection from "./registration/CouponCodeSection";
 
 interface RegistrationFormFieldsProps {
   register: UseFormRegister<RegistrationFormData>;
@@ -15,6 +16,10 @@ interface RegistrationFormFieldsProps {
   watch: UseFormWatch<RegistrationFormData>;
   control: Control<RegistrationFormData>;
   onEmailValidation?: (result: { isValid: boolean; message?: string }) => void;
+  setCouponCode: (couponCode: string | null) => void;
+  setCouponDiscount: (discount: { type: 'percentage' | 'fixed'; amount: number } | null) => void;
+  setIsFullDiscount: (isFullDiscount: boolean) => void;
+  couponDiscount: { type: 'percentage' | 'fixed'; amount: number } | null;
 }
 
 /**
@@ -29,6 +34,10 @@ interface RegistrationFormFieldsProps {
  * @param watch - React Hook Form watch function
  * @param control - React Hook Form control object
  * @param onEmailValidation - Callback when email validation completes
+ * @param setCouponCode - Function to set coupon code 
+ * @param setCouponDiscount - Function to set coupon discount details
+ * @param setIsFullDiscount - Function to indicate if coupon provides 100% discount
+ * @param couponDiscount - Current coupon discount details
  */
 const RegistrationFormFields = ({ 
   register, 
@@ -36,7 +45,11 @@ const RegistrationFormFields = ({
   setValue, 
   watch,
   control,
-  onEmailValidation
+  onEmailValidation,
+  setCouponCode,
+  setCouponDiscount,
+  setIsFullDiscount,
+  couponDiscount
 }: RegistrationFormFieldsProps) => {
   
   // Use the group size reset hook to handle group size logic
@@ -55,6 +68,7 @@ const RegistrationFormFields = ({
         watch={watch} 
         setValue={setValue} 
         errors={errors} 
+        couponDiscount={couponDiscount}
       />
       
       <GroupRegistrationSection
@@ -62,6 +76,17 @@ const RegistrationFormFields = ({
         setValue={setValue}
         control={control}
       />
+      
+      {/* Add the coupon code section */}
+      <div className="py-4 border-t border-b border-gray-100">
+        <h3 className="text-lg font-medium text-[#274675] mb-3">Coupon Code</h3>
+        <p className="text-sm text-gray-500 mb-3">If you have a coupon code, enter it below.</p>
+        <CouponCodeSection 
+          setCouponCode={setCouponCode}
+          setCouponDiscount={setCouponDiscount}
+          setIsFullDiscount={setIsFullDiscount}
+        />
+      </div>
 
       <ReferralSourceSection 
         register={register}

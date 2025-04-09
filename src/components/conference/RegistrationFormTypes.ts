@@ -44,7 +44,8 @@ export const registrationFormSchema = z.object({
       value: z.string().email("Invalid email address")
     }).or(z.string().email("Invalid email address")).nullable()
   ).optional(),
-  specialRequests: z.string().optional()
+  specialRequests: z.string().optional(),
+  couponCode: z.string().optional()
 });
 
 // Alias for backward compatibility
@@ -64,7 +65,8 @@ export const defaultFormValues: RegistrationFormData = {
   groupSize: undefined,
   groupEmails: [],
   specialRequests: "",
-  referralSource: undefined
+  referralSource: undefined,
+  couponCode: ""
 };
 
 /**
@@ -132,6 +134,28 @@ export const calculateTotalPrice = (
   }
   
   return basePrice;
+};
+
+/**
+ * Calculate discounted price based on coupon
+ * @param originalPrice The original price before discount
+ * @param discount The discount object with type and amount
+ * @returns The price after discount
+ */
+export const calculateDiscountedPrice = (
+  originalPrice: number,
+  discount: { type: 'percentage' | 'fixed'; amount: number } | null
+): number => {
+  if (!discount) return originalPrice;
+  
+  if (discount.type === 'percentage') {
+    // For percentage discounts, reduce by the percentage
+    const discountAmount = (originalPrice * discount.amount) / 100;
+    return Math.max(0, originalPrice - discountAmount);
+  } else {
+    // For fixed discounts, reduce by the fixed amount
+    return Math.max(0, originalPrice - discount.amount);
+  }
 };
 
 /**

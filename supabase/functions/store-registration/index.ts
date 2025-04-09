@@ -46,6 +46,7 @@ serve(async (req) => {
       groupEmails,
       specialRequests,
       referralSource,
+      couponCode,
       paymentComplete = false
     } = requestData;
     
@@ -90,6 +91,23 @@ serve(async (req) => {
       }
     );
     
+    // If a coupon code was provided, increment its usage
+    if (couponCode) {
+      console.log(`[${requestId}] Incrementing usage count for coupon code: ${couponCode}`);
+      
+      const { data: couponData, error: couponError } = await supabaseAdmin.rpc(
+        'increment_coupon_usage',
+        { coupon_code_param: couponCode }
+      );
+      
+      if (couponError) {
+        console.error(`[${requestId}] Error incrementing coupon usage:`, couponError);
+        // Continue with registration despite coupon error
+      } else {
+        console.log(`[${requestId}] Coupon usage updated. New count: ${couponData}`);
+      }
+    }
+    
     // Check if a record with this email already exists
     console.log(`[${requestId}] Checking for existing registration: ${email}`);
     const { data: existingRegistration, error: checkError } = await supabaseAdmin
@@ -125,7 +143,8 @@ serve(async (req) => {
           special_requests: specialRequests || null,
           status: paymentComplete ? 'confirmed' : 'pending',
           updated_at: new Date().toISOString(),
-          verification_method: referralSource || null
+          verification_method: referralSource || null,
+          coupon_code: couponCode || null
         })
         .eq('id', existingRegistration.id)
         .select();
@@ -165,7 +184,8 @@ serve(async (req) => {
           special_requests: specialRequests || null,
           status: paymentComplete ? 'confirmed' : 'pending',
           verification_method: referralSource || null,
-          email_verified: emailVerified
+          email_verified: emailVerified,
+          coupon_code: couponCode || null
         })
         .select();
         

@@ -1,15 +1,18 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/hooks/use-toast";
 import { registrationFormSchema, RegistrationFormData, TICKET_TYPES_ENUM } from "../RegistrationFormTypes";
+import { supabase } from "@/integrations/supabase/client";
 
 export const useRegistrationForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [registrationData, setRegistrationData] = useState<RegistrationFormData | null>(null);
   const [emailValidated, setEmailValidated] = useState(false);
+  const [couponCode, setCouponCode] = useState<string | null>(null);
+  const [couponDiscount, setCouponDiscount] = useState<{ type: 'percentage' | 'fixed'; amount: number } | null>(null);
+  const [isFullDiscount, setIsFullDiscount] = useState(false);
 
   // Initialize form with zod schema validation
   const form = useForm<RegistrationFormData>({
@@ -23,6 +26,7 @@ export const useRegistrationForm = () => {
       specialRequests: "",
       groupEmails: [],
       groupSize: undefined,
+      couponCode: "",
     },
     mode: "onChange", // Enable real-time validation
   });
@@ -48,9 +52,22 @@ export const useRegistrationForm = () => {
     
     setIsSubmitting(true);
     try {
-      // Store the registration data for payment processing
+      // If this is a 100% discount coupon, add the coupon code to the registration data
+      if (isFullDiscount && couponCode) {
+        data.couponCode = couponCode;
+      }
+      
+      // Store the registration data for payment processing or direct submission
       setRegistrationData(data);
-      setShowPayment(true);
+      
+      // If we have a 100% discount coupon, skip payment and proceed directly to registration
+      if (isFullDiscount && couponCode) {
+        // Create a registration record directly without payment
+        await handleDirectRegistration(data);
+      } else {
+        // Otherwise, show the payment section
+        setShowPayment(true);
+      }
     } catch (error) {
       console.error("Registration error:", error);
       toast({
@@ -63,11 +80,66 @@ export const useRegistrationForm = () => {
     }
   };
 
+  // Direct registration function for 100% off coupons
+  const handleDirectRegistration = async (data: RegistrationFormData) => {
+    try {
+      console.log("Processing free registration with coupon code:", couponCode);
+      
+      // Submit registration data with coupon info to store-registration function
+      const { error } = await supabase.functions.invoke('store-registration', {
+        body: {
+          fullName: data.fullName,
+          email: data.email,
+          organization: data.organization || "",
+          role: data.role || "",
+          ticketType: data.ticketType,
+          groupSize: data.groupSize,
+          groupEmails: data.groupEmails,
+          specialRequests: data.specialRequests || "",
+          referralSource: data.referralSource || "",
+          couponCode: couponCode,
+          paymentComplete: true // Mark as paid since it's a 100% discount
+        }
+      });
+      
+      if (error) {
+        throw new Error(`Registration failed: ${error.message}`);
+      }
+      
+      // Reset form and show success message
+      form.reset();
+      setRegistrationData(null);
+      setShowPayment(false);
+      setCouponCode(null);
+      setCouponDiscount(null);
+      setIsFullDiscount(false);
+      
+      // Show success toast
+      toast({
+        title: "Registration Successful!",
+        description: "Your free registration has been confirmed. You'll receive a confirmation email shortly.",
+        variant: "default",
+      });
+      
+      // Redirect to confirmation page or show confirmation component
+    } catch (error) {
+      console.error("Free registration error:", error);
+      toast({
+        title: "Registration failed",
+        description: "There was an error processing your registration. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   // Function to reset the form and payment state
   // This is useful when a user navigates back from Stripe checkout
   const resetForm = () => {
     setShowPayment(false);
     setRegistrationData(null);
+    setCouponCode(null);
+    setCouponDiscount(null);
+    setIsFullDiscount(false);
     form.reset({
       ticketType: TICKET_TYPES_ENUM.STUDENT,
       fullName: "",
@@ -77,6 +149,7 @@ export const useRegistrationForm = () => {
       specialRequests: "",
       groupEmails: [],
       groupSize: undefined,
+      couponCode: "",
     });
     setEmailValidated(false);
   };
@@ -88,8 +161,14 @@ export const useRegistrationForm = () => {
     registrationData,
     emailValidated,
     watchTicketType,
+    couponCode,
+    couponDiscount,
+    isFullDiscount,
     handleEmailValidation,
     handleInitialSubmit,
+    setCouponCode,
+    setCouponDiscount,
+    setIsFullDiscount,
     setShowPayment,
     resetForm,
   };
