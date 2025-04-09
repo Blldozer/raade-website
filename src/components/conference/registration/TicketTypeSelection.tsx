@@ -10,7 +10,7 @@ interface TicketTypeSelectionProps {
   setValue: UseFormSetValue<RegistrationFormData>;
   errors: FormState<RegistrationFormData>["errors"];
   couponDiscount: { type: 'percentage' | 'fixed'; amount: number } | null;
-  control: Control<RegistrationFormData>; // Add control prop
+  control: Control<RegistrationFormData>;
 }
 
 /**
@@ -21,6 +21,8 @@ interface TicketTypeSelectionProps {
  * - Professional tickets
  * - Student group tickets
  * - Shows discounted prices when coupons are applied
+ * - Displays sale indicators when active
+ * - Optimized for both mobile and desktop viewing
  * 
  * @param watch - React Hook Form watch function
  * @param setValue - React Hook Form setValue function
@@ -45,6 +47,16 @@ const TicketTypeSelection = ({ watch, setValue, errors, couponDiscount, control 
   const hasStudentDiscount = discountedStudentPrice < studentPrice;
   const hasProfessionalDiscount = discountedProfessionalPrice < professionalPrice;
   const hasGroupDiscount = discountedGroupPrice < groupPrice;
+
+  // Calculate discount percentages for display
+  const getDiscountPercentage = (original: number, discounted: number) => {
+    if (original <= 0 || discounted >= original) return 0;
+    return Math.round(((original - discounted) / original) * 100);
+  };
+
+  const studentDiscountPercentage = getDiscountPercentage(studentPrice, discountedStudentPrice);
+  const professionalDiscountPercentage = getDiscountPercentage(professionalPrice, discountedProfessionalPrice);
+  const groupDiscountPercentage = getDiscountPercentage(groupPrice, discountedGroupPrice);
 
   return (
     <div className="py-4">
@@ -73,11 +85,9 @@ const TicketTypeSelection = ({ watch, setValue, errors, couponDiscount, control 
                         <>
                           <span className="line-through mr-2">{formatCurrency(studentPrice)}</span>
                           <span className="text-green-600 font-medium">{formatCurrency(discountedStudentPrice)}</span>
-                          {couponDiscount?.type === 'percentage' && (
-                            <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
-                              {couponDiscount.amount}% off
-                            </span>
-                          )}
+                          <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
+                            {studentDiscountPercentage}% off
+                          </span>
                         </>
                       ) : (
                         <>{formatCurrency(studentPrice)}</>
@@ -104,11 +114,9 @@ const TicketTypeSelection = ({ watch, setValue, errors, couponDiscount, control 
                         <>
                           <span className="line-through mr-2">{formatCurrency(professionalPrice)}</span>
                           <span className="text-green-600 font-medium">{formatCurrency(discountedProfessionalPrice)}</span>
-                          {couponDiscount?.type === 'percentage' && (
-                            <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
-                              {couponDiscount.amount}% off
-                            </span>
-                          )}
+                          <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
+                            {professionalDiscountPercentage}% off
+                          </span>
                         </>
                       ) : (
                         <>{formatCurrency(professionalPrice)}</>
@@ -135,11 +143,9 @@ const TicketTypeSelection = ({ watch, setValue, errors, couponDiscount, control 
                         <>
                           <span className="line-through mr-2">{formatCurrency(groupPrice)}</span>
                           <span className="text-green-600 font-medium">{formatCurrency(discountedGroupPrice)}</span>
-                          {couponDiscount?.type === 'percentage' && (
-                            <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
-                              {couponDiscount.amount}% off
-                            </span>
-                          )}
+                          <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
+                            {groupDiscountPercentage}% off
+                          </span>
                         </>
                       ) : (
                         <>{formatCurrency(groupPrice)}</>

@@ -1,7 +1,9 @@
+
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2, CheckCircle, XCircle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CouponCodeSectionProps {
   setCouponCode: (couponCode: string | null) => void;
@@ -13,9 +15,10 @@ interface CouponCodeSectionProps {
  * CouponCodeSection Component
  * 
  * Allows users to enter and validate coupon codes:
- * - Validates coupon codes client-side for now (can be switched to API later)
+ * - Validates coupon codes through the Supabase edge function
  * - Shows coupon discount information
  * - Displays validation state with clear feedback
+ * - Handles various coupon validation errors
  * 
  * @param setCouponCode - Function to update coupon code in parent component
  * @param setCouponDiscount - Function to update coupon discount details
@@ -45,53 +48,58 @@ const CouponCodeSection = ({
     setValidationResult(null);
     
     try {
-      // Using client-side validation for now to avoid edge function issues
-      // In production, replace this with an API call
-      setTimeout(() => {
-        const validCoupons = {
-          "RAADE100": { type: 'percentage' as const, amount: 100 },
-          "SPEAKER": { type: 'percentage' as const, amount: 100 },
-          "SPONSOR50": { type: 'percentage' as const, amount: 50 },
-          "EARLY25": { type: 'percentage' as const, amount: 25 },
-          "DISCOUNT10": { type: 'fixed' as const, amount: 10 }
-        };
+      // Call the validate-coupon edge function
+      const { data, error } = await supabase.functions.invoke('validate-coupon', {
+        body: { code: inputValue.trim() }
+      });
+      
+      if (error) {
+        console.error("Coupon validation error:", error);
+        setValidationResult({
+          isValid: false,
+          message: "Error validating coupon code. Please try again."
+        });
+        setIsValidating(false);
+        return;
+      }
+      
+      if (data.isValid) {
+        // Set coupon code and discount in parent component
+        setCouponCode(inputValue.trim().toUpperCase());
+        setCouponDiscount(data.discount);
         
-        const code = inputValue.trim().toUpperCase();
+        // Check if it's a 100% discount
+        const isFullDiscount = data.discount.type === 'percentage' && data.discount.amount === 100;
+        setIsFullDiscount(isFullDiscount);
         
-        if (code in validCoupons) {
-          const discount = validCoupons[code as keyof typeof validCoupons];
-          
-          // Set coupon code in parent component
-          setCouponCode(code);
-          setCouponDiscount(discount);
-          
-          // Check if it's a 100% discount
-          const isFullDiscount = discount.type === 'percentage' && discount.amount === 100;
-          setIsFullDiscount(isFullDiscount);
-          
-          // Set validation result for UI
-          setValidationResult({
-            isValid: true,
-            message: isFullDiscount 
-              ? 'Free registration code applied!' 
-              : `Discount applied: ${discount.type === 'percentage' ? `${discount.amount}%` : `$${discount.amount}`} off`,
-            discount
-          });
+        // Format message based on discount type and amount
+        let message = "";
+        if (isFullDiscount) {
+          message = 'Free registration code applied!';
         } else {
-          setValidationResult({
-            isValid: false,
-            message: "Invalid coupon code"
-          });
+          message = `Discount applied: ${data.discount.type === 'percentage' 
+            ? `${data.discount.amount}%` 
+            : `$${data.discount.amount}`} off`;
         }
         
-        setIsValidating(false);
-      }, 500); // Simulate API delay
+        setValidationResult({
+          isValid: true,
+          message,
+          discount: data.discount
+        });
+      } else {
+        setValidationResult({
+          isValid: false,
+          message: data.message || "Invalid coupon code"
+        });
+      }
     } catch (error) {
       console.error("Coupon validation error:", error);
       setValidationResult({
         isValid: false,
         message: "Error validating coupon"
       });
+    } finally {
       setIsValidating(false);
     }
   };

@@ -1,7 +1,9 @@
+
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CouponCodeInputProps {
   onApply: (result: {
@@ -19,10 +21,15 @@ interface CouponCodeInputProps {
  * CouponCodeInput Component
  * 
  * Allows users to input and verify coupon codes:
- * - Handles coupon code validation
+ * - Handles coupon code validation via Supabase edge function
  * - Shows loading state during verification
  * - Displays success/error feedback
  * - Works with parent form validation
+ * 
+ * @param onApply - Function called when coupon verification completes
+ * @param value - Current input value
+ * @param onChange - Function to update input value
+ * @param isDisabled - Whether the input is disabled
  */
 const CouponCodeInput = ({ onApply, value, onChange, isDisabled }: CouponCodeInputProps) => {
   const [isVerifying, setIsVerifying] = useState(false);
@@ -36,51 +43,61 @@ const CouponCodeInput = ({ onApply, value, onChange, isDisabled }: CouponCodeInp
     setIsVerifying(true);
     
     try {
-      // For testing/demo purposes we'll use a client-side verification
-      // In production, this should be a server API call
-      setTimeout(() => {
-        const validCoupons = {
-          "RAADE100": { type: 'percentage' as const, amount: 100 },
-          "SPEAKER": { type: 'percentage' as const, amount: 100 },
-          "SPONSOR50": { type: 'percentage' as const, amount: 50 },
-          "EARLY25": { type: 'percentage' as const, amount: 25 },
-          "DISCOUNT10": { type: 'fixed' as const, amount: 10 }
-        };
+      // Call the validate-coupon edge function
+      const { data, error } = await supabase.functions.invoke('validate-coupon', {
+        body: { code: value.trim() }
+      });
+      
+      if (error) {
+        console.error("Coupon validation error:", error);
+        setVerificationResult({
+          valid: false,
+          message: "Error validating coupon"
+        });
         
-        const couponCode = value.toUpperCase();
-        
-        if (couponCode in validCoupons) {
-          const discount = validCoupons[couponCode as keyof typeof validCoupons];
-          const result = {
-            valid: true,
-            code: couponCode,
-            discount,
-            message: `${discount.type === 'percentage' ? `${discount.amount}% off` : `$${discount.amount} off`}`
-          };
-          
-          setVerificationResult({
-            valid: true,
-            message: result.message
-          });
-          
-          onApply(result);
-        } else {
-          setVerificationResult({
-            valid: false,
-            message: "Invalid coupon code"
-          });
-          
-          onApply({
-            valid: false,
-            code: couponCode,
-            discount: null,
-            message: "Invalid coupon code"
-          });
-        }
+        onApply({
+          valid: false,
+          code: value,
+          discount: null,
+          message: "Error validating coupon"
+        });
         
         setIsVerifying(false);
-      }, 500); // Simulate network delay
+        return;
+      }
+      
+      if (data.isValid) {
+        // Format message based on discount type and amount
+        const message = data.discount.type === 'percentage' 
+          ? `${data.discount.amount}% off` 
+          : `$${data.discount.amount} off`;
+        
+        setVerificationResult({
+          valid: true,
+          message
+        });
+        
+        onApply({
+          valid: true,
+          code: value.toUpperCase(),
+          discount: data.discount,
+          message
+        });
+      } else {
+        setVerificationResult({
+          valid: false,
+          message: data.message || "Invalid coupon code"
+        });
+        
+        onApply({
+          valid: false,
+          code: value,
+          discount: null,
+          message: data.message || "Invalid coupon code"
+        });
+      }
     } catch (error) {
+      console.error("Error verifying coupon:", error);
       setVerificationResult({
         valid: false,
         message: "Error verifying coupon"
@@ -92,7 +109,7 @@ const CouponCodeInput = ({ onApply, value, onChange, isDisabled }: CouponCodeInp
         discount: null,
         message: "Error verifying coupon"
       });
-      
+    } finally {
       setIsVerifying(false);
     }
   };
