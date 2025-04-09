@@ -15,11 +15,14 @@ import { Toaster } from "@/components/ui/toaster";
 import StripeWrapper from "./stripe/StripeWrapper";
 import StripePaymentForm from "./stripe/StripePaymentForm";
 import { useStripePayment } from "./stripe/useStripePayment";
+import DonationStepIndicator from "./DonationStepIndicator";
+import DonationSummary from "./DonationSummary";
 
 /**
  * DonationForm Component
  * 
  * Interactive donation form with:
+ * - Two-step process: form submission followed by payment
  * - Clean, modern interface based on the provided design
  * - Preset donation amounts with highlighted selection
  * - Stripe payment processing integration
@@ -72,10 +75,15 @@ const DonationForm = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Left column - Donation Form or Payment Form */}
         <div className="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-100">
+          <h3 className="text-2xl font-bold text-gray-800 mb-6 font-simula">
+            {!showCardPayment ? "Make a Donation" : "Complete Your Donation"}
+          </h3>
+          
+          {/* Step Indicator */}
+          <DonationStepIndicator currentStep={showCardPayment ? "payment" : "information"} />
+          
           {!showCardPayment ? (
             <>
-              <h3 className="text-2xl font-bold text-gray-800 mb-6 font-simula">Make a Donation</h3>
-              
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
                   {/* Donation amount selection */}
@@ -255,14 +263,6 @@ const DonationForm = () => {
                     />
                   </div>
                   
-                  {/* Display payment error if any */}
-                  {paymentError && (
-                    <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-                      <p className="font-medium">Payment Error</p>
-                      <p>{paymentError}</p>
-                    </div>
-                  )}
-                  
                   {/* Submit button */}
                   <Button
                     type="submit"
@@ -291,59 +291,69 @@ const DonationForm = () => {
             </>
           ) : (
             <>
-              <div className="flex items-center justify-between mb-6">
+              {/* Payment step */}
+              <div className="space-y-6">
+                {/* Back button */}
                 <button 
                   onClick={handleBackToForm}
-                  className="flex items-center text-gray-600 hover:text-gray-900"
+                  className="flex items-center text-gray-600 hover:text-gray-900 mb-4"
                 >
                   <ArrowLeft className="h-4 w-4 mr-1" />
-                  <span>Back</span>
+                  <span>Back to form</span>
                 </button>
-                <h3 className="text-xl font-bold text-gray-800 font-simula">Payment Details</h3>
-              </div>
-              
-              <div className="mb-6 p-4 bg-gray-50 border border-gray-100 rounded-lg">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-gray-600">Donation Amount:</span>
-                  <span className="font-medium text-[#FBB03B]">
-                    {getDonationAmount()}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Donor:</span>
-                  <span className="font-medium">{submittedValues?.fullName}</span>
-                </div>
-              </div>
-              
-              {submittedValues && stripePaymentProps && (
-                <StripeWrapper>
-                  <StripePaymentForm
-                    isSubmitting={stripePaymentProps.isLoading || isSubmitting}
-                    error={stripePaymentProps.error || paymentError}
+                
+                {/* Donation Summary */}
+                {submittedValues && (
+                  <DonationSummary 
+                    values={submittedValues} 
+                    formattedAmount={getDonationAmount()}
                   />
-                  
-                  {/* Donate button */}
-                  <Button 
-                    onClick={async () => {
-                      const success = await stripePaymentProps.processPayment();
-                      if (success) {
-                        handlePaymentSuccess();
-                      }
-                    }}
-                    disabled={stripePaymentProps.isLoading || isSubmitting}
-                    className="w-full mt-4 bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white"
-                  >
-                    {stripePaymentProps.isLoading || isSubmitting ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Processing Payment...
-                      </>
-                    ) : (
-                      `Complete Donation of ${getDonationAmount()}`
+                )}
+                
+                {/* Stripe Payment Form */}
+                {submittedValues && stripePaymentProps && (
+                  <StripeWrapper>
+                    <StripePaymentForm
+                      isSubmitting={stripePaymentProps.isLoading || isSubmitting}
+                      error={stripePaymentProps.error || paymentError}
+                    />
+                    
+                    {/* Display payment error if any */}
+                    {paymentError && (
+                      <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm mt-4">
+                        <p className="font-medium">Payment Error</p>
+                        <p>{paymentError}</p>
+                      </div>
                     )}
-                  </Button>
-                </StripeWrapper>
-              )}
+                    
+                    {/* Donate button */}
+                    <Button 
+                      onClick={async () => {
+                        const success = await stripePaymentProps.processPayment();
+                        if (success) {
+                          handlePaymentSuccess();
+                        }
+                      }}
+                      disabled={stripePaymentProps.isLoading || isSubmitting}
+                      className="w-full mt-4 bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white"
+                    >
+                      {stripePaymentProps.isLoading || isSubmitting ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Processing Payment...
+                        </>
+                      ) : (
+                        `Complete Donation of ${getDonationAmount()}`
+                      )}
+                    </Button>
+                    
+                    <p className="text-xs text-gray-500 text-center mt-4">
+                      Your payment information is securely processed by Stripe.
+                      We do not store your full card details on our servers.
+                    </p>
+                  </StripeWrapper>
+                )}
+              </div>
             </>
           )}
         </div>
