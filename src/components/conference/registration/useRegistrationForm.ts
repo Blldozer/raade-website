@@ -108,6 +108,9 @@ export const useRegistrationForm = () => {
           .filter(email => email.length > 0);
       }
       
+      // Generate a unique request ID for tracking
+      const requestId = `free-reg-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+      
       // Submit registration data with coupon info to store-registration function
       const { data: responseData, error } = await supabase.functions.invoke('store-registration', {
         body: {
@@ -121,7 +124,8 @@ export const useRegistrationForm = () => {
           specialRequests: data.specialRequests || "",
           referralSource: data.referralSource || "",
           couponCode: couponCode,
-          paymentComplete: true // Mark as paid since it's a 100% discount
+          paymentComplete: true, // Mark as paid since it's a 100% discount
+          requestId // Add for tracking
         }
       });
       
@@ -129,6 +133,9 @@ export const useRegistrationForm = () => {
         console.error("Free registration edge function error:", error);
         throw new Error(`Registration failed: ${error.message || "Server error"}`);
       }
+      
+      // Log the response for debugging
+      console.log("Free registration response:", responseData);
       
       // Store the email in sessionStorage for the success page
       sessionStorage.setItem("registrationEmail", data.email);
@@ -149,9 +156,10 @@ export const useRegistrationForm = () => {
       });
       
       // Redirect to confirmation page
+      // Use setTimeout to ensure state updates before navigation
       setTimeout(() => {
         navigate("/conference/success");
-      }, 100);
+      }, 500); // A longer delay to ensure proper state management
     } catch (error) {
       console.error("Free registration error:", error);
       

@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.1";
 
@@ -30,8 +31,6 @@ serve(async (req) => {
   const requestId = requestData.requestId || crypto.randomUUID();
   
   console.log(`[${requestId}] Processing registration storage request`);
-  console.log(`[${requestId}] Supabase URL environment variable exists: ${!!Deno.env.get("SUPABASE_URL")}`);
-  console.log(`[${requestId}] Service Role Key environment variable exists: ${!!Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`);
   
   try {
     // Parse the request body
