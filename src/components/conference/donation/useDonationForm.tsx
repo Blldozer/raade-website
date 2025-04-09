@@ -14,7 +14,6 @@ const formSchema = z.object({
   fullName: z.string().min(2, "Please enter your full name"),
   email: z.string().email("Please enter a valid email address"),
   message: z.string().optional(),
-  // Removed makeAnonymous field
 });
 
 // Create type from schema and export it
@@ -27,7 +26,6 @@ interface SubmittedValues {
   fullName: string;
   email: string;
   message?: string;
-  // Removed makeAnonymous field
 }
 
 export const useDonationForm = () => {
@@ -46,8 +44,8 @@ export const useDonationForm = () => {
       fullName: "",
       email: "",
       message: "",
-      // Removed makeAnonymous default value
     },
+    mode: "onChange", // Validate on change for more responsive feedback
   });
   
   // Handle amount selection to determine if custom amount field should be shown
@@ -63,7 +61,8 @@ export const useDonationForm = () => {
   // Get formatted donation amount for display
   const getDonationAmount = () => {
     if (selectedAmount === "custom" && form.watch("customAmount")) {
-      return `$${parseFloat(form.watch("customAmount")).toFixed(2)}`;
+      const amount = parseFloat(form.watch("customAmount"));
+      return isNaN(amount) ? "$0.00" : `$${amount.toFixed(2)}`;
     }
     return `$${selectedAmount}`;
   };
@@ -87,10 +86,10 @@ export const useDonationForm = () => {
         fullName: values.fullName,
         email: values.email,
         message: values.message,
-        // Removed makeAnonymous from the submitted values
       });
       
       setShowConfirmation(true);
+      console.log("Donation submitted successfully:", values);
     } catch (error) {
       setPaymentError("There was an error processing your donation. Please try again.");
       console.error("Donation error:", error);
@@ -118,7 +117,6 @@ export const useDonationForm = () => {
     onSubmit,
     handleAmountSelect,
     getDonationAmount,
-    handleDonateAgain,
-    amounts: ["50", "100", "250", "500", "1000", "custom"]
+    handleDonateAgain
   };
 };

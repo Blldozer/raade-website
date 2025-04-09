@@ -90,6 +90,8 @@ const DonationFormSection: React.FC = () => {
                   {...form.register("customAmount")}
                   onChange={(e) => {
                     form.setValue("customAmount", e.target.value);
+                    // Force re-render for impact display
+                    form.trigger("customAmount");
                   }}
                 />
               </div>
