@@ -60,6 +60,7 @@ export const useCardPayment = ({
    * - Creates payment intent via edge function
    * - Confirms card payment with Stripe
    * - Handles success/error states
+   * - Ensures coupon code is passed for database storage
    * 
    * @param e - Form submission event
    */
@@ -80,6 +81,17 @@ export const useCardPayment = ({
     setCardError(null);
 
     try {
+      // If couponCode is empty, try to get it from the hidden element
+      let effectiveCouponCode = couponCode;
+      if (!effectiveCouponCode) {
+        const hiddenElement = document.getElementById("coupon-code-value");
+        if (hiddenElement) {
+          effectiveCouponCode = hiddenElement.getAttribute("data-value") || "";
+        }
+      }
+      
+      console.log("Processing payment with coupon code:", effectiveCouponCode);
+      
       // Call our create-direct-payment-intent function
       const { data, error } = await supabase.functions.invoke('create-direct-payment-intent', {
         body: {
@@ -92,7 +104,7 @@ export const useCardPayment = ({
           role,
           specialRequests,
           referralSource,
-          couponCode,  // Pass couponCode to the edge function
+          couponCode: effectiveCouponCode,  // Use the effective coupon code
           couponDiscount,  // Pass couponDiscount to the edge function
           attemptId
         }

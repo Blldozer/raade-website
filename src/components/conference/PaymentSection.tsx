@@ -76,7 +76,7 @@ const PaymentSection = ({
   // Auto-recover from registrations that get stuck for too long
   useEffect(() => {
     if (processingFreeRegistration && registrationStartTime) {
-      const REGISTRATION_TIMEOUT = 15000; // 15 seconds
+      const REGISTRATION_TIMEOUT = 20000; // 20 seconds (increased from 15)
       
       const timeoutId = setTimeout(() => {
         // If we're still processing after timeout period, assume there's an issue
@@ -138,8 +138,14 @@ const PaymentSection = ({
       // Store registration email before navigating
       sessionStorage.setItem("registrationEmail", registrationData.email);
       
+      // Make sure the coupon code is saved in the form data
+      if (registrationData.couponCode === undefined || registrationData.couponCode === null) {
+        console.log("Adding coupon code to registration data before processing");
+        registrationData.couponCode = document.getElementById("coupon-code-value")?.getAttribute("data-value") || "";
+      }
+      
       // Add a console log for debugging
-      console.log("Starting free registration process for:", registrationData.email);
+      console.log("Starting free registration process for:", registrationData.email, "with coupon:", registrationData.couponCode);
       
       // Call the free registration handler
       onFreeRegistration();

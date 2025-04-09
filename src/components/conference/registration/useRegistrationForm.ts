@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,6 +5,7 @@ import { toast } from "@/hooks/use-toast";
 import { registrationFormSchema, RegistrationFormData, TICKET_TYPES_ENUM } from "../RegistrationFormTypes";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { storeRegistrationData } from "../payment/services/registrationDataService";
 
 /**
  * useRegistrationForm Hook
@@ -117,70 +117,26 @@ export const useRegistrationForm = () => {
       
       console.log(`Processing free registration with coupon code: ${couponCode} (Attempt #${currentAttempt})`);
       
-      // Process group emails consistently
-      let processedGroupEmails = [];
-      if (data.groupEmails && Array.isArray(data.groupEmails)) {
-        processedGroupEmails = data.groupEmails
-          .filter(Boolean)
-          .map(email => {
-            if (typeof email === 'object' && email !== null && 'value' in email) {
-              return typeof email.value === 'string' ? email.value : '';
-            }
-            return String(email || '');
-          })
-          .filter(email => email.length > 0);
-      }
-      
-      // Generate a unique request ID for tracking
-      const requestId = `free-reg-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
-      
       // Store the email in sessionStorage for the success page
       // Do this BEFORE the registration attempt to ensure it's available even if there's an error
       sessionStorage.setItem("registrationEmail", data.email);
       
-      console.log(`[${requestId}] Starting store-registration function call...`);
-      console.log(`[${requestId}] Registration data:`, {
-        fullName: data.fullName,
-        email: data.email,
-        ticketType: data.ticketType,
-        organization: data.organization || "",
-        couponCode,
-        requestId
+      // Generate a unique request ID for tracking
+      const requestId = `free-reg-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+      console.log(`[${requestId}] Starting registration storage...`);
+      
+      // Use the dedicated registration data service for more reliable storage with retries
+      const success = await storeRegistrationData({
+        ...data,
+        couponCode: couponCode,  // Make sure coupon code is included
       });
       
-      // Submit registration data with coupon info to store-registration function
-      const response = await supabase.functions.invoke('store-registration', {
-        body: {
-          fullName: data.fullName,
-          email: data.email,
-          organization: data.organization || "",
-          role: data.role || "",
-          ticketType: data.ticketType,
-          groupSize: data.groupSize,
-          groupEmails: processedGroupEmails,
-          specialRequests: data.specialRequests || "",
-          referralSource: data.referralSource || "",
-          couponCode: couponCode,
-          paymentComplete: true, // Mark as paid since it's a 100% discount
-          requestId // Add for tracking
-        }
-      });
-      
-      // Check for errors in function response
-      if (response.error) {
-        console.error(`[${requestId}] Free registration edge function error:`, response.error);
-        throw new Error(`Registration failed: ${response.error.message || "Server error"}`);
+      if (!success) {
+        console.error(`[${requestId}] Registration storage failed`);
+        throw new Error("Failed to save your registration. Please try again.");
       }
       
-      const responseData = response.data;
-      
-      // Log the response for debugging
-      console.log(`[${requestId}] Free registration response:`, responseData);
-      
-      if (!responseData || !responseData.success) {
-        console.error(`[${requestId}] Registration response indicates failure:`, responseData);
-        throw new Error(responseData?.message || "Unknown server error");
-      }
+      console.log(`[${requestId}] Registration storage successful`);
       
       // Reset form and state
       form.reset();

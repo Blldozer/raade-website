@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -28,6 +27,7 @@ interface CouponCodeSectionProps {
  * - Tests Supabase connection when validation fails
  * - Supports special school codes that have unlimited uses but can't be used twice by the same email
  * - Prevents discount application to group tickets
+ * - Ensures coupon code is accessible for registration process
  * 
  * @param setCouponCode - Function to update coupon code in parent component
  * @param setCouponDiscount - Function to update coupon discount details
@@ -188,6 +188,21 @@ const CouponCodeSection = ({
           discount: data.discount
         });
         
+        // Store the coupon code as a data attribute for retrieval later if needed
+        setTimeout(() => {
+          const hiddenElement = document.getElementById("coupon-code-value");
+          if (hiddenElement) {
+            hiddenElement.setAttribute("data-value", inputValue.trim().toUpperCase());
+          } else {
+            // Create an element to store the coupon code if it doesn't exist
+            const element = document.createElement("div");
+            element.id = "coupon-code-value";
+            element.style.display = "none";
+            element.setAttribute("data-value", inputValue.trim().toUpperCase());
+            document.body.appendChild(element);
+          }
+        }, 100);
+        
         toast({
           title: "Coupon applied",
           description: isFullDiscount 
@@ -234,6 +249,12 @@ const CouponCodeSection = ({
     setIsFullDiscount(false);
     setValidationResult(null);
     setConnectionError(false);
+    
+    // Clear the stored coupon code
+    const hiddenElement = document.getElementById("coupon-code-value");
+    if (hiddenElement) {
+      hiddenElement.removeAttribute("data-value");
+    }
     
     toast({
       title: "Coupon cleared",
@@ -284,6 +305,8 @@ const CouponCodeSection = ({
               </Button>
             )}
           </div>
+          
+          <div id="coupon-code-value" style={{ display: 'none' }}></div>
           
           {connectionError && (
             <div className="flex items-center gap-2 text-sm p-2 rounded-md text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400">

@@ -9,6 +9,7 @@ import { RegistrationFormData } from "../../RegistrationFormTypes";
  * - Processes group emails to ensure proper format
  * - Implements retry logic with exponential backoff
  * - Handles timeouts and network errors gracefully
+ * - Ensures coupon codes are properly stored with registrations
  */
 export const storeRegistrationData = async (
   registrationData: RegistrationFormData,
@@ -43,7 +44,9 @@ export const storeRegistrationData = async (
         referralSource: registrationData.referralSource || "",
         groupSize: registrationData.groupSize,
         groupEmails: processedGroupEmails,
-        paymentComplete: true // Registration is being stored after successful payment
+        // Make sure coupon code is included for free registrations
+        couponCode: registrationData.couponCode || "",
+        paymentComplete: true // Registration is being stored after successful payment or free coupon
       };
       
       console.log("Storing registration data in Supabase:", requestData);
@@ -52,7 +55,7 @@ export const storeRegistrationData = async (
       sessionStorage.setItem("registrationEmail", registrationData.email);
       
       // Set a timeout for the data storage request
-      const STORAGE_TIMEOUT = 10000; // 10 seconds
+      const STORAGE_TIMEOUT = 15000; // 15 seconds (increased from 10)
       
       // Create a timeout promise
       const timeoutPromise = new Promise<never>((_, reject) => {
