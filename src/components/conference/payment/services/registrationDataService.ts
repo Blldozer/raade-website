@@ -48,6 +48,9 @@ export const storeRegistrationData = async (
       
       console.log("Storing registration data in Supabase:", requestData);
       
+      // Store the registrant email for the success page
+      sessionStorage.setItem("registrationEmail", registrationData.email);
+      
       // Set a timeout for the data storage request
       const STORAGE_TIMEOUT = 10000; // 10 seconds
       

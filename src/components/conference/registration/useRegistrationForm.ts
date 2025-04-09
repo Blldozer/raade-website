@@ -1,9 +1,11 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/hooks/use-toast";
 import { registrationFormSchema, RegistrationFormData, TICKET_TYPES_ENUM } from "../RegistrationFormTypes";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 export const useRegistrationForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -13,6 +15,7 @@ export const useRegistrationForm = () => {
   const [couponCode, setCouponCode] = useState<string | null>(null);
   const [couponDiscount, setCouponDiscount] = useState<{ type: 'percentage' | 'fixed'; amount: number } | null>(null);
   const [isFullDiscount, setIsFullDiscount] = useState(false);
+  const navigate = useNavigate();
 
   // Initialize form with zod schema validation
   const form = useForm<RegistrationFormData>({
@@ -106,6 +109,9 @@ export const useRegistrationForm = () => {
         throw new Error(`Registration failed: ${error.message}`);
       }
       
+      // Store the email in sessionStorage for the success page
+      sessionStorage.setItem("registrationEmail", data.email);
+      
       // Reset form and show success message
       form.reset();
       setRegistrationData(null);
@@ -121,7 +127,8 @@ export const useRegistrationForm = () => {
         variant: "default",
       });
       
-      // Redirect to confirmation page or show confirmation component
+      // Redirect to confirmation page
+      navigate("/conference/success");
     } catch (error) {
       console.error("Free registration error:", error);
       toast({
