@@ -26,7 +26,7 @@ interface DonationConfirmationProps {
  * - Shows donation amount and donor information
  * - Provides confirmation details and a reference number
  * - Includes options to donate again or return to conference
- * - Clean, modern design consistent with the new UI
+ * - Clean, modern design consistent with the RAADE branding
  */
 const DonationConfirmation: React.FC<DonationConfirmationProps> = ({ 
   values, 

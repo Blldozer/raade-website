@@ -1,6 +1,7 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,7 +13,7 @@ const corsHeaders = {
  * 
  * Handles donation payments by:
  * - Creating a Stripe payment intent for the donation amount
- * - Storing donation details as metadata
+ * - Storing donation details in the database
  * - Setting up proper email receipts
  * - Handling CORS for browser requests
  * - Detailed error handling and logging
@@ -28,6 +29,11 @@ serve(async (req) => {
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2022-11-15",
     });
+    
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
+    const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY") || "";
+    const supabase = createClient(supabaseUrl, supabaseKey);
     
     // Parse the request body
     const requestData = await req.json();
@@ -70,6 +76,26 @@ serve(async (req) => {
           donationType: "conference-support",
         },
       });
+      
+      // Store the donation in the database
+      const { error: insertError } = await supabase
+        .from('donations')
+        .insert({
+          donor_name: makeAnonymous ? null : fullName,
+          donor_email: email,
+          amount: amount / 100, // Store as dollars, not cents
+          message: message || null,
+          is_anonymous: makeAnonymous || false,
+          payment_intent_id: paymentIntent.id,
+          payment_status: paymentIntent.status,
+          donation_type: "conference-support"
+        });
+      
+      if (insertError) {
+        console.error("Error inserting donation record:", insertError);
+      } else {
+        console.log(`Successfully recorded donation from ${fullName} with payment intent: ${paymentIntent.id}`);
+      }
       
       console.log(`Successfully created payment intent: ${paymentIntent.id}`);
       

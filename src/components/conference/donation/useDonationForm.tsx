@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
 // Define form schema with validation
@@ -35,6 +34,7 @@ interface SubmittedValues {
 export const useDonationForm = () => {
   const [selectedAmount, setSelectedAmount] = useState("50");
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showCardPayment, setShowCardPayment] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedValues, setSubmittedValues] = useState<SubmittedValues | null>(null);
   const [paymentError, setPaymentError] = useState<string | null>(null);
@@ -78,9 +78,8 @@ export const useDonationForm = () => {
     return parseInt(selectedAmount) * 100;
   };
   
-  // Form submission handler
+  // Initial form submission handler - validates form and shows card payment
   const onSubmit = async (values: DonationFormValues) => {
-    setIsSubmitting(true);
     setPaymentError(null);
     
     try {
@@ -91,30 +90,7 @@ export const useDonationForm = () => {
         throw new Error("Invalid donation amount. Minimum donation is $1.");
       }
       
-      // Call our Supabase edge function to create a payment intent
-      const { data, error } = await supabase.functions.invoke('process-donation', {
-        body: {
-          amount: amountInCents,
-          email: values.email,
-          fullName: values.fullName,
-          makeAnonymous: values.makeAnonymous,
-          message: values.message || "",
-        }
-      });
-      
-      if (error) {
-        console.error("Donation processing error:", error);
-        throw new Error(error.message || "Failed to process donation");
-      }
-      
-      if (!data || !data.clientSecret) {
-        throw new Error("No payment details returned from server");
-      }
-      
-      // Here you would normally redirect to Stripe for payment completion,
-      // but for this demo we'll just simulate success
-      
-      // Store submitted values for confirmation page
+      // Store submitted values for the payment form
       setSubmittedValues({
         amount: values.amount,
         customAmount: values.customAmount,
@@ -124,16 +100,8 @@ export const useDonationForm = () => {
         makeAnonymous: values.makeAnonymous
       });
       
-      // Show the confirmation page
-      setShowConfirmation(true);
-      
-      // Show success toast
-      toast({
-        title: "Donation Successful",
-        description: `Thank you for your donation of ${getDonationAmount()}!`,
-        variant: "default",
-      });
-      
+      // Show the payment form
+      setShowCardPayment(true);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
       setPaymentError(errorMessage);
@@ -145,9 +113,32 @@ export const useDonationForm = () => {
         description: errorMessage,
         variant: "destructive",
       });
-    } finally {
-      setIsSubmitting(false);
     }
+  };
+  
+  // Handle payment success
+  const handlePaymentSuccess = () => {
+    setShowConfirmation(true);
+    setShowCardPayment(false);
+    
+    // Show success toast
+    toast({
+      title: "Donation Successful",
+      description: `Thank you for your donation of ${getDonationAmount()}!`,
+      variant: "default",
+    });
+  };
+  
+  // Handle payment error
+  const handlePaymentError = (errorMessage: string) => {
+    setPaymentError(errorMessage);
+    
+    // Show error toast
+    toast({
+      title: "Payment Failed",
+      description: errorMessage,
+      variant: "destructive",
+    });
   };
   
   // Reset form to donate again
@@ -155,14 +146,21 @@ export const useDonationForm = () => {
     form.reset();
     setSelectedAmount("50");
     setShowConfirmation(false);
+    setShowCardPayment(false);
     setSubmittedValues(null);
     setPaymentError(null);
+  };
+  
+  // Go back to form from payment screen
+  const handleBackToForm = () => {
+    setShowCardPayment(false);
   };
   
   return {
     form,
     isSubmitting,
     showConfirmation,
+    showCardPayment,
     selectedAmount,
     submittedValues,
     paymentError,
@@ -170,6 +168,9 @@ export const useDonationForm = () => {
     handleAmountSelect,
     getDonationAmount,
     handleDonateAgain,
+    handlePaymentSuccess,
+    handlePaymentError,
+    handleBackToForm,
     amounts: ["25", "50", "100", "250", "500", "1000"]
   };
 };
