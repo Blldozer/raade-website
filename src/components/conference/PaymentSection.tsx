@@ -12,13 +12,16 @@ interface PaymentSectionProps {
   onPaymentSuccess: () => void;
   onPaymentError: (error: string) => void;
   onBackClick: () => void;
+  couponDiscount?: { type: 'percentage' | 'fixed'; amount: number } | null;
+  totalPrice?: number;
 }
 
 /**
  * PaymentSection Component
  * 
  * Handles the payment process for conference registration:
- * - Displays registration summary
+ * - Now with support for coupon discounts
+ * - Displays registration summary with discounted prices
  * - Uses our simplified direct Stripe integration
  * - Provides consistent back button functionality
  * - Shows payment confirmation screen on success
@@ -28,13 +31,17 @@ interface PaymentSectionProps {
  * @param onPaymentSuccess - Callback when payment succeeds
  * @param onPaymentError - Callback when payment fails
  * @param onBackClick - Callback to go back to the registration form
+ * @param couponDiscount - Applied coupon discount information
+ * @param totalPrice - Total price after discounts
  */
 const PaymentSection = ({
   registrationData,
   isSubmitting,
   onPaymentSuccess,
   onPaymentError,
-  onBackClick
+  onBackClick,
+  couponDiscount,
+  totalPrice
 }: PaymentSectionProps) => {
   const [paymentComplete, setPaymentComplete] = useState(false);
   
@@ -67,7 +74,11 @@ const PaymentSection = ({
 
   return (
     <div className="space-y-6">
-      <RegistrationSummary registrationData={registrationData} />
+      <RegistrationSummary 
+        registrationData={registrationData} 
+        couponDiscount={couponDiscount}
+        totalPrice={totalPrice}
+      />
       
       <SimpleStripeProvider 
         ticketType={registrationData.ticketType}
@@ -79,6 +90,8 @@ const PaymentSection = ({
         role={registrationData.role}
         specialRequests={registrationData.specialRequests}
         referralSource={registrationData.referralSource}
+        couponCode={registrationData.couponCode}
+        couponDiscount={couponDiscount}
         onSuccess={handlePaymentSuccess}
         onError={onPaymentError}
       />

@@ -1,7 +1,7 @@
 
 import { useState } from "react";
-import { StripeError } from "@stripe/stripe-js";
-import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { useStripe, useElements } from "@stripe/react-stripe-js";
+import { supabase } from "@/integrations/supabase/client";
 
 interface UseCardPaymentProps {
   ticketType: string;
@@ -13,30 +13,25 @@ interface UseCardPaymentProps {
   role?: string;
   specialRequests?: string;
   referralSource?: string;
+  couponCode?: string;  // Add couponCode prop
+  couponDiscount?: { type: 'percentage' | 'fixed'; amount: number } | null;  // Add couponDiscount prop
   onSuccess: () => void;
-  onError: (message: string) => void;
-  attemptId?: string;
+  onError: (error: string) => void;
+  attemptId: string;
 }
 
-/**
- * Custom hook for handling card payments
- * 
- * Manages the card payment process including:
- * - Payment submission
- * - Card validation
- * - Error handling
- * - Status updates
- */
 export const useCardPayment = ({
   ticketType,
   email,
   fullName,
   groupSize,
-  groupEmails,
-  organization,
-  role,
-  specialRequests,
-  referralSource,
+  groupEmails = [],
+  organization = "",
+  role = "",
+  specialRequests = "",
+  referralSource = "",
+  couponCode = "",  // Add default value
+  couponDiscount = null,  // Add default value
   onSuccess,
   onError,
   attemptId
@@ -44,57 +39,50 @@ export const useCardPayment = ({
   const stripe = useStripe();
   const elements = useElements();
   const [isLoading, setIsLoading] = useState(false);
-  const [successState, setSuccessState] = useState(false);
   const [cardError, setCardError] = useState<string | null>(null);
   const [cardComplete, setCardComplete] = useState(false);
+
+  /**
+   * Handles card input changes and updates error state
+   * 
+   * @param event - The Stripe card element change event
+   */
+  const handleCardChange = (event: any) => {
+    setCardError(event.error ? event.error.message : null);
+  };
 
   const resetCardError = () => {
     setCardError(null);
   };
 
   /**
-   * Handle card changes and validation
-   */
-  const handleCardChange = (event: any) => {
-    setCardError(event.error ? event.error.message : null);
-  };
-
-  /**
-   * Handle card payment submission
+   * Handles form submission and payment processing
+   * - Creates payment intent via edge function
+   * - Confirms card payment with Stripe
+   * - Handles success/error states
+   * 
+   * @param e - Form submission event
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!stripe || !elements) {
-      onError("Stripe has not initialized. Please try again later.");
+      onError("Stripe not loaded yet. Please try again.");
       return;
     }
 
-    // Get CardElement
-    const cardElement = elements.getElement(CardElement);
-    
-    if (!cardElement) {
-      onError("Card element not found. Please reload the page and try again.");
-      return;
-    }
-    
-    // Don't allow submission if the card isn't complete
     if (!cardComplete) {
-      setCardError("Please complete your card details");
+      setCardError("Please complete card information");
       return;
     }
 
     setIsLoading(true);
-    resetCardError();
+    setCardError(null);
 
     try {
-      // Create payment intent via edge function
-      const createIntent = await fetch('/api/create-payment-intent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      // Call our create-direct-payment-intent function
+      const { data, error } = await supabase.functions.invoke('create-direct-payment-intent', {
+        body: {
           ticketType,
           email,
           fullName,
@@ -104,65 +92,60 @@ export const useCardPayment = ({
           role,
           specialRequests,
           referralSource,
+          couponCode,  // Pass couponCode to the edge function
+          couponDiscount,  // Pass couponDiscount to the edge function
           attemptId
-        }),
+        }
       });
-      
-      if (!createIntent.ok) {
-        const errorData = await createIntent.json();
-        throw new Error(errorData.message || 'Failed to create payment intent');
+
+      if (error || !data?.clientSecret) {
+        console.error("Payment intent creation error:", error || "No client secret returned");
+        onError(error?.message || "Failed to create payment intent. Please try again.");
+        setIsLoading(false);
+        return;
       }
-      
-      const intentData = await createIntent.json();
-      
-      if (!intentData.clientSecret) {
-        throw new Error('No client secret received');
+
+      const cardElement = elements.getElement('card');
+      if (!cardElement) {
+        onError("Card element not found. Please refresh and try again.");
+        setIsLoading(false);
+        return;
       }
-      
-      // Use the client secret to confirm payment
-      const paymentResult = await stripe.confirmCardPayment(intentData.clientSecret, {
+
+      // Confirm the card payment
+      const { error: paymentError } = await stripe.confirmCardPayment(data.clientSecret, {
         payment_method: {
           card: cardElement,
           billing_details: {
             name: fullName,
-            email: email,
-          },
-        },
+            email: email
+          }
+        }
       });
-      
-      if (paymentResult.error) {
-        throw paymentResult.error;
-      }
-      
-      // Payment succeeded
-      setSuccessState(true);
-      onSuccess();
-      
-    } catch (error) {
-      console.error('Payment error:', error);
-      
-      // Handle Stripe errors
-      if ((error as StripeError).type) {
-        const stripeError = error as StripeError;
-        setCardError(stripeError.message || 'Payment failed. Please try again.');
+
+      if (paymentError) {
+        console.error("Payment confirmation error:", paymentError);
+        setCardError(paymentError.message || "Payment failed. Please try again.");
+        onError(paymentError.message || "Payment failed. Please try again.");
       } else {
-        // Handle other errors
-        setCardError((error as Error).message || 'Something went wrong. Please try again.');
+        console.log("Payment succeeded!");
+        onSuccess();
       }
-      
-      onError((error as Error).message || 'Payment failed. Please try again.');
+    } catch (err) {
+      console.error("Unexpected payment error:", err);
+      setCardError("An unexpected error occurred. Please try again.");
+      onError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
   return {
+    handleSubmit,
     isLoading,
-    successState,
     cardError,
     handleCardChange,
     setCardComplete,
-    resetCardError,
-    handleSubmit
+    resetCardError
   };
 };
