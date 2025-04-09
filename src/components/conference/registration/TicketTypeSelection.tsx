@@ -1,5 +1,5 @@
 
-import { UseFormWatch, UseFormSetValue, FormState } from "react-hook-form";
+import { UseFormWatch, UseFormSetValue, FormState, Control } from "react-hook-form";
 import { RegistrationFormData, TICKET_TYPES_ENUM, getTicketPrice, isSaleActive, calculateDiscountedPrice } from "../RegistrationFormTypes";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -10,6 +10,7 @@ interface TicketTypeSelectionProps {
   setValue: UseFormSetValue<RegistrationFormData>;
   errors: FormState<RegistrationFormData>["errors"];
   couponDiscount: { type: 'percentage' | 'fixed'; amount: number } | null;
+  control: Control<RegistrationFormData>; // Add control prop
 }
 
 /**
@@ -25,8 +26,9 @@ interface TicketTypeSelectionProps {
  * @param setValue - React Hook Form setValue function
  * @param errors - Form validation errors
  * @param couponDiscount - Applied coupon discount information
+ * @param control - React Hook Form control object
  */
-const TicketTypeSelection = ({ watch, setValue, errors, couponDiscount }: TicketTypeSelectionProps) => {
+const TicketTypeSelection = ({ watch, setValue, errors, couponDiscount, control }: TicketTypeSelectionProps) => {
   const saleActive = isSaleActive();
   
   // Get prices for each ticket type
@@ -48,119 +50,116 @@ const TicketTypeSelection = ({ watch, setValue, errors, couponDiscount }: Ticket
     <div className="py-4">
       <h3 className="text-lg font-medium text-[#274675] mb-3">Select Ticket Type</h3>
       
-      <RadioGroup
-        defaultValue={watch("ticketType")}
-        value={watch("ticketType")}
-        onValueChange={(value) => {
-          setValue("ticketType", value as typeof TICKET_TYPES_ENUM[keyof typeof TICKET_TYPES_ENUM]);
-        }}
-        className="space-y-3"
-      >
-        <FormField
-          name="ticketType"
-          render={({ field }) => (
-            <FormItem className="space-y-3">
-              <div className="space-y-3">
-                <FormItem className="flex items-center space-x-3 space-y-0">
-                  <FormControl>
-                    <RadioGroupItem value={TICKET_TYPES_ENUM.STUDENT} id="ticket-student" />
-                  </FormControl>
-                  <FormLabel className="font-normal cursor-pointer" htmlFor="ticket-student">
-                    <div className="flex-1">
-                      <div className="font-medium text-gray-800">Student</div>
-                      <div className="text-sm text-gray-500 flex items-center">
-                        {hasStudentDiscount ? (
-                          <>
-                            <span className="line-through mr-2">{formatCurrency(studentPrice)}</span>
-                            <span className="text-green-600 font-medium">{formatCurrency(discountedStudentPrice)}</span>
-                            {couponDiscount?.type === 'percentage' && (
-                              <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
-                                {couponDiscount.amount}% off
-                              </span>
-                            )}
-                          </>
-                        ) : (
-                          <>{formatCurrency(studentPrice)}</>
-                        )}
-                        {saleActive && !hasStudentDiscount && (
-                          <span className="ml-2 bg-red-100 text-red-800 text-xs px-2 py-0.5 rounded-full">
-                            Sale!
-                          </span>
-                        )}
-                      </div>
+      <FormField
+        control={control}
+        name="ticketType"
+        render={({ field }) => (
+          <FormItem className="space-y-3">
+            <RadioGroup
+              onValueChange={field.onChange}
+              defaultValue={field.value}
+              value={field.value}
+              className="space-y-3"
+            >
+              <FormItem className="flex items-center space-x-3 space-y-0">
+                <FormControl>
+                  <RadioGroupItem value={TICKET_TYPES_ENUM.STUDENT} id="ticket-student" />
+                </FormControl>
+                <FormLabel className="font-normal cursor-pointer" htmlFor="ticket-student">
+                  <div className="flex-1">
+                    <div className="font-medium text-gray-800">Student</div>
+                    <div className="text-sm text-gray-500 flex items-center">
+                      {hasStudentDiscount ? (
+                        <>
+                          <span className="line-through mr-2">{formatCurrency(studentPrice)}</span>
+                          <span className="text-green-600 font-medium">{formatCurrency(discountedStudentPrice)}</span>
+                          {couponDiscount?.type === 'percentage' && (
+                            <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
+                              {couponDiscount.amount}% off
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <>{formatCurrency(studentPrice)}</>
+                      )}
+                      {saleActive && !hasStudentDiscount && (
+                        <span className="ml-2 bg-red-100 text-red-800 text-xs px-2 py-0.5 rounded-full">
+                          Sale!
+                        </span>
+                      )}
                     </div>
-                  </FormLabel>
-                </FormItem>
+                  </div>
+                </FormLabel>
+              </FormItem>
 
-                <FormItem className="flex items-center space-x-3 space-y-0">
-                  <FormControl>
-                    <RadioGroupItem value={TICKET_TYPES_ENUM.PROFESSIONAL} id="ticket-professional" />
-                  </FormControl>
-                  <FormLabel className="font-normal cursor-pointer" htmlFor="ticket-professional">
-                    <div className="flex-1">
-                      <div className="font-medium text-gray-800">Professional</div>
-                      <div className="text-sm text-gray-500 flex items-center">
-                        {hasProfessionalDiscount ? (
-                          <>
-                            <span className="line-through mr-2">{formatCurrency(professionalPrice)}</span>
-                            <span className="text-green-600 font-medium">{formatCurrency(discountedProfessionalPrice)}</span>
-                            {couponDiscount?.type === 'percentage' && (
-                              <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
-                                {couponDiscount.amount}% off
-                              </span>
-                            )}
-                          </>
-                        ) : (
-                          <>{formatCurrency(professionalPrice)}</>
-                        )}
-                        {saleActive && !hasProfessionalDiscount && (
-                          <span className="ml-2 bg-red-100 text-red-800 text-xs px-2 py-0.5 rounded-full">
-                            Sale!
-                          </span>
-                        )}
-                      </div>
+              <FormItem className="flex items-center space-x-3 space-y-0">
+                <FormControl>
+                  <RadioGroupItem value={TICKET_TYPES_ENUM.PROFESSIONAL} id="ticket-professional" />
+                </FormControl>
+                <FormLabel className="font-normal cursor-pointer" htmlFor="ticket-professional">
+                  <div className="flex-1">
+                    <div className="font-medium text-gray-800">Professional</div>
+                    <div className="text-sm text-gray-500 flex items-center">
+                      {hasProfessionalDiscount ? (
+                        <>
+                          <span className="line-through mr-2">{formatCurrency(professionalPrice)}</span>
+                          <span className="text-green-600 font-medium">{formatCurrency(discountedProfessionalPrice)}</span>
+                          {couponDiscount?.type === 'percentage' && (
+                            <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
+                              {couponDiscount.amount}% off
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <>{formatCurrency(professionalPrice)}</>
+                      )}
+                      {saleActive && !hasProfessionalDiscount && (
+                        <span className="ml-2 bg-red-100 text-red-800 text-xs px-2 py-0.5 rounded-full">
+                          Sale!
+                        </span>
+                      )}
                     </div>
-                  </FormLabel>
-                </FormItem>
+                  </div>
+                </FormLabel>
+              </FormItem>
 
-                <FormItem className="flex items-center space-x-3 space-y-0">
-                  <FormControl>
-                    <RadioGroupItem value={TICKET_TYPES_ENUM.STUDENT_GROUP} id="ticket-group" />
-                  </FormControl>
-                  <FormLabel className="font-normal cursor-pointer" htmlFor="ticket-group">
-                    <div className="flex-1">
-                      <div className="font-medium text-gray-800">Student Group</div>
-                      <div className="text-sm text-gray-500 flex items-center">
-                        {hasGroupDiscount ? (
-                          <>
-                            <span className="line-through mr-2">{formatCurrency(groupPrice)}</span>
-                            <span className="text-green-600 font-medium">{formatCurrency(discountedGroupPrice)}</span>
-                            {couponDiscount?.type === 'percentage' && (
-                              <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
-                                {couponDiscount.amount}% off
-                              </span>
-                            )}
-                          </>
-                        ) : (
-                          <>{formatCurrency(groupPrice)}</>
-                        )}
-                        <span className="ml-1">per person</span>
-                        {saleActive && !hasGroupDiscount && (
-                          <span className="ml-2 bg-red-100 text-red-800 text-xs px-2 py-0.5 rounded-full">
-                            Sale!
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-sm text-gray-500">For student groups of 5 or more</div>
+              <FormItem className="flex items-center space-x-3 space-y-0">
+                <FormControl>
+                  <RadioGroupItem value={TICKET_TYPES_ENUM.STUDENT_GROUP} id="ticket-group" />
+                </FormControl>
+                <FormLabel className="font-normal cursor-pointer" htmlFor="ticket-group">
+                  <div className="flex-1">
+                    <div className="font-medium text-gray-800">Student Group</div>
+                    <div className="text-sm text-gray-500 flex items-center">
+                      {hasGroupDiscount ? (
+                        <>
+                          <span className="line-through mr-2">{formatCurrency(groupPrice)}</span>
+                          <span className="text-green-600 font-medium">{formatCurrency(discountedGroupPrice)}</span>
+                          {couponDiscount?.type === 'percentage' && (
+                            <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
+                              {couponDiscount.amount}% off
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <>{formatCurrency(groupPrice)}</>
+                      )}
+                      <span className="ml-1">per person</span>
+                      {saleActive && !hasGroupDiscount && (
+                        <span className="ml-2 bg-red-100 text-red-800 text-xs px-2 py-0.5 rounded-full">
+                          Sale!
+                        </span>
+                      )}
                     </div>
-                  </FormLabel>
-                </FormItem>
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </RadioGroup>
+                    <div className="text-sm text-gray-500">For student groups of 5 or more</div>
+                  </div>
+                </FormLabel>
+              </FormItem>
+            </RadioGroup>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
     </div>
   );
 };

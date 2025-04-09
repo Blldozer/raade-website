@@ -1,6 +1,7 @@
 
 import { useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form } from "@/components/ui/form"; // Import Form from shadcn/ui
 import RegistrationFormFields from "./RegistrationFormFields";
 import PaymentSection from "./PaymentSection";
 import StepIndicator from "./registration/StepIndicator";
@@ -171,37 +172,39 @@ const ConferenceRegistrationForm = () => {
         <StepIndicator currentStep={showPayment ? 'payment' : 'registration'} />
         
         {!showPayment ? (
-          <form onSubmit={form.handleSubmit(handleInitialSubmit)} className="space-y-6">
-            <RegistrationFormFields 
-              register={form.register}
-              errors={form.formState.errors}
-              setValue={form.setValue}
-              watch={form.watch}
-              control={form.control}
-              onEmailValidation={handleEmailValidation}
-              setCouponCode={setCouponCode}
-              setCouponDiscount={setCouponDiscount}
-              setIsFullDiscount={setIsFullDiscount}
-              couponDiscount={couponDiscount}
-            />
-            
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora 
-                dark:bg-[#FBB03B] dark:hover:bg-[#FBB03B]/80 dark:text-white
-                transition-colors duration-300"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                isFullDiscount ? 'Complete Free Registration' : 'Continue to Payment'
-              )}
-            </Button>
-          </form>
+          <Form {...form.formState} onSubmit={form.handleSubmit(handleInitialSubmit)}>
+            <form onSubmit={form.handleSubmit(handleInitialSubmit)} className="space-y-6">
+              <RegistrationFormFields 
+                register={form.register}
+                errors={form.formState.errors}
+                setValue={form.setValue}
+                watch={form.watch}
+                control={form.control}
+                onEmailValidation={handleEmailValidation}
+                setCouponCode={setCouponCode}
+                setCouponDiscount={setCouponDiscount}
+                setIsFullDiscount={setIsFullDiscount}
+                couponDiscount={couponDiscount}
+              />
+              
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-lora 
+                  dark:bg-[#FBB03B] dark:hover:bg-[#FBB03B]/80 dark:text-white
+                  transition-colors duration-300"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  isFullDiscount ? 'Complete Free Registration' : 'Continue to Payment'
+                )}
+              </Button>
+            </form>
+          </Form>
         ) : (
           <PaymentSection 
             registrationData={registrationData!}

@@ -69,6 +69,7 @@ const RegistrationFormFields = ({
         setValue={setValue} 
         errors={errors} 
         couponDiscount={couponDiscount}
+        control={control} // Ensure control is passed to TicketTypeSelection
       />
       
       <GroupRegistrationSection
@@ -79,8 +80,6 @@ const RegistrationFormFields = ({
       
       {/* Add the coupon code section */}
       <div className="py-4 border-t border-b border-gray-100">
-        <h3 className="text-lg font-medium text-[#274675] mb-3">Coupon Code</h3>
-        <p className="text-sm text-gray-500 mb-3">If you have a coupon code, enter it below.</p>
         <CouponCodeSection 
           setCouponCode={setCouponCode}
           setCouponDiscount={setCouponDiscount}
