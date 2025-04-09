@@ -75,7 +75,16 @@ const DonationForm = () => {
       console.log("Donation submitted:", data);
       
       // Store the submitted values for the confirmation screen
-      setSubmittedValues(data);
+      setSubmittedValues({
+        // Ensure all required fields are explicitly set
+        amount: data.amount,
+        fullName: data.fullName,
+        email: data.email,
+        // Optional fields
+        customAmount: data.customAmount,
+        message: data.message,
+        makeAnonymous: data.makeAnonymous,
+      });
       
       // Show success state after a short delay to simulate processing
       setTimeout(() => {
