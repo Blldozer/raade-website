@@ -1,4 +1,3 @@
-
 import { X } from "lucide-react";
 import NavLogo from "../NavLogo";
 
@@ -24,7 +23,7 @@ const MobileNavHeader = ({ onClose }: MobileNavHeaderProps) => {
   return (
     <div className="sticky top-0 flex justify-between items-center p-4 border-b border-white/20 bg-[#274675] shadow-md z-20">
       <NavLogo 
-        forceBlackLogo={false} 
+        forceDarkMode={false} 
         useShortForm={true}
         forceSize="h-8"
       />

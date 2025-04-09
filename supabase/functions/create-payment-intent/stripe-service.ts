@@ -1,4 +1,3 @@
-
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createTimeout } from "./utils.ts";
 import { getBackoffDelay } from "./utils.ts";
@@ -51,7 +50,6 @@ export async function createPaymentIntentWithRetry(
     
     try {
       console.log(`[${requestId}] Creating payment intent, attempt ${attempt + 1}/${MAX_RETRIES + 1}`);
-      console.log(`[${requestId}] Payment details: ${ticketType}, ${amount} cents, ${isGroupRegistration ? 'Group of ' + groupSize : 'Individual'}`);
       
       // Create a promise for the payment intent creation
       const paymentIntentPromise = stripe.paymentIntents.create({
@@ -82,14 +80,13 @@ export async function createPaymentIntentWithRetry(
       // If we reach here, the request was successful - clean up the timeout
       cleanupTimeout();
       
-      console.log(`[${requestId}] Payment intent created successfully: ${paymentIntent.id}`);
+      console.log(`[${requestId}] Payment intent created successfully`);
       return { paymentIntent };
     } catch (error) {
       // Always clean up the timeout
       cleanupTimeout();
       
       lastError = error;
-      console.error(`[${requestId}] Payment intent error:`, error);
       
       // Determine if we should retry based on the error type
       const shouldRetry = attempt < MAX_RETRIES && (

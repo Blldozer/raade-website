@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { RegistrationFormData, calculateTotalPrice, TICKET_TYPES_ENUM } from "../RegistrationFormTypes";
+import { RegistrationFormData, calculateTotalPrice } from "../RegistrationFormTypes";
 
 interface GroupRegistrationProps {
   watch: UseFormWatch<RegistrationFormData>;
@@ -43,11 +43,7 @@ const GroupRegistration = ({ watch, setValue, control, errors }: GroupRegistrati
   });
 
   const groupSize = watch("groupSize") || 3; // Default to 3 now instead of 5
-  const formData: Partial<RegistrationFormData> = {
-    ticketType: TICKET_TYPES_ENUM.STUDENT_GROUP,
-    groupSize: groupSize
-  };
-  const totalPrice = calculateTotalPrice(formData as RegistrationFormData);
+  const totalPrice = calculateTotalPrice("student-group", groupSize);
   
   return (
     <div className="mt-4 space-y-4">

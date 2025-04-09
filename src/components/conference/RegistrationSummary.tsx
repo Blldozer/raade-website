@@ -30,7 +30,7 @@ const RegistrationSummary = ({ registrationData }: RegistrationSummaryProps) => 
   } = registrationData;
   
   // Calculate total price
-  const totalPrice = calculateTotalPrice(registrationData);
+  const totalPrice = calculateTotalPrice(ticketType, groupSize);
   
   // Get formatted ticket type for display
   const getFormattedTicketType = () => {

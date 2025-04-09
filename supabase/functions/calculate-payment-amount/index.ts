@@ -19,15 +19,10 @@ serve(async (req) => {
     const requestData = await req.json();
     const { ticketType, groupSize = 0 } = requestData;
     
-    // Check if the sale is still active
-    const currentDate = new Date();
-    const saleEndDate = new Date('2025-04-08T16:00:00-05:00'); // CST is UTC-5
-    const isSaleActive = currentDate < saleEndDate;
-    
-    // Define prices in cents based on whether the sale is active
-    const STUDENT_PRICE = isSaleActive ? 2500 : 3500; // $25.00 (sale) / $35.00 (regular)
-    const PROFESSIONAL_PRICE = isSaleActive ? 5000 : 6000; // $50.00 (sale) / $60.00 (regular)
-    const GROUP_PRICE_PER_PERSON = isSaleActive ? 2000 : 3000; // $20.00 (sale) / $30.00 (regular) per person
+    // Define SALE prices in cents
+    const STUDENT_PRICE = 2500; // $25.00 (was $35.00)
+    const PROFESSIONAL_PRICE = 5000; // $50.00 (was $60.00)
+    const GROUP_PRICE_PER_PERSON = 2000; // $20.00 per person (was $30.00)
     
     let amount = 0;
     
@@ -42,7 +37,7 @@ serve(async (req) => {
         break;
       
       case "student-group":
-        // Allow for groups of 3 or more
+        // Allow for groups of 3 or more now (was 5+)
         const validGroupSize = Math.max(3, parseInt(String(groupSize)) || 3);
         amount = GROUP_PRICE_PER_PERSON * validGroupSize;
         break;
