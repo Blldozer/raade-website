@@ -20,7 +20,7 @@ serve(async (req) => {
   try {
     // Get parameters from request
     const requestData = await req.json();
-    const { code, email } = requestData;
+    const { code, email, ticketType } = requestData;
     
     if (!code || typeof code !== 'string') {
       return new Response(
@@ -32,6 +32,19 @@ serve(async (req) => {
           status: 400, 
           headers: { ...corsHeaders, "Content-Type": "application/json" } 
         }
+      );
+    }
+
+    // Check if it's a group ticket - discounts don't apply to groups
+    const isGroupTicket = ticketType === 'student-group';
+    
+    if (isGroupTicket) {
+      return new Response(
+        JSON.stringify({
+          isValid: false,
+          message: "Discount codes cannot be applied to group tickets"
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 

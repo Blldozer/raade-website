@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { RegistrationFormData, calculateTotalPrice } from "./RegistrationFormTypes";
+import { RegistrationFormData, TICKET_TYPES_ENUM, calculateTotalPrice } from "./RegistrationFormTypes";
 import { formatCurrency } from "@/lib/utils";
 
 interface RegistrationSummaryProps {
@@ -16,6 +16,7 @@ interface RegistrationSummaryProps {
  * - Shows ticket type, name, email, and other registration details
  * - Displays original price and discount when a coupon is applied
  * - Calculates and shows per-person pricing for group registrations
+ * - Note: Discounts do not apply to group tickets
  * 
  * @param registrationData Registration form data
  * @param couponDiscount Applied coupon discount information
@@ -31,16 +32,19 @@ const RegistrationSummary = ({
   // Calculate the original price before discounts
   const originalPrice = calculateTotalPrice(
     ticketType, 
-    ticketType === "student-group" ? groupSize : undefined
+    ticketType === TICKET_TYPES_ENUM.STUDENT_GROUP ? groupSize : undefined
   );
 
-  // Get the total price (with discount if available)
-  const finalPrice = totalPrice !== undefined ? totalPrice : originalPrice;
+  // For group tickets, ignore discount
+  const isGroupTicket = ticketType === TICKET_TYPES_ENUM.STUDENT_GROUP;
   
-  // Determine the discount percentage for display
-  const discountPercentage = couponDiscount && couponDiscount.type === 'percentage' 
+  // Get the total price (with discount if available and not a group ticket)
+  const finalPrice = isGroupTicket ? originalPrice : (totalPrice !== undefined ? totalPrice : originalPrice);
+  
+  // Determine the discount percentage for display (none for group tickets)
+  const discountPercentage = !isGroupTicket && couponDiscount && couponDiscount.type === 'percentage' 
     ? couponDiscount.amount 
-    : couponDiscount && originalPrice > 0 
+    : !isGroupTicket && couponDiscount && originalPrice > 0 
       ? Math.round((couponDiscount.amount / originalPrice) * 100) 
       : 0;
 
@@ -72,7 +76,7 @@ const RegistrationSummary = ({
             <span>{organization}</span>
           </div>
           
-          {ticketType === "student-group" && groupSize && (
+          {ticketType === TICKET_TYPES_ENUM.STUDENT_GROUP && groupSize && (
             <div className="flex justify-between">
               <span className="font-medium">Group Size:</span>
               <span>{groupSize} people</span>
@@ -81,7 +85,7 @@ const RegistrationSummary = ({
           
           {/* Price breakdown with discount */}
           <div className="border-t border-gray-200 dark:border-gray-700 mt-4 pt-4">
-            {couponDiscount && originalPrice !== finalPrice ? (
+            {couponDiscount && !isGroupTicket && originalPrice !== finalPrice ? (
               <>
                 <div className="flex justify-between">
                   <span className="font-medium">Original Price:</span>
@@ -105,7 +109,7 @@ const RegistrationSummary = ({
               </div>
             )}
             
-            {ticketType === "student-group" && groupSize && (
+            {ticketType === TICKET_TYPES_ENUM.STUDENT_GROUP && groupSize && (
               <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 mt-1">
                 <span>Per Person:</span>
                 <span>{formatCurrency(finalPrice / groupSize)}</span>
@@ -113,9 +117,15 @@ const RegistrationSummary = ({
             )}
           </div>
           
-          {registrationData.couponCode && (
+          {registrationData.couponCode && !isGroupTicket && (
             <div className="mt-2 text-sm font-medium text-green-600 dark:text-green-400">
               Coupon code applied: {registrationData.couponCode}
+            </div>
+          )}
+          
+          {registrationData.couponCode && isGroupTicket && (
+            <div className="mt-2 text-sm font-medium text-amber-600 dark:text-amber-400">
+              Note: Discounts do not apply to group tickets
             </div>
           )}
         </div>

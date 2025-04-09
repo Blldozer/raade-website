@@ -5,12 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Loader2, CheckCircle, XCircle, Tag, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { TICKET_TYPES_ENUM } from "../RegistrationFormTypes";
 
 interface CouponCodeSectionProps {
   setCouponCode: (couponCode: string | null) => void;
   setCouponDiscount: (discount: { type: 'percentage' | 'fixed'; amount: number } | null) => void;
   setIsFullDiscount: (isFullDiscount: boolean) => void;
-  email?: string; // Add email prop for checking usage history
+  email?: string; // Email prop for checking usage history
+  ticketType?: string; // Add ticket type to check if it's a group ticket
 }
 
 /**
@@ -25,17 +27,20 @@ interface CouponCodeSectionProps {
  * - Added error handling to display meaningful error messages
  * - Tests Supabase connection when validation fails
  * - Supports special school codes that have unlimited uses but can't be used twice by the same email
+ * - Prevents discount application to group tickets
  * 
  * @param setCouponCode - Function to update coupon code in parent component
  * @param setCouponDiscount - Function to update coupon discount details
  * @param setIsFullDiscount - Function to indicate if coupon is 100% off
  * @param email - User's email to check for previous usage of unlimited school codes
+ * @param ticketType - The selected ticket type to check if it's a group ticket
  */
 const CouponCodeSection = ({
   setCouponCode,
   setCouponDiscount,
   setIsFullDiscount,
-  email
+  email,
+  ticketType
 }: CouponCodeSectionProps) => {
   const [inputValue, setInputValue] = useState<string>("");
   const [isValidating, setIsValidating] = useState<boolean>(false);
@@ -45,6 +50,9 @@ const CouponCodeSection = ({
     discount?: { type: 'percentage' | 'fixed'; amount: number } | null;
   } | null>(null);
   const [connectionError, setConnectionError] = useState<boolean>(false);
+
+  // Check if this is a group ticket - discounts don't apply to groups
+  const isGroupTicket = ticketType === TICKET_TYPES_ENUM.STUDENT_GROUP;
 
   // List of special school codes that need email verification
   const SCHOOL_CODES = ['PVAMU', 'TEXAS', 'TULANE'];
@@ -70,6 +78,16 @@ const CouponCodeSection = ({
   // Handle coupon code validation
   const validateCoupon = async () => {
     if (!inputValue.trim()) return;
+    
+    // Don't allow coupon validation for group tickets
+    if (isGroupTicket) {
+      toast({
+        title: "Not available for group tickets",
+        description: "Discount codes cannot be applied to group tickets.",
+        variant: "destructive",
+      });
+      return;
+    }
     
     setIsValidating(true);
     setCouponCode(null);
@@ -109,13 +127,18 @@ const CouponCodeSection = ({
       }
       
       // Prepare request payload
-      const requestPayload: { code: string; email?: string } = { 
+      const requestPayload: { code: string; email?: string; ticketType?: string } = { 
         code: inputValue.trim() 
       };
       
       // Add email for school codes
       if (isSchoolCode && email) {
         requestPayload.email = email;
+      }
+      
+      // Add ticket type to check if it's a group ticket on the backend
+      if (ticketType) {
+        requestPayload.ticketType = ticketType;
       }
       
       // Call the validate-coupon edge function
@@ -226,66 +249,75 @@ const CouponCodeSection = ({
         Apply Coupon Code
       </h3>
       
-      <div className="flex gap-2">
-        <Input
-          placeholder="Enter coupon code"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value.toUpperCase())}
-          className="flex-grow"
-          disabled={isValidating || (validationResult?.isValid ?? false)}
-        />
-        
-        {validationResult?.isValid ? (
-          <Button
-            onClick={clearCoupon}
-            variant="outline"
-            type="button"
-          >
-            Clear
-          </Button>
-        ) : (
-          <Button
-            onClick={validateCoupon}
-            disabled={!inputValue.trim() || isValidating}
-            variant="outline"
-            type="button"
-          >
-            {isValidating ? <Loader2 className="h-4 w-4 animate-spin" /> : "Apply"}
-          </Button>
-        )}
-      </div>
-      
-      {connectionError && (
-        <div className="flex items-center gap-2 text-sm p-2 rounded-md text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400">
-          <AlertCircle className="h-4 w-4 flex-shrink-0" />
-          <span>Could not connect to our service. Please check your connection and try again.</span>
+      {isGroupTicket ? (
+        <div className="text-amber-600 text-sm p-2 border border-amber-200 rounded-md bg-amber-50 dark:bg-amber-900/20 dark:border-amber-800">
+          Discount codes cannot be applied to group tickets.
         </div>
-      )}
-      
-      {validationResult && (
-        <div className={`flex items-center gap-2 text-sm p-2 rounded-md ${
-          validationResult.isValid 
-            ? 'text-green-600 bg-green-50 dark:bg-green-900/20 dark:text-green-400' 
-            : 'text-red-500 bg-red-50 dark:bg-red-900/20 dark:text-red-400'
-        }`}>
-          {validationResult.isValid ? (
-            <CheckCircle className="h-4 w-4 flex-shrink-0" />
-          ) : (
-            <XCircle className="h-4 w-4 flex-shrink-0" />
+      ) : (
+        <>
+          <div className="flex gap-2">
+            <Input
+              placeholder="Enter coupon code"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value.toUpperCase())}
+              className="flex-grow"
+              disabled={isValidating || (validationResult?.isValid ?? false) || isGroupTicket}
+            />
+            
+            {validationResult?.isValid ? (
+              <Button
+                onClick={clearCoupon}
+                variant="outline"
+                type="button"
+                disabled={isGroupTicket}
+              >
+                Clear
+              </Button>
+            ) : (
+              <Button
+                onClick={validateCoupon}
+                disabled={!inputValue.trim() || isValidating || isGroupTicket}
+                variant="outline"
+                type="button"
+              >
+                {isValidating ? <Loader2 className="h-4 w-4 animate-spin" /> : "Apply"}
+              </Button>
+            )}
+          </div>
+          
+          {connectionError && (
+            <div className="flex items-center gap-2 text-sm p-2 rounded-md text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400">
+              <AlertCircle className="h-4 w-4 flex-shrink-0" />
+              <span>Could not connect to our service. Please check your connection and try again.</span>
+            </div>
           )}
-          <span>{validationResult.message}</span>
-        </div>
-      )}
-      
-      {validationResult?.isValid && validationResult.discount && (
-        <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-          <p className="italic">
-            This discount will be applied at checkout.
-            {validationResult.discount.type === 'percentage' && validationResult.discount.amount === 100 
-              ? ' Your registration will be free.' 
-              : ''}
-          </p>
-        </div>
+          
+          {validationResult && (
+            <div className={`flex items-center gap-2 text-sm p-2 rounded-md ${
+              validationResult.isValid 
+                ? 'text-green-600 bg-green-50 dark:bg-green-900/20 dark:text-green-400' 
+                : 'text-red-500 bg-red-50 dark:bg-red-900/20 dark:text-red-400'
+            }`}>
+              {validationResult.isValid ? (
+                <CheckCircle className="h-4 w-4 flex-shrink-0" />
+              ) : (
+                <XCircle className="h-4 w-4 flex-shrink-0" />
+              )}
+              <span>{validationResult.message}</span>
+            </div>
+          )}
+          
+          {validationResult?.isValid && validationResult.discount && (
+            <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              <p className="italic">
+                This discount will be applied at checkout.
+                {validationResult.discount.type === 'percentage' && validationResult.discount.amount === 100 
+                  ? ' Your registration will be free.' 
+                  : ''}
+              </p>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

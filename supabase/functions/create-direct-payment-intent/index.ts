@@ -62,7 +62,10 @@ serve(async (req) => {
     let verifiedDiscount = null;
     let couponId = null;
 
-    if (couponCode) {
+    // Check if this is a group ticket - discounts don't apply to groups
+    const isGroupTicket = ticketType === 'student-group';
+
+    if (couponCode && !isGroupTicket) {
       // Validate the coupon against the database
       const { data: couponData, error: couponError } = await supabaseAdmin
         .from('coupon_codes')
@@ -94,18 +97,19 @@ serve(async (req) => {
           amount: Number(couponData.discount_amount)
         };
         couponId = couponData.id;
-      } else if (couponDiscount) {
+      } else if (couponDiscount && !isGroupTicket) {
         // Fallback to client-provided discount if database validation fails
         // This supports the demo coupons
         verifiedDiscount = couponDiscount;
       }
-    } else if (couponDiscount) {
+    } else if (couponDiscount && !isGroupTicket) {
       // If no coupon code is provided but discount is, use the client-provided discount
+      // (only for non-group tickets)
       verifiedDiscount = couponDiscount;
     }
 
-    // Apply verified discount if available
-    if (verifiedDiscount) {
+    // Apply verified discount if available and not a group ticket
+    if (verifiedDiscount && !isGroupTicket) {
       if (verifiedDiscount.type === 'percentage') {
         const discountAmount = Math.round((amount * verifiedDiscount.amount) / 100);
         amount = Math.max(0, amount - discountAmount);
@@ -138,8 +142,8 @@ serve(async (req) => {
       },
     });
 
-    // If using a valid coupon from database, increment its usage
-    if (couponId) {
+    // If using a valid coupon from database and not a group ticket, increment its usage
+    if (couponId && !isGroupTicket) {
       const { error: usageError } = await supabaseAdmin.rpc(
         'increment_coupon_usage',
         { coupon_code_param: couponCode.toUpperCase() }

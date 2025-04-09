@@ -1,4 +1,3 @@
-
 import { UseFormWatch, UseFormSetValue, FormState, Control } from "react-hook-form";
 import { RegistrationFormData, TICKET_TYPES_ENUM, getTicketPrice, isSaleActive, calculateDiscountedPrice } from "../RegistrationFormTypes";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -23,6 +22,7 @@ interface TicketTypeSelectionProps {
  * - Shows discounted prices when coupons are applied
  * - Displays sale indicators when active
  * - Optimized for both mobile and desktop viewing
+ * - Note: Discounts do not apply to group tickets
  * 
  * @param watch - React Hook Form watch function
  * @param setValue - React Hook Form setValue function
@@ -38,15 +38,16 @@ const TicketTypeSelection = ({ watch, setValue, errors, couponDiscount, control 
   const professionalPrice = getTicketPrice(TICKET_TYPES_ENUM.PROFESSIONAL);
   const groupPrice = getTicketPrice(TICKET_TYPES_ENUM.STUDENT_GROUP);
   
-  // Calculate discounted prices if a coupon is applied
+  // Calculate discounted prices if a coupon is applied (but not for group tickets)
   const discountedStudentPrice = calculateDiscountedPrice(studentPrice, couponDiscount);
   const discountedProfessionalPrice = calculateDiscountedPrice(professionalPrice, couponDiscount);
-  const discountedGroupPrice = calculateDiscountedPrice(groupPrice, couponDiscount);
+  // Group tickets do not get discounts, so the price remains the same
+  const discountedGroupPrice = groupPrice;
   
   // Check if prices are discounted
   const hasStudentDiscount = discountedStudentPrice < studentPrice;
   const hasProfessionalDiscount = discountedProfessionalPrice < professionalPrice;
-  const hasGroupDiscount = discountedGroupPrice < groupPrice;
+  const hasGroupDiscount = false; // Group discounts are not allowed
 
   // Calculate discount percentages for display
   const getDiscountPercentage = (original: number, discounted: number) => {
@@ -56,7 +57,7 @@ const TicketTypeSelection = ({ watch, setValue, errors, couponDiscount, control 
 
   const studentDiscountPercentage = getDiscountPercentage(studentPrice, discountedStudentPrice);
   const professionalDiscountPercentage = getDiscountPercentage(professionalPrice, discountedProfessionalPrice);
-  const groupDiscountPercentage = getDiscountPercentage(groupPrice, discountedGroupPrice);
+  const groupDiscountPercentage = 0; // Group discounts are not allowed
 
   return (
     <div className="py-4">
@@ -139,25 +140,20 @@ const TicketTypeSelection = ({ watch, setValue, errors, couponDiscount, control 
                   <div className="flex-1">
                     <div className="font-medium text-gray-800">Student Group</div>
                     <div className="text-sm text-gray-500 flex items-center">
-                      {hasGroupDiscount ? (
-                        <>
-                          <span className="line-through mr-2">{formatCurrency(groupPrice)}</span>
-                          <span className="text-green-600 font-medium">{formatCurrency(discountedGroupPrice)}</span>
-                          <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
-                            {groupDiscountPercentage}% off
-                          </span>
-                        </>
-                      ) : (
-                        <>{formatCurrency(groupPrice)}</>
-                      )}
+                      {formatCurrency(groupPrice)}
                       <span className="ml-1">per person</span>
-                      {saleActive && !hasGroupDiscount && (
+                      {saleActive && (
                         <span className="ml-2 bg-red-100 text-red-800 text-xs px-2 py-0.5 rounded-full">
                           Sale!
                         </span>
                       )}
                     </div>
                     <div className="text-sm text-gray-500">For student groups of 3 or more</div>
+                    {couponDiscount && (
+                      <div className="text-xs text-amber-600 mt-1">
+                        Note: Discounts do not apply to group tickets
+                      </div>
+                    )}
                   </div>
                 </FormLabel>
               </FormItem>

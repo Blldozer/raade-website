@@ -138,14 +138,22 @@ export const calculateTotalPrice = (
 
 /**
  * Calculate discounted price based on coupon
+ * Does not apply discounts to group tickets
  * @param originalPrice The original price before discount
  * @param discount The discount object with type and amount
+ * @param ticketType The type of ticket
  * @returns The price after discount
  */
 export const calculateDiscountedPrice = (
   originalPrice: number,
-  discount: { type: 'percentage' | 'fixed'; amount: number } | null
+  discount: { type: 'percentage' | 'fixed'; amount: number } | null,
+  ticketType?: typeof TICKET_TYPES[number]
 ): number => {
+  // Return original price for group tickets (no discounts allowed)
+  if (ticketType === TICKET_TYPES_ENUM.STUDENT_GROUP) {
+    return originalPrice;
+  }
+  
   if (!discount) return originalPrice;
   
   if (discount.type === 'percentage') {

@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form"; // Import Form from shadcn/ui
@@ -8,7 +9,7 @@ import { useRegistrationForm } from "./registration/useRegistrationForm";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { calculateDiscountedPrice, calculateTotalPrice } from "./RegistrationFormTypes";
+import { TICKET_TYPES_ENUM, calculateDiscountedPrice, calculateTotalPrice } from "./RegistrationFormTypes";
 import { clearExistingSessionData, detectBackNavigation, getSessionDiagnostics } from "./payment/services/sessionManagement";
 
 /**
@@ -22,6 +23,7 @@ import { clearExistingSessionData, detectBackNavigation, getSessionDiagnostics }
  * - Better error recovery after payment failures
  * - Improved user experience with clear status messages
  * - Added payment confirmation screen for better UX
+ * - Discounts do not apply to group tickets
  */
 const ConferenceRegistrationForm = () => {
   const {
@@ -151,21 +153,30 @@ const ConferenceRegistrationForm = () => {
     });
   };
 
-  // Calculate the total price with discount applied
+  // Calculate the total price with discount applied (if not a group ticket)
   const getTotalPrice = () => {
     if (!registrationData) return 0;
     
+    const isGroupTicket = registrationData.ticketType === TICKET_TYPES_ENUM.STUDENT_GROUP;
+    
+    // Calculate base price first
     const originalPrice = calculateTotalPrice(
       registrationData.ticketType, 
-      registrationData.ticketType === "student-group" ? registrationData.groupSize : undefined
+      registrationData.ticketType === TICKET_TYPES_ENUM.STUDENT_GROUP ? registrationData.groupSize : undefined
     );
     
-    return calculateDiscountedPrice(originalPrice, couponDiscount);
+    // If it's a group ticket, no discount applies
+    if (isGroupTicket) {
+      return originalPrice;
+    }
+    
+    // Apply discount for non-group tickets
+    return calculateDiscountedPrice(originalPrice, couponDiscount, registrationData.ticketType);
   };
 
   // Handle completion of free registration
   const handleFreeRegistrationComplete = () => {
-    if (registrationData && isFullDiscount) {
+    if (registrationData && isFullDiscount && registrationData.ticketType !== TICKET_TYPES_ENUM.STUDENT_GROUP) {
       // This will process the registration and navigate to success page
       handleDirectRegistration(registrationData);
     }
@@ -222,6 +233,9 @@ const ConferenceRegistrationForm = () => {
                       `${couponDiscount.amount}% off` : 
                       `$${couponDiscount.amount} off`}</p>
                   )}
+                  {watchTicketType === TICKET_TYPES_ENUM.STUDENT_GROUP && (
+                    <p className="text-amber-600 mt-1">Note: Discounts do not apply to group tickets</p>
+                  )}
                 </div>
               )}
             </form>
@@ -239,7 +253,7 @@ const ConferenceRegistrationForm = () => {
             }}
             couponDiscount={couponDiscount}
             totalPrice={getTotalPrice()}
-            isFullDiscount={isFullDiscount}
+            isFullDiscount={isFullDiscount && registrationData?.ticketType !== TICKET_TYPES_ENUM.STUDENT_GROUP}
             onFreeRegistration={handleFreeRegistrationComplete}
           />
         )}
