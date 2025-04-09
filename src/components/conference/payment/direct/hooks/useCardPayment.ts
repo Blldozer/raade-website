@@ -42,7 +42,12 @@ export const useCardPayment = ({
   const [cardError, setCardError] = useState<string | null>(null);
   const [cardComplete, setCardComplete] = useState(false);
 
-  const handleCardChange = (event: StripeCardElementChangeEvent) => {
+  /**
+   * Handles card input changes and updates error state
+   * 
+   * @param event - The Stripe card element change event
+   */
+  const handleCardChange = (event: any) => {
     setCardError(event.error ? event.error.message : null);
   };
 
@@ -50,6 +55,14 @@ export const useCardPayment = ({
     setCardError(null);
   };
 
+  /**
+   * Handles form submission and payment processing
+   * - Creates payment intent via edge function
+   * - Confirms card payment with Stripe
+   * - Handles success/error states
+   * 
+   * @param e - Form submission event
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
