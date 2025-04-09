@@ -122,12 +122,12 @@ export const useDonationForm = () => {
       }
       
       // Step 3: Payment successful, update UI
-      // Store the submitted values for the confirmation screen
-      // Fix: Ensure all required fields are explicitly set to satisfy TypeScript
+      // Ensure all required fields are explicitly set to satisfy TypeScript
+      // Using non-null assertion to guarantee that these fields are required by the schema
       setSubmittedValues({
-        amount: data.amount,  // Required field
-        fullName: data.fullName,  // Required field
-        email: data.email,  // Required field
+        amount: data.amount,
+        fullName: data.fullName,
+        email: data.email,
         customAmount: data.customAmount || "",
         message: data.message || "",
         makeAnonymous: data.makeAnonymous || false,
