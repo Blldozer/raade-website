@@ -8,6 +8,9 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
+// Special school codes that have unlimited uses but can't be used by the same email twice
+const UNLIMITED_SCHOOL_CODES = ['PVAMU', 'TEXAS', 'TULANE'];
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -16,7 +19,8 @@ serve(async (req) => {
 
   try {
     // Get parameters from request
-    const { code } = await req.json();
+    const requestData = await req.json();
+    const { code, email } = requestData;
     
     if (!code || typeof code !== 'string') {
       return new Response(
@@ -98,26 +102,69 @@ serve(async (req) => {
       );
     }
     
-    // Check if coupon is expired
-    if (couponData.expires_at && new Date(couponData.expires_at) < new Date()) {
-      return new Response(
-        JSON.stringify({
-          isValid: false,
-          message: "Coupon has expired"
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-    
-    // Check max usage limit if set
-    if (couponData.max_uses !== null && couponData.current_uses >= couponData.max_uses) {
-      return new Response(
-        JSON.stringify({
-          isValid: false,
-          message: "Coupon usage limit reached"
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    // For unlimited school codes, check if this email has used the code before
+    if (UNLIMITED_SCHOOL_CODES.includes(upperCaseCode) && email) {
+      // Check if email has used this code before
+      const { data: usageData, error: usageError } = await supabaseAdmin
+        .from('conference_registrations')
+        .select('id')
+        .eq('coupon_code', upperCaseCode)
+        .eq('email', email)
+        .limit(1);
+        
+      if (usageError) {
+        console.error("Error checking coupon usage history:", usageError);
+        // Continue with validation since this is just a secondary check
+      } else if (usageData && usageData.length > 0) {
+        // This email has already used this coupon code
+        return new Response(
+          JSON.stringify({
+            isValid: false,
+            message: "You have already used this coupon code"
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
+      // For unlimited school codes that haven't been used by this email,
+      // we don't check max_uses or increment usage counts
+    } else {
+      // Check if coupon is expired
+      if (couponData.expires_at && new Date(couponData.expires_at) < new Date()) {
+        return new Response(
+          JSON.stringify({
+            isValid: false,
+            message: "Coupon has expired"
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
+      // Check max usage limit if set (skip this for unlimited school codes)
+      if (!UNLIMITED_SCHOOL_CODES.includes(upperCaseCode) && 
+          couponData.max_uses !== null && 
+          couponData.current_uses >= couponData.max_uses) {
+        return new Response(
+          JSON.stringify({
+            isValid: false,
+            message: "Coupon usage limit reached"
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
+      // Increment the current_uses count for non-unlimited codes
+      if (!UNLIMITED_SCHOOL_CODES.includes(upperCaseCode)) {
+        const { data: usageData, error: usageError } = await supabaseAdmin.rpc(
+          'increment_coupon_usage',
+          { coupon_code_param: upperCaseCode }
+        );
+        
+        if (usageError) {
+          console.error("Error incrementing coupon usage:", usageError);
+          // We still continue since validation was successful
+        }
+      }
     }
     
     // Create the discount object based on the discount type
@@ -125,17 +172,6 @@ serve(async (req) => {
       type: couponData.discount_type as "percentage" | "fixed",
       amount: Number(couponData.discount_amount)
     };
-    
-    // Increment the current_uses count via RPC call
-    const { data: usageData, error: usageError } = await supabaseAdmin.rpc(
-      'increment_coupon_usage',
-      { coupon_code_param: upperCaseCode }
-    );
-    
-    if (usageError) {
-      console.error("Error incrementing coupon usage:", usageError);
-      // We still continue since validation was successful
-    }
     
     return new Response(
       JSON.stringify({

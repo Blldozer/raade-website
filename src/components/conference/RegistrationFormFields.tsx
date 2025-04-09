@@ -1,4 +1,3 @@
-
 import { UseFormRegister, FormState, UseFormSetValue, UseFormWatch, Control } from "react-hook-form";
 import { RegistrationFormData } from "./RegistrationFormTypes";
 import TicketTypeSelection from "./registration/TicketTypeSelection";
@@ -55,8 +54,11 @@ const RegistrationFormFields = ({
   // Use the group size reset hook to handle group size logic
   useGroupSizeReset(watch, setValue);
   
+  // Get the current email value for coupon validation
+  const currentEmail = watch("email");
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <BasicInformationSection 
         register={register} 
         errors={errors} 
@@ -78,12 +80,13 @@ const RegistrationFormFields = ({
         control={control}
       />
       
-      {/* Add the coupon code section */}
-      <div className="py-4 border-t border-b border-gray-100">
+      {/* Coupon Code Section (now with email) */}
+      <div className="p-4 border border-gray-200 rounded-lg bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <CouponCodeSection 
           setCouponCode={setCouponCode}
           setCouponDiscount={setCouponDiscount}
           setIsFullDiscount={setIsFullDiscount}
+          email={currentEmail} // Pass the current email
         />
       </div>
 

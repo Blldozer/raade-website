@@ -10,6 +10,7 @@ interface CouponCodeSectionProps {
   setCouponCode: (couponCode: string | null) => void;
   setCouponDiscount: (discount: { type: 'percentage' | 'fixed'; amount: number } | null) => void;
   setIsFullDiscount: (isFullDiscount: boolean) => void;
+  email?: string; // Add email prop for checking usage history
 }
 
 /**
@@ -23,15 +24,18 @@ interface CouponCodeSectionProps {
  * - Improved visual feedback for successful coupon application
  * - Added error handling to display meaningful error messages
  * - Tests Supabase connection when validation fails
+ * - Supports special school codes that have unlimited uses but can't be used twice by the same email
  * 
  * @param setCouponCode - Function to update coupon code in parent component
  * @param setCouponDiscount - Function to update coupon discount details
  * @param setIsFullDiscount - Function to indicate if coupon is 100% off
+ * @param email - User's email to check for previous usage of unlimited school codes
  */
 const CouponCodeSection = ({
   setCouponCode,
   setCouponDiscount,
-  setIsFullDiscount
+  setIsFullDiscount,
+  email
 }: CouponCodeSectionProps) => {
   const [inputValue, setInputValue] = useState<string>("");
   const [isValidating, setIsValidating] = useState<boolean>(false);
@@ -42,6 +46,9 @@ const CouponCodeSection = ({
   } | null>(null);
   const [connectionError, setConnectionError] = useState<boolean>(false);
 
+  // List of special school codes that need email verification
+  const SCHOOL_CODES = ['PVAMU', 'TEXAS', 'TULANE'];
+  
   // Function to test Supabase connection
   const testSupabaseConnection = async () => {
     try {
@@ -86,9 +93,34 @@ const CouponCodeSection = ({
         return;
       }
       
+      // For school codes, we need to include the email to check usage history
+      const upperCaseCode = inputValue.trim().toUpperCase();
+      const isSchoolCode = SCHOOL_CODES.includes(upperCaseCode);
+      
+      // Check if we need email for school code but don't have it
+      if (isSchoolCode && !email) {
+        toast({
+          title: "Email required",
+          description: "Please fill in your email first before applying this school coupon code.",
+          variant: "destructive",
+        });
+        setIsValidating(false);
+        return;
+      }
+      
+      // Prepare request payload
+      const requestPayload: { code: string; email?: string } = { 
+        code: inputValue.trim() 
+      };
+      
+      // Add email for school codes
+      if (isSchoolCode && email) {
+        requestPayload.email = email;
+      }
+      
       // Call the validate-coupon edge function
       const { data, error } = await supabase.functions.invoke('validate-coupon', {
-        body: { code: inputValue.trim() }
+        body: requestPayload
       });
       
       if (error) {
