@@ -276,12 +276,12 @@ const CouponCodeSection = ({
         </div>
       ) : (
         <>
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2">
             <Input
               placeholder="Enter coupon code"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value.toUpperCase())}
-              className="flex-grow"
+              className="w-full"
               disabled={isValidating || (validationResult?.isValid ?? false) || isGroupTicket}
             />
             
@@ -291,6 +291,7 @@ const CouponCodeSection = ({
                 variant="outline"
                 type="button"
                 disabled={isGroupTicket}
+                className="w-full"
               >
                 Clear
               </Button>
@@ -300,6 +301,7 @@ const CouponCodeSection = ({
                 disabled={!inputValue.trim() || isValidating || isGroupTicket}
                 variant="outline"
                 type="button"
+                className="w-full"
               >
                 {isValidating ? <Loader2 className="h-4 w-4 animate-spin" /> : "Apply"}
               </Button>
