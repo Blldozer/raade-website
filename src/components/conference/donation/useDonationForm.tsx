@@ -63,9 +63,9 @@ export const useDonationForm = () => {
         amount: data.amount,
         fullName: data.fullName,
         email: data.email,
-        customAmount: data.customAmount,
-        message: data.message,
-        makeAnonymous: data.makeAnonymous,
+        customAmount: data.customAmount || "",
+        message: data.message || "",
+        makeAnonymous: data.makeAnonymous || false,
       });
       
       // Show success state after a short delay to simulate processing
