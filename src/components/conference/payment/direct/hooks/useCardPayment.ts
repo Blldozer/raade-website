@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { useStripe, useElements } from "@stripe/react-stripe-js";
+import { useStripe, useElements, StripeCardElementChangeEvent } from "@stripe/react-stripe-js";
 import { supabase } from "@/integrations/supabase/client";
 
 interface UseCardPaymentProps {
@@ -13,8 +13,8 @@ interface UseCardPaymentProps {
   role?: string;
   specialRequests?: string;
   referralSource?: string;
-  couponCode?: string;  // Add couponCode prop
-  couponDiscount?: { type: 'percentage' | 'fixed'; amount: number } | null;  // Add couponDiscount prop
+  couponCode?: string;  
+  couponDiscount?: { type: 'percentage' | 'fixed'; amount: number } | null;
   onSuccess: () => void;
   onError: (error: string) => void;
   attemptId: string;
@@ -30,8 +30,8 @@ export const useCardPayment = ({
   role = "",
   specialRequests = "",
   referralSource = "",
-  couponCode = "",  // Add default value
-  couponDiscount = null,  // Add default value
+  couponCode = "",
+  couponDiscount = null,
   onSuccess,
   onError,
   attemptId
@@ -47,7 +47,7 @@ export const useCardPayment = ({
    * 
    * @param event - The Stripe card element change event
    */
-  const handleCardChange = (event: any) => {
+  const handleCardChange = (event: StripeCardElementChangeEvent) => {
     setCardError(event.error ? event.error.message : null);
   };
 
