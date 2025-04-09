@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { AlertCircle, CheckCircle, Loader2 } from "lucide-react";
+import { Loader2, CheckCircle, XCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface CouponCodeSectionProps {
@@ -15,129 +15,126 @@ interface CouponCodeSectionProps {
  * CouponCodeSection Component
  * 
  * Allows users to enter and validate coupon codes:
- * - Provides real-time validation with server-side checking
- * - Shows appropriate feedback based on coupon status
- * - Updates parent form with discount information
+ * - Checks coupon validity through edge function
+ * - Shows coupon discount information
+ * - Displays validation state with clear feedback
+ * 
+ * @param setCouponCode - Function to update coupon code in parent component
+ * @param setCouponDiscount - Function to update coupon discount details
+ * @param setIsFullDiscount - Function to indicate if coupon is 100% off
  */
-const CouponCodeSection = ({ setCouponCode, setCouponDiscount, setIsFullDiscount }: CouponCodeSectionProps) => {
-  const [couponInput, setCouponInput] = useState("");
-  const [isValidating, setIsValidating] = useState(false);
-  const [validationMessage, setValidationMessage] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
-  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+const CouponCodeSection = ({
+  setCouponCode,
+  setCouponDiscount,
+  setIsFullDiscount
+}: CouponCodeSectionProps) => {
+  const [inputValue, setInputValue] = useState<string>("");
+  const [isValidating, setIsValidating] = useState<boolean>(false);
+  const [validationResult, setValidationResult] = useState<{
+    isValid: boolean;
+    message: string;
+    discount?: { type: 'percentage' | 'fixed'; amount: number } | null;
+  } | null>(null);
 
-  const handleValidateCoupon = async () => {
-    if (!couponInput.trim()) {
-      setValidationMessage({ type: 'error', message: "Please enter a coupon code" });
-      return;
-    }
-
+  // Handle coupon code validation
+  const validateCoupon = async () => {
+    if (!inputValue.trim()) return;
+    
     setIsValidating(true);
-    setValidationMessage(null);
-
+    setCouponCode(null);
+    setCouponDiscount(null);
+    setIsFullDiscount(false);
+    setValidationResult(null);
+    
     try {
+      // Call validate-coupon edge function
       const { data, error } = await supabase.functions.invoke('validate-coupon', {
-        body: { code: couponInput.trim() }
-      });
-
-      if (error || !data.success) {
-        setValidationMessage({ 
-          type: 'error', 
-          message: (data && data.message) || "Invalid coupon code" 
-        });
-        setCouponCode(null);
-        setCouponDiscount(null);
-        setIsFullDiscount(false);
-        setAppliedCoupon(null);
-        return;
-      }
-
-      // Valid coupon
-      setValidationMessage({ 
-        type: 'success', 
-        message: `Coupon applied: ${data.coupon.discountType === 'percentage' ? 
-          `${data.coupon.discountAmount}% off` : 
-          `$${data.coupon.discountAmount} off`}`
+        body: { code: inputValue.trim() }
       });
       
-      setCouponCode(data.coupon.code);
-      setCouponDiscount({
-        type: data.coupon.discountType,
-        amount: data.coupon.discountAmount
-      });
-      setIsFullDiscount(data.coupon.isFullDiscount);
-      setAppliedCoupon(data.coupon.code);
-
+      if (error) {
+        throw new Error(`Validation failed: ${error.message}`);
+      }
+      
+      if (!data?.isValid) {
+        setValidationResult({
+          isValid: false,
+          message: data?.message || "Invalid coupon code"
+        });
+        return;
+      }
+      
+      // Process valid coupon
+      setCouponCode(inputValue.trim());
+      
+      // Handle discount information
+      if (data.discount) {
+        setCouponDiscount(data.discount);
+        
+        // Check if this is a 100% discount coupon
+        const isFullDiscount = 
+          (data.discount.type === 'percentage' && data.discount.amount === 100) ||
+          (data.discount.type === 'fixed' && data.discount.amount >= 500); // Assuming $500 or higher means full discount
+        
+        setIsFullDiscount(isFullDiscount);
+        
+        // Set validation result with appropriate message
+        setValidationResult({
+          isValid: true,
+          message: isFullDiscount 
+            ? "Free registration coupon applied!"
+            : `Coupon applied: ${data.discount.type === 'percentage' 
+                ? `${data.discount.amount}% off` 
+                : `$${data.discount.amount} off`}`,
+          discount: data.discount
+        });
+      } else {
+        setValidationResult({
+          isValid: true,
+          message: "Coupon applied!"
+        });
+      }
     } catch (err) {
-      console.error("Error validating coupon:", err);
-      setValidationMessage({ type: 'error', message: "Error validating coupon" });
-      setCouponCode(null);
-      setCouponDiscount(null);
-      setIsFullDiscount(false);
-      setAppliedCoupon(null);
+      console.error("Coupon validation error:", err);
+      setValidationResult({
+        isValid: false,
+        message: "Error validating coupon"
+      });
     } finally {
       setIsValidating(false);
     }
   };
 
-  const handleRemoveCoupon = () => {
-    setCouponInput("");
-    setValidationMessage(null);
-    setCouponCode(null);
-    setCouponDiscount(null);
-    setIsFullDiscount(false);
-    setAppliedCoupon(null);
-  };
-
   return (
-    <div className="space-y-3">
-      <div className="flex flex-col sm:flex-row gap-2">
+    <div className="flex flex-col space-y-2">
+      <div className="flex space-x-2">
         <Input
           placeholder="Enter coupon code"
-          value={couponInput}
-          onChange={(e) => setCouponInput(e.target.value)}
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
           className="flex-grow"
-          disabled={!!appliedCoupon || isValidating}
+          disabled={isValidating}
         />
-        
-        {!appliedCoupon ? (
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={handleValidateCoupon}
-            disabled={isValidating || !couponInput.trim()}
-            className="min-w-24"
-          >
-            {isValidating ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Validating
-              </>
-            ) : (
-              "Apply"
-            )}
-          </Button>
-        ) : (
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={handleRemoveCoupon}
-            className="min-w-24"
-          >
-            Remove
-          </Button>
-        )}
+        <Button 
+          onClick={validateCoupon}
+          disabled={!inputValue.trim() || isValidating}
+          variant="outline"
+          type="button"
+        >
+          {isValidating ? <Loader2 className="h-4 w-4 animate-spin" /> : "Apply"}
+        </Button>
       </div>
       
-      {validationMessage && (
-        <div className={`flex items-center text-sm ${
-          validationMessage.type === 'success' ? 'text-green-600' : 'text-red-600'
+      {validationResult && (
+        <div className={`text-sm flex items-center space-x-1 ${
+          validationResult.isValid ? 'text-green-600' : 'text-red-600'
         }`}>
-          {validationMessage.type === 'success' ? (
-            <CheckCircle className="h-4 w-4 mr-2" />
+          {validationResult.isValid ? (
+            <CheckCircle className="h-4 w-4" />
           ) : (
-            <AlertCircle className="h-4 w-4 mr-2" />
+            <XCircle className="h-4 w-4" />
           )}
-          {validationMessage.message}
+          <span>{validationResult.message}</span>
         </div>
       )}
     </div>

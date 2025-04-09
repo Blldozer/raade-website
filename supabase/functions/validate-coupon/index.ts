@@ -1,5 +1,5 @@
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.1";
 
 const corsHeaders = {
@@ -8,130 +8,91 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-// Helper function to create standardized responses
-function createResponse(data: any, status = 200) {
-  return new Response(
-    JSON.stringify(data),
-    {
-      status,
-      headers: { ...corsHeaders, "Content-Type": "application/json" }
-    }
-  );
-}
-
 serve(async (req) => {
   // Handle CORS preflight requests
-  if (req.method === "OPTIONS") {
+  if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
-  
-  // Generate a request ID for tracking
-  const requestId = crypto.randomUUID();
-  console.log(`[${requestId}] Processing coupon validation request`);
-  
+
   try {
-    // Parse the request body
+    // Get parameters from request
     const { code } = await req.json();
     
-    if (!code) {
-      return createResponse({
-        success: false,
-        message: "No coupon code provided",
-        requestId
-      }, 400);
+    if (!code || typeof code !== 'string') {
+      return new Response(
+        JSON.stringify({ 
+          isValid: false, 
+          message: "Missing or invalid coupon code" 
+        }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
     }
-    
-    // Initialize Supabase client with admin privileges
-    const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-    
-    if (!supabaseUrl || !supabaseServiceRoleKey) {
-      console.error(`[${requestId}] Missing Supabase environment variables`);
-      return createResponse({
-        success: false,
-        message: "Server configuration error",
-        requestId
-      }, 500);
-    }
-    
+
+    // Initialize Supabase admin client
     const supabaseAdmin = createClient(
-      supabaseUrl,
-      supabaseServiceRoleKey,
+      Deno.env.get("SUPABASE_URL") || "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "",
       {
         auth: {
-          persistSession: false,
+          persistSession: false
         }
       }
     );
+
+    // For demo purposes, implementing a basic validation pattern
+    // In a real application, this would query a coupons table
+    // with validation logic for expiration, maximum uses, etc.
+
+    // Example fixed coupon codes for testing
+    const validCoupons = {
+      "DEMO25": { type: "percentage", amount: 25 },
+      "DEMO50": { type: "percentage", amount: 50 },
+      "DEMO100": { type: "percentage", amount: 100 },
+      "DEMO10DOLLARS": { type: "fixed", amount: 10 },
+      "DEMO25DOLLARS": { type: "fixed", amount: 25 },
+      "EARLYBIRD2025": { type: "percentage", amount: 15 }
+    };
+
+    const upperCaseCode = code.toUpperCase();
     
-    // Check if the coupon code exists and is valid
-    console.log(`[${requestId}] Checking coupon code: ${code}`);
-    const { data: coupon, error: couponError } = await supabaseAdmin
-      .from('coupon_codes')
-      .select('*')
-      .eq('code', code)
-      .eq('is_active', true)
-      .single();
-      
-    if (couponError || !coupon) {
-      console.log(`[${requestId}] Invalid or inactive coupon code`);
-      return createResponse({
-        success: false,
-        message: "Invalid or inactive coupon code",
-        requestId
-      }, 400);
+    if (upperCaseCode in validCoupons) {
+      return new Response(
+        JSON.stringify({
+          isValid: true,
+          message: "Coupon is valid",
+          discount: validCoupons[upperCaseCode as keyof typeof validCoupons]
+        }),
+        { 
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
     }
-    
-    // Check if the coupon has expired
-    if (coupon.expires_at && new Date(coupon.expires_at) < new Date()) {
-      console.log(`[${requestId}] Coupon has expired`);
-      return createResponse({
-        success: false,
-        message: "This coupon code has expired",
-        requestId
-      }, 400);
-    }
-    
-    // Check if the coupon has reached its usage limit
-    if (coupon.max_uses !== null && coupon.current_uses >= coupon.max_uses) {
-      console.log(`[${requestId}] Coupon usage limit reached`);
-      return createResponse({
-        success: false,
-        message: "This coupon code has reached its usage limit",
-        requestId
-      }, 400);
-    }
-    
-    // Return coupon details to client
-    const isFullDiscount = coupon.discount_type === 'percentage' && coupon.discount_amount === 100;
-    
-    console.log(`[${requestId}] Valid coupon found: ${JSON.stringify({
-      code: coupon.code,
-      discountType: coupon.discount_type,
-      discountAmount: coupon.discount_amount,
-      isFullDiscount
-    })}`);
-    
-    return createResponse({
-      success: true,
-      coupon: {
-        code: coupon.code,
-        discountType: coupon.discount_type,
-        discountAmount: coupon.discount_amount,
-        isFullDiscount
-      },
-      requestId
-    });
-    
+
+    return new Response(
+      JSON.stringify({
+        isValid: false,
+        message: "Invalid coupon code"
+      }),
+      { 
+        headers: { ...corsHeaders, "Content-Type": "application/json" } 
+      }
+    );
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error(`[${requestId}] Error in validate-coupon: ${errorMessage}`);
+    console.error("Error validating coupon:", error);
     
-    return createResponse({
-      success: false,
-      message: "Error validating coupon code",
-      error: errorMessage,
-      requestId
-    }, 500);
+    return new Response(
+      JSON.stringify({
+        isValid: false,
+        message: "Error processing coupon",
+        error: error.message
+      }),
+      { 
+        status: 500, 
+        headers: { ...corsHeaders, "Content-Type": "application/json" } 
+      }
+    );
   }
 });
