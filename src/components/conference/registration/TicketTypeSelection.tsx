@@ -151,7 +151,7 @@ const TicketTypeSelection = ({ watch, setValue, errors, couponDiscount, control 
                         </span>
                       )}
                     </div>
-                    <div className="text-sm text-gray-500">For student groups of 5 or more</div>
+                    <div className="text-sm text-gray-500">For student groups of 3 or more</div>
                   </div>
                 </FormLabel>
               </FormItem>
