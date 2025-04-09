@@ -210,6 +210,7 @@ export type Database = {
           email: string
           email_verified: boolean
           from_known_institution: boolean | null
+          full_name: string | null
           group_id: string
           id: string
         }
@@ -218,6 +219,7 @@ export type Database = {
           email: string
           email_verified?: boolean
           from_known_institution?: boolean | null
+          full_name?: string | null
           group_id: string
           id?: string
         }
@@ -226,6 +228,7 @@ export type Database = {
           email?: string
           email_verified?: boolean
           from_known_institution?: boolean | null
+          full_name?: string | null
           group_id?: string
           id?: string
         }

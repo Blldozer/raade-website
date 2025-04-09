@@ -26,7 +26,7 @@ interface GroupRegistrationProps {
  * 
  * Handles the group registration form fields:
  * - Group size selection (minimum 3 people for sale)
- * - Group member email collection with proper autocomplete attributes
+ * - Group member name and email collection with proper autocomplete attributes
  * - Validation for group size and email domains
  * - Price calculation and display
  * - Mobile-responsive layout with accessible form controls
@@ -102,31 +102,53 @@ const GroupRegistration = ({ watch, setValue, control, errors }: GroupRegistrati
       </div>
       
       <div className="space-y-2">
-        <Label>Group Member Emails</Label>
+        <Label>Group Member Information</Label>
         <p className="text-gray-600 text-sm">
-          You will be the group leader. Please provide emails for all group members (including yourself).
+          You will be the group leader. Please provide names and emails for all group members (including yourself).
         </p>
         
         {fields.map((field, index) => (
-          <div key={field.id} className="flex gap-2">
-            <Input
-              placeholder={`Group member ${index + 1} email`}
-              name={`groupEmail${index + 1}`}
-              id={`groupEmail${index + 1}`}
-              type="email"
-              autoComplete={index === 0 ? "email" : `email-${index + 1}`}
-              {...control.register(`groupEmails.${index}.value` as const)}
-              aria-label={`Email address for group member ${index + 1}`}
-            />
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              onClick={() => remove(index)}
-              aria-label={`Remove group member ${index + 1}`}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+          <div key={field.id} className="space-y-2 p-3 border border-gray-200 rounded-md">
+            <div className="flex items-center justify-between">
+              <h4 className="font-medium">Member {index + 1}</h4>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => remove(index)}
+                aria-label={`Remove group member ${index + 1}`}
+              >
+                <Trash2 className="h-4 w-4 text-gray-500" />
+              </Button>
+            </div>
+            
+            <div className="grid gap-2">
+              <div>
+                <Label htmlFor={`groupMemberName${index + 1}`}>Full Name</Label>
+                <Input
+                  placeholder="Full name"
+                  id={`groupMemberName${index + 1}`}
+                  name={`groupMemberName${index + 1}`}
+                  type="text"
+                  autoComplete={index === 0 ? "name" : `member-name-${index + 1}`}
+                  {...control.register(`groupEmails.${index}.fullName` as const)}
+                  aria-label={`Full name for group member ${index + 1}`}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor={`groupEmail${index + 1}`}>Email (.edu required)</Label>
+                <Input
+                  placeholder="Email address"
+                  id={`groupEmail${index + 1}`}
+                  name={`groupEmail${index + 1}`}
+                  type="email"
+                  autoComplete={index === 0 ? "email" : `email-${index + 1}`}
+                  {...control.register(`groupEmails.${index}.value` as const)}
+                  aria-label={`Email address for group member ${index + 1}`}
+                />
+              </div>
+            </div>
           </div>
         ))}
         
@@ -135,7 +157,7 @@ const GroupRegistration = ({ watch, setValue, control, errors }: GroupRegistrati
             type="button"
             variant="outline"
             className="w-full"
-            onClick={() => append({ value: "" })}
+            onClick={() => append({ value: "", fullName: "" })}
           >
             <Plus className="h-4 w-4 mr-2" />
             Add Group Member
@@ -146,7 +168,7 @@ const GroupRegistration = ({ watch, setValue, control, errors }: GroupRegistrati
           <Alert className="bg-amber-50 text-amber-800 border-amber-200">
             <AlignJustify className="h-4 w-4" />
             <AlertDescription>
-              Please add {groupSize - fields.length} more email{fields.length === groupSize - 1 ? '' : 's'} to match your group size of {groupSize}.
+              Please add {groupSize - fields.length} more member{fields.length === groupSize - 1 ? '' : 's'} to match your group size of {groupSize}.
             </AlertDescription>
           </Alert>
         )}

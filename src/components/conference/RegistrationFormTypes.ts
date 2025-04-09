@@ -41,8 +41,9 @@ export const registrationFormSchema = z.object({
   groupSize: z.number().optional(),
   groupEmails: z.array(
     z.object({
-      value: z.string().email("Invalid email address")
-    }).or(z.string().email("Invalid email address")).nullable()
+      value: z.string().email("Invalid email address"),
+      fullName: z.string().min(1, "Name is required")
+    }).nullable()
   ).optional(),
   specialRequests: z.string().optional(),
   couponCode: z.string().optional()

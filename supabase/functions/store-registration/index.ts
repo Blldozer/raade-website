@@ -350,18 +350,33 @@ serve(async (req) => {
           
           // Process group member emails if we have a group ID
           if (groupId) {
-            // Clean and process emails
-            const processedEmails = groupEmails
+            // Clean and process emails and names
+            const processedMembers = groupEmails
               .filter(Boolean)
               .map(item => {
-                if (typeof item === 'object' && item !== null && 'value' in item) {
-                  return String(item.value || '').trim();
+                let email = '';
+                let fullName = '';
+                
+                if (typeof item === 'object' && item !== null) {
+                  if ('value' in item) {
+                    email = String(item.value || '').trim();
+                  }
+                  if ('fullName' in item) {
+                    fullName = String(item.fullName || '').trim();
+                  }
+                } else {
+                  email = String(item || '').trim();
                 }
-                return String(item || '').trim();
+                
+                return { 
+                  email, 
+                  fullName,
+                  isValid: email.length > 0 && email.includes('@')
+                };
               })
-              .filter(email => email.length > 0 && email.includes('@'));
+              .filter(member => member.isValid);
             
-            console.log(`[${requestId}] Processing ${processedEmails.length} group members`);
+            console.log(`[${requestId}] Processing ${processedMembers.length} group members with names`);
             
             // First delete any existing members to avoid duplicates
             const { error: deleteError } = await supabaseAdmin
@@ -373,10 +388,11 @@ serve(async (req) => {
               console.error(`[${requestId}] Error deleting existing group members:`, deleteError);
             }
             
-            // Now insert all the new members
-            if (processedEmails.length > 0) {
-              const memberInserts = processedEmails.map(memberEmail => ({
-                email: memberEmail,
+            // Now insert all the new members with names
+            if (processedMembers.length > 0) {
+              const memberInserts = processedMembers.map(member => ({
+                email: member.email,
+                full_name: member.fullName, // Use the new full_name column
                 group_id: groupId,
                 email_verified: false, // Will be verified separately
                 from_known_institution: false // Will be determined during verification
@@ -389,7 +405,7 @@ serve(async (req) => {
               if (membersInsertError) {
                 console.error(`[${requestId}] Error inserting group members:`, membersInsertError);
               } else {
-                console.log(`[${requestId}] Successfully added ${processedEmails.length} group members`);
+                console.log(`[${requestId}] Successfully added ${processedMembers.length} group members with names`);
               }
             }
           }
