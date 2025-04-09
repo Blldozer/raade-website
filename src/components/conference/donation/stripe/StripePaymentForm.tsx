@@ -35,7 +35,8 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
       <label className="block text-sm font-medium text-gray-700 mb-2">
         Card Details
       </label>
-      <div className={`p-4 border rounded-md ${error ? 'border-red-500' : 'border-gray-300'}`}>
+      <div className={`p-4 border rounded-md ${error ? 'border-red-500' : 'border-gray-300'} ${isSubmitting ? 'opacity-50' : ''}`}>
+        {/* Removed the disabled prop as it's not supported by CardElement */}
         <CardElement 
           options={{
             style: {
@@ -55,7 +56,6 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
             hidePostalCode: true,
           }}
           onChange={handleCardChange}
-          disabled={isSubmitting}
         />
       </div>
       
