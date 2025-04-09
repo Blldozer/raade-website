@@ -52,9 +52,9 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
             <FormLabel>Payment Information</FormLabel>
             <FormControl>
               <div className={`p-3 border rounded-md ${error ? 'border-red-500' : 'border-gray-300'} transition-colors`}>
+                {/* Fix: Remove the disabled prop from CardElement as it's not supported */}
                 <CardElement 
                   options={cardElementOptions}
-                  disabled={isSubmitting}
                 />
               </div>
             </FormControl>
