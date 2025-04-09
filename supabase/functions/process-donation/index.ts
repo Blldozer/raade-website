@@ -1,7 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,12 +10,11 @@ const corsHeaders = {
 /**
  * Process Donation Edge Function
  * 
- * Handles donation payments by:
- * - Creating a Stripe payment intent for the donation amount
- * - Storing donation details in the database
- * - Setting up proper email receipts
- * - Handling CORS for browser requests
- * - Detailed error handling and logging
+ * Creates a Stripe payment intent for donations:
+ * - Validates donation amount
+ * - Creates payment intent with Stripe
+ * - Returns client secret for frontend processing
+ * - Handles CORS for browser requests
  */
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -30,27 +28,29 @@ serve(async (req) => {
       apiVersion: "2022-11-15",
     });
     
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
-    const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY") || "";
-    const supabase = createClient(supabaseUrl, supabaseKey);
-    
     // Parse the request body
     const requestData = await req.json();
     
-    // Validate the request data
-    const { 
-      amount, 
-      email, 
-      fullName, 
-      makeAnonymous, 
-      message 
-    } = requestData;
+    // Validate required fields
+    const { amount, email, fullName, makeAnonymous, message } = requestData;
     
     if (!amount || !email || !fullName) {
       return new Response(
         JSON.stringify({
           error: "Missing required fields: amount, email, or fullName",
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+    
+    // Validate amount
+    if (isNaN(amount) || amount < 100) { // Minimum $1 donation (100 cents)
+      return new Response(
+        JSON.stringify({
+          error: "Invalid amount. Minimum donation is $1.",
         }),
         {
           status: 400,
@@ -76,26 +76,6 @@ serve(async (req) => {
           donationType: "conference-support",
         },
       });
-      
-      // Store the donation in the database
-      const { error: insertError } = await supabase
-        .from('donations')
-        .insert({
-          donor_name: makeAnonymous ? null : fullName,
-          donor_email: email,
-          amount: amount / 100, // Store as dollars, not cents
-          message: message || null,
-          is_anonymous: makeAnonymous || false,
-          payment_intent_id: paymentIntent.id,
-          payment_status: paymentIntent.status,
-          donation_type: "conference-support"
-        });
-      
-      if (insertError) {
-        console.error("Error inserting donation record:", insertError);
-      } else {
-        console.log(`Successfully recorded donation from ${fullName} with payment intent: ${paymentIntent.id}`);
-      }
       
       console.log(`Successfully created payment intent: ${paymentIntent.id}`);
       

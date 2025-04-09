@@ -14,6 +14,7 @@ import DynamicDonationImpact from "./DynamicDonationImpact";
 import { Toaster } from "@/components/ui/toaster";
 import StripeWrapper from "./stripe/StripeWrapper";
 import StripePaymentForm from "./stripe/StripePaymentForm";
+import { useStripePayment } from "./stripe/useStripePayment";
 
 /**
  * DonationForm Component
@@ -37,6 +38,7 @@ const DonationForm = () => {
     onSubmit: handleSubmit,
     handleAmountSelect,
     getDonationAmount,
+    getDonationAmountValue,
     handleDonateAgain,
     handlePaymentSuccess,
     handlePaymentError,
@@ -52,6 +54,16 @@ const DonationForm = () => {
       />
     );
   }
+
+  // Get the Stripe payment hook when showing payment screen
+  const stripePaymentProps = showCardPayment && submittedValues ? 
+    useStripePayment({
+      donationAmount: getDonationAmountValue(),
+      email: submittedValues.email,
+      fullName: submittedValues.fullName,
+      message: submittedValues.message,
+      makeAnonymous: submittedValues.makeAnonymous
+    }) : null;
 
   return (
     <div className="w-full max-w-7xl mx-auto">
@@ -294,9 +306,7 @@ const DonationForm = () => {
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-gray-600">Donation Amount:</span>
                   <span className="font-medium text-[#FBB03B]">
-                    {submittedValues?.amount === "custom" && submittedValues?.customAmount
-                      ? `$${parseFloat(submittedValues.customAmount).toFixed(2)}`
-                      : `$${submittedValues?.amount}`}
+                    {getDonationAmount()}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
@@ -305,28 +315,31 @@ const DonationForm = () => {
                 </div>
               </div>
               
-              {submittedValues && (
+              {submittedValues && stripePaymentProps && (
                 <StripeWrapper>
                   <StripePaymentForm
-                    isSubmitting={isSubmitting}
-                    error={paymentError}
+                    isSubmitting={stripePaymentProps.isLoading || isSubmitting}
+                    error={stripePaymentProps.error || paymentError}
                   />
                   
                   {/* Donate button */}
                   <Button 
-                    onClick={() => handlePaymentSuccess()}
-                    disabled={isSubmitting}
+                    onClick={async () => {
+                      const success = await stripePaymentProps.processPayment();
+                      if (success) {
+                        handlePaymentSuccess();
+                      }
+                    }}
+                    disabled={stripePaymentProps.isLoading || isSubmitting}
                     className="w-full mt-4 bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white"
                   >
-                    {isSubmitting ? (
+                    {stripePaymentProps.isLoading || isSubmitting ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Processing...
+                        Processing Payment...
                       </>
                     ) : (
-                      `Donate ${submittedValues.amount === "custom" && submittedValues.customAmount 
-                        ? `$${parseFloat(submittedValues.customAmount).toFixed(2)}` 
-                        : `$${submittedValues.amount}`}`
+                      `Complete Donation of ${getDonationAmount()}`
                     )}
                   </Button>
                 </StripeWrapper>

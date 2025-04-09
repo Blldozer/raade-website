@@ -71,6 +71,14 @@ export const useDonationForm = () => {
     return `$${selectedAmount}`;
   };
   
+  // Get numeric donation amount value
+  const getDonationAmountValue = (): number => {
+    if (selectedAmount === "custom" && form.watch("customAmount")) {
+      return parseFloat(form.watch("customAmount"));
+    }
+    return parseInt(selectedAmount);
+  };
+  
   // Get numeric donation amount in cents for Stripe
   const getDonationAmountInCents = (): number => {
     if (selectedAmount === "custom" && form.watch("customAmount")) {
@@ -117,7 +125,7 @@ export const useDonationForm = () => {
     }
   };
   
-  // Handle payment success
+  // Handle payment success - Records donation in Supabase after payment is processed
   const handlePaymentSuccess = async () => {
     setIsSubmitting(true);
     
@@ -138,7 +146,7 @@ export const useDonationForm = () => {
         amount,
         message: submittedValues.message || null,
         is_anonymous: submittedValues.makeAnonymous || false,
-        payment_status: 'succeeded', // For now, we're assuming success
+        payment_status: 'succeeded',
         donation_type: 'conference-support'
       });
       
@@ -210,6 +218,7 @@ export const useDonationForm = () => {
     onSubmit,
     handleAmountSelect,
     getDonationAmount,
+    getDonationAmountValue,
     handleDonateAgain,
     handlePaymentSuccess,
     handlePaymentError,
