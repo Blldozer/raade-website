@@ -128,7 +128,7 @@ const TransitionStat = () => {
       <div ref={contentRef} className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
         <div className="space-y-6 md:space-y-8">
           <div className="text-4xl md:text-7xl lg:text-8xl font-bold text-white mb-4 md:mb-8 font-alegreyasans rounded-3xl stat-counter px-2 md:px-0 mx-auto">
-            By 2050, <span className="text-raade-gold-start"><CountUp end={25} duration={2.5} />%</span> of people
+            By 2050, <span className="text-raade-gold-start"><CountUp end={25} duration={2.5} /></span>% of people
             <br className="md:inline hidden" /><span className="md:hidden"> </span>will be African.
           </div>
           <p className="text-xl md:text-3xl text-white/80 max-w-3xl mx-auto font-merriweather content-element px-4 leading-relaxed">
