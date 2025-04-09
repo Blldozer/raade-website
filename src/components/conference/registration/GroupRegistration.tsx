@@ -53,7 +53,7 @@ const GroupRegistration = ({ watch, setValue, control, errors }: GroupRegistrati
           <div>
             <h3 className="font-medium text-blue-700">Group Registration</h3>
             <p className="text-sm text-blue-600">
-              <span className="bg-red-100 text-red-800 px-2 py-0.5 rounded font-medium">SALE!</span> Register 3+ students at a discounted rate ($20/person).
+              <span className="bg-red-100 text-red-800 px-2 py-0.5 rounded font-medium">SALE!</span> Register 3+ students at a discounted rate ($30/person).
               All group members must have valid .edu email addresses.
             </p>
           </div>
