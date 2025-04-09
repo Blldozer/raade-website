@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,8 +16,8 @@ const formSchema = z.object({
   makeAnonymous: z.boolean().optional().default(false),
 });
 
-// Create type from schema
-type DonationFormValues = z.infer<typeof formSchema>;
+// Create type from schema and export it
+export type DonationFormValues = z.infer<typeof formSchema>;
 
 // Define the return values for submittedValues to ensure they're not optional
 interface SubmittedValues {
