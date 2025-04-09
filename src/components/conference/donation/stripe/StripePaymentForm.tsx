@@ -1,6 +1,6 @@
 
 import React from "react";
-import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { CardElement } from "@stripe/react-stripe-js";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Loader2, AlertCircle } from "lucide-react";
 
@@ -21,9 +21,6 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
   isSubmitting,
   error
 }) => {
-  const stripe = useStripe();
-  const elements = useElements();
-
   // Card element styling to match the rest of the form
   const cardElementOptions = {
     style: {
@@ -52,7 +49,6 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
             <FormLabel>Payment Information</FormLabel>
             <FormControl>
               <div className={`p-3 border rounded-md ${error ? 'border-red-500' : 'border-gray-300'} transition-colors`}>
-                {/* Fix: Remove the disabled prop from CardElement as it's not supported */}
                 <CardElement 
                   options={cardElementOptions}
                 />

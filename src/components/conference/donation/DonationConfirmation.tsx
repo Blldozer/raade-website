@@ -24,9 +24,9 @@ interface DonationConfirmationProps {
  * 
  * Displays a thank you message after successful donation:
  * - Shows donation amount and donor information
- * - Provides options to donate again or return to conference
- * - Includes animated elements for better user experience
- * - Mobile responsive design
+ * - Provides confirmation details and a reference number
+ * - Includes options to donate again or return to conference
+ * - Clean, modern design consistent with the new UI
  */
 const DonationConfirmation: React.FC<DonationConfirmationProps> = ({ 
   values, 
@@ -56,8 +56,8 @@ const DonationConfirmation: React.FC<DonationConfirmationProps> = ({
       <h3 className="text-2xl font-bold text-gray-800 mb-3 font-simula">Thank You for Your Donation!</h3>
       
       <p className="text-lg text-gray-700 mb-2">
-        Your generous donation of <span className="font-bold text-[#FBB03B]">{donationAmount}</span> will 
-        make a real difference in our mission to pioneer innovative approaches to African development.
+        Your donation of <span className="font-bold text-[#FBB03B]">{donationAmount}</span> will 
+        make a real difference in our mission.
       </p>
       
       <div className="my-6 p-4 bg-gray-50 rounded-lg border border-gray-100">
