@@ -14,7 +14,7 @@ const TitleSection = () => {
         className="w-full lg:w-[39%]"
       >
         <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-black">
-          Africa's path to the <span className="font-['Simula_Book_Italic']">future</span>
+          Africa's path to the <span className="font-simula-italic">future</span>
         </h2>
       </motion.div>
       

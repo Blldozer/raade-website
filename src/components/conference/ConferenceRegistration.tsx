@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star, ExternalLink, ChevronRight, Clock, AlertTriangle } from "lucide-react";
+import { Star, ExternalLink, ChevronRight, Clock, AlertTriangle, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { TICKET_TYPES_ENUM, getTicketPrice, getRegularTicketPrice, isSaleActive, SALE_END_DATE } from "./RegistrationFormTypes";
 import { Badge } from "@/components/ui/badge";
@@ -44,25 +44,64 @@ const ConferenceRegistration = () => {
   return (
     <section id="registration" className="py-16 px-4 md:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12 scroll-animate">
-          {saleActive ? (
+        {saleActive ? (
+          <div className="text-center mb-8">
             <div className="inline-block mb-4 px-4 py-2 bg-red-100 rounded-full">
               <div className="flex items-center justify-center">
                 <Clock className="h-5 w-5 mr-2 text-red-600 animate-pulse" />
                 <p className="text-red-600 font-bold">LIMITED TIME OFFER - Sale Ends {formattedSaleEndDate}!</p>
               </div>
             </div>
-          ) : (
-            <div className="inline-block mb-4 px-4 py-2 bg-blue-100 rounded-full">
-              <p className="text-blue-600 font-bold">Conference Registration Open</p>
-            </div>
-          )}
-          <h2 className="text-4xl font-bold text-raade-navy mb-4 font-simula">Registration Options</h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto font-lora">
-            {saleActive 
-              ? "Special pricing available for a limited time! Secure your spot at the RAADE 2025 African Development Forum."
-              : "Secure your spot at the RAADE 2025 African Development Forum. Early registration is recommended as space is limited."}
-          </p>
+          </div>
+        ) : (
+          <div className="text-center mb-8">
+            {/* "Conference Registration Open" badge removed as requested */}
+          </div>
+        )}
+        
+        {/* First row: Title on left (39%), empty space on right (61%) */}
+        <div className="flex flex-col lg:flex-row mb-12">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="w-full lg:w-[39%] mb-6 lg:mb-0"
+          >
+            <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-black">
+              Registration Options
+            </h2>
+          </motion.div>
+          
+          {/* Empty right spacer - 61% */}
+          <motion.div 
+            className="lg:w-[61%]" 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            {/* Intentionally empty for layout */}
+          </motion.div>
+        </div>
+
+        {/* Second row: Empty space on left (39%), paragraph on right (61%) */}
+        <div className="flex flex-col lg:flex-row mb-16">
+          <div className="lg:w-[39%]"></div> {/* Spacer div */}
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="w-full lg:w-[61%] mt-8 lg:mt-0"
+          >
+            <p className="text-xl font-lora text-black leading-relaxed max-w-[800px]">
+              {saleActive 
+                ? "Special pricing available for a limited time! Secure your spot at the RAADE 2025 African Development Forum."
+                : "Secure your spot at the RAADE 2025 African Development Forum. Early registration is recommended as space is limited."}
+            </p>
+          </motion.div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
@@ -199,18 +238,31 @@ const ConferenceRegistration = () => {
             <span className="font-bold">NEW!</span> Student groups of 3 or more can register at a discounted rate of ${groupPrice} per person.
           </p>
           {saleActive ? (
-            <p className="text-gray-600 mb-6 font-lora">
-              <span className="text-red-600 font-medium">Limited time offer!</span> Was <span className="line-through">${regularGroupPrice}</span> per person.
-            </p>
+            <div className="flex items-center mt-4">
+              <div className="mr-2">
+                <p className="text-red-600 font-bold">Save ${regularGroupPrice - groupPrice} per student!</p>
+              </div>
+              <div className="flex items-center">
+                <p className="text-gray-500 line-through mr-2">${regularGroupPrice}/person</p>
+                <ArrowRight className="h-4 w-4 text-red-500 mx-1" />
+                <p className="text-red-600 font-bold">${groupPrice}/person</p>
+              </div>
+            </div>
           ) : (
-            <p className="text-gray-600 mb-6 font-lora">
-              Save ${regularStudentPrice - groupPrice} per person compared to individual student registration.
-            </p>
+            <p className="text-raade-navy font-bold mt-4">Save ${regularStudentPrice - groupPrice} per student!</p>
           )}
-          <Button variant="outline" className="border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-lora group" onClick={handleRegistration}>
+          <Button
+            variant="outline"
+            className="mt-6 border-raade-navy text-raade-navy hover:bg-raade-navy hover:text-white font-lora group"
+            onClick={handleRegistration}
+          >
             Register Group
             <ChevronRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
           </Button>
+          <p className="text-sm text-gray-500 mt-4 font-lora flex items-start">
+            <AlertTriangle className="h-4 w-4 mr-1 shrink-0 mt-0.5 text-amber-500" />
+            Discounted group rates available only when registering all members at once.
+          </p>
         </div>
         
         {/* Donation Section */}

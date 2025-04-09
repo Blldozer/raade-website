@@ -52,6 +52,11 @@ export const useDonationForm = () => {
   // Handle amount selection to determine if custom amount field should be shown
   const handleAmountSelect = (value: string) => {
     setSelectedAmount(value);
+    
+    // If switching away from custom amount, clear the custom amount field
+    if (value !== "custom") {
+      form.setValue("customAmount", "");
+    }
   };
   
   // Get formatted donation amount for display
@@ -109,9 +114,10 @@ export const useDonationForm = () => {
     selectedAmount,
     submittedValues,
     paymentError,
-    onSubmit: form.handleSubmit(onSubmit),
+    onSubmit,
     handleAmountSelect,
     getDonationAmount,
-    handleDonateAgain
+    handleDonateAgain,
+    amounts: ["50", "100", "250", "500", "1000", "custom"]
   };
 };

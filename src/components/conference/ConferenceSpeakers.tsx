@@ -1,4 +1,3 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { ExternalLink } from "lucide-react";
@@ -24,13 +23,47 @@ const ConferenceSpeakers = () => {
   return (
     <section className="py-16 px-4 md:px-8 bg-white" id="speakers-section">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12 scroll-animate">
-          <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-black">
-            Featured Speakers
-          </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto font-lora">
-            Learn from thought leaders and innovators at the forefront of African development.
-          </p>
+        {/* First row: Title on left (39%), empty space on right (61%) */}
+        <div className="flex flex-col lg:flex-row mb-12">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="w-full lg:w-[39%] mb-6 lg:mb-0"
+          >
+            <h2 className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[1.15] font-simula text-black">
+              Featured Speakers
+            </h2>
+          </motion.div>
+          
+          {/* Empty right spacer - 61% */}
+          <motion.div 
+            className="lg:w-[61%]" 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            {/* Intentionally empty for layout */}
+          </motion.div>
+        </div>
+
+        {/* Second row: Empty space on left (39%), paragraph on right (61%) */}
+        <div className="flex flex-col lg:flex-row mb-16">
+          <div className="lg:w-[39%]"></div> {/* Spacer div */}
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="w-full lg:w-[61%] mt-8 lg:mt-0"
+          >
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto font-lora">
+              Learn from thought leaders and innovators at the forefront of African development.
+            </p>
+          </motion.div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
@@ -88,17 +121,30 @@ const ConferenceSpeakers = () => {
           ))}
         </div>
         
-        <div className="text-center">
-          <p className="text-gray-600 mb-6 font-lora">
-            Join us to hear from these distinguished speakers and many more industry experts.
-          </p>
-          <Button
-            variant="outline"
-            className="border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-lora"
-            asChild
+        {/* Third row: Empty space on left (39%), text on right (61%) */}
+        <div className="flex flex-col lg:flex-row mb-6">
+          <div className="lg:w-[39%]"></div> {/* Spacer div */}
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="w-full lg:w-[61%]"
           >
-            <Link to="/conference/register">Register Now</Link>
-          </Button>
+            <p className="text-lg text-gray-600 font-lora mb-6">
+              Join us to hear from these distinguished speakers and many more industry experts.
+            </p>
+            
+            <Button
+              variant="outline"
+              size="lg"
+              className="border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-lora text-lg py-6"
+              asChild
+            >
+              <Link to="/conference/register">Register Now</Link>
+            </Button>
+          </motion.div>
         </div>
       </div>
     </section>
