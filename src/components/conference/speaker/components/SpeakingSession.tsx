@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, Clock } from "lucide-react";
@@ -7,6 +6,7 @@ import { Calendar, Clock } from "lucide-react";
  * SpeakingSession Component
  * 
  * Displays details about a speaker's presentation session
+ * Currently hidden for all speakers until schedule is finalized
  * 
  * @param title - Title of the speaking session
  * @param description - Description of the speaking session
@@ -21,6 +21,10 @@ type SpeakingSessionProps = {
 };
 
 const SpeakingSession = ({ title, description, date, time }: SpeakingSessionProps) => {
+  // Temporarily hidden for all speakers
+  return null;
+  
+  /* Original implementation preserved for when needed again
   if (!title) return null;
   
   return (
@@ -50,6 +54,7 @@ const SpeakingSession = ({ title, description, date, time }: SpeakingSessionProp
       </Card>
     </div>
   );
+  */
 };
 
 export default SpeakingSession;
