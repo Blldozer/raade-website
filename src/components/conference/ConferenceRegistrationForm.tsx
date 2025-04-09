@@ -172,7 +172,7 @@ const ConferenceRegistrationForm = () => {
         <StepIndicator currentStep={showPayment ? 'payment' : 'registration'} />
         
         {!showPayment ? (
-          <Form {...form.formState} onSubmit={form.handleSubmit(handleInitialSubmit)}>
+          <Form {...form}>
             <form onSubmit={form.handleSubmit(handleInitialSubmit)} className="space-y-6">
               <RegistrationFormFields 
                 register={form.register}
