@@ -51,11 +51,11 @@ const DonationForm = () => {
   const [selectedAmount, setSelectedAmount] = useState("25");
   const [submittedValues, setSubmittedValues] = useState<DonationFormValues | null>(null);
   
-  // Initialize form with zod schema validation
+  // Initialize form with zod schema validation and proper default values
   const form = useForm<DonationFormValues>({
     resolver: zodResolver(donationFormSchema),
     defaultValues: {
-      amount: "25",
+      amount: "25", // This ensures amount is not optional but has a default value
       customAmount: "",
       fullName: "",
       email: "",
@@ -119,7 +119,14 @@ const DonationForm = () => {
   
   // Reset form and confirmation state
   const handleDonateAgain = () => {
-    form.reset();
+    form.reset({
+      amount: "25", // Make sure to reset with the default value for amount
+      customAmount: "",
+      fullName: "",
+      email: "",
+      message: "",
+      makeAnonymous: false,
+    });
     setShowConfirmation(false);
     setSelectedAmount("25");
   };
