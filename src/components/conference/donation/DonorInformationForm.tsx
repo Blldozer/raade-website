@@ -89,9 +89,6 @@ const DonorInformationForm: React.FC<DonorInformationFormProps> = ({ form }) => 
             </FormControl>
             <div className="space-y-1 leading-none">
               <FormLabel>Make this donation anonymous</FormLabel>
-              <p className="text-sm text-gray-500">
-                Your name will not be displayed publicly
-              </p>
             </div>
           </FormItem>
         )}
