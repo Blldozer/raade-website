@@ -15,7 +15,7 @@ const corsHeaders = {
  * - Creates payment intent with Stripe
  * - Returns client secret for frontend processing
  * - Handles CORS for browser requests
- * - Now with enhanced error logging
+ * - Enhanced error logging and request validation
  */
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -39,14 +39,36 @@ serve(async (req) => {
     });
     
     // Parse the request body
-    const requestData = await req.json();
-    console.log("Request data:", JSON.stringify(requestData));
+    let requestData;
+    try {
+      requestData = await req.json();
+      console.log("Request data received:", JSON.stringify({
+        ...requestData,
+        email: requestData.email ? `${requestData.email.substring(0, 3)}...` : undefined // Log partial email for privacy
+      }));
+    } catch (parseError) {
+      console.error("Error parsing request body:", parseError);
+      return new Response(
+        JSON.stringify({
+          error: "Invalid request format",
+          details: String(parseError)
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
     
     // Validate required fields
     const { amount, email, fullName, makeAnonymous, message } = requestData;
     
     if (!amount || !email || !fullName) {
-      console.error("Missing required fields:", { amount, email, fullName });
+      console.error("Missing required fields:", { 
+        hasAmount: !!amount, 
+        hasEmail: !!email, 
+        hasFullName: !!fullName 
+      });
       return new Response(
         JSON.stringify({
           error: "Missing required fields: amount, email, or fullName",
@@ -72,7 +94,7 @@ serve(async (req) => {
       );
     }
     
-    console.log(`Processing donation: $${amount/100} from ${fullName} (${email})`);
+    console.log(`Processing donation: $${amount/100} from ${fullName} (${email.substring(0, 3)}...)`);
     
     try {
       // Create a payment intent with Stripe

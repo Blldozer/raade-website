@@ -5,6 +5,7 @@ import DonationForm from "./DonationForm";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import StripeWrapper from "./stripe/StripeWrapper";
 
 /**
  * DonationSection Component
@@ -14,6 +15,7 @@ import { Button } from "@/components/ui/button";
  * - Contains the donation form with two-step process
  * - Uses consistent styling with other conference sections
  * - Now includes error handling and recovery options
+ * - Wraps donation form in Stripe Elements provider
  */
 const DonationSection = () => {
   const [hasError, setHasError] = useState(false);
@@ -57,7 +59,9 @@ const DonationSection = () => {
             </div>
           </div>
         ) : (
-          <DonationForm onPaymentError={() => setHasError(true)} />
+          <StripeWrapper>
+            <DonationForm onPaymentError={() => setHasError(true)} />
+          </StripeWrapper>
         )}
       </motion.div>
     </div>

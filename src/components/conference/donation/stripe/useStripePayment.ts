@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -32,17 +32,37 @@ export const useStripePayment = ({
   const elements = useElements();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Initialize and check Stripe context
+  useEffect(() => {
+    const checkStripeContext = () => {
+      if (!stripe || !elements) {
+        console.log("Stripe or Elements not available yet");
+        return false;
+      }
+      
+      console.log("Stripe context initialized successfully");
+      setIsInitialized(true);
+      return true;
+    };
+
+    // Check if Stripe is initialized
+    checkStripeContext();
+  }, [stripe, elements]);
 
   // Process the payment
   const processPayment = async () => {
     if (!stripe || !elements) {
-      setError("Stripe hasn't loaded yet. Please try again.");
+      console.error("Stripe hasn't loaded yet. Please try again.");
+      setError("Payment system not ready. Please try again.");
       return false;
     }
 
     // Get the card element
     const cardElement = elements.getElement(CardElement);
     if (!cardElement) {
+      console.error("Card element not found");
       setError("Card element not found. Please refresh the page.");
       return false;
     }
@@ -124,6 +144,7 @@ export const useStripePayment = ({
     processPayment,
     isLoading,
     error,
-    setError
+    setError,
+    isInitialized
   };
 };
