@@ -142,36 +142,6 @@ export const useCardPayment = ({
         onError(paymentError.message || "Payment failed. Please try again.");
       } else {
         console.log("Payment succeeded!");
-        
-        // Store the registration data explicitly with the coupon code
-        try {
-          const storeResult = await supabase.functions.invoke('store-registration', {
-            body: {
-              fullName,
-              email,
-              organization,
-              role,
-              ticketType,
-              groupSize,
-              groupEmails,
-              specialRequests,
-              referralSource,
-              couponCode: effectiveCouponCode,
-              paymentComplete: true
-            }
-          });
-          
-          if (storeResult.error) {
-            console.error("Error storing registration after payment:", storeResult.error);
-            // Don't block the success flow if storage fails
-          } else {
-            console.log("Registration stored successfully after payment:", storeResult.data);
-          }
-        } catch (storeError) {
-          console.error("Exception storing registration after payment:", storeError);
-          // Don't block the success flow if storage fails
-        }
-        
         onSuccess();
       }
     } catch (err) {
