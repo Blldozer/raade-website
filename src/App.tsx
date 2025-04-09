@@ -1,64 +1,27 @@
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Conference from './pages/Conference';
+import ConferenceRegistration from './pages/ConferenceRegistration';
+import EmailVerification from './pages/EmailVerification';
+import Success from './pages/Success';
+import { ThemeProvider } from "@/components/theme-provider"
+import AdminRegistrations from './pages/AdminRegistrations';
 
-import { Suspense, useEffect } from "react";
-import AppRoutes from "./components/app/AppRoutes";
-import Footer from "./components/Footer";
-import ErrorBoundary from "./components/ErrorBoundary";
-import { initializeContentsquare } from "./config/analytics-config";
-
-/**
- * App Component - Main application container
- * 
- * Features:
- * - Routes centralized in AppRoutes
- * - Navigation handled within AppRoutes component
- * - Simplified structure for better maintainability
- * - Added explicit error boundary and suspense at app root
- * - Analytics tracking for UX insights (Contentsquare)
- */
-const App = () => {
-  // Add console logging to help debug startup issues
-  console.log("App: Rendering");
-  
-  // Initialize analytics tracking
-  useEffect(() => {
-    // Only initialize in production to avoid tracking during development
-    if (process.env.NODE_ENV === 'production') {
-      initializeContentsquare();
-      console.log("Analytics: Contentsquare initialized");
-    }
-  }, []);
-  
+function App() {
   return (
-    <ErrorBoundary 
-      fallback={
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-          <div className="p-8 text-center">
-            <h2 className="text-2xl font-bold mb-4">Application Error</h2>
-            <p className="mb-6">An unexpected error occurred while loading the application.</p>
-            <button 
-              onClick={() => window.location.reload()} 
-              className="bg-[#274675] text-white px-4 py-2 rounded hover:bg-opacity-90"
-            >
-              Refresh Page
-            </button>
-          </div>
-        </div>
-      }
-    >
-      <Suspense 
-        fallback={
-          <div className="flex items-center justify-center min-h-screen">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#274675]"></div>
-          </div>
-        }
-      >
-        <div className="flex flex-col min-h-screen">
-          <AppRoutes />
-          <Footer />
-        </div>
-      </Suspense>
-    </ErrorBoundary>
+    <ThemeProvider defaultTheme="system" storageKey="vite-react-theme">
+      <Router>
+        <Routes>
+          <Route path="/" element={<Conference />} />
+          <Route path="/conference" element={<Conference />} />
+          <Route path="/register" element={<ConferenceRegistration />} />
+          <Route path="/verify-email" element={<EmailVerification />} />
+          <Route path="/conference/success" element={<Success />} />
+          <Route path="/admin/registrations" element={<AdminRegistrations />} />
+        </Routes>
+      </Router>
+    </ThemeProvider>
   );
-};
+}
 
 export default App;

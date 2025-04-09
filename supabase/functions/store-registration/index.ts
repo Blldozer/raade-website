@@ -129,8 +129,28 @@ serve(async (req) => {
           
           if (couponError) {
             console.error(`[${requestId}] Error retrieving coupon:`, couponError);
-            // Continue since we don't want to block registration if coupon validation fails at this stage
-            // The coupon was already validated earlier in the flow
+            
+            // Try a direct query as a fallback
+            const { data: fallbackData, error: fallbackError } = await supabaseAdmin
+              .from('coupon_codes')
+              .select('*')
+              .eq('code', couponCode)
+              .eq('is_active', true)
+              .maybeSingle();
+              
+            if (!fallbackError && fallbackData) {
+              // Increment the coupon usage using direct update
+              const { error: updateError } = await supabaseAdmin
+                .from('coupon_codes')
+                .update({ current_uses: fallbackData.current_uses + 1 })
+                .eq('id', fallbackData.id);
+                
+              if (updateError) {
+                console.error(`[${requestId}] Error incrementing coupon usage via direct update:`, updateError);
+              } else {
+                console.log(`[${requestId}] Successfully incremented usage for coupon: ${couponCode} via direct update`);
+              }
+            }
           } else if (couponData) {
             // Increment the coupon usage
             const { error: usageError } = await supabaseAdmin.rpc(
@@ -152,282 +172,271 @@ serve(async (req) => {
       }
     }
     
-    // Store the registration in the database
+    // Check for existing registration
+    let existingRegistration;
+    let checkError;
+    
     try {
-      // Check for existing registration
-      let existingRegistration;
-      let checkError;
+      const result = await supabaseAdmin
+        .from('conference_registrations')
+        .select('id, email, ticket_type')
+        .eq('email', email)
+        .maybeSingle();
+        
+      existingRegistration = result.data;
+      checkError = result.error;
+      
+      console.log(`[${requestId}] Existing registration check result:`, existingRegistration ? "Found" : "Not found");
+    } catch (error) {
+      console.error(`[${requestId}] Exception checking for existing registration:`, error);
+      checkError = error;
+    }
+    
+    if (checkError) {
+      console.error(`[${requestId}] Error checking for existing registration:`, checkError);
+      return createResponse({
+        success: false,
+        message: `Database error: ${checkError.message || "Error checking existing registrations"}`,
+        details: checkError,
+        requestId
+      }, 500);
+    }
+    
+    // Process based on existing data or create new record
+    let result;
+    
+    if (existingRegistration) {
+      // Update the existing record
+      console.log(`[${requestId}] Updating existing registration for ${email}`);
       
       try {
-        const result = await supabaseAdmin
+        const { data, error: updateError } = await supabaseAdmin
           .from('conference_registrations')
-          .select('id, email, ticket_type')
-          .eq('email', email)
-          .maybeSingle();
+          .update({
+            full_name: fullName,
+            organization,
+            role,
+            ticket_type: ticketType,
+            special_requests: specialRequests || null,
+            status: paymentComplete ? 'confirmed' : 'pending',
+            updated_at: new Date().toISOString(),
+            verification_method: referralSource || null,
+            coupon_code: couponCode || null  // Ensure coupon code is stored
+          })
+          .eq('id', existingRegistration.id)
+          .select();
           
-        existingRegistration = result.data;
-        checkError = result.error;
+        if (updateError) {
+          console.error(`[${requestId}] Error updating registration:`, updateError);
+          return createResponse({
+            success: false,
+            message: `Database update error: ${updateError.message || "Error updating registration"}`,
+            details: updateError,
+            requestId
+          }, 500);
+        }
         
-        console.log(`[${requestId}] Existing registration check result:`, existingRegistration ? "Found" : "Not found");
-      } catch (error) {
-        console.error(`[${requestId}] Exception checking for existing registration:`, error);
-        checkError = error;
-      }
-      
-      if (checkError) {
-        console.error(`[${requestId}] Error checking for existing registration:`, checkError);
+        result = { 
+          success: true, 
+          action: "updated",
+          registration_id: existingRegistration.id,
+          data
+        };
+        
+        console.log(`[${requestId}] Successfully updated registration record with coupon: ${couponCode || 'None'}`);
+      } catch (updateException) {
+        console.error(`[${requestId}] Exception updating registration:`, updateException);
         return createResponse({
           success: false,
-          message: `Database error: ${checkError.message || "Error checking existing registrations"}`,
-          details: checkError,
+          message: `Exception: ${updateException.message || "Error during update operation"}`,
           requestId
         }, 500);
       }
+    } else {
+      // Create a new registration record
+      console.log(`[${requestId}] Creating new registration for ${email} with coupon: ${couponCode || 'None'}`);
       
-      // Process based on existing data or create new record
-      let result;
+      // Set default email_verified to true for professional registrations
+      // For student tickets, this will be set through the verification process
+      const emailVerified = ticketType === "professional" ? true : false;
       
-      if (existingRegistration) {
-        // Update the existing record
-        console.log(`[${requestId}] Updating existing registration for ${email}`);
-        
-        try {
-          const { data, error: updateError } = await supabaseAdmin
-            .from('conference_registrations')
-            .update({
-              full_name: fullName,
-              organization,
-              role,
-              ticket_type: ticketType,
-              special_requests: specialRequests || null,
-              status: paymentComplete ? 'confirmed' : 'pending',
-              updated_at: new Date().toISOString(),
-              verification_method: referralSource || null,
-              coupon_code: couponCode || null  // Ensure coupon code is stored
-            })
-            .eq('id', existingRegistration.id)
-            .select();
-            
-          if (updateError) {
-            console.error(`[${requestId}] Error updating registration:`, updateError);
-            return createResponse({
-              success: false,
-              message: `Database update error: ${updateError.message || "Error updating registration"}`,
-              details: updateError,
-              requestId
-            }, 500);
-          }
+      try {
+        const { data: newRegistration, error: insertError } = await supabaseAdmin
+          .from('conference_registrations')
+          .insert({
+            full_name: fullName,
+            email,
+            organization,
+            role,
+            ticket_type: ticketType,
+            special_requests: specialRequests || null,
+            status: paymentComplete ? 'confirmed' : 'pending',
+            verification_method: referralSource || null,
+            email_verified: emailVerified,
+            coupon_code: couponCode || null  // Ensure coupon code is stored
+          })
+          .select();
           
-          result = { 
-            success: true, 
-            action: "updated",
-            registration_id: existingRegistration.id,
-            data
-          };
-          
-          console.log(`[${requestId}] Successfully updated registration record`);
-        } catch (updateException) {
-          console.error(`[${requestId}] Exception updating registration:`, updateException);
+        if (insertError) {
+          console.error(`[${requestId}] Error inserting registration:`, insertError);
           return createResponse({
             success: false,
-            message: `Exception: ${updateException.message || "Error during update operation"}`,
+            message: `Database insert error: ${insertError.message || "Error creating registration"}`,
+            details: insertError,
             requestId
           }, 500);
         }
-      } else {
-        // Create a new registration record
-        console.log(`[${requestId}] Creating new registration for ${email}`);
         
-        // Set default email_verified to true for professional registrations
-        // For student tickets, this will be set through the verification process
-        const emailVerified = ticketType === "professional" ? true : false;
-        
-        try {
-          const { data: newRegistration, error: insertError } = await supabaseAdmin
-            .from('conference_registrations')
-            .insert({
-              full_name: fullName,
-              email,
-              organization,
-              role,
-              ticket_type: ticketType,
-              special_requests: specialRequests || null,
-              status: paymentComplete ? 'confirmed' : 'pending',
-              verification_method: referralSource || null,
-              email_verified: emailVerified,
-              coupon_code: couponCode || null  // Ensure coupon code is stored
-            })
-            .select();
-            
-          if (insertError) {
-            console.error(`[${requestId}] Error inserting registration:`, insertError);
-            return createResponse({
-              success: false,
-              message: `Database insert error: ${insertError.message || "Error creating registration"}`,
-              details: insertError,
-              requestId
-            }, 500);
-          }
-          
-          result = { 
-            success: true, 
-            action: "created",
-            registration_id: newRegistration?.[0]?.id,
-            data: newRegistration
-          };
-          
-          console.log(`[${requestId}] Successfully created new registration record`);
-        } catch (insertException) {
-          console.error(`[${requestId}] Exception inserting registration:`, insertException);
-          return createResponse({
-            success: false, 
-            message: `Exception: ${insertException.message || "Error during insert operation"}`,
-            requestId
-          }, 500);
-        }
-      }
-      
-      // If this is a group registration, handle the group members
-      if (ticketType === "student-group" && groupSize && groupEmails && Array.isArray(groupEmails) && groupEmails.length > 0) {
-        // Create or update group registration record
-        console.log(`[${requestId}] Processing group registration with ${groupEmails.length} members`);
-        
-        const groupData = {
-          lead_name: fullName,
-          lead_email: email,
-          lead_organization: organization,
-          group_size: typeof groupSize === 'string' ? parseInt(groupSize) : groupSize,
-          ticket_type: ticketType,
-          payment_completed: paymentComplete,
-          completed: paymentComplete
+        result = { 
+          success: true, 
+          action: "created",
+          registration_id: newRegistration?.[0]?.id,
+          data: newRegistration
         };
         
-        let groupId;
-        
-        try {
-          // Check for existing group with this lead email
-          const { data: existingGroup, error: groupCheckError } = await supabaseAdmin
-            .from('group_registrations')
-            .select('id')
-            .eq('lead_email', email)
-            .maybeSingle();
-            
-          if (groupCheckError) {
-            console.error(`[${requestId}] Error checking for existing group:`, groupCheckError);
-            // Continue processing, don't exit with error
-          }
-          
-          if (existingGroup) {
-            // Update existing group
-            console.log(`[${requestId}] Updating existing group for ${email}`);
-            const { data: updatedGroup, error: groupUpdateError } = await supabaseAdmin
-              .from('group_registrations')
-              .update(groupData)
-              .eq('id', existingGroup.id)
-              .select('id');
-              
-            if (groupUpdateError) {
-              console.error(`[${requestId}] Error updating group:`, groupUpdateError);
-            } else {
-              groupId = existingGroup.id;
-              console.log(`[${requestId}] Group updated successfully: ${groupId}`);
-            }
-          } else {
-            // Create new group
-            console.log(`[${requestId}] Creating new group for ${email}`);
-            const { data: newGroup, error: groupInsertError } = await supabaseAdmin
-              .from('group_registrations')
-              .insert(groupData)
-              .select('id');
-              
-            if (groupInsertError) {
-              console.error(`[${requestId}] Error inserting group:`, groupInsertError);
-            } else {
-              groupId = newGroup?.[0]?.id;
-              console.log(`[${requestId}] Group created successfully: ${groupId}`);
-            }
-          }
-          
-          // Process group member emails if we have a group ID
-          if (groupId) {
-            // Clean and process emails
-            const processedEmails = groupEmails
-              .filter(Boolean)
-              .map(item => {
-                if (typeof item === 'object' && item !== null && 'value' in item) {
-                  return String(item.value || '').trim();
-                }
-                return String(item || '').trim();
-              })
-              .filter(email => email.length > 0 && email.includes('@'));
-            
-            console.log(`[${requestId}] Processing ${processedEmails.length} group members`);
-            
-            // First delete any existing members to avoid duplicates
-            const { error: deleteError } = await supabaseAdmin
-              .from('group_registration_members')
-              .delete()
-              .eq('group_id', groupId);
-              
-            if (deleteError) {
-              console.error(`[${requestId}] Error deleting existing group members:`, deleteError);
-            }
-            
-            // Now insert all the new members
-            if (processedEmails.length > 0) {
-              const memberInserts = processedEmails.map(memberEmail => ({
-                email: memberEmail,
-                group_id: groupId,
-                email_verified: false, // Will be verified separately
-                from_known_institution: false // Will be determined during verification
-              }));
-              
-              const { error: membersInsertError } = await supabaseAdmin
-                .from('group_registration_members')
-                .insert(memberInserts);
-                
-              if (membersInsertError) {
-                console.error(`[${requestId}] Error inserting group members:`, membersInsertError);
-              } else {
-                console.log(`[${requestId}] Successfully added ${processedEmails.length} group members`);
-              }
-            }
-          }
-        } catch (groupError) {
-          console.error(`[${requestId}] Exception during group processing:`, groupError);
-          // Continue with main registration despite group error
-        }
+        console.log(`[${requestId}] Successfully created new registration record with coupon: ${couponCode || 'None'}`);
+      } catch (insertException) {
+        console.error(`[${requestId}] Exception inserting registration:`, insertException);
+        return createResponse({
+          success: false, 
+          message: `Exception: ${insertException.message || "Error during insert operation"}`,
+          requestId
+        }, 500);
       }
-      
-      // Return success response with result data
-      console.log(`[${requestId}] Registration storage successful`);
-      return createResponse({
-        success: true,
-        ...result,
-        requestId
-      });
-      
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      const errorStack = error instanceof Error ? error.stack : undefined;
-      
-      console.error(`[${requestId}] Unhandled error in store-registration:`, error);
-      console.error(`[${requestId}] Error details:`, { message: errorMessage, stack: errorStack });
-      
-      return createResponse({
-        success: false,
-        message: errorMessage || "An unexpected error occurred",
-        requestId,
-        timestamp: new Date().toISOString()
-      }, 500);
     }
+    
+    // If this is a group registration, handle the group members
+    if (ticketType === "student-group" && groupSize && groupEmails && Array.isArray(groupEmails) && groupEmails.length > 0) {
+      // Create or update group registration record
+      console.log(`[${requestId}] Processing group registration with ${groupEmails.length} members`);
+      
+      const groupData = {
+        lead_name: fullName,
+        lead_email: email,
+        lead_organization: organization,
+        group_size: typeof groupSize === 'string' ? parseInt(groupSize) : groupSize,
+        ticket_type: ticketType,
+        payment_completed: paymentComplete,
+        completed: paymentComplete
+      };
+      
+      let groupId;
+      
+      try {
+        // Check for existing group with this lead email
+        const { data: existingGroup, error: groupCheckError } = await supabaseAdmin
+          .from('group_registrations')
+          .select('id')
+          .eq('lead_email', email)
+          .maybeSingle();
+          
+        if (groupCheckError) {
+          console.error(`[${requestId}] Error checking for existing group:`, groupCheckError);
+          // Continue processing, don't exit with error
+        }
+        
+        if (existingGroup) {
+          // Update existing group
+          console.log(`[${requestId}] Updating existing group for ${email}`);
+          const { data: updatedGroup, error: groupUpdateError } = await supabaseAdmin
+            .from('group_registrations')
+            .update(groupData)
+            .eq('id', existingGroup.id)
+            .select('id');
+            
+          if (groupUpdateError) {
+            console.error(`[${requestId}] Error updating group:`, groupUpdateError);
+          } else {
+            groupId = existingGroup.id;
+            console.log(`[${requestId}] Group updated successfully: ${groupId}`);
+          }
+        } else {
+          // Create new group
+          console.log(`[${requestId}] Creating new group for ${email}`);
+          const { data: newGroup, error: groupInsertError } = await supabaseAdmin
+            .from('group_registrations')
+            .insert(groupData)
+            .select('id');
+            
+          if (groupInsertError) {
+            console.error(`[${requestId}] Error inserting group:`, groupInsertError);
+          } else {
+            groupId = newGroup?.[0]?.id;
+            console.log(`[${requestId}] Group created successfully: ${groupId}`);
+          }
+        }
+        
+        // Process group member emails if we have a group ID
+        if (groupId) {
+          // Clean and process emails
+          const processedEmails = groupEmails
+            .filter(Boolean)
+            .map(item => {
+              if (typeof item === 'object' && item !== null && 'value' in item) {
+                return String(item.value || '').trim();
+              }
+              return String(item || '').trim();
+            })
+            .filter(email => email.length > 0 && email.includes('@'));
+          
+          console.log(`[${requestId}] Processing ${processedEmails.length} group members`);
+          
+          // First delete any existing members to avoid duplicates
+          const { error: deleteError } = await supabaseAdmin
+            .from('group_registration_members')
+            .delete()
+            .eq('group_id', groupId);
+            
+          if (deleteError) {
+            console.error(`[${requestId}] Error deleting existing group members:`, deleteError);
+          }
+          
+          // Now insert all the new members
+          if (processedEmails.length > 0) {
+            const memberInserts = processedEmails.map(memberEmail => ({
+              email: memberEmail,
+              group_id: groupId,
+              email_verified: false, // Will be verified separately
+              from_known_institution: false // Will be determined during verification
+            }));
+            
+            const { error: membersInsertError } = await supabaseAdmin
+              .from('group_registration_members')
+              .insert(memberInserts);
+              
+            if (membersInsertError) {
+              console.error(`[${requestId}] Error inserting group members:`, membersInsertError);
+            } else {
+              console.log(`[${requestId}] Successfully added ${processedEmails.length} group members`);
+            }
+          }
+        }
+      } catch (groupError) {
+        console.error(`[${requestId}] Exception during group processing:`, groupError);
+        // Continue with main registration despite group error
+      }
+    }
+    
+    // Return success response with result data
+    console.log(`[${requestId}] Registration storage successful`);
+    return createResponse({
+      success: true,
+      ...result,
+      requestId
+    });
+    
   } catch (error) {
-    // Catch all for any unexpected errors
-    console.error("Critical error in store-registration function:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    
+    console.error(`[${requestId}] Unhandled error in store-registration:`, error);
+    console.error(`[${requestId}] Error details:`, { message: errorMessage, stack: errorStack });
+    
     return createResponse({
       success: false,
-      message: "A critical error occurred while processing the registration",
-      error: String(error)
+      message: errorMessage || "An unexpected error occurred",
+      requestId,
+      timestamp: new Date().toISOString()
     }, 500);
   }
 });
