@@ -10,8 +10,8 @@ export enum TICKET_TYPES_ENUM {
 }
 
 // Define sale period
-export const SALE_START_DATE = new Date("2025-01-15T00:00:00");
-export const SALE_END_DATE = new Date("2025-02-15T23:59:59");
+export const SALE_START_DATE = new Date("2025-04-07T16:00:00-05:00"); // CST is UTC-5
+export const SALE_END_DATE = new Date("2025-04-08T16:00:00-05:00");
 
 // Check if sale is currently active
 export const isSaleActive = () => {
@@ -19,19 +19,19 @@ export const isSaleActive = () => {
   return isAfter(now, SALE_START_DATE) && isBefore(now, SALE_END_DATE);
 };
 
-// Define the base prices
+// Define the base prices - using the original values from pricing.ts
 const PRICING = {
   [TICKET_TYPES_ENUM.STUDENT]: {
-    regular: 75,
-    sale: 50
+    regular: 35,
+    sale: 25
   },
   [TICKET_TYPES_ENUM.PROFESSIONAL]: {
-    regular: 150,
-    sale: 120
+    regular: 60,
+    sale: 50
   },
   [TICKET_TYPES_ENUM.STUDENT_GROUP]: {
-    regular: 60,
-    sale: 40
+    regular: 30,
+    sale: 20
   }
 };
 
