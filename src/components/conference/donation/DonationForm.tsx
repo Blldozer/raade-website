@@ -4,14 +4,10 @@ import { Form } from "@/components/ui/form";
 import DonationConfirmation from "./DonationConfirmation";
 import { useDonationForm } from "./useDonationForm";
 import StripeWrapper from "./stripe/StripeWrapper";
-import { Button } from "@/components/ui/button";
-import { Loader2, Heart } from "lucide-react";
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import DynamicDonationImpact from "./DynamicDonationImpact";
+import DonationAmountSelector from "./DonationAmountSelector";
+import DonorInformationForm from "./DonorInformationForm";
+import DonationFormSubmit from "./DonationFormSubmit";
 
 /**
  * DonationForm Component
@@ -69,184 +65,20 @@ const DonationFormContent = () => {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
               {/* Donation amount selection */}
-              <FormField
-                control={form.control}
-                name="amount"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel className="text-base">Select Amount</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                          handleAmountSelect(value);
-                        }}
-                        value={field.value}
-                        className="grid grid-cols-2 gap-3"
-                      >
-                        {["25", "50", "100", "250", "500", "1000"].map((amount) => (
-                          <div key={amount} className="flex items-center">
-                            <div className="w-full">
-                              <RadioGroupItem
-                                value={amount}
-                                id={`amount-${amount}`}
-                                className="sr-only peer"
-                              />
-                              <Label
-                                htmlFor={`amount-${amount}`}
-                                className="w-full flex justify-center text-center px-4 py-3 rounded-lg cursor-pointer border transition-all peer-data-[state=checked]:bg-[#FBB03B] peer-data-[state=checked]:text-white peer-data-[state=checked]:border-[#FBB03B] bg-white border-gray-200 hover:border-[#FBB03B]/50 text-gray-700"
-                              >
-                                ${amount}
-                              </Label>
-                            </div>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+              <DonationAmountSelector 
+                form={form} 
+                selectedAmount={selectedAmount}
+                handleAmountSelect={handleAmountSelect}
               />
-              
-              <FormField
-                control={form.control}
-                name="amount"
-                render={({ field }) => (
-                  <FormItem>
-                    <RadioGroup
-                      onValueChange={(value) => {
-                        field.onChange(value);
-                        handleAmountSelect(value);
-                      }}
-                      value={field.value}
-                    >
-                      <div className="flex items-center">
-                        <div className="w-full">
-                          <RadioGroupItem
-                            value="custom"
-                            id="amount-custom"
-                            className="sr-only peer"
-                          />
-                          <Label
-                            htmlFor="amount-custom"
-                            className="w-full flex justify-center text-center px-4 py-3 rounded-lg cursor-pointer border transition-all peer-data-[state=checked]:bg-[#FBB03B] peer-data-[state=checked]:text-white peer-data-[state=checked]:border-[#FBB03B] bg-white border-gray-200 hover:border-[#FBB03B]/50 text-gray-700"
-                          >
-                            Custom Amount
-                          </Label>
-                        </div>
-                      </div>
-                    </RadioGroup>
-                  </FormItem>
-                )}
-              />
-              
-              {/* Custom amount field */}
-              {selectedAmount === "custom" && (
-                <FormField
-                  control={form.control}
-                  name="customAmount"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Enter custom amount ($)</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
-                          <Input
-                            placeholder="e.g. 75"
-                            type="number"
-                            min="1"
-                            step="any"
-                            className="pl-8"
-                            {...field}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
               
               {/* Personal Information */}
-              <div className="space-y-4">
-                <h4 className="text-lg font-medium text-gray-700">Your Information</h4>
-                
-                <FormField
-                  control={form.control}
-                  name="fullName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Full Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Your full name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="email" 
-                          placeholder="your.email@example.com" 
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="message"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Message (Optional)</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Share why you're supporting RAADE..."
-                          className="resize-none h-24"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                {/* Anonymous donation checkbox removed */}
-              </div>
+              <DonorInformationForm form={form} />
               
               {/* Submit button */}
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white h-12 rounded-lg"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <Heart className="mr-2 h-5 w-5" />
-                    Donate {getDonationAmount()}
-                  </>
-                )}
-              </Button>
-              
-              <p className="text-xs text-gray-500 text-center">
-                Your donation helps support RAADE's work in pioneering innovative approaches to 
-                African development. Tax receipts will be provided for eligible donations.
-              </p>
+              <DonationFormSubmit 
+                isSubmitting={isSubmitting} 
+                donationAmount={getDonationAmount()} 
+              />
             </form>
           </Form>
         </div>

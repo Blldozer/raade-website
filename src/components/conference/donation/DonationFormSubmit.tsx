@@ -25,17 +25,17 @@ const DonationFormSubmit: React.FC<DonationFormSubmitProps> = ({
       <Button
         type="submit"
         disabled={isSubmitting}
-        className="w-full bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white"
+        className="w-full bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white h-12 rounded-lg"
       >
         {isSubmitting ? (
           <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
             Processing...
           </>
         ) : (
           <>
-            <Heart className="mr-2 h-4 w-4" />
-            Donate {donationAmount} Now
+            <Heart className="mr-2 h-5 w-5" />
+            Donate {donationAmount}
           </>
         )}
       </Button>

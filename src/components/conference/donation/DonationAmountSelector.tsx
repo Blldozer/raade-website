@@ -34,38 +34,68 @@ const DonationAmountSelector: React.FC<DonationAmountSelectorProps> = ({
         name="amount"
         render={({ field }) => (
           <FormItem className="space-y-3">
-            <FormLabel className="text-base">Select an amount</FormLabel>
+            <FormLabel className="text-base">Select Amount</FormLabel>
             <FormControl>
               <RadioGroup
                 onValueChange={(value) => {
                   field.onChange(value);
                   handleAmountSelect(value);
                 }}
-                defaultValue={field.value}
-                className="flex flex-wrap gap-3"
+                value={field.value}
+                className="grid grid-cols-2 gap-3"
               >
-                {["25", "50", "100", "250", "custom"].map((amount) => (
-                  <div key={amount} className="flex items-center space-x-2">
-                    <RadioGroupItem
-                      value={amount}
-                      id={`amount-${amount}`}
-                      className="sr-only"
-                    />
-                    <Label
-                      htmlFor={`amount-${amount}`}
-                      className={`px-4 py-2 rounded-md cursor-pointer transition-colors ${
-                        selectedAmount === amount
-                          ? "bg-[#FBB03B] text-white"
-                          : "bg-gray-100 hover:bg-gray-200 text-gray-800"
-                      }`}
-                    >
-                      {amount === "custom" ? "Custom" : `$${amount}`}
-                    </Label>
+                {["25", "50", "100", "250", "500", "1000"].map((amount) => (
+                  <div key={amount} className="flex items-center">
+                    <div className="w-full">
+                      <RadioGroupItem
+                        value={amount}
+                        id={`amount-${amount}`}
+                        className="sr-only peer"
+                      />
+                      <Label
+                        htmlFor={`amount-${amount}`}
+                        className="w-full flex justify-center text-center px-4 py-3 rounded-lg cursor-pointer border transition-all peer-data-[state=checked]:bg-[#FBB03B] peer-data-[state=checked]:text-white peer-data-[state=checked]:border-[#FBB03B] bg-white border-gray-200 hover:border-[#FBB03B]/50 text-gray-700"
+                      >
+                        ${amount}
+                      </Label>
+                    </div>
                   </div>
                 ))}
               </RadioGroup>
             </FormControl>
             <FormMessage />
+          </FormItem>
+        )}
+      />
+      
+      <FormField
+        control={form.control}
+        name="amount"
+        render={({ field }) => (
+          <FormItem>
+            <RadioGroup
+              onValueChange={(value) => {
+                field.onChange(value);
+                handleAmountSelect(value);
+              }}
+              value={field.value}
+            >
+              <div className="flex items-center">
+                <div className="w-full">
+                  <RadioGroupItem
+                    value="custom"
+                    id="amount-custom"
+                    className="sr-only peer"
+                  />
+                  <Label
+                    htmlFor="amount-custom"
+                    className="w-full flex justify-center text-center px-4 py-3 rounded-lg cursor-pointer border transition-all peer-data-[state=checked]:bg-[#FBB03B] peer-data-[state=checked]:text-white peer-data-[state=checked]:border-[#FBB03B] bg-white border-gray-200 hover:border-[#FBB03B]/50 text-gray-700"
+                  >
+                    Custom Amount
+                  </Label>
+                </div>
+              </div>
+            </RadioGroup>
           </FormItem>
         )}
       />
@@ -79,13 +109,17 @@ const DonationAmountSelector: React.FC<DonationAmountSelectorProps> = ({
             <FormItem>
               <FormLabel>Enter custom amount ($)</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="E.g. 75"
-                  type="number"
-                  min="1"
-                  step="any"
-                  {...field}
-                />
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                  <Input
+                    placeholder="e.g. 75"
+                    type="number"
+                    min="1"
+                    step="any"
+                    className="pl-8"
+                    {...field}
+                  />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
