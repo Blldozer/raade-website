@@ -27,7 +27,18 @@ serve(async (req) => {
   }
   
   // Get the request ID for tracking or generate a new one
-  const requestData = await req.json().catch(() => ({}));
+  let requestData;
+  try {
+    requestData = await req.json();
+  } catch (parseError) {
+    console.error("Error parsing request JSON:", parseError);
+    return createResponse({
+      success: false,
+      message: "Invalid JSON in request body",
+      error: String(parseError)
+    }, 400);
+  }
+  
   const requestId = requestData.requestId || crypto.randomUUID();
   
   console.log(`[${requestId}] Processing registration storage request`);
@@ -66,6 +77,8 @@ serve(async (req) => {
     
     if (!supabaseUrl || !supabaseServiceRoleKey) {
       console.error(`[${requestId}] Missing Supabase environment variables`);
+      console.error(`[${requestId}] Environment check: SUPABASE_URL=${!!supabaseUrl}, SUPABASE_SERVICE_ROLE_KEY=${!!supabaseServiceRoleKey}`);
+      
       return createResponse({
         success: false,
         message: "Server configuration error: Missing database connection details",
@@ -77,7 +90,7 @@ serve(async (req) => {
       }, 500);
     }
     
-    console.log(`[${requestId}] Initializing Supabase client`);
+    console.log(`[${requestId}] Initializing Supabase client with URL: ${supabaseUrl.substring(0, 20)}...`);
     
     const supabaseAdmin = createClient(
       supabaseUrl,
@@ -88,6 +101,25 @@ serve(async (req) => {
         }
       }
     );
+    
+    // Verify the Supabase connection is working
+    try {
+      const { error: connectionTestError } = await supabaseAdmin.from('coupon_codes').select('id').limit(1);
+      if (connectionTestError) {
+        console.error(`[${requestId}] Supabase connection test failed:`, connectionTestError);
+        throw new Error(`Database connection failed: ${connectionTestError.message}`);
+      } else {
+        console.log(`[${requestId}] Supabase connection test successful`);
+      }
+    } catch (connectionError) {
+      console.error(`[${requestId}] Supabase connection test exception:`, connectionError);
+      return createResponse({
+        success: false,
+        message: "Database connection failed",
+        error: String(connectionError),
+        requestId
+      }, 500);
+    }
     
     // If a coupon code was provided, increment its usage
     if (couponCode) {
@@ -125,6 +157,8 @@ serve(async (req) => {
         
       existingRegistration = result.data;
       checkError = result.error;
+      
+      console.log(`[${requestId}] Existing registration check result:`, existingRegistration ? "Found" : "Not found");
     } catch (error) {
       console.error(`[${requestId}] Exception checking for existing registration:`, error);
       checkError = error;
@@ -180,6 +214,8 @@ serve(async (req) => {
           registration_id: existingRegistration.id,
           data
         };
+        
+        console.log(`[${requestId}] Successfully updated registration record`);
       } catch (updateException) {
         console.error(`[${requestId}] Exception updating registration:`, updateException);
         return createResponse({
@@ -229,6 +265,8 @@ serve(async (req) => {
           registration_id: newRegistration?.[0]?.id,
           data: newRegistration
         };
+        
+        console.log(`[${requestId}] Successfully created new registration record`);
       } catch (insertException) {
         console.error(`[${requestId}] Exception inserting registration:`, insertException);
         return createResponse({

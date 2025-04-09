@@ -2,8 +2,9 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, CheckCircle, XCircle, Tag } from "lucide-react";
+import { Loader2, CheckCircle, XCircle, Tag, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 interface CouponCodeSectionProps {
   setCouponCode: (couponCode: string | null) => void;
@@ -20,6 +21,8 @@ interface CouponCodeSectionProps {
  * - Displays validation state with clear feedback
  * - Handles various coupon validation errors
  * - Improved visual feedback for successful coupon application
+ * - Added error handling to display meaningful error messages
+ * - Tests Supabase connection when validation fails
  * 
  * @param setCouponCode - Function to update coupon code in parent component
  * @param setCouponDiscount - Function to update coupon discount details
@@ -37,6 +40,25 @@ const CouponCodeSection = ({
     message: string;
     discount?: { type: 'percentage' | 'fixed'; amount: number } | null;
   } | null>(null);
+  const [connectionError, setConnectionError] = useState<boolean>(false);
+
+  // Function to test Supabase connection
+  const testSupabaseConnection = async () => {
+    try {
+      // Test if Supabase is accessible by making a simple request
+      const { error } = await supabase.from('coupon_codes').select('id').limit(1);
+      
+      if (error) {
+        console.error("Supabase connection test failed:", error);
+        return false;
+      }
+      
+      return true;
+    } catch (error) {
+      console.error("Supabase connection test exception:", error);
+      return false;
+    }
+  };
 
   // Handle coupon code validation
   const validateCoupon = async () => {
@@ -47,8 +69,23 @@ const CouponCodeSection = ({
     setCouponDiscount(null);
     setIsFullDiscount(false);
     setValidationResult(null);
+    setConnectionError(false);
     
     try {
+      // Test Supabase connection before validating
+      const isConnected = await testSupabaseConnection();
+      
+      if (!isConnected) {
+        setConnectionError(true);
+        toast({
+          title: "Connection issue",
+          description: "We're having trouble connecting to our services. Please try again in a moment.",
+          variant: "destructive",
+        });
+        setIsValidating(false);
+        return;
+      }
+      
       // Call the validate-coupon edge function
       const { data, error } = await supabase.functions.invoke('validate-coupon', {
         body: { code: inputValue.trim() }
@@ -60,6 +97,13 @@ const CouponCodeSection = ({
           isValid: false,
           message: "Error validating coupon code. Please try again."
         });
+        
+        toast({
+          title: "Validation error",
+          description: "There was an error validating your coupon code. Please try again.",
+          variant: "destructive",
+        });
+        
         setIsValidating(false);
         return;
       }
@@ -88,10 +132,26 @@ const CouponCodeSection = ({
           message,
           discount: data.discount
         });
+        
+        toast({
+          title: "Coupon applied",
+          description: isFullDiscount 
+            ? "Your registration will be free with this coupon!" 
+            : `Discount of ${data.discount.type === 'percentage' 
+                ? `${data.discount.amount}%` 
+                : `$${data.discount.amount}`} applied to your registration.`,
+          variant: "default",
+        });
       } else {
         setValidationResult({
           isValid: false,
           message: data.message || "Invalid coupon code"
+        });
+        
+        toast({
+          title: "Invalid coupon",
+          description: data.message || "The coupon code you entered is not valid.",
+          variant: "default",
         });
       }
     } catch (error) {
@@ -99,6 +159,12 @@ const CouponCodeSection = ({
       setValidationResult({
         isValid: false,
         message: "Error validating coupon"
+      });
+      
+      toast({
+        title: "Validation failed",
+        description: "We couldn't validate your coupon code due to a technical error. Please try again later.",
+        variant: "destructive",
       });
     } finally {
       setIsValidating(false);
@@ -112,6 +178,13 @@ const CouponCodeSection = ({
     setCouponDiscount(null);
     setIsFullDiscount(false);
     setValidationResult(null);
+    setConnectionError(false);
+    
+    toast({
+      title: "Coupon cleared",
+      description: "Coupon code has been removed from your registration.",
+      variant: "default",
+    });
   };
 
   return (
@@ -149,6 +222,13 @@ const CouponCodeSection = ({
           </Button>
         )}
       </div>
+      
+      {connectionError && (
+        <div className="flex items-center gap-2 text-sm p-2 rounded-md text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400">
+          <AlertCircle className="h-4 w-4 flex-shrink-0" />
+          <span>Could not connect to our service. Please check your connection and try again.</span>
+        </div>
+      )}
       
       {validationResult && (
         <div className={`flex items-center gap-2 text-sm p-2 rounded-md ${

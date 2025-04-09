@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/hooks/use-toast";
@@ -7,6 +7,17 @@ import { registrationFormSchema, RegistrationFormData, TICKET_TYPES_ENUM } from 
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * useRegistrationForm Hook
+ * 
+ * Manages the conference registration form state and submission:
+ * - Handles form validation with Zod schema
+ * - Manages coupon code application and discounts
+ * - Controls multi-step registration flow
+ * - Processes both paid and free registrations
+ * - Handles error recovery and retries
+ * - Manages navigation after successful registration
+ */
 export const useRegistrationForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
@@ -16,6 +27,8 @@ export const useRegistrationForm = () => {
   const [couponDiscount, setCouponDiscount] = useState<{ type: 'percentage' | 'fixed'; amount: number } | null>(null);
   const [isFullDiscount, setIsFullDiscount] = useState(false);
   const navigate = useNavigate();
+  const freeRegistrationAttemptRef = useRef(0);
+  const registrationInProgressRef = useRef(false);
 
   // Initialize form with zod schema validation
   const form = useForm<RegistrationFormData>({
@@ -90,9 +103,19 @@ export const useRegistrationForm = () => {
 
   // Direct registration function for 100% off coupons
   const handleDirectRegistration = async (data: RegistrationFormData) => {
+    // Prevent multiple simultaneous registration attempts
+    if (registrationInProgressRef.current) {
+      console.log("Registration already in progress, ignoring duplicate request");
+      return;
+    }
+    
     try {
       setIsSubmitting(true);
-      console.log("Processing free registration with coupon code:", couponCode);
+      registrationInProgressRef.current = true;
+      freeRegistrationAttemptRef.current += 1;
+      const currentAttempt = freeRegistrationAttemptRef.current;
+      
+      console.log(`Processing free registration with coupon code: ${couponCode} (Attempt #${currentAttempt})`);
       
       // Process group emails consistently
       let processedGroupEmails = [];
@@ -111,8 +134,22 @@ export const useRegistrationForm = () => {
       // Generate a unique request ID for tracking
       const requestId = `free-reg-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
       
+      // Store the email in sessionStorage for the success page
+      // Do this BEFORE the registration attempt to ensure it's available even if there's an error
+      sessionStorage.setItem("registrationEmail", data.email);
+      
+      console.log(`[${requestId}] Starting store-registration function call...`);
+      console.log(`[${requestId}] Registration data:`, {
+        fullName: data.fullName,
+        email: data.email,
+        ticketType: data.ticketType,
+        organization: data.organization || "",
+        couponCode,
+        requestId
+      });
+      
       // Submit registration data with coupon info to store-registration function
-      const { data: responseData, error } = await supabase.functions.invoke('store-registration', {
+      const response = await supabase.functions.invoke('store-registration', {
         body: {
           fullName: data.fullName,
           email: data.email,
@@ -129,18 +166,23 @@ export const useRegistrationForm = () => {
         }
       });
       
-      if (error) {
-        console.error("Free registration edge function error:", error);
-        throw new Error(`Registration failed: ${error.message || "Server error"}`);
+      // Check for errors in function response
+      if (response.error) {
+        console.error(`[${requestId}] Free registration edge function error:`, response.error);
+        throw new Error(`Registration failed: ${response.error.message || "Server error"}`);
       }
       
+      const responseData = response.data;
+      
       // Log the response for debugging
-      console.log("Free registration response:", responseData);
+      console.log(`[${requestId}] Free registration response:`, responseData);
       
-      // Store the email in sessionStorage for the success page
-      sessionStorage.setItem("registrationEmail", data.email);
+      if (!responseData || !responseData.success) {
+        console.error(`[${requestId}] Registration response indicates failure:`, responseData);
+        throw new Error(responseData?.message || "Unknown server error");
+      }
       
-      // Reset form and show success message
+      // Reset form and state
       form.reset();
       setRegistrationData(null);
       setShowPayment(false);
@@ -157,9 +199,16 @@ export const useRegistrationForm = () => {
       
       // Redirect to confirmation page
       // Use setTimeout to ensure state updates before navigation
+      console.log(`[${requestId}] Registration successful, navigating to success page in 500ms`);
       setTimeout(() => {
-        navigate("/conference/success");
+        if (currentAttempt === freeRegistrationAttemptRef.current) {
+          console.log(`[${requestId}] Executing navigation to /conference/success`);
+          navigate("/conference/success");
+        } else {
+          console.log(`[${requestId}] Navigation canceled - newer attempt in progress`);
+        }
       }, 500); // A longer delay to ensure proper state management
+      
     } catch (error) {
       console.error("Free registration error:", error);
       
@@ -172,8 +221,20 @@ export const useRegistrationForm = () => {
         description: errorMessage,
         variant: "destructive",
       });
+      
+      // Show diagnostic toast for user to provide more context about the error
+      toast({
+        title: "Technical details",
+        description: "There was an error communicating with our registration service. Please try again or contact support.",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
+      
+      // Delayed release of the in-progress flag to prevent race conditions
+      setTimeout(() => {
+        registrationInProgressRef.current = false;
+      }, 1000);
     }
   };
 
@@ -197,6 +258,8 @@ export const useRegistrationForm = () => {
       couponCode: "",
     });
     setEmailValidated(false);
+    freeRegistrationAttemptRef.current = 0;
+    registrationInProgressRef.current = false;
   };
 
   return {

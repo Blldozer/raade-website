@@ -3,10 +3,11 @@ import { Button } from "@/components/ui/button";
 import SimpleStripeProvider from "./payment/direct/SimpleStripeProvider";
 import { RegistrationFormData } from "./RegistrationFormTypes";
 import RegistrationSummary from "./RegistrationSummary";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SuccessfulPayment from "./payment/SuccessfulPayment";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface PaymentSectionProps {
   registrationData: RegistrationFormData;
@@ -30,6 +31,8 @@ interface PaymentSectionProps {
  * - Provides consistent back button functionality
  * - Shows payment confirmation screen on success
  * - Handles both partial and full discount coupons
+ * - Added timeout recovery for registration navigation
+ * - Enhanced error handling for free registrations
  * 
  * @param registrationData - Form data from the registration form
  * @param isSubmitting - Loading state for the form
@@ -54,6 +57,7 @@ const PaymentSection = ({
 }: PaymentSectionProps) => {
   const [paymentComplete, setPaymentComplete] = useState(false);
   const [processingFreeRegistration, setProcessingFreeRegistration] = useState(false);
+  const [registrationStartTime, setRegistrationStartTime] = useState<number | null>(null);
   const navigate = useNavigate();
   
   // Process raw form data into a clean array of emails
@@ -69,6 +73,53 @@ const PaymentSection = ({
         .filter(email => email.length > 0) // Remove empty strings
     : [];
 
+  // Auto-recover from registrations that get stuck for too long
+  useEffect(() => {
+    if (processingFreeRegistration && registrationStartTime) {
+      const REGISTRATION_TIMEOUT = 15000; // 15 seconds
+      
+      const timeoutId = setTimeout(() => {
+        // If we're still processing after timeout period, assume there's an issue
+        if (processingFreeRegistration) {
+          console.log("Free registration taking too long, checking for redirect opportunity");
+          
+          // Check if email is in sessionStorage - if so, we might have completed registration
+          // but failed to navigate or update UI state
+          const registeredEmail = sessionStorage.getItem("registrationEmail");
+          
+          if (registeredEmail && registeredEmail === registrationData.email) {
+            console.log("Found registration email in session storage, likely completed successfully");
+            
+            // Assume registration was successful but UI didn't update
+            setProcessingFreeRegistration(false);
+            
+            toast({
+              title: "Registration processed",
+              description: "Your registration appears to have been processed. Redirecting to confirmation page.",
+              variant: "default",
+            });
+            
+            // Navigate to success page
+            setTimeout(() => {
+              navigate("/conference/success");
+            }, 1000);
+          } else {
+            // Registration appears to have actually failed
+            setProcessingFreeRegistration(false);
+            
+            toast({
+              title: "Registration timeout",
+              description: "Your registration is taking longer than expected. Please try again.",
+              variant: "destructive",
+            });
+          }
+        }
+      }, REGISTRATION_TIMEOUT);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [processingFreeRegistration, registrationStartTime, registrationData.email, navigate]);
+
   const handlePaymentSuccess = () => {
     // Show payment confirmation screen first
     setPaymentComplete(true);
@@ -81,16 +132,31 @@ const PaymentSection = ({
     }
     
     setProcessingFreeRegistration(true);
+    setRegistrationStartTime(Date.now());
     
     try {
       // Store registration email before navigating
       sessionStorage.setItem("registrationEmail", registrationData.email);
       
+      // Add a console log for debugging
+      console.log("Starting free registration process for:", registrationData.email);
+      
       // Call the free registration handler
       onFreeRegistration();
+      
+      // Note: We intentionally don't clear processingFreeRegistration here
+      // It will be cleared either by the successful registration callback
+      // or by the timeout recovery effect
     } catch (error) {
       console.error("Error during free registration:", error);
       setProcessingFreeRegistration(false);
+      setRegistrationStartTime(null);
+      
+      toast({
+        title: "Registration error",
+        description: "There was an error starting your registration. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -131,6 +197,13 @@ const PaymentSection = ({
           <p className="text-center text-sm text-green-600 mt-2">
             Your registration is free with the applied coupon code.
           </p>
+          
+          {/* Add more context about what's happening during processing */}
+          {processingFreeRegistration && (
+            <p className="text-center text-xs text-gray-500 mt-1 animate-pulse">
+              Please wait while we finalize your registration...
+            </p>
+          )}
         </div>
       ) : (
         <SimpleStripeProvider 
