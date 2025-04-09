@@ -4,9 +4,8 @@ import { loadStripe, Stripe } from "@stripe/stripe-js";
 import { useEffect, useState } from "react";
 import SimpleStripeCheckout from "./SimpleStripeCheckout";
 
-// Get the Stripe key from environment variables instead of hardcoding
-const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 
-  "pk_live_51QzaGsJCmIJg645X8x5sPqhMAiH4pXBh2e6mbgdxxwgqqsCfM8N7SiOvv98N2l5kVeoAlJj3ab08VG4c6PtgVg4d004QXy2W3m";
+// Get the publishable key - Stripe keys starting with pk_ are safe to be in client-side code
+const STRIPE_PUBLISHABLE_KEY = "pk_live_51QzaGsJCmIJg645X8x5sPqhMAiH4pXBh2e6mbgdxxwgqqsCfM8N7SiOvv98N2l5kVeoAlJj3ab08VG4c6PtgVg4d004QXy2W3m";
 
 // Initialize Stripe with error handling
 const getStripe = () => {
@@ -49,11 +48,23 @@ const SimpleStripeProvider = (props: SimpleStripeProviderProps) => {
   useEffect(() => {
     const initializeStripe = () => {
       try {
-        // loadStripe returns a Promise<Stripe|null>, so we set that directly to the state
+        console.log("Initializing Stripe with key:", STRIPE_PUBLISHABLE_KEY.substring(0, 10) + "...");
         const promise = getStripe();
         setStripePromise(promise);
-        // Flag successful initialization
         setIsInitialized(true);
+        
+        // Log when promise resolves for debugging
+        promise?.then(stripe => {
+          if (stripe) {
+            console.log("Stripe initialized successfully");
+          } else {
+            console.error("Stripe initialization returned null");
+            setError("Failed to initialize payment system");
+          }
+        }).catch(err => {
+          console.error("Stripe initialization failed:", err);
+          setError("Failed to initialize payment system: " + err.message);
+        });
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Unknown error initializing payment system";
         console.error("Stripe initialization error:", errorMessage);

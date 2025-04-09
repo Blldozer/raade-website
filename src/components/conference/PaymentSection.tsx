@@ -52,6 +52,7 @@ const PaymentSection = ({
     : [];
 
   const handlePaymentSuccess = () => {
+    console.log("Payment completed successfully");
     // Show payment confirmation screen first
     setPaymentComplete(true);
   };
@@ -80,7 +81,10 @@ const PaymentSection = ({
         specialRequests={registrationData.specialRequests}
         referralSource={registrationData.referralSource}
         onSuccess={handlePaymentSuccess}
-        onError={onPaymentError}
+        onError={onError => {
+          console.error("Payment error:", onError);
+          onPaymentError(onError);
+        }}
       />
       
       <Button 
