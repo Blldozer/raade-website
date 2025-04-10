@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -141,13 +142,19 @@ const CouponCodeSection = ({
         requestPayload.ticketType = ticketType;
       }
       
+      // Add unique request ID for tracking
+      const requestId = Math.random().toString(36).substring(2, 15);
+      requestPayload.requestId = requestId;
+      
+      console.log(`Validating coupon code: ${inputValue.trim()} (Request ID: ${requestId})`);
+      
       // Call the validate-coupon edge function
       const { data, error } = await supabase.functions.invoke('validate-coupon', {
         body: requestPayload
       });
       
       if (error) {
-        console.error("Coupon validation error:", error);
+        console.error(`Coupon validation error (${requestId}):`, error);
         setValidationResult({
           isValid: false,
           message: "Error validating coupon code. Please try again."
@@ -164,6 +171,8 @@ const CouponCodeSection = ({
       }
       
       if (data.isValid) {
+        console.log(`Coupon code ${inputValue.trim()} validated successfully (${requestId})`);
+        
         // Set coupon code and discount in parent component
         setCouponCode(inputValue.trim().toUpperCase());
         setCouponDiscount(data.discount);
@@ -213,6 +222,8 @@ const CouponCodeSection = ({
           variant: "default",
         });
       } else {
+        console.log(`Coupon code ${inputValue.trim()} is invalid: ${data.message} (${requestId})`);
+        
         setValidationResult({
           isValid: false,
           message: data.message || "Invalid coupon code"
