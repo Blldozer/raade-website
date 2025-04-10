@@ -5,7 +5,7 @@ import {
   TableHead, TableCell
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import CSVExportButton from "./CSVExportButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, Filter } from "lucide-react";
@@ -127,13 +127,17 @@ const RegistrantsTable: React.FC<RegistrantsTableProps> = ({
               <Select 
                 value={filterType}
                 onValueChange={setFilterType}
-                className="w-full"
               >
-                <option value="all">All Registrants</option>
-                <option value="individual">Individual</option>
-                <option value="group">Group (All)</option>
-                <option value="group-leader">Group Leaders</option>
-                <option value="group-member">Group Members</option>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="All Registrants" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Registrants</SelectItem>
+                  <SelectItem value="individual">Individual</SelectItem>
+                  <SelectItem value="group">Group (All)</SelectItem>
+                  <SelectItem value="group-leader">Group Leaders</SelectItem>
+                  <SelectItem value="group-member">Group Members</SelectItem>
+                </SelectContent>
               </Select>
             </div>
             
