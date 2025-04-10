@@ -1,104 +1,145 @@
-
-import React from "react";
-import { Link } from "react-router-dom";
-
-interface FooterProps {}
+import { Mail, Link, Globe, Copyright, Shield, ArrowUp, Instagram, Linkedin } from "lucide-react";
+import { Button } from "./ui/button";
+import { cn } from "@/lib/utils";
 
 const Footer = () => {
-  
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
-    <footer className="w-full bg-white dark:bg-gray-900 pt-12 pb-6 border-t border-gray-200 dark:border-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Contact Us section */}
-          <div>
-            <h3 className="text-lg font-medium mb-4">Contact Us</h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              Email: <a href="mailto:support@raadeconf.com" className="text-blue-500">support@raadeconf.com</a>
-            </p>
-            <p className="text-gray-600 dark:text-gray-400">
-              Phone: (123) 456-7890
-            </p>
-            <p className="text-gray-600 dark:text-gray-400">
-              Address: 123 Main St, Houston, TX
+    <footer className="relative bg-gradient-to-b from-[#F5F5F0] to-[#EAEAE5] border-t border-gray-200">
+      {/* Back to Top Button */}
+      <Button
+        onClick={scrollToTop}
+        className="absolute -top-6 right-8 rounded-full bg-white shadow-md hover:shadow-lg transition-all duration-300"
+        size="icon"
+      >
+        <ArrowUp className="h-4 w-4 text-gray-600" />
+      </Button>
+
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        {/* Logo and Mission Statement Row */}
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-16 gap-8">
+          <div className="flex flex-col items-start gap-6">
+            <img
+              src="/logos/RAADE-logo-final-black.png"
+              alt="RAADE Logo"
+              className="h-20 w-auto"
+            />
+            <p className="text-gray-600 max-w-xl text-base leading-relaxed">
+              We are a student-led organization pioneering innovative approaches to African 
+              development through collaboration and technology.
             </p>
           </div>
-          
-          {/* Quick Links section */}
-          <div>
-            <h3 className="text-lg font-medium mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/" className="text-gray-600 dark:text-gray-400 hover:text-blue-500">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link to="/about" className="text-gray-600 dark:text-gray-400 hover:text-blue-500">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/studios" className="text-gray-600 dark:text-gray-400 hover:text-blue-500">
-                  Innovation Studios
-                </Link>
-              </li>
-              <li>
-                <Link to="/conference" className="text-gray-600 dark:text-gray-400 hover:text-blue-500">
-                  Conference
-                </Link>
-              </li>
-              <li>
-                <Link to="/admin/reconciliation" className="text-[#274675] font-medium hover:text-blue-700 flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  Admin Portal
-                </Link>
-              </li>
-            </ul>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 pb-16 border-b border-gray-200">
+          {/* Contact Information */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-800 mb-6">Contact Us</h3>
+            <div className="space-y-3">
+              <a
+                href="mailto:raade@rice.edu"
+                className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors duration-200"
+              >
+                <Mail className="h-4 w-4" />
+                raade@rice.edu
+              </a>
+              <p className="text-sm text-gray-600">
+                6100 Main St,
+                <br />
+                Houston, TX 77005
+              </p>
+            </div>
           </div>
-          
-          {/* Connect section */}
-          <div>
-            <h3 className="text-lg font-medium mb-4">Connect</h3>
-            <div className="flex space-x-4">
-              <a href="#" className="text-gray-600 dark:text-gray-400 hover:text-blue-500">
-                <svg fill="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
-                  <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.663 9.15 8.431 9.817v-6.988h-2.033v-2.829h2.033V9.354c0-2.029 1.262-3.138 3.086-3.138 0.883 0 1.642 0.064 1.863 0.094v2.16h-1.281c-0.994 0-1.187 0.476-1.187 1.179v1.54h2.396l-0.31 2.829h-2.086v6.988C18.337 21.15 22 16.991 22 12z"></path>
-                </svg>
+
+          {/* Quick Links */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-800 mb-6">Quick Links</h3>
+            <div className="space-y-3">
+              {[
+                { href: "/studios", text: "Innovation Studios" },
+                { href: "/conference", text: "Annual Conference" },
+                { href: "/about", text: "About Us" }
+              ].map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="block text-sm text-gray-600 hover:text-gray-800 transition-colors duration-200"
+                >
+                  {link.text}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Social Media */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-800 mb-6">Connect</h3>
+            <div className="space-y-3">
+              <a
+                href="https://www.linkedin.com/company/rice-association-for-african-development/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors duration-200"
+              >
+                <Linkedin className="h-4 w-4" />
+                LinkedIn
               </a>
-              <a href="#" className="text-gray-600 dark:text-gray-400 hover:text-blue-500">
-                <svg fill="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
-                  <path d="M23.954 4.569c-.885.389-1.83.654-2.825.775 1.014-.611 1.794-1.574 2.163-2.723-.951.555-2.005.959-3.127 1.184-.896-.959-2.173-1.559-3.591-1.559-2.717 0-4.92 2.203-4.92 4.917 0 .39.045.765.127 1.124C7.691 8.094 4.066 6.13 1.64 3.161c-.427.722-.666 1.561-.666 2.475 0 1.71.87 3.213 2.188 4.096-.807-.026-1.566-.248-2.228-.616v.061c0 2.385 1.693 4.372 3.946 4.827-.413.111-.849.171-1.304.171-.314 0-.615-.03-.916-.086.631 1.953 2.445 3.377 4.604 3.417-1.68 1.319-3.809 2.105-6.102 2.105-.39 0-.779-.023-1.169-.067 2.189 1.394 4.768 2.212 7.548 2.212 9.058 0 14.01-7.508 14.01-14.008 0-.211-.009-.421-.023-.632.961-.689 1.8-1.56 2.46-2.548l-.047-.02z"></path>
-                </svg>
-              </a>
-              <a href="#" className="text-gray-600 dark:text-gray-400 hover:text-blue-500">
-                <svg fill="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
-                  <path d="M14 13.5c0 1.381-1.119 2.5-2.5 2.5s-2.5-1.119-2.5-2.5 1.119-2.5 2.5-2.5 2.5 1.119 2.5 2.5zm9-5.122c0 .626-.506 1.132-1.132 1.132H1.132C.506 8.378 0 7.872 0 7.246v9.508c0-.626.506-1.132 1.132-1.132h21.736c.626 0 1.132.506 1.132 1.132V7.246zm-1.132 8.378H1.132c-.076 0-.141-.014-.194-.039L11.868 6.07a1.376 1.376 0 0 1 2.264 0l10.936 9.515c-.053.025-.118.039-.194.039z"></path>
-                </svg>
+              <a
+                href="https://www.instagram.com/rice_aade?igsh=amhrYTR5a2M4cHlv"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors duration-200"
+              >
+                <Instagram className="h-4 w-4" />
+                Instagram
               </a>
             </div>
           </div>
         </div>
-        
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center mt-8 pt-4 border-t border-gray-200 dark:border-gray-800 text-sm text-gray-500 dark:text-gray-400">
-          <div className="mb-2 md:mb-0">
-            © {new Date().getFullYear()} RAADE. All rights reserved.
+
+        {/* Bottom Section */}
+        <div className="mt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <Copyright className="h-4 w-4" />
+            <span>{new Date().getFullYear()} RAADE. All rights reserved.</span>
           </div>
           
-          <div className="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4">
-            <div>Site Contributors: Ife Idakolo & Kene Onubogu</div>
-            
-            <Link to="/privacy" className="flex items-center">
-              <div className="mr-1">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-              </div>
-              Privacy Policy
-            </Link>
+          {/* Site Contributors */}
+          <div className="text-sm text-gray-600">
+            <span className="mr-2">Site Contributors:</span>
+            <a 
+              href="https://www.linkedin.com/in/ifeoluwaidakolo/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-gray-600 hover:text-gray-800 transition-colors duration-200"
+            >
+              Ife Idakolo
+            </a>
+            <span className="mx-1">&amp;</span>
+            <a 
+              href="https://www.linkedin.com/in/kenerice/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-gray-600 hover:text-gray-800 transition-colors duration-200"
+            >
+              Kene Onubogu
+            </a>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <Button
+              variant="link"
+              className="text-sm text-gray-600 hover:text-gray-800"
+              asChild
+            >
+              <a href="/privacy">
+                <Shield className="h-4 w-4 mr-2" />
+                Privacy Policy
+              </a>
+            </Button>
           </div>
         </div>
       </div>

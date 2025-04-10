@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { NextStepsEmailProps } from './next-steps-email.tsx';
+import { NextStepsEmail, NextStepsEmailProps } from './next-steps-email';
 
 /**
  * Preview version of the Next Steps Email template
