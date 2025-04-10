@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
@@ -86,8 +85,7 @@ const AdminReconciliation = () => {
     
     try {
       const { data, error } = await supabase.functions.invoke('stripe-reconcile', {
-        body: {},
-        query: { action: 'find-missing' }
+        body: { action: 'find-missing' }
       });
       
       if (error) throw error;
@@ -111,8 +109,7 @@ const AdminReconciliation = () => {
     
     try {
       const { data, error } = await supabase.functions.invoke('stripe-reconcile', {
-        body: {},
-        query: { action: 'fetch-all' }
+        body: { action: 'fetch-all' }
       });
       
       if (error) throw error;
@@ -184,9 +181,9 @@ const AdminReconciliation = () => {
       const { data, error } = await supabase.functions.invoke('stripe-reconcile', {
         body: {
           ...formData,
-          checkout_session_id: selectedRecord.checkout_session_id
-        },
-        query: { action: 'reconcile' }
+          checkout_session_id: selectedRecord.checkout_session_id,
+          action: 'reconcile'
+        }
       });
       
       if (error) throw error;

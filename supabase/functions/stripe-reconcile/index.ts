@@ -35,9 +35,9 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
     const supabase = createClient(supabaseUrl, supabaseKey);
     
-    const url = new URL(req.url);
-    const action = url.searchParams.get("action") || "";
+    // Parse the request body to get the action
     const requestBody = await req.json().catch(() => ({}));
+    const action = requestBody.action || "";
     
     // Process based on the requested action
     if (action === "fetch-all") {
@@ -100,9 +100,9 @@ serve(async (req) => {
     }
     else if (action === "reconcile") {
       // Reconcile a specific registration
-      const { email, full_name, ticket_type, checkout_session_id } = requestBody;
+      const { email, full_name, ticket_type, checkout_session_id, role, organization, from_known_institution, special_requests } = requestBody;
       
-      if (!email || !full_name || !ticket_type) {
+      if (!email || !full_name || !ticket_type || !checkout_session_id) {
         return new Response(
           JSON.stringify({ error: "Missing required fields" }),
           { 
@@ -121,11 +121,11 @@ serve(async (req) => {
           ticket_type,
           status: 'completed',
           payment_method: 'stripe',
-          role: requestBody.role || 'attendee',
-          organization: requestBody.organization || 'Unknown',
+          role: role || 'attendee',
+          organization: organization || 'Unknown',
           email_verified: true,
-          from_known_institution: requestBody.from_known_institution || false,
-          special_requests: requestBody.special_requests || null
+          from_known_institution: from_known_institution || false,
+          special_requests: special_requests || null
         });
         
       if (error) {
