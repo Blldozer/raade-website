@@ -60,3 +60,9 @@ verify_jwt = false
 
 [functions.send-next-steps-email]
 verify_jwt = false
+
+[functions.stripe-webhooks]
+verify_jwt = false
+
+[functions.stripe-reconcile]
+verify_jwt = true
