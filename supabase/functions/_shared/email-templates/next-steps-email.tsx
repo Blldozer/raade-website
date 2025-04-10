@@ -1,7 +1,7 @@
 
 /** @jsx jsx */
 /** @jsxFrag Fragment */
-import { jsx, Fragment } from 'react/jsx-runtime';
+import { jsx, Fragment } from 'npm:react/jsx-runtime';
 import {
   Body,
   Container,
@@ -17,7 +17,7 @@ import {
   Link,
   Button,
   Img,
-} from '@react-email/components';
+} from 'npm:@react-email/components';
 
 export interface NextStepsEmailProps {
   fullName?: string;
