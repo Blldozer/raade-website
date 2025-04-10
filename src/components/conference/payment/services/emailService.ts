@@ -97,15 +97,20 @@ export class EmailService {
           metadata: data.metadata || {},
           created_at: new Date().toISOString(),
         })
-        .select('id')
-        .single();
+        .select('id');
         
       if (error) {
         console.error("Failed to create email record:", error);
         return null;
       }
       
-      return record?.id || null;
+      // Check if we actually got a record back and it has an id property
+      const recordArray = record as any[];
+      if (recordArray && recordArray.length > 0 && recordArray[0].id) {
+        return recordArray[0].id;
+      }
+      
+      return null;
     } catch (error) {
       console.error("Exception creating email record:", error);
       return null;
@@ -136,8 +141,9 @@ export class EmailService {
         
         // Use a direct SQL query for incrementing retry count
         try {
-          const { data: retryData, error: retryError } = await supabase
-            .rpc('increment_retry_count' as any, { record_id: id });
+          // Access the function directly using rpc
+          const { error: retryError } = await supabase
+            .rpc('increment_retry_count', { record_id: id });
           
           if (retryError) {
             console.error(`Failed to increment retry count for ${id}:`, retryError);
@@ -416,12 +422,13 @@ export class EmailService {
         .eq('id', emailId)
         .single();
         
-      if (error || !data) {
+      if (error) {
         console.error("Error fetching email status:", error);
         return null;
       }
       
-      return data.status as EmailDeliveryStatus;
+      const result = data as any;
+      return result?.status as EmailDeliveryStatus || null;
     } catch (error) {
       console.error("Exception fetching email status:", error);
       return null;

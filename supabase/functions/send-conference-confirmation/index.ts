@@ -2,6 +2,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { Resend } from "npm:resend@4.0.0";
 import { format } from "npm:date-fns@2.30.0";
+import { renderAsync } from "npm:@react-email/render@0.0.7";
+import { ConfirmationEmail } from "../_shared/email-templates/confirmation-email.tsx";
+import * as React from "npm:react@18.2.0";
 
 const resendApiKey = Deno.env.get("RESEND_API_KEY");
 
@@ -31,13 +34,13 @@ function formatDate(date: Date): string {
 /**
  * Send Conference Confirmation Email Edge Function
  * 
- * Sends personalized email confirmations for conference registrations by:
+ * Sends personalized email confirmations for conference registrations using React Email:
+ * - Using React Email templates for better maintainability
  * - Using improved error handling with detailed logging
- * - Supporting multiple email templates based on ticket type
+ * - Supporting responsive, well-designed email templates 
  * - Implementing request timeouts for better reliability
  * - Tracking delivery attempts in request data
  * - Enhanced logging for troubleshooting
- * - Gracefully handling edge cases
  */
 serve(async (req) => {
   // Create a unique request ID for tracking this specific email
@@ -136,102 +139,40 @@ serve(async (req) => {
     const formattedEventDates = `${formatDate(eventStartDate)} - ${formatDate(eventEndDate)}`;
     const registrationDate = formatDate(new Date());
 
-    // Enhanced receipt section for group registrations
-    let receiptSection = `
-      <p><strong>Registration Date:</strong> ${registrationDate}</p>
-      <p><strong>Name:</strong> ${fullName}</p>
-      <p><strong>Email:</strong> ${email}</p>
-      <p><strong>Ticket Type:</strong> ${ticketTypeDisplay}</p>
-      <p><strong>Price:</strong> ${ticketPrice}</p>
-    `;
-    
-    if (ticketType === "student-group" && groupSize) {
-      receiptSection += `
-        <p><strong>Group Size:</strong> ${groupSize} people</p>
-        <p><strong>Total Amount Paid:</strong> ${totalPrice}</p>
-      `;
-    } else {
-      receiptSection += `
-        <p><strong>Total Amount Paid:</strong> ${totalPrice}</p>
-      `;
-    }
-    
-    // Add coupon information if applicable
-    if (couponCode) {
-      receiptSection += `
-        <p><strong>Coupon Applied:</strong> ${couponCode}</p>
-      `;
-    }
+    // Use a shortened version of the request ID as the reference number
+    const referenceId = requestId.substring(0, 8);
 
-    // HTML email content with improved design
-    const emailContent = `
-      <html>
-        <head>
-          <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
-            .container { max-width: 600px; margin: 0 auto; }
-            .header { background-color: #274675; color: white; padding: 20px; text-align: center; }
-            .header h1 { margin: 0; font-size: 24px; }
-            .content { padding: 20px; background-color: #ffffff; }
-            .receipt { background-color: #f7f7f7; padding: 20px; margin: 15px 0; border-radius: 5px; border-left: 4px solid #274675; }
-            .footer { font-size: 12px; color: #666; margin-top: 20px; text-align: center; padding: 20px; background-color: #f9f9f9; }
-            .highlight { color: #FBB03B; font-weight: bold; }
-            .cta-button { background-color: #FBB03B; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 15px 0; }
-            .event-details { background-color: #FAFAFA; padding: 15px; margin: 15px 0; border-radius: 5px; }
-            .divider { border-top: 1px solid #eee; margin: 20px 0; }
-            .logo { max-width: 150px; margin: 0 auto; display: block; }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <h1>Your RAADE Conference Registration is Confirmed!</h1>
-            </div>
-            <div class="content">
-              <p>Dear ${fullName},</p>
-              <p>Thank you for registering for the <strong>RAADE Annual Conference 2025</strong>! Your registration has been successfully processed and confirmed.</p>
-              
-              <h2>Receipt</h2>
-              <div class="receipt">
-                ${receiptSection}
-                <p><em>Reference: RAADE-CONF-2025-${requestId.substring(0, 8)}</em></p>
-              </div>
-              
-              <div class="event-details">
-                <h2>Event Details</h2>
-                <p><strong>Dates:</strong> ${formattedEventDates}</p>
-                <p><strong>Location:</strong> Rice University, Houston, TX</p>
-                <p><strong>Check-in:</strong> Begins at 8:00 AM on April 11th</p>
-              </div>
-              
-              <div class="divider"></div>
-              
-              <h2>What's Next?</h2>
-              <p>Please mark your calendar for this exciting event. You'll receive the following information closer to the event date:</p>
-              <ul>
-                <li>Detailed venue information and campus map</li>
-                <li>Complete conference schedule</li>
-                <li>Speaker announcements</li>
-                <li>Networking opportunities</li>
-              </ul>
-              
-              <p>If you have any questions or need to make changes to your registration, please contact us at <a href="mailto:conference@raade.org">conference@raade.org</a></p>
-              
-              <p>We look forward to seeing you at the conference!</p>
-              <p>Best regards,<br>The RAADE Conference Team</p>
-            </div>
-            <div class="footer">
-              <p>This is an automated message. Please do not reply to this email.</p>
-              <p>&copy; 2024 RAADE - Rice Association for African Development</p>
-              <p><small>Sent at: ${new Date().toISOString()}</small></p>
-            </div>
-          </div>
-        </body>
-      </html>
-    `;
+    // Determine the best sender email to use
+    const senderEmail = isRiceEmail(email) 
+      ? "RAADE Conference <ife@rice-raade.com>"
+      : "RAADE Conference <conference@resend.dev>";
 
-    // Plain text version of the email
-    const plainTextContent = `
+    console.log(`[${requestId}] Using sender email: ${senderEmail} for recipient: ${email}`);
+
+    // Create a timeout for the email sending operation
+    const EMAIL_SEND_TIMEOUT = 15000; // 15 seconds
+    
+    let emailSendingComplete = false;
+    
+    try {
+      // Render the React Email template
+      const emailHtml = await renderAsync(
+        React.createElement(ConfirmationEmail, {
+          fullName,
+          email,
+          ticketType,
+          ticketPrice,
+          totalPrice,
+          groupSize: ticketType === "student-group" ? (groupSize || 5) : undefined,
+          couponCode,
+          eventDates: formattedEventDates,
+          registrationDate,
+          referenceId,
+        })
+      );
+
+      // Plain text version of the email
+      const plainTextContent = `
 Conference Registration Confirmation - RAADE Annual Conference 2025
 
 Dear ${fullName},
@@ -247,7 +188,7 @@ Email: ${email}
 Ticket Type: ${ticketTypeDisplay} (${ticketPrice})
 ${ticketType === "student-group" && groupSize ? `Group Size: ${groupSize} people\nTotal Amount Paid: ${totalPrice}` : `Total Amount Paid: ${totalPrice}`}
 ${couponCode ? `Coupon Applied: ${couponCode}` : ''}
-Reference: RAADE-CONF-2025-${requestId.substring(0, 8)}
+Reference: RAADE-CONF-2025-${referenceId}
 
 EVENT DETAILS:
 Dates: ${formattedEventDates}
@@ -270,22 +211,9 @@ The RAADE Conference Team
 
 This is an automated message. Please do not reply to this email.
 © 2024 RAADE - Rice Association for African Development
-    `;
+      `;
 
-    // Determine the best sender email to use
-    const senderEmail = isRiceEmail(email) 
-      ? "RAADE Conference <ife@rice-raade.com>"
-      : "RAADE Conference <conference@resend.dev>";
-
-    console.log(`[${requestId}] Using sender email: ${senderEmail} for recipient: ${email}`);
-
-    // Create a timeout for the email sending operation
-    const EMAIL_SEND_TIMEOUT = 15000; // 15 seconds
-    
-    let emailSendingComplete = false;
-    
-    // Send email using Resend with timeout handling
-    try {
+      // Send email using Resend with timeout handling
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => {
           if (!emailSendingComplete) {
@@ -298,7 +226,7 @@ This is an automated message. Please do not reply to this email.
         from: senderEmail,
         to: [email],
         subject: "RAADE Conference 2025 - Registration Confirmation",
-        html: emailContent,
+        html: emailHtml,
         text: plainTextContent,
         // Add reply-to for responses
         reply_to: "conference@raade.org",

@@ -1,6 +1,10 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 import { Resend } from "npm:resend@4.0.0";
+import { renderAsync } from "npm:@react-email/render@0.0.7";
+import { VerificationEmail } from "../_shared/email-templates/verification-email.tsx";
+import * as React from "npm:react@18.2.0";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
@@ -90,47 +94,16 @@ serve(async (req) => {
       throw tokenError;
     }
     
-    // Email HTML content
-    const emailContent = `
-      <html>
-        <head>
-          <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .header { background-color: #274675; color: white; padding: 20px; text-align: center; }
-            .content { padding: 20px; border: 1px solid #ddd; border-top: none; }
-            .verification-code { font-size: 24px; font-weight: bold; text-align: center; margin: 20px 0; letter-spacing: 2px; background-color: #f7f7f7; padding: 10px; border-radius: 5px; }
-            .footer { font-size: 12px; color: #666; margin-top: 20px; text-align: center; }
-            .instructions { background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 15px 0; }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <h1>Email Verification</h1>
-            </div>
-            <div class="content">
-              <p>Dear ${fullName},</p>
-              <p>Thank you for registering for the RAADE Annual Conference 2025! Please verify your email address to complete your registration.</p>
-              <div class="instructions">
-                <p>Your verification code is:</p>
-                <div class="verification-code">${token}</div>
-                <p>Please enter this code on the verification page to confirm your email address.</p>
-              </div>
-              <p>This code will expire in 24 hours.</p>
-              <p>If you have any issues, please contact us at conference@raade.org for assistance.</p>
-              <p>Best regards,<br>The RAADE Conference Team</p>
-            </div>
-            <div class="footer">
-              <p>&copy; 2024 RAADE - Rice Association for African Development</p>
-              <p>This is an automated message from the conference registration system.</p>
-            </div>
-          </div>
-        </body>
-      </html>
-    `;
+    // Render the React Email template
+    const emailHtml = await renderAsync(
+      React.createElement(VerificationEmail, {
+        fullName,
+        token,
+        ticketType
+      })
+    );
 
-    // Plain text version of the email
+    // Generate plain text version
     const plainTextContent = `
 Email Verification - RAADE Conference 2025
 
@@ -149,7 +122,7 @@ If you have any issues, please contact us at conference@raade.org for assistance
 Best regards,
 The RAADE Conference Team
 
-&copy; 2024 RAADE - Rice Association for African Development
+© 2024 RAADE - Rice Association for African Development
 This is an automated message from the conference registration system.
     `;
 
@@ -168,7 +141,7 @@ This is an automated message from the conference registration system.
         from: senderEmail,
         to: [email],
         subject: "RAADE Conference 2025 - Email Verification",
-        html: emailContent,
+        html: emailHtml,
         text: plainTextContent,
         // Add reply-to for responses
         reply_to: "conference@raade.org"
