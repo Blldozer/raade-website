@@ -1,8 +1,9 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.1";
-import { Resend } from "npm:resend@2.0.0";
-import React from "npm:react@18.3.1";
-import { render } from "npm:@react-email/render@0.0.7";
+import { Resend } from "https://esm.sh/resend@2.0.0";
+import React from "https://esm.sh/react@18.3.1";
+import { render } from "https://esm.sh/@react-email/render@0.0.7";
 import { NextStepsEmail } from "../_shared/email-templates/next-steps-email.tsx";
 
 // CORS headers for cross-origin requests

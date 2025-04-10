@@ -1,8 +1,6 @@
 
-import React from 'npm:react@18.3.1';
-import * as ReactEmail from 'npm:@react-email/components@0.0.7';
-
-const {
+import React from "https://esm.sh/react@18.3.1";
+import {
   Body,
   Container,
   Head,
@@ -17,7 +15,7 @@ const {
   Link,
   Button,
   Img,
-} = ReactEmail;
+} from "https://esm.sh/@react-email/components@0.0.7";
 
 export interface NextStepsEmailProps {
   fullName?: string;
