@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 // Create a simpler preview version that doesn't rely on React Email components
