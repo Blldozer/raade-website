@@ -535,6 +535,60 @@ export type Database = {
         }
         Relationships: []
       }
+      stripe_reconciliation_data: {
+        Row: {
+          amount_total: number | null
+          checkout_session_id: string | null
+          created_at: string
+          customer_email: string | null
+          customer_name: string | null
+          id: string
+          metadata: Json | null
+          notes: string | null
+          payment_intent_id: string | null
+          payment_status: string | null
+          raw_data: Json | null
+          reconciled: boolean | null
+          reconciled_at: string | null
+          reconciliation_status: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount_total?: number | null
+          checkout_session_id?: string | null
+          created_at?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          payment_intent_id?: string | null
+          payment_status?: string | null
+          raw_data?: Json | null
+          reconciled?: boolean | null
+          reconciled_at?: string | null
+          reconciliation_status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount_total?: number | null
+          checkout_session_id?: string | null
+          created_at?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          payment_intent_id?: string | null
+          payment_status?: string | null
+          raw_data?: Json | null
+          reconciled?: boolean | null
+          reconciled_at?: string | null
+          reconciliation_status?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       student_applications: {
         Row: {
           created_at: string
