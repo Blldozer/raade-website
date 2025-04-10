@@ -1,7 +1,4 @@
-/// <reference path="../types/deno-imports.d.ts" />
-/** @jsx jsx */
-/** @jsxFrag Fragment */
-import { jsx, Fragment } from 'npm:react/jsx-runtime';
+import React, { Fragment } from 'react';
 import {
   Body,
   Container,
@@ -16,7 +13,7 @@ import {
   Link,
   Button,
   Img,
-} from 'npm:@react-email/components';
+} from '@react-email/components';
 
 export interface NextStepsEmailProps {
   fullName?: string;
@@ -29,50 +26,44 @@ export interface NextStepsEmailProps {
 /**
  * Next Steps Email Template
  * 
- * Sends conference attendees important information about next steps
- * after they have registered for the RAADE Conference. Includes:
- * - Calendar information
- * - Accommodation recommendations
- * - Schedule link
- * - Preparation tips
- * - Social media links
+ * Sent to registrants after they complete registration
+ * Provides details about the conference and next steps
  */
 export const NextStepsEmail = ({
-  fullName = 'Conference Attendee',
-  ticketType = 'professional',
-  conferenceDate = 'April 11-12, 2025',
-  venueAddress = 'Rice University, Houston, TX',
-  conferenceUrl = 'https://raadeconf.com',
+  fullName = "Conference Attendee",
+  ticketType = "Professional",
+  conferenceDate = "April 11-12, 2025",
+  venueAddress = "Rice University, 6100 Main St, Houston, TX 77005",
+  conferenceUrl = "https://raadeconf.com",
 }: NextStepsEmailProps) => {
-  // Format ticket type for display (e.g., "student-group" -> "Student Group")
-  const formattedTicketType = ticketType
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+  // Format ticket type display
+  const formattedTicketType = typeof ticketType === 'string' 
+    ? ticketType.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+    : 'Professional';
 
   return (
     <Html>
       <Head />
-      <Preview>Next Steps for Your RAADE Conference Registration</Preview>
+      <Preview>Your RAADE Conference Registration - Important Next Steps</Preview>
       <Tailwind>
         <Body className="font-sans bg-white">
-          <Container className="max-w-[600px] mx-auto p-4">
+          <Container className="max-w-600 mx-auto p-8">
             <Section className="mb-8">
-              <Img 
-                src="https://raadeconf.com/logos/RAADE-logo-final-black.png" 
-                alt="RAADE Conference Logo" 
-                className="h-16 mb-4 mx-auto" 
+              <Img
+                src={`${conferenceUrl}/logos/RAADE-logo-final-black.png`}
+                alt="RAADE Conference Logo"
+                className="h-16 mb-4"
               />
-              <Heading className="text-2xl font-bold text-[#274675] mb-2 text-center">
+              <Heading className="text-2xl font-bold text-[#274675] mb-2">
                 Your RAADE Conference Registration
               </Heading>
-              <Text className="text-gray-700 text-center">
+              <Text className="text-gray-700">
                 Important next steps and information for attendees
               </Text>
             </Section>
 
-            <Section className="mb-8 bg-gray-50 p-4 rounded-lg">
-              <Heading className="text-xl font-semibold text-[#274675] mb-2">
+            <Section className="mb-8 bg-gray-50 p-6 rounded-lg">
+              <Heading className="text-xl font-semibold text-[#274675] mb-4">
                 Hello, {fullName}
               </Heading>
               
@@ -113,9 +104,9 @@ export const NextStepsEmail = ({
                 </Text>
               </div>
               
-              <Button 
-                className="bg-[#274675] text-white px-4 py-2 mt-4 rounded font-semibold w-full text-center"
+              <Button
                 href={conferenceUrl}
+                className="bg-[#274675] text-white px-4 py-2 mt-4 rounded font-semibold w-full text-center"
               >
                 Visit Conference Website
               </Button>
