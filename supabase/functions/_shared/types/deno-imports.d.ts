@@ -1,3 +1,4 @@
+
 // Type declarations for Deno-specific imports used in Supabase Edge Functions
 declare module 'npm:react/jsx-runtime' {
   import { jsx, Fragment } from 'react/jsx-runtime';
