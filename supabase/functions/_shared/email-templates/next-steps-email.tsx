@@ -1,6 +1,8 @@
 
 import React from 'react';
-import {
+import * as ReactEmail from '@react-email/components';
+
+const {
   Body,
   Container,
   Head,
@@ -15,7 +17,7 @@ import {
   Link,
   Button,
   Img,
-} from '@react-email/components';
+} = ReactEmail;
 
 export interface NextStepsEmailProps {
   fullName?: string;

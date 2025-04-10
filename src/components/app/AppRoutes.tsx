@@ -18,6 +18,7 @@ import ConferenceRegistration from "../../pages/ConferenceRegistration";
 import SpeakerProfile from "../../pages/SpeakerProfile";
 import RegistrationSuccess from "../../pages/RegistrationSuccess";
 import EmailPreview from "../../pages/email-preview";
+import AdminReconciliation from "../../pages/AdminReconciliation";
 
 /**
  * AppRoutes component
@@ -50,6 +51,7 @@ const AppRoutes = () => {
               <Route path="/apply/student" element={<StudentApplication />} />
               <Route path="/apply/partner" element={<PartnerApplication />} />
               <Route path="/email-preview" element={<EmailPreview />} />
+              <Route path="/admin/reconciliation" element={<AdminReconciliation />} />
             </Routes>
           </Suspense>
         </div>
