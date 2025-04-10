@@ -1,46 +1,62 @@
 
-import React, { lazy, Suspense } from 'react';
-import { Route, Routes } from 'react-router-dom';
-import PageLoading from './PageLoading';
+import { Route, Routes } from "react-router-dom";
+import { Suspense, lazy } from "react";
+import PageLoading from "./PageLoading";
+import ErrorBoundary from "../ErrorBoundary";
+import GlobalErrorFallback from "./GlobalErrorFallback";
+import NavigationWrapper from "./NavigationWrapper";
 
-// Pages
-const Index = lazy(() => import('@/pages/Index'));
-const About = lazy(() => import('@/pages/About'));
-const InnovationStudios = lazy(() => import('@/pages/InnovationStudios'));
-const ProjectDetail = lazy(() => import('@/pages/ProjectDetail'));
-const Conference = lazy(() => import('@/pages/Conference'));
-const PartnerApplication = lazy(() => import('@/pages/PartnerApplication'));
-const StudentApplication = lazy(() => import('@/pages/StudentApplication'));
-const Success = lazy(() => import('@/pages/Success'));
-const SpeakerProfile = lazy(() => import('@/pages/SpeakerProfile'));
-const ConferenceRegistration = lazy(() => import('@/pages/ConferenceRegistration'));
-const RegistrationSuccess = lazy(() => import('@/pages/RegistrationSuccess'));
-const EmailVerification = lazy(() => import('@/pages/EmailVerification'));
-const EmailPreview = lazy(() => import('@/pages/email-preview'));
-const AdminReconciliation = lazy(() => import('@/pages/AdminReconciliation'));
-const RunStripeReconciliation = lazy(() => import('@/pages/RunStripeReconciliation'));
+// Import main pages directly to avoid lazy loading issues
+import Index from "../../pages/Index";
+import InnovationStudios from "../../pages/InnovationStudios";
+import Conference from "../../pages/Conference";
+import About from "../../pages/About";
+import ProjectDetail from "../../pages/ProjectDetail";
+import StudentApplication from "../../pages/StudentApplication";
+import PartnerApplication from "../../pages/PartnerApplication";
+import ConferenceRegistration from "../../pages/ConferenceRegistration";
+import SpeakerProfile from "../../pages/SpeakerProfile";
+import RegistrationSuccess from "../../pages/RegistrationSuccess";
+import EmailPreview from "../../pages/email-preview";
+import AdminReconciliation from "../../pages/AdminReconciliation";
 
+/**
+ * AppRoutes component
+ * Centralizes all application routes with error boundaries and suspense
+ */
 const AppRoutes = () => {
+  // Check if we're in development mode
+  const isDevelopment = process.env.NODE_ENV === 'development';
+
   return (
-    <Suspense fallback={<PageLoading />}>
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/studios" element={<InnovationStudios />} />
-        <Route path="/projects/:id" element={<ProjectDetail />} />
-        <Route path="/conference" element={<Conference />} />
-        <Route path="/partner-application" element={<PartnerApplication />} />
-        <Route path="/student-application" element={<StudentApplication />} />
-        <Route path="/success" element={<Success />} />
-        <Route path="/conference/speakers/:id" element={<SpeakerProfile />} />
-        <Route path="/conference/register" element={<ConferenceRegistration />} />
-        <Route path="/conference/register/success" element={<RegistrationSuccess />} />
-        <Route path="/conference/verify" element={<EmailVerification />} />
-        <Route path="/email-preview" element={<EmailPreview />} />
-        <Route path="/admin/reconciliation" element={<AdminReconciliation />} />
-        <Route path="/admin/run-reconciliation" element={<RunStripeReconciliation />} />
-      </Routes>
-    </Suspense>
+    <>
+      {/* NavigationWrapper inside proper context */}
+      <NavigationWrapper />
+      
+      <ErrorBoundary 
+        fallback={<GlobalErrorFallback error={new Error("Content failed to render")} />}
+        suppressDevErrors={isDevelopment}
+      >
+        <div className="flex-grow">
+          <Suspense fallback={<PageLoading />}>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/studios" element={<InnovationStudios />} />
+              <Route path="/conference" element={<Conference />} />
+              <Route path="/conference/register" element={<ConferenceRegistration />} />
+              <Route path="/conference/success" element={<RegistrationSuccess />} />
+              <Route path="/conference/speakers/:speakerId" element={<SpeakerProfile />} />
+              <Route path="/projects/:projectSlug" element={<ProjectDetail />} />
+              <Route path="/apply/student" element={<StudentApplication />} />
+              <Route path="/apply/partner" element={<PartnerApplication />} />
+              <Route path="/email-preview" element={<EmailPreview />} />
+              <Route path="/admin/reconciliation" element={<AdminReconciliation />} />
+            </Routes>
+          </Suspense>
+        </div>
+      </ErrorBoundary>
+    </>
   );
 };
 

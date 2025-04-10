@@ -1,6 +1,8 @@
 
-import React from 'https://esm.sh/react@18.2.0';
-import {
+import React from 'npm:react@18.3.1';
+import * as ReactEmail from 'npm:@react-email/components@0.0.7';
+
+const {
   Body,
   Container,
   Head,
@@ -14,23 +16,35 @@ import {
   Hr,
   Link,
   Button,
-} from 'https://esm.sh/@react-email/components@0.0.7';
+  Img,
+} = ReactEmail;
 
 export interface NextStepsEmailProps {
-  fullName: string;
-  ticketType: string;
-  conferenceDate: string;
-  venueAddress: string;
-  conferenceUrl: string;
+  fullName?: string;
+  ticketType?: string;
+  conferenceDate?: string;
+  venueAddress?: string;
+  conferenceUrl?: string;
 }
 
-export const NextStepsEmail: React.FC<NextStepsEmailProps> = ({
-  fullName,
-  ticketType,
-  conferenceDate,
-  venueAddress,
+/**
+ * Next Steps Email Template
+ * 
+ * Sends conference attendees important information about next steps
+ * after they have registered for the RAADE Conference. Includes:
+ * - Calendar information
+ * - Accommodation recommendations
+ * - Schedule link
+ * - Preparation tips
+ * - Social media links
+ */
+export const NextStepsEmail = ({
+  fullName = 'Conference Attendee',
+  ticketType = 'professional',
+  conferenceDate = 'April 11-12, 2025',
+  venueAddress = 'Rice University, Houston, TX',
   conferenceUrl = 'https://raadeconf.com',
-}) => {
+}: NextStepsEmailProps) => {
   // Format ticket type for display (e.g., "student-group" -> "Student Group")
   const formattedTicketType = ticketType
     .split('-')
@@ -40,69 +54,72 @@ export const NextStepsEmail: React.FC<NextStepsEmailProps> = ({
   return (
     <Html>
       <Head />
-      <Preview>RAADE Conference 2025 - Next Steps for Your Registration</Preview>
+      <Preview>Next Steps for Your RAADE Conference Registration</Preview>
       <Tailwind>
-        <Body className="bg-white font-sans">
-          <Container className="mx-auto max-w-600 p-4">
+        <Body className="font-sans bg-white">
+          <Container className="max-w-[600px] mx-auto p-4">
             <Section className="mb-8">
-              <Heading className="text-[#274675] text-2xl font-bold text-center mb-4">
+              <Img 
+                src="https://raadeconf.com/logos/RAADE-logo-final-black.png" 
+                alt="RAADE Conference Logo" 
+                className="h-16 mb-4 mx-auto" 
+              />
+              <Heading className="text-2xl font-bold text-[#274675] mb-2 text-center">
                 Your RAADE Conference Registration
               </Heading>
               <Text className="text-gray-700 text-center">
                 Important next steps and information for attendees
               </Text>
             </Section>
-            
-            <Section className="mb-8 bg-gray-50 p-6 rounded-lg">
-              <Text className="text-xl font-semibold text-[#274675]">
+
+            <Section className="mb-8 bg-gray-50 p-4 rounded-lg">
+              <Heading className="text-xl font-semibold text-[#274675] mb-2">
                 Hello, {fullName}
-              </Text>
+              </Heading>
               
               <Text className="text-gray-700 mb-4">
                 Thank you for registering for the RAADE Conference with a <strong>{formattedTicketType}</strong> ticket! 
                 We're excited to have you join us for this transformative event.
               </Text>
               
-              <Heading className="text-lg font-semibold text-[#274675] mt-6 mb-4">
+              <Heading className="text-lg font-semibold text-[#274675] mt-6 mb-2">
                 Here are your next steps:
               </Heading>
               
-              <Box className="bg-white p-4 rounded my-4 border-l-4 border-[#274675]">
+              <Box className="bg-white p-3 rounded my-4 border-l-4 border-[#274675]">
                 <Text className="font-semibold text-[#274675] mb-1">1. Mark your calendar</Text>
                 <Text className="text-gray-700 text-sm">
                   The conference will take place on <strong>{conferenceDate}</strong> at <strong>{venueAddress}</strong>.
                 </Text>
               </Box>
               
-              <Box className="bg-white p-4 rounded my-4 border-l-4 border-[#FBB03B]">
+              <Box className="bg-white p-3 rounded my-4 border-l-4 border-[#FBB03B]">
                 <Text className="font-semibold text-[#274675] mb-1">2. Book your accommodation</Text>
                 <Text className="text-gray-700 text-sm">
                   We recommend booking your accommodation as soon as possible. Our recommended hotels are listed on the conference website.
                 </Text>
               </Box>
               
-              <Box className="bg-white p-4 rounded my-4 border-l-4 border-[#274675]">
+              <Box className="bg-white p-3 rounded my-4 border-l-4 border-[#274675]">
                 <Text className="font-semibold text-[#274675] mb-1">3. Review the schedule</Text>
                 <Text className="text-gray-700 text-sm">
                   Check out our exciting lineup of speakers and sessions on the conference website.
                 </Text>
               </Box>
               
-              <Box className="bg-white p-4 rounded my-4 border-l-4 border-[#FBB03B]">
+              <Box className="bg-white p-3 rounded my-4 border-l-4 border-[#FBB03B]">
                 <Text className="font-semibold text-[#274675] mb-1">4. Connect with us</Text>
                 <Text className="text-gray-700 text-sm">
                   Follow us on social media for the latest updates and announcements.
                 </Text>
               </Box>
               
-              <Section className="text-center mt-6">
-                <Button 
-                  href={conferenceUrl}
-                  className="bg-[#274675] text-white px-4 py-2 rounded font-semibold"
-                >
-                  Visit Conference Website
-                </Button>
-              </Section>
+              <Button 
+                className="bg-[#274675] text-white px-4 py-2 mt-4 rounded font-semibold w-full text-center"
+                href={conferenceUrl}
+              >
+                Visit Conference Website
+              </Button>
             </Section>
             
             <Section className="mb-8">
@@ -122,7 +139,7 @@ export const NextStepsEmail: React.FC<NextStepsEmailProps> = ({
               </Text>
             </Section>
             
-            <Hr className="border-gray-300 my-6" />
+            <Hr className="my-6 border-gray-300" />
             
             <Section className="text-center">
               <Text className="text-sm text-gray-500">
