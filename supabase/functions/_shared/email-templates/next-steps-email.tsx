@@ -1,5 +1,5 @@
 
-import * as React from 'npm:react@18.2.0';
+import React from 'https://esm.sh/react@18.2.0';
 import {
   Body,
   Container,
@@ -14,7 +14,7 @@ import {
   Hr,
   Link,
   Button,
-} from 'npm:@react-email/components@0.0.7';
+} from 'https://esm.sh/@react-email/components@0.0.7';
 
 export interface NextStepsEmailProps {
   fullName: string;
