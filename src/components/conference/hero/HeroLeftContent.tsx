@@ -1,7 +1,6 @@
-
 import React, { memo } from "react";
 import { motion } from "framer-motion";
-import { Calendar, MapPin, Users, Mic, Lightbulb } from "lucide-react";
+import { Calendar, MapPin, Users, Mic, Lightbulb, Clock, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 /**
@@ -11,6 +10,7 @@ import { useNavigate } from "react-router-dom";
  * - Consistent fluid typography that works across all devices
  * - Optimized text scaling for Android and other mobile platforms
  * - Staggered animations for visual interest
+ * - Urgency message about registration closing today
  */
 const HeroLeftContent = () => {
   const navigate = useNavigate();
@@ -24,6 +24,17 @@ const HeroLeftContent = () => {
         className="space-y-6"
         style={{ willChange: "transform, opacity" }}
       >
+        {/* Registration closing alert */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="inline-flex items-center bg-red-600/30 px-4 py-2 rounded-full animate-pulse"
+        >
+          <AlertCircle className="h-4 w-4 mr-2 text-white" />
+          <p className="text-white font-bold text-sm md:text-base">Registration closes today at 11:59 PM CST!</p>
+        </motion.div>
+        
         <motion.p 
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -89,6 +100,10 @@ const HeroLeftContent = () => {
             <Users className="text-[#FBB03B] h-4 w-4" />
             <p className="text-white font-lora font-medium">100+ Attendees</p>
           </div>
+          <div className="px-5 py-2.5 bg-red-500/30 backdrop-blur-sm rounded-full flex items-center gap-2 animate-pulse">
+            <Clock className="text-white h-4 w-4" />
+            <p className="text-white font-lora font-medium">Registration Closes Today!</p>
+          </div>
         </motion.div>
 
         {/* Event details */}
@@ -109,6 +124,7 @@ const HeroLeftContent = () => {
           </div>
         </motion.div>
 
+        {/* Description paragraph */}
         <motion.p 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -132,10 +148,11 @@ const HeroLeftContent = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => navigate("/conference/register")} 
-            className="px-8 py-3 bg-[#FBB03B] text-white rounded-md font-medium transition-all hover:bg-[#FBB03B]/90 font-lora shadow-md"
+            className="px-8 py-3 bg-[#FBB03B] text-white rounded-md font-medium transition-all hover:bg-[#FBB03B]/90 font-lora shadow-md relative overflow-hidden group"
             style={{ willChange: "transform" }}
           >
-            Register Now
+            <span className="relative z-10">Register Now</span>
+            <span className="absolute inset-0 bg-red-600 opacity-20 group-hover:opacity-30 transition-opacity"></span>
           </motion.button>
         </motion.div>
       </motion.div>

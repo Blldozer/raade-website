@@ -1,7 +1,8 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Clock } from 'lucide-react';
 
 const JoinSectionCTA = () => {
   const navigate = useNavigate();
@@ -27,6 +28,14 @@ const JoinSectionCTA = () => {
       </div>
       
       <div className="container mx-auto px-6 relative z-10">
+        {/* Registration closing alert */}
+        <div className="mb-8 flex justify-center">
+          <div className="inline-flex items-center bg-red-600/20 px-4 py-2 rounded-full">
+            <Clock className="h-4 w-4 mr-2 text-white animate-pulse" />
+            <p className="text-white font-bold text-sm">Registration closes today at 11:59 PM CST!</p>
+          </div>
+        </div>
+        
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="max-w-xl">
             <motion.h3 
@@ -45,7 +54,7 @@ const JoinSectionCTA = () => {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-white/80 font-lora"
             >
-              Join our community of changemakers and contribute to creating sustainable solutions for pressing challenges across Africa.
+              Join our community of changemakers and contribute to creating sustainable solutions for pressing challenges across Africa. <span className="text-[#FBB03B] font-bold">Final day to register for the conference!</span>
             </motion.p>
           </div>
           
@@ -68,10 +77,13 @@ const JoinSectionCTA = () => {
               onClick={handleConferenceClick}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-6 py-3 bg-[#FBB03B] text-white font-medium rounded-md flex items-center hover:shadow-lg transition-all duration-300 font-lora"
+              className="px-6 py-3 bg-[#FBB03B] text-white font-medium rounded-md flex items-center hover:shadow-lg transition-all duration-300 font-lora group relative overflow-hidden"
             >
-              Register for Conference
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <span className="relative z-10 flex items-center">
+                Register Now
+                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </span>
+              <span className="absolute inset-0 bg-red-600 animate-pulse opacity-20"></span>
             </motion.button>
           </motion.div>
         </div>
