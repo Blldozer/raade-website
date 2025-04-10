@@ -1,7 +1,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Clock, MapPin, Users, User } from "lucide-react";
+import { Clock, MapPin, Users } from "lucide-react";
 
 export interface ScheduleEventProps {
   event: {
@@ -37,27 +37,6 @@ const ScheduleEvent = ({ event, index }: ScheduleEventProps) => {
     }
   };
 
-  const getEventTypeLabel = (type: string) => {
-    switch(type) {
-      case "keynote":
-        return "Keynote";
-      case "panel":
-        return "Panel";
-      case "workshop":
-        return "Workshop";
-      case "showcase":
-        return "Showcase";
-      case "social":
-        return "Social";
-      case "break":
-        return "Break";
-      case "ceremony":
-        return "Ceremony";
-      default:
-        return "Event";
-    }
-  };
-
   return (
     <motion.div
       key={`event-${index}`}
@@ -68,9 +47,6 @@ const ScheduleEvent = ({ event, index }: ScheduleEventProps) => {
     >
       <div className="w-full md:w-1/4 mb-2 md:mb-0">
         <p className="font-semibold text-raade-navy font-montserrat">{event.time}</p>
-        <div className="bg-[#274675]/10 text-[#274675] text-xs px-2 py-1 rounded-full inline-block mt-1 font-medium">
-          {getEventTypeLabel(event.type)}
-        </div>
       </div>
       <div className="w-full md:w-3/4">
         <h3 className="text-lg font-bold text-raade-navy font-montserrat">{event.title}</h3>
@@ -83,14 +59,14 @@ const ScheduleEvent = ({ event, index }: ScheduleEventProps) => {
           
           {event.speaker && (
             <div className="flex items-center text-[#FBB03B]">
-              <User className="w-4 h-4 mr-1" />
+              <Users className="w-4 h-4 mr-1" />
               <span className="font-opensans">{event.speaker}</span>
             </div>
           )}
           
           {event.capacity && (
             <div className="flex items-center text-gray-500">
-              <Users className="w-4 h-4 mr-1" />
+              <Clock className="w-4 h-4 mr-1" />
               <span className="font-opensans">{event.capacity}</span>
             </div>
           )}

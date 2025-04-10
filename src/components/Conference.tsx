@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -9,7 +8,6 @@ import ConferenceWhy from "./conference/ConferenceWhy";
 import ConferenceRegistration from "./conference/ConferenceRegistration";
 import ConferenceFinalCta from "./conference/ConferenceFinalCta";
 import ConferenceSpeakers from "./conference/ConferenceSpeakers";
-import ConferenceSchedule from "./conference/ConferenceSchedule";
 
 /**
  * Conference component - Main container for all conference-related sections
@@ -60,11 +58,6 @@ const Conference = () => {
       {/* Speakers Section */}
       <section id="speakers">
         <ConferenceSpeakers />
-      </section>
-      
-      {/* Schedule Section - Added */}
-      <section id="schedule">
-        <ConferenceSchedule />
       </section>
       
       {/* Registration Options */}
