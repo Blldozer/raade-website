@@ -47,6 +47,7 @@ const mainNavItems: NavItem[] = [
       { name: "Overview", href: "/conference#overview" },
       { name: "Why Attend", href: "/conference#why-attend" },
       { name: "Speakers", href: "/conference#speakers" },
+      { name: "Schedule", href: "/conference#schedule" }, // Added schedule link
       { name: "Register Now", href: "/conference/register", highlight: true }, // Registration link
       { name: "Donate", href: "/conference#donation", highlight: false } // Added donation link
     ]
