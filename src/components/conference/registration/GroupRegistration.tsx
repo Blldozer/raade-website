@@ -1,4 +1,3 @@
-
 import { UseFormWatch, UseFormSetValue, Control, useFieldArray, FieldErrors } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -12,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { RegistrationFormData, calculateTotalPrice } from "../RegistrationFormTypes";
+import { RegistrationFormData, calculateTotalPrice, getTicketPrice, getRegularTicketPrice } from "../RegistrationFormTypes";
 
 interface GroupRegistrationProps {
   watch: UseFormWatch<RegistrationFormData>;
@@ -44,6 +43,8 @@ const GroupRegistration = ({ watch, setValue, control, errors }: GroupRegistrati
 
   const groupSize = watch("groupSize") || 3; // Default to 3 now instead of 5
   const totalPrice = calculateTotalPrice("student-group", groupSize);
+  // Get the per-person price dynamically from the pricing configuration
+  const perPersonPrice = getRegularTicketPrice("student-group");
   
   return (
     <div className="mt-4 space-y-4">
@@ -87,7 +88,7 @@ const GroupRegistration = ({ watch, setValue, control, errors }: GroupRegistrati
         <div className="mt-2 p-3 bg-gray-50 rounded-md">
           <div className="flex justify-between items-center">
             <span className="text-gray-700">Price per person:</span>
-            <span className="font-medium">$20</span>
+            <span className="font-medium">${perPersonPrice}</span>
           </div>
           <div className="flex justify-between items-center mt-1">
             <span className="text-gray-700">Group size:</span>
