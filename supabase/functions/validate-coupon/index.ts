@@ -98,28 +98,6 @@ serve(async (req) => {
     const upperCaseCode = code.toUpperCase();
     logDebug(requestId, `Checking coupon code: ${upperCaseCode}`);
     
-    // First check if it's a demo coupon
-    const demoValidCoupons = {
-      "DEMO25": { type: "percentage", amount: 25 },
-      "DEMO50": { type: "percentage", amount: 50 },
-      "DEMO100": { type: "percentage", amount: 100 },
-      "DEMO10DOLLARS": { type: "fixed", amount: 10 },
-      "DEMO25DOLLARS": { type: "fixed", amount: 25 },
-      "EARLYBIRD2025": { type: "percentage", amount: 15 }
-    };
-    
-    if (upperCaseCode in demoValidCoupons) {
-      logDebug(requestId, "Demo coupon found", demoValidCoupons[upperCaseCode as keyof typeof demoValidCoupons]);
-      return new Response(
-        JSON.stringify({
-          isValid: true,
-          message: "Demo coupon is valid",
-          discount: demoValidCoupons[upperCaseCode as keyof typeof demoValidCoupons]
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
     // Check if it's an unlimited school code
     if (UNLIMITED_SCHOOL_CODES.includes(upperCaseCode)) {
       logDebug(requestId, "School code detected");
@@ -169,18 +147,6 @@ serve(async (req) => {
     
     if (couponError) {
       logDebug(requestId, "Error retrieving coupon from database", couponError);
-      
-      // For database errors, still check the backup hardcoded coupons
-      if (upperCaseCode in demoValidCoupons) {
-        return new Response(
-          JSON.stringify({
-            isValid: true,
-            message: "Demo coupon is valid",
-            discount: demoValidCoupons[upperCaseCode as keyof typeof demoValidCoupons]
-          }),
-          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
       
       return new Response(
         JSON.stringify({

@@ -29,12 +29,6 @@ interface CouponCodeSectionProps {
  * - Supports special school codes that have unlimited uses but can't be used twice by the same email
  * - Prevents discount application to group tickets
  * - Ensures coupon code is accessible for registration process
- * 
- * @param setCouponCode - Function to update coupon code in parent component
- * @param setCouponDiscount - Function to update coupon discount details
- * @param setIsFullDiscount - Function to indicate if coupon is 100% off
- * @param email - User's email to check for previous usage of unlimited school codes
- * @param ticketType - The selected ticket type to check if it's a group ticket
  */
 const CouponCodeSection = ({
   setCouponCode,
@@ -54,9 +48,6 @@ const CouponCodeSection = ({
 
   // Check if this is a group ticket - discounts don't apply to groups
   const isGroupTicket = ticketType === TICKET_TYPES_ENUM.STUDENT_GROUP;
-  
-  // List of special school codes that need email verification
-  const SCHOOL_CODES = ['PVAMU', 'TEXAS', 'TULANE'];
   
   // Function to test Supabase connection
   const testSupabaseConnection = async () => {
@@ -112,21 +103,6 @@ const CouponCodeSection = ({
         return;
       }
       
-      // For school codes, we need to include the email to check usage history
-      const upperCaseCode = inputValue.trim().toUpperCase();
-      const isSchoolCode = SCHOOL_CODES.includes(upperCaseCode);
-      
-      // Check if we need email for school code but don't have it
-      if (isSchoolCode && !email) {
-        toast({
-          title: "Email required",
-          description: "Please fill in your email first before applying this school coupon code.",
-          variant: "destructive",
-        });
-        setIsValidating(false);
-        return;
-      }
-      
       // Add unique request ID for tracking
       const requestId = Math.random().toString(36).substring(2, 15);
       const requestPayload: { 
@@ -139,8 +115,8 @@ const CouponCodeSection = ({
         requestId
       };
       
-      // Add email for school codes
-      if (isSchoolCode && email) {
+      // Add email if available
+      if (email) {
         requestPayload.email = email;
       }
       
@@ -161,67 +137,6 @@ const CouponCodeSection = ({
       
       if (error) {
         console.error(`Coupon validation error (${requestId}):`, error);
-        
-        // Try the hardcoded coupons as fallback
-        const hardcodedCoupons: Record<string, { type: 'percentage' | 'fixed'; amount: number }> = {
-          "DEMO25": { type: "percentage", amount: 25 },
-          "DEMO50": { type: "percentage", amount: 50 },
-          "DEMO100": { type: "percentage", amount: 100 },
-          "DEMO10DOLLARS": { type: "fixed", amount: 10 },
-          "DEMO25DOLLARS": { type: "fixed", amount: 25 },
-          "EARLYBIRD2025": { type: "percentage", amount: 15 },
-          "PVAMU": { type: "percentage", amount: 100 },
-          "TEXAS": { type: "percentage", amount: 100 },
-          "TULANE": { type: "percentage", amount: 100 }
-        };
-        
-        const couponKey = upperCaseCode as keyof typeof hardcodedCoupons;
-        if (hardcodedCoupons[couponKey]) {
-          // Valid hardcoded coupon
-          console.log(`Using hardcoded coupon ${upperCaseCode}`);
-          
-          const hardcodedDiscount = hardcodedCoupons[couponKey];
-          setCouponCode(upperCaseCode);
-          setCouponDiscount(hardcodedDiscount);
-          setIsFullDiscount(hardcodedDiscount.type === 'percentage' && hardcodedDiscount.amount === 100);
-          
-          setValidationResult({
-            isValid: true,
-            message: hardcodedDiscount.type === 'percentage' && hardcodedDiscount.amount === 100 
-              ? 'Free registration code applied!' 
-              : `Discount applied: ${hardcodedDiscount.type === 'percentage' 
-                  ? `${hardcodedDiscount.amount}%` 
-                  : `$${hardcodedDiscount.amount}`} off`,
-            discount: hardcodedDiscount
-          });
-          
-          // Store the coupon code
-          setTimeout(() => {
-            const hiddenElement = document.getElementById("coupon-code-value");
-            if (hiddenElement) {
-              hiddenElement.setAttribute("data-value", upperCaseCode);
-            } else {
-              const element = document.createElement("div");
-              element.id = "coupon-code-value";
-              element.style.display = "none";
-              element.setAttribute("data-value", upperCaseCode);
-              document.body.appendChild(element);
-            }
-          }, 100);
-          
-          toast({
-            title: "Coupon applied",
-            description: hardcodedDiscount.type === 'percentage' && hardcodedDiscount.amount === 100 
-              ? "Your registration will be free with this coupon!" 
-              : `Discount of ${hardcodedDiscount.type === 'percentage' 
-                  ? `${hardcodedDiscount.amount}%` 
-                  : `$${hardcodedDiscount.amount}`} applied to your registration.`,
-            variant: "default",
-          });
-          
-          setIsValidating(false);
-          return;
-        }
         
         setValidationResult({
           isValid: false,

@@ -1,7 +1,7 @@
 
 /** @jsx jsx */
 /** @jsxFrag Fragment */
-import { jsx, Fragment } from 'https://esm.sh/react@18.3.1/jsx-runtime';
+import { jsx, Fragment } from 'https://esm.sh/react@18.3.0/jsx-runtime';
 import {
   Body,
   Container,

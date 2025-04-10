@@ -1,17 +1,14 @@
-
 import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
 import Stripe from 'https://esm.sh/stripe@14.21.0';
 import { calculatePaymentAmount } from '../_shared/pricing.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.1';
 
-// CORS headers for browser requests
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -24,7 +21,6 @@ serve(async (req) => {
       apiVersion: '2023-10-16',
     });
 
-    // Initialize Supabase admin client
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL") || "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "",
@@ -61,20 +57,16 @@ serve(async (req) => {
       );
     }
 
-    // Calculate the payment amount using our shared pricing module
     let { amount, description, isGroupRegistration } = calculatePaymentAmount(ticketType, groupSize);
 
-    // Verify coupon code if provided
     let verifiedDiscount = null;
     let couponId = null;
 
-    // Check if this is a group ticket - discounts don't apply to groups
     const isGroupTicket = ticketType === 'student-group';
 
     if (couponCode && !isGroupTicket) {
       console.log(`[${requestId}] Validating coupon code: ${couponCode}`);
       
-      // Validate the coupon against the database
       const { data: couponData, error: couponError } = await supabaseAdmin
         .from('coupon_codes')
         .select('*')
@@ -85,7 +77,6 @@ serve(async (req) => {
       if (!couponError && couponData) {
         console.log(`[${requestId}] Coupon found in database:`, couponData);
         
-        // Check if coupon is expired
         if (couponData.expires_at && new Date(couponData.expires_at) < new Date()) {
           console.log(`[${requestId}] Coupon has expired`);
           return new Response(
@@ -94,7 +85,6 @@ serve(async (req) => {
           );
         }
 
-        // Check max usage limit if set
         if (couponData.max_uses !== null && couponData.current_uses >= couponData.max_uses) {
           console.log(`[${requestId}] Coupon usage limit reached`);
           return new Response(
@@ -103,7 +93,24 @@ serve(async (req) => {
           );
         }
 
-        // Coupon is valid, apply discount
+        const SCHOOL_CODES = ['PVAMU', 'TEXAS', 'TULANE'];
+        if (SCHOOL_CODES.includes(couponCode.toUpperCase())) {
+          const { data: usageData, error: usageError } = await supabaseAdmin
+            .from('conference_registrations')
+            .select('id')
+            .eq('coupon_code', couponCode.toUpperCase())
+            .eq('email', email)
+            .limit(1);
+            
+          if (!usageError && usageData && usageData.length > 0) {
+            console.log(`[${requestId}] Email already used this school code`);
+            return new Response(
+              JSON.stringify({ error: 'You have already used this coupon code' }),
+              { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+        }
+
         verifiedDiscount = {
           type: couponData.discount_type,
           amount: Number(couponData.discount_amount)
@@ -113,24 +120,29 @@ serve(async (req) => {
       } else if (couponError) {
         console.error(`[${requestId}] Error validating coupon:`, couponError);
       }
-      
-      // Special handling for hardcoded demo coupons
-      if (!verifiedDiscount) {
-        // Fallback to client-provided discount if database validation fails
-        // This supports the demo coupons and school codes
-        if (couponDiscount && !isGroupTicket) {
-          console.log(`[${requestId}] Using client-provided discount:`, couponDiscount);
-          verifiedDiscount = couponDiscount;
-        }
-      }
     } else if (couponDiscount && !isGroupTicket) {
-      // If no coupon code is provided but discount is, use the client-provided discount
-      // (only for non-group tickets)
+      const upperCaseCode = couponDiscount.type === 'percentage' && couponDiscount.amount === 100 
+        ? 'SCHOOL' : 'UNKNOWN';
       console.log(`[${requestId}] Using discount without code:`, couponDiscount);
-      verifiedDiscount = couponDiscount;
+      
+      const { data: anyCoupon, error: anyError } = await supabaseAdmin
+        .from('coupon_codes')
+        .select('*')
+        .eq('discount_type', couponDiscount.type)
+        .eq('discount_amount', couponDiscount.amount.toString())
+        .eq('is_active', true)
+        .limit(1);
+        
+      if (!anyError && anyCoupon && anyCoupon.length > 0) {
+        verifiedDiscount = couponDiscount;
+        couponId = anyCoupon[0].id;
+        console.log(`[${requestId}] Found matching coupon in database:`, anyCoupon[0].code);
+      } else {
+        console.log(`[${requestId}] No matching coupon found for discount:`, couponDiscount);
+        verifiedDiscount = null;
+      }
     }
 
-    // Apply verified discount if available and not a group ticket
     if (verifiedDiscount && !isGroupTicket) {
       console.log(`[${requestId}] Applying discount to payment amount`);
       if (verifiedDiscount.type === 'percentage') {
@@ -138,14 +150,12 @@ serve(async (req) => {
         amount = Math.max(0, amount - discountAmount);
         console.log(`[${requestId}] Applied ${verifiedDiscount.amount}% discount, new amount: ${amount}`);
       } else {
-        // Fixed amount discount (in cents)
-        const discountAmount = verifiedDiscount.amount * 100; // Convert dollars to cents
+        const discountAmount = verifiedDiscount.amount * 100;
         amount = Math.max(0, amount - discountAmount);
         console.log(`[${requestId}] Applied $${verifiedDiscount.amount} discount, new amount: ${amount}`);
       }
     }
 
-    // Create the payment intent
     console.log(`[${requestId}] Creating payment intent for ${amount} cents`);
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
@@ -170,8 +180,7 @@ serve(async (req) => {
 
     console.log(`[${requestId}] Payment intent created: ${paymentIntent.id}`);
 
-    // If using a valid coupon from database and not a group ticket, increment its usage
-    if (couponId && !isGroupTicket) {
+    if (couponCode && !isGroupTicket) {
       console.log(`[${requestId}] Incrementing coupon usage for ${couponCode}`);
       const { error: usageError } = await supabaseAdmin.rpc(
         'increment_coupon_usage',
@@ -180,13 +189,11 @@ serve(async (req) => {
       
       if (usageError) {
         console.error(`[${requestId}] Error incrementing coupon usage:`, usageError);
-        // Continue since payment intent was created successfully
       } else {
         console.log(`[${requestId}] Successfully incremented coupon usage`);
       }
     }
 
-    // Return the client secret to the frontend
     console.log(`[${requestId}] Returning client secret to frontend`);
     return new Response(
       JSON.stringify({
