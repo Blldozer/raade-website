@@ -44,11 +44,16 @@ export default function EmailCampaignsPage() {
     status: "completed"
   });
 
-  const handleFilterChange = (category: string, key: string, checked: boolean) => {
+  // Fix: Type the category parameter to be more specific instead of using string
+  const handleFilterChange = (
+    category: 'ticketTypes' | 'registrantTypes', 
+    key: string, 
+    checked: boolean
+  ) => {
     setFilters(prev => ({
       ...prev,
       [category]: {
-        ...prev[category as keyof typeof prev],
+        ...prev[category],
         [key]: checked
       }
     }));
