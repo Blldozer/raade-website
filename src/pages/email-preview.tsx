@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import VerificationEmail from '../../supabase/functions/_shared/email-templates/verification-email-preview';
-import NextStepsEmail from '../../supabase/functions/_shared/email-templates/next-steps-email';
+import NextStepsEmail from '../../supabase/functions/_shared/email-templates/next-steps-email-preview';
 
 /**
  * Email Preview Page
