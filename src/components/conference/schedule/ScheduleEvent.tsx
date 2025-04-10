@@ -16,58 +16,133 @@ export interface ScheduleEventProps {
   index: number;
 }
 
+/**
+ * ScheduleEvent component - Displays individual event details in the conference schedule
+ * 
+ * Features:
+ * - Color-coded event types for quick visual identification
+ * - Responsive layout that adapts to all screen sizes
+ * - Subtle hover animations for better interactivity
+ * - Consistent RAADE branding throughout
+ * 
+ * Mobile optimizations:
+ * - Stacks layout vertically on small screens
+ * - Adjusts font sizes for better readability
+ * - Maintains touch-friendly spacing
+ */
 const ScheduleEvent = ({ event, index }: ScheduleEventProps) => {
-  const getEventTypeClass = (type: string) => {
-    switch(type) {
-      case "keynote":
-        return "border-l-[#FBB03B]";
-      case "panel":
-        return "border-l-raade-navy";
-      case "workshop":
-        return "border-l-green-500";
-      case "showcase":
-        return "border-l-purple-500";
-      case "social":
-      case "break":
-        return "border-l-gray-400";
-      case "ceremony":
-        return "border-l-red-500";
-      default:
-        return "border-l-gray-300";
+  // Animation variant for individual schedule events
+  const itemVariant = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        duration: 0.3,
+        ease: "easeOut" 
+      }
     }
   };
 
+  // Get event type color and icon styling
+  const getEventTypeStyles = (type: string) => {
+    switch(type) {
+      case "keynote":
+        return {
+          borderColor: "#FBB03B",
+          bgColor: "bg-[#FBB03B]/10",
+          textColor: "text-[#FBB03B]",
+          icon: "🎤"
+        };
+      case "panel":
+        return {
+          borderColor: "#274675",
+          bgColor: "bg-raade-navy/10",
+          textColor: "text-raade-navy",
+          icon: "👥"
+        };
+      case "workshop":
+        return {
+          borderColor: "#4CAF50",
+          bgColor: "bg-green-100",
+          textColor: "text-green-700",
+          icon: "🧩"
+        };
+      case "showcase":
+        return {
+          borderColor: "#9C27B0",
+          bgColor: "bg-purple-100",
+          textColor: "text-purple-700",
+          icon: "🌟"
+        };
+      case "social":
+        return {
+          borderColor: "#2196F3",
+          bgColor: "bg-blue-100",
+          textColor: "text-blue-700",
+          icon: "🥂"
+        };
+      case "break":
+        return {
+          borderColor: "#9E9E9E",
+          bgColor: "bg-gray-100",
+          textColor: "text-gray-700",
+          icon: "☕"
+        };
+      case "ceremony":
+        return {
+          borderColor: "#F44336",
+          bgColor: "bg-red-100",
+          textColor: "text-red-700",
+          icon: "🎭"
+        };
+      default:
+        return {
+          borderColor: "#9E9E9E",
+          bgColor: "bg-gray-100",
+          textColor: "text-gray-700",
+          icon: "📌"
+        };
+    }
+  };
+
+  const styles = getEventTypeStyles(event.type);
+
   return (
     <motion.div
-      key={`event-${index}`}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
-      className={`flex flex-col md:flex-row mb-4 p-4 border-l-4 ${getEventTypeClass(event.type)} bg-gray-50 rounded-r-md hover:shadow-md transition-shadow`}
+      variants={itemVariant}
+      className={`flex flex-col md:flex-row mb-4 rounded-lg overflow-hidden border-l-4 hover:shadow-md transition-shadow duration-300 ${styles.bgColor}`}
+      style={{ borderLeftColor: styles.borderColor }}
     >
-      <div className="w-full md:w-1/4 mb-2 md:mb-0">
-        <p className="font-semibold text-raade-navy font-montserrat">{event.time}</p>
+      <div className="w-full md:w-1/4 p-4 md:border-r border-gray-200">
+        <div className="font-semibold text-raade-navy font-montserrat mb-1">{event.time}</div>
+        <div className={`text-sm ${styles.textColor} font-medium inline-flex items-center`}>
+          <span className="mr-1">{styles.icon}</span>
+          <span className="capitalize">{event.type}</span>
+        </div>
       </div>
-      <div className="w-full md:w-3/4">
-        <h3 className="text-lg font-bold text-raade-navy font-montserrat">{event.title}</h3>
-        <p className="text-gray-600 mb-2 font-opensans">{event.description}</p>
-        <div className="flex flex-wrap gap-4 mt-2 text-sm">
-          <div className="flex items-center text-gray-500">
-            <MapPin className="w-4 h-4 mr-1" />
-            <span className="font-opensans">{event.location}</span>
+      
+      <div className="w-full md:w-3/4 p-4">
+        <h3 className="text-lg font-bold text-raade-navy font-montserrat mb-1">{event.title}</h3>
+        <p className="text-gray-600 mb-3 font-opensans text-sm md:text-base">{event.description}</p>
+        
+        <div className="flex flex-wrap gap-3 text-sm">
+          <div className="flex items-center bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full">
+            <MapPin className="w-3.5 h-3.5 mr-1 text-gray-500" />
+            <span className="font-opensans text-gray-600">{event.location}</span>
           </div>
           
           {event.speaker && (
-            <div className="flex items-center text-[#FBB03B]">
-              <Users className="w-4 h-4 mr-1" />
-              <span className="font-opensans">{event.speaker}</span>
+            <div className="flex items-center bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full">
+              <Users className="w-3.5 h-3.5 mr-1 text-[#FBB03B]" />
+              <span className="font-opensans text-gray-600">{event.speaker}</span>
             </div>
           )}
           
           {event.capacity && (
-            <div className="flex items-center text-gray-500">
-              <Clock className="w-4 h-4 mr-1" />
-              <span className="font-opensans">{event.capacity}</span>
+            <div className="flex items-center bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full">
+              <Clock className="w-3.5 h-3.5 mr-1 text-gray-500" />
+              <span className="font-opensans text-gray-600">{event.capacity}</span>
             </div>
           )}
         </div>
