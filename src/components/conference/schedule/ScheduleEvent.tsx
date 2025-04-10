@@ -1,4 +1,3 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { Clock, MapPin, Users } from "lucide-react";
@@ -20,16 +19,10 @@ export interface ScheduleEventProps {
  * ScheduleEvent component - Displays individual event details in the conference schedule
  * 
  * Features:
+ * - Table-like layout with time on the left and session details on the right
  * - Elegant typography using Simula Book and Lora fonts
  * - Color-coded event types for quick visual identification
- * - Responsive layout that adapts to all screen sizes
- * - Subtle hover animations for better interactivity
  * - Consistent RAADE branding throughout
- * 
- * Mobile optimizations:
- * - Stacks layout vertically on small screens
- * - Adjusts font sizes for better readability
- * - Maintains touch-friendly spacing
  */
 const ScheduleEvent = ({ event, index }: ScheduleEventProps) => {
   // Animation variant for individual schedule events
@@ -97,6 +90,13 @@ const ScheduleEvent = ({ event, index }: ScheduleEventProps) => {
           textColor: "text-red-700",
           icon: "🎭"
         };
+      case "call-to-action":
+        return {
+          borderColor: "#E91E63",
+          bgColor: "bg-pink-100",
+          textColor: "text-pink-700",
+          icon: "✨"
+        };
       default:
         return {
           borderColor: "#9E9E9E",
@@ -112,40 +112,47 @@ const ScheduleEvent = ({ event, index }: ScheduleEventProps) => {
   return (
     <motion.div
       variants={itemVariant}
-      className={`flex flex-col md:flex-row mb-4 rounded-lg overflow-hidden border-l-4 hover:shadow-md transition-shadow duration-300 ${styles.bgColor}`}
-      style={{ borderLeftColor: styles.borderColor }}
+      className="flex mb-4 hover:shadow-md transition-shadow duration-300 border-b border-gray-100 pb-4"
     >
-      <div className="w-full md:w-1/4 p-4 md:border-r border-gray-200">
-        <div className="font-simula font-semibold text-raade-navy mb-1">{event.time}</div>
-        <div className={`text-sm ${styles.textColor} font-medium inline-flex items-center`}>
+      {/* Time Column - Fixed width */}
+      <div className="w-1/4 pr-4">
+        <div className="font-sans font-semibold text-raade-navy">{event.time}</div>
+        <div className={`text-sm ${styles.textColor} font-medium inline-flex items-center mt-1`}>
           <span className="mr-1">{styles.icon}</span>
           <span className="capitalize font-lora italic">{event.type}</span>
         </div>
       </div>
       
-      <div className="w-full md:w-3/4 p-4">
-        <h3 className="text-lg font-bold text-raade-navy font-simula mb-1">{event.title}</h3>
-        <p className="text-gray-600 mb-3 font-lora text-sm md:text-base italic">{event.description}</p>
-        
-        <div className="flex flex-wrap gap-3 text-sm">
-          <div className="flex items-center bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full">
-            <MapPin className="w-3.5 h-3.5 mr-1 text-gray-500" />
-            <span className="font-lora text-gray-600">{event.location}</span>
+      {/* Content Column - Takes remaining width */}
+      <div className="w-3/4 pl-4 border-l-4" style={{ borderLeftColor: styles.borderColor }}>
+        <div className={`${styles.bgColor} p-4 rounded-lg`}>
+          <h3 className="text-lg font-bold text-raade-navy font-simula mb-1">{event.title}</h3>
+          {event.description && (
+            <p className="text-gray-600 mb-3 font-lora text-sm md:text-base italic">{event.description}</p>
+          )}
+          
+          <div className="flex flex-wrap gap-3 text-sm">
+            {event.location && (
+              <div className="flex items-center bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full">
+                <MapPin className="w-3.5 h-3.5 mr-1 text-gray-500" />
+                <span className="font-lora text-gray-600">{event.location}</span>
+              </div>
+            )}
+            
+            {event.speaker && (
+              <div className="flex items-center bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full">
+                <Users className="w-3.5 h-3.5 mr-1 text-[#FBB03B]" />
+                <span className="font-lora text-gray-600">{event.speaker}</span>
+              </div>
+            )}
+            
+            {event.capacity && (
+              <div className="flex items-center bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full">
+                <Clock className="w-3.5 h-3.5 mr-1 text-gray-500" />
+                <span className="font-lora text-gray-600">{event.capacity}</span>
+              </div>
+            )}
           </div>
-          
-          {event.speaker && (
-            <div className="flex items-center bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full">
-              <Users className="w-3.5 h-3.5 mr-1 text-[#FBB03B]" />
-              <span className="font-lora text-gray-600">{event.speaker}</span>
-            </div>
-          )}
-          
-          {event.capacity && (
-            <div className="flex items-center bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full">
-              <Clock className="w-3.5 h-3.5 mr-1 text-gray-500" />
-              <span className="font-lora text-gray-600">{event.capacity}</span>
-            </div>
-          )}
         </div>
       </div>
     </motion.div>

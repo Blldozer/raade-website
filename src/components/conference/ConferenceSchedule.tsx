@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ScheduleHeader from "./schedule/ScheduleHeader";
@@ -82,8 +81,8 @@ const ConferenceSchedule = () => {
             
             <div className="mt-8">
               <div className="flex mb-4 px-4 border-b border-gray-200 pb-2">
-                <div className="w-1/4 sm:w-1/5 font-simula text-raade-navy text-sm">Time</div>
-                <div className="w-3/4 sm:w-4/5 font-simula text-raade-navy text-sm">Session</div>
+                <div className="w-1/4 font-simula text-raade-navy text-sm">TIME</div>
+                <div className="w-3/4 font-simula text-raade-navy text-sm">SESSION</div>
               </div>
               
               <div className="overflow-hidden">

@@ -1,0 +1,13 @@
+[33mcommit cd4b47b185a4f307aad2fe03d3f7e342a21e15a9[m
+Author: gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com>
+Date:   Thu Apr 10 18:23:26 2025 +0000
+
+    Reverted to edit 8cf4a1e0-edad-483c-b50e-e93618391b19: "feat: add Next Steps email template and Deno type declarations for React Email components"
+
+[33mcommit 473a8b089301318e4599d124eaa28648394175eb[m
+Author: gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com>
+Date:   Thu Apr 10 18:19:38 2025 +0000
+
+    Fix: Implement navigation and email changes
+    
+    This commit implements the changes requested in the plan, including navigation updates and email template modifications.
