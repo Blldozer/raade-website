@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
  * ConferenceSchedule component - Displays the conference agenda in a tabbed interface
  * 
  * Features:
+ * - Elegant typography using Simula Book and Lora fonts
  * - Responsive design for all device sizes
  * - Interactive tab navigation between conference days
  * - Consistent RAADE branding and styling
@@ -17,7 +18,7 @@ import { motion } from "framer-motion";
  * - Smooth animations for better user experience
  * 
  * Design considerations:
- * - Uses Montserrat for headings and OpenSans for body text
+ * - Uses Simula Book for headings and Lora for body text
  * - Incorporates RAADE's navy blue and yellow-orange brand colors
  * - Implements subtle animations for mobile and desktop
  * - Uses consistent spacing and padding for optimal readability
@@ -54,7 +55,7 @@ const ConferenceSchedule = () => {
               <TabsList className="grid w-full max-w-md grid-cols-2 p-1 bg-gray-100 rounded-lg">
                 <TabsTrigger 
                   value="day1" 
-                  className="text-base md:text-lg font-montserrat font-semibold rounded-md transition-all duration-300
+                  className="text-base md:text-lg font-simula rounded-md transition-all duration-300
                     data-[state=active]:bg-raade-navy data-[state=active]:text-white 
                     data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-600
                     data-[state=inactive]:hover:bg-gray-200"
@@ -66,7 +67,7 @@ const ConferenceSchedule = () => {
                 </TabsTrigger>
                 <TabsTrigger 
                   value="day2" 
-                  className="text-base md:text-lg font-montserrat font-semibold rounded-md transition-all duration-300
+                  className="text-base md:text-lg font-simula rounded-md transition-all duration-300
                     data-[state=active]:bg-raade-navy data-[state=active]:text-white 
                     data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-600
                     data-[state=inactive]:hover:bg-gray-200"
@@ -81,8 +82,8 @@ const ConferenceSchedule = () => {
             
             <div className="mt-8">
               <div className="flex mb-4 px-4 border-b border-gray-200 pb-2">
-                <div className="w-1/4 sm:w-1/5 font-montserrat font-semibold text-raade-navy text-sm">Time</div>
-                <div className="w-3/4 sm:w-4/5 font-montserrat font-semibold text-raade-navy text-sm">Session</div>
+                <div className="w-1/4 sm:w-1/5 font-simula text-raade-navy text-sm">Time</div>
+                <div className="w-3/4 sm:w-4/5 font-simula text-raade-navy text-sm">Session</div>
               </div>
               
               <div className="overflow-hidden">
@@ -93,7 +94,7 @@ const ConferenceSchedule = () => {
           </Tabs>
           
           <div className="bg-[#FBB03B]/10 p-6 rounded-lg mt-12 border border-[#FBB03B]/20">
-            <p className="text-gray-700 font-opensans text-center">
+            <p className="text-gray-700 font-lora text-center italic">
               This schedule is subject to change. Please check back for updates before the event.
             </p>
           </div>

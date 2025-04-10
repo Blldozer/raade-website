@@ -20,6 +20,7 @@ export interface ScheduleEventProps {
  * ScheduleEvent component - Displays individual event details in the conference schedule
  * 
  * Features:
+ * - Elegant typography using Simula Book and Lora fonts
  * - Color-coded event types for quick visual identification
  * - Responsive layout that adapts to all screen sizes
  * - Subtle hover animations for better interactivity
@@ -115,34 +116,34 @@ const ScheduleEvent = ({ event, index }: ScheduleEventProps) => {
       style={{ borderLeftColor: styles.borderColor }}
     >
       <div className="w-full md:w-1/4 p-4 md:border-r border-gray-200">
-        <div className="font-semibold text-raade-navy font-montserrat mb-1">{event.time}</div>
+        <div className="font-simula font-semibold text-raade-navy mb-1">{event.time}</div>
         <div className={`text-sm ${styles.textColor} font-medium inline-flex items-center`}>
           <span className="mr-1">{styles.icon}</span>
-          <span className="capitalize">{event.type}</span>
+          <span className="capitalize font-lora italic">{event.type}</span>
         </div>
       </div>
       
       <div className="w-full md:w-3/4 p-4">
-        <h3 className="text-lg font-bold text-raade-navy font-montserrat mb-1">{event.title}</h3>
-        <p className="text-gray-600 mb-3 font-opensans text-sm md:text-base">{event.description}</p>
+        <h3 className="text-lg font-bold text-raade-navy font-simula mb-1">{event.title}</h3>
+        <p className="text-gray-600 mb-3 font-lora text-sm md:text-base italic">{event.description}</p>
         
         <div className="flex flex-wrap gap-3 text-sm">
           <div className="flex items-center bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full">
             <MapPin className="w-3.5 h-3.5 mr-1 text-gray-500" />
-            <span className="font-opensans text-gray-600">{event.location}</span>
+            <span className="font-lora text-gray-600">{event.location}</span>
           </div>
           
           {event.speaker && (
             <div className="flex items-center bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full">
               <Users className="w-3.5 h-3.5 mr-1 text-[#FBB03B]" />
-              <span className="font-opensans text-gray-600">{event.speaker}</span>
+              <span className="font-lora text-gray-600">{event.speaker}</span>
             </div>
           )}
           
           {event.capacity && (
             <div className="flex items-center bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full">
               <Clock className="w-3.5 h-3.5 mr-1 text-gray-500" />
-              <span className="font-opensans text-gray-600">{event.capacity}</span>
+              <span className="font-lora text-gray-600">{event.capacity}</span>
             </div>
           )}
         </div>

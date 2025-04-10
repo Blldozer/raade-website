@@ -21,6 +21,7 @@ export interface DayScheduleProps {
  * DaySchedule component - Displays the events for a specific conference day
  * 
  * Features:
+ * - Elegant typography with Simula Book and Lora fonts
  * - Staggered animation for event listings
  * - Responsive design for all device sizes
  * - Automatic mapping of events from data source
