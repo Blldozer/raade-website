@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -127,9 +126,16 @@ const CouponCodeSection = ({
         return;
       }
       
-      // Prepare request payload
-      const requestPayload: { code: string; email?: string; ticketType?: string } = { 
-        code: inputValue.trim() 
+      // Add unique request ID for tracking
+      const requestId = Math.random().toString(36).substring(2, 15);
+      const requestPayload: { 
+        code: string; 
+        email?: string; 
+        ticketType?: string;
+        requestId?: string;
+      } = { 
+        code: inputValue.trim(),
+        requestId
       };
       
       // Add email for school codes
@@ -141,10 +147,6 @@ const CouponCodeSection = ({
       if (ticketType) {
         requestPayload.ticketType = ticketType;
       }
-      
-      // Add unique request ID for tracking
-      const requestId = Math.random().toString(36).substring(2, 15);
-      requestPayload.requestId = requestId;
       
       console.log(`Validating coupon code: ${inputValue.trim()} (Request ID: ${requestId})`);
       

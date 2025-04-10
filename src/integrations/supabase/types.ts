@@ -171,6 +171,63 @@ export type Database = {
         }
         Relationships: []
       }
+      email_tracking: {
+        Row: {
+          coupon_code: string | null
+          created_at: string
+          email: string
+          email_type: string
+          failure_reason: string | null
+          full_name: string
+          group_size: number | null
+          id: string
+          is_known_institution: boolean | null
+          last_retry_at: string | null
+          metadata: Json | null
+          retry_count: number
+          sent_at: string | null
+          status: string
+          ticket_type: string
+          updated_at: string
+        }
+        Insert: {
+          coupon_code?: string | null
+          created_at?: string
+          email: string
+          email_type: string
+          failure_reason?: string | null
+          full_name: string
+          group_size?: number | null
+          id?: string
+          is_known_institution?: boolean | null
+          last_retry_at?: string | null
+          metadata?: Json | null
+          retry_count?: number
+          sent_at?: string | null
+          status: string
+          ticket_type: string
+          updated_at?: string
+        }
+        Update: {
+          coupon_code?: string | null
+          created_at?: string
+          email?: string
+          email_type?: string
+          failure_reason?: string | null
+          full_name?: string
+          group_size?: number | null
+          id?: string
+          is_known_institution?: boolean | null
+          last_retry_at?: string | null
+          metadata?: Json | null
+          retry_count?: number
+          sent_at?: string | null
+          status?: string
+          ticket_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       email_verifications: {
         Row: {
           created_at: string
@@ -434,6 +491,10 @@ export type Database = {
       }
       increment_coupon_usage: {
         Args: { coupon_code_param: string }
+        Returns: number
+      }
+      increment_retry_count: {
+        Args: { record_id: string }
         Returns: number
       }
       is_admin: {
