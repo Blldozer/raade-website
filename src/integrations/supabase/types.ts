@@ -171,6 +171,134 @@ export type Database = {
         }
         Relationships: []
       }
+      email_campaign_recipients: {
+        Row: {
+          campaign_id: string
+          click_count: number | null
+          error_message: string | null
+          id: string
+          metadata: Json | null
+          open_count: number | null
+          registrant_email: string
+          registrant_id: string
+          registrant_type: string
+          sent_at: string
+          status: string
+        }
+        Insert: {
+          campaign_id: string
+          click_count?: number | null
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          open_count?: number | null
+          registrant_email: string
+          registrant_id: string
+          registrant_type: string
+          sent_at?: string
+          status?: string
+        }
+        Update: {
+          campaign_id?: string
+          click_count?: number | null
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          open_count?: number | null
+          registrant_email?: string
+          registrant_id?: string
+          registrant_type?: string
+          sent_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_campaign_recipients_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "email_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_campaigns: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          filters: Json | null
+          id: string
+          name: string
+          sent_at: string | null
+          status: string
+          target_audience: string[] | null
+          template_name: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          filters?: Json | null
+          id?: string
+          name: string
+          sent_at?: string | null
+          status?: string
+          target_audience?: string[] | null
+          template_name: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          filters?: Json | null
+          id?: string
+          name?: string
+          sent_at?: string | null
+          status?: string
+          target_audience?: string[] | null
+          template_name?: string
+        }
+        Relationships: []
+      }
+      email_templates: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          subject: string
+          template_content: string
+          updated_at: string
+          variables: Json | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          subject: string
+          template_content: string
+          updated_at?: string
+          variables?: Json | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          subject?: string
+          template_content?: string
+          updated_at?: string
+          variables?: Json | null
+        }
+        Relationships: []
+      }
       email_tracking: {
         Row: {
           coupon_code: string | null
@@ -478,7 +606,28 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      unified_registrants: {
+        Row: {
+          additional_data: Json | null
+          coupon_code: string | null
+          created_at: string | null
+          email: string | null
+          email_verified: boolean | null
+          from_known_institution: boolean | null
+          full_name: string | null
+          group_id: string | null
+          group_size: number | null
+          id: string | null
+          is_group_leader: boolean | null
+          organization: string | null
+          registrant_type: string | null
+          role: string | null
+          status: string | null
+          ticket_type: string | null
+          updated_at: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_current_uses: {

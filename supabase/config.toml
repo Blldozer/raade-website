@@ -29,3 +29,34 @@ enabled = true
 
 [edge-functions]
 enabled = true
+
+[functions]
+[functions.calculate-payment-amount]
+verify_jwt = false
+
+[functions.create-checkout-session]
+verify_jwt = false
+
+[functions.create-direct-payment-intent]
+verify_jwt = false
+
+[functions.create-payment-intent]
+verify_jwt = false
+
+[functions.send-conference-confirmation]
+verify_jwt = false
+
+[functions.send-verification-email]
+verify_jwt = false
+
+[functions.store-registration]
+verify_jwt = false
+
+[functions.verify-email-domain]
+verify_jwt = false
+
+[functions.verify-email-token]
+verify_jwt = false
+
+[functions.send-next-steps-email]
+verify_jwt = false
