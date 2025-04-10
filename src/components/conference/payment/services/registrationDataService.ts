@@ -64,7 +64,14 @@ export const storeRegistrationData = async (
         }, STORAGE_TIMEOUT);
       });
       
-      // Create the storage request promise
+      // Create the storage request promise with more detailed information
+      console.log("Calling store-registration edge function with data:", {
+        email: requestData.email, 
+        ticketType: requestData.ticketType,
+        hasGroupEmails: requestData.groupEmails?.length > 0,
+        couponCode: requestData.couponCode || 'None'
+      });
+      
       const storagePromise = supabase.functions.invoke('store-registration', {
         body: requestData
       });
