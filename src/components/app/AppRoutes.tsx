@@ -1,4 +1,3 @@
-
 import { Route, Routes } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import PageLoading from "./PageLoading";
@@ -17,6 +16,7 @@ import PartnerApplication from "../../pages/PartnerApplication";
 import ConferenceRegistration from "../../pages/ConferenceRegistration";
 import SpeakerProfile from "../../pages/SpeakerProfile";
 import RegistrationSuccess from "../../pages/RegistrationSuccess";
+import EmailPreview from "../../pages/email-preview";
 
 /**
  * AppRoutes component
@@ -48,6 +48,7 @@ const AppRoutes = () => {
               <Route path="/projects/:projectSlug" element={<ProjectDetail />} />
               <Route path="/apply/student" element={<StudentApplication />} />
               <Route path="/apply/partner" element={<PartnerApplication />} />
+              <Route path="/email-preview" element={<EmailPreview />} />
             </Routes>
           </Suspense>
         </div>
