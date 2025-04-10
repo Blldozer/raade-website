@@ -1,5 +1,5 @@
 
-import React from "https://esm.sh/react@18.3.1";
+import React from "https://esm.sh/react@18.2.0";
 import {
   Body,
   Container,
