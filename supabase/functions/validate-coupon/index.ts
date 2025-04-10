@@ -11,18 +11,30 @@ const corsHeaders = {
 // Special school codes that have unlimited uses but can't be used by the same email twice
 const UNLIMITED_SCHOOL_CODES = ['PVAMU', 'TEXAS', 'TULANE'];
 
+// For debugging purposes, create a helper function to log the process
+function logDebug(requestId: string, message: string, data?: any) {
+  console.log(`[${requestId}] ${message}`, data ? JSON.stringify(data) : '');
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Generate a unique request ID for tracking
+  const requestId = crypto.randomUUID().substring(0, 8);
+  logDebug(requestId, "Starting coupon validation");
+
   try {
     // Get parameters from request
     const requestData = await req.json();
     const { code, email, ticketType } = requestData;
     
+    logDebug(requestId, "Received request data", { code, email, ticketType });
+    
     if (!code || typeof code !== 'string') {
+      logDebug(requestId, "Missing or invalid coupon code");
       return new Response(
         JSON.stringify({ 
           isValid: false, 
@@ -39,6 +51,7 @@ serve(async (req) => {
     const isGroupTicket = ticketType === 'student-group';
     
     if (isGroupTicket) {
+      logDebug(requestId, "Group ticket - discounts not applicable");
       return new Response(
         JSON.stringify({
           isValid: false,
@@ -49,31 +62,20 @@ serve(async (req) => {
     }
 
     // Initialize Supabase admin client
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL") || "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "",
-      {
-        auth: {
-          persistSession: false
-        }
-      }
-    );
-
-    // Query the coupon_codes table
-    const upperCaseCode = code.toUpperCase();
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     
-    // Now using the get_coupon_by_code database function
-    const { data: couponData, error: dbError } = await supabaseAdmin.rpc(
-      'get_coupon_by_code',
-      { coupon_code_param: upperCaseCode }
-    );
-      
-    if (dbError) {
-      console.error("Database error:", dbError);
+    logDebug(requestId, "Initializing Supabase client", { 
+      hasUrl: !!supabaseUrl, 
+      hasKey: !!supabaseServiceRoleKey 
+    });
+
+    if (!supabaseUrl || !supabaseServiceRoleKey) {
+      logDebug(requestId, "Missing Supabase environment variables");
       return new Response(
         JSON.stringify({
           isValid: false,
-          message: "Error validating coupon"
+          message: "Server configuration error"
         }),
         { 
           status: 500, 
@@ -81,19 +83,94 @@ serve(async (req) => {
         }
       );
     }
+
+    const supabaseAdmin = createClient(
+      supabaseUrl,
+      supabaseServiceRoleKey,
+      {
+        auth: {
+          persistSession: false
+        }
+      }
+    );
+
+    // Query the coupon_codes table directly
+    const upperCaseCode = code.toUpperCase();
+    logDebug(requestId, `Checking coupon code: ${upperCaseCode}`);
     
-    // Check if coupon exists and is valid
-    if (!couponData || (Array.isArray(couponData) && couponData.length === 0)) {
-      // Fallback to hardcoded coupons for testing/demo purposes
-      const demoValidCoupons = {
-        "DEMO25": { type: "percentage", amount: 25 },
-        "DEMO50": { type: "percentage", amount: 50 },
-        "DEMO100": { type: "percentage", amount: 100 },
-        "DEMO10DOLLARS": { type: "fixed", amount: 10 },
-        "DEMO25DOLLARS": { type: "fixed", amount: 25 },
-        "EARLYBIRD2025": { type: "percentage", amount: 15 }
-      };
+    // First check if it's a demo coupon
+    const demoValidCoupons = {
+      "DEMO25": { type: "percentage", amount: 25 },
+      "DEMO50": { type: "percentage", amount: 50 },
+      "DEMO100": { type: "percentage", amount: 100 },
+      "DEMO10DOLLARS": { type: "fixed", amount: 10 },
+      "DEMO25DOLLARS": { type: "fixed", amount: 25 },
+      "EARLYBIRD2025": { type: "percentage", amount: 15 }
+    };
+    
+    if (upperCaseCode in demoValidCoupons) {
+      logDebug(requestId, "Demo coupon found", demoValidCoupons[upperCaseCode as keyof typeof demoValidCoupons]);
+      return new Response(
+        JSON.stringify({
+          isValid: true,
+          message: "Demo coupon is valid",
+          discount: demoValidCoupons[upperCaseCode as keyof typeof demoValidCoupons]
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Check if it's an unlimited school code
+    if (UNLIMITED_SCHOOL_CODES.includes(upperCaseCode)) {
+      logDebug(requestId, "School code detected");
       
+      // For unlimited school codes, check if this email has used the code before
+      if (email) {
+        const { data: usageData, error: usageError } = await supabaseAdmin
+          .from('conference_registrations')
+          .select('id')
+          .eq('coupon_code', upperCaseCode)
+          .eq('email', email)
+          .limit(1);
+          
+        if (usageError) {
+          logDebug(requestId, "Error checking school code usage", usageError);
+        } else if (usageData && usageData.length > 0) {
+          logDebug(requestId, "Email already used this school code");
+          return new Response(
+            JSON.stringify({
+              isValid: false,
+              message: "You have already used this coupon code"
+            }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+        
+        // School code valid and not used by this email
+        logDebug(requestId, "School code valid - 100% discount");
+        return new Response(
+          JSON.stringify({
+            isValid: true,
+            message: "School code accepted",
+            discount: { type: "percentage", amount: 100 }
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
+    
+    // For regular coupons, query the database directly
+    const { data: couponData, error: couponError } = await supabaseAdmin
+      .from('coupon_codes')
+      .select('*')
+      .eq('code', upperCaseCode)
+      .eq('is_active', true)
+      .single();
+    
+    if (couponError) {
+      logDebug(requestId, "Error retrieving coupon from database", couponError);
+      
+      // For database errors, still check the backup hardcoded coupons
       if (upperCaseCode in demoValidCoupons) {
         return new Response(
           JSON.stringify({
@@ -114,68 +191,64 @@ serve(async (req) => {
       );
     }
     
-    // For unlimited school codes, check if this email has used the code before
-    if (UNLIMITED_SCHOOL_CODES.includes(upperCaseCode) && email) {
-      // Check if email has used this code before
-      const { data: usageData, error: usageError } = await supabaseAdmin
-        .from('conference_registrations')
-        .select('id')
-        .eq('coupon_code', upperCaseCode)
-        .eq('email', email)
-        .limit(1);
-        
-      if (usageError) {
-        console.error("Error checking coupon usage history:", usageError);
-        // Continue with validation since this is just a secondary check
-      } else if (usageData && usageData.length > 0) {
-        // This email has already used this coupon code
-        return new Response(
-          JSON.stringify({
-            isValid: false,
-            message: "You have already used this coupon code"
-          }),
-          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      
-      // For unlimited school codes that haven't been used by this email,
-      // we don't check max_uses or increment usage counts
-    } else {
-      // Extract data from the database function response
-      const coupon = Array.isArray(couponData) ? couponData[0] : couponData;
-      
-      // Return the validated coupon details
+    if (!couponData) {
+      logDebug(requestId, "No coupon found with this code");
       return new Response(
         JSON.stringify({
-          isValid: true,
-          message: "Coupon is valid",
-          discount: {
-            type: coupon.discount_type,
-            amount: parseFloat(coupon.discount_amount)
-          }
+          isValid: false,
+          message: "Invalid coupon code"
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
     
-    // If we've made it here, the coupon is valid
-    // For unlimited school codes, we don't need to increment usage count here
-    const coupon = Array.isArray(couponData) ? couponData[0] : couponData;
+    // Check if coupon is expired
+    if (couponData.expires_at && new Date(couponData.expires_at) < new Date()) {
+      logDebug(requestId, "Coupon expired", { expires_at: couponData.expires_at });
+      return new Response(
+        JSON.stringify({
+          isValid: false,
+          message: "This coupon has expired"
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    
+    // Check if max uses has been reached
+    if (couponData.max_uses !== null && couponData.current_uses >= couponData.max_uses) {
+      logDebug(requestId, "Coupon usage limit reached", { 
+        current: couponData.current_uses, 
+        max: couponData.max_uses 
+      });
+      return new Response(
+        JSON.stringify({
+          isValid: false,
+          message: "This coupon has reached its usage limit"
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    
+    // Coupon is valid
+    logDebug(requestId, "Coupon is valid", { 
+      type: couponData.discount_type, 
+      amount: couponData.discount_amount 
+    });
     
     return new Response(
       JSON.stringify({
         isValid: true,
         message: "Coupon is valid",
         discount: {
-          type: coupon.discount_type,
-          amount: parseFloat(coupon.discount_amount)
+          type: couponData.discount_type,
+          amount: parseFloat(couponData.discount_amount)
         }
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
     
   } catch (error) {
-    console.error("Error validating coupon:", error);
+    console.error(`[${requestId}] Error validating coupon:`, error);
     return new Response(
       JSON.stringify({
         isValid: false,

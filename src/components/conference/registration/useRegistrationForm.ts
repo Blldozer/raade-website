@@ -125,11 +125,14 @@ export const useRegistrationForm = () => {
       const requestId = `free-reg-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
       console.log(`[${requestId}] Starting registration storage...`);
       
-      // Use the dedicated registration data service for more reliable storage with retries
-      const success = await storeRegistrationData({
+      // Make sure coupon code is included in the registration data
+      const registrationDataWithCoupon = {
         ...data,
-        couponCode: couponCode,  // Make sure coupon code is included
-      });
+        couponCode: couponCode || data.couponCode,  // Use the coupon code from state or from the form data
+      };
+      
+      // Use the dedicated registration data service for more reliable storage with retries
+      const success = await storeRegistrationData(registrationDataWithCoupon);
       
       if (!success) {
         console.error(`[${requestId}] Registration storage failed`);

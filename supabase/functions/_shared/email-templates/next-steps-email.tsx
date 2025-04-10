@@ -1,6 +1,6 @@
 
-import React from 'npm:react@18.3.1';
-import * as ReactEmail from 'npm:@react-email/components@0.0.7';
+import React from "npm:react@18.3.1";
+import * as ReactEmail from "npm:@react-email/components@0.0.7";
 
 const {
   Body,
