@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -162,7 +163,7 @@ const CouponCodeSection = ({
         console.error(`Coupon validation error (${requestId}):`, error);
         
         // Try the hardcoded coupons as fallback
-        const hardcodedCoupons = {
+        const hardcodedCoupons: Record<string, { type: 'percentage' | 'fixed'; amount: number }> = {
           "DEMO25": { type: "percentage", amount: 25 },
           "DEMO50": { type: "percentage", amount: 50 },
           "DEMO100": { type: "percentage", amount: 100 },
