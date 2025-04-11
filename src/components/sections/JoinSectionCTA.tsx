@@ -4,6 +4,16 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Clock } from 'lucide-react';
 
+/**
+ * JoinSectionCTA Component
+ * 
+ * Call-to-action section promoting conference registration and studios
+ * Enhanced with:
+ * - Optimized registration button with clear call-to-action
+ * - Visual urgency indicators for time-sensitive registration
+ * - Animated elements for increased engagement
+ * - Mobile responsive layout
+ */
 const JoinSectionCTA = () => {
   const navigate = useNavigate();
   
@@ -30,9 +40,9 @@ const JoinSectionCTA = () => {
       <div className="container mx-auto px-6 relative z-10">
         {/* Registration closing alert */}
         <div className="mb-8 flex justify-center">
-          <div className="inline-flex items-center bg-red-600/20 px-4 py-2 rounded-full">
-            <Clock className="h-4 w-4 mr-2 text-white animate-pulse" />
-            <p className="text-white font-bold text-sm">Registration closes today at 11:59 PM CST!</p>
+          <div className="inline-flex items-center bg-red-600/30 px-5 py-2.5 rounded-full animate-pulse">
+            <Clock className="h-5 w-5 mr-2 text-white" />
+            <p className="text-white font-bold text-sm md:text-base">Final day for registration! Closes tonight at 11:59 PM CST</p>
           </div>
         </div>
         
@@ -54,7 +64,7 @@ const JoinSectionCTA = () => {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-white/80 font-lora"
             >
-              Join our community of changemakers and contribute to creating sustainable solutions for pressing challenges across Africa. <span className="text-[#FBB03B] font-bold">Final day to register for the conference!</span>
+              Join our community of changemakers and contribute to creating sustainable solutions for pressing challenges across Africa. <span className="text-[#FBB03B] font-bold">Don't miss out — final opportunity to register!</span>
             </motion.p>
           </div>
           

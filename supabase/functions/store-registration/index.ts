@@ -63,24 +63,33 @@ serve(async (req) => {
       );
     }
 
-    // Check if registration already exists
+    // First check if registration already exists - IMPROVED ROBUSTNESS
     const { data: existingReg, error: checkError } = await supabaseAdmin
       .from('conference_registrations')
-      .select('id, email')
+      .select('id, email, full_name, status')
       .eq('email', email)
       .maybeSingle();
 
     if (checkError) {
       console.error(`[${requestId}] Error checking existing registration:`, checkError);
+      // Continue despite error - we'll handle duplicate constraint error later if needed
     }
 
     if (existingReg) {
       console.log(`[${requestId}] Registration already exists for ${email}`);
+      
+      // Return a successful response even though we're not creating a new registration
+      // This prevents client-side retries from causing errors
       return new Response(
         JSON.stringify({ 
           success: true, 
           message: "Registration already exists",
-          data: { id: existingReg.id }
+          data: { 
+            id: existingReg.id,
+            duplicateDetected: true,
+            existingName: existingReg.full_name,
+            status: existingReg.status
+          }
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
@@ -88,28 +97,179 @@ serve(async (req) => {
 
     // Insert new registration
     console.log(`[${requestId}] Creating new registration record`);
-    const { data: registrationRecord, error: insertError } = await supabaseAdmin
-      .from('conference_registrations')
-      .insert({
-        full_name: fullName,
-        email: email,
-        organization: organization || "",
-        role: role || "",
-        ticket_type: ticketType,
-        special_requests: specialRequests || "",
-        coupon_code: couponCode || null,
-        status: paymentComplete ? 'confirmed' : 'pending',
-        payment_method: 'stripe'
-      })
-      .select('id')
-      .single();
+    try {
+      const { data: registrationRecord, error: insertError } = await supabaseAdmin
+        .from('conference_registrations')
+        .insert({
+          full_name: fullName,
+          email: email,
+          organization: organization || "",
+          role: role || "",
+          ticket_type: ticketType,
+          special_requests: specialRequests || "",
+          coupon_code: couponCode || null,
+          status: paymentComplete ? 'confirmed' : 'pending',
+          payment_method: 'stripe'
+        })
+        .select('id')
+        .single();
 
-    if (insertError) {
-      console.error(`[${requestId}] Error inserting registration:`, insertError);
+      if (insertError) {
+        // Check if this is a unique constraint violation (duplicate email)
+        if (insertError.code === '23505' || insertError.message?.includes('duplicate key value')) {
+          console.log(`[${requestId}] Duplicate email detected during insert: ${email}`);
+          
+          // Get the existing registration to return its ID
+          const { data: existingRecord } = await supabaseAdmin
+            .from('conference_registrations')
+            .select('id')
+            .eq('email', email)
+            .maybeSingle();
+            
+          // Return success with the existing record ID to prevent retries
+          return new Response(
+            JSON.stringify({ 
+              success: true, 
+              message: "Registration already exists",
+              data: { 
+                id: existingRecord?.id || 'unknown',
+                duplicateDetected: true 
+              } 
+            }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        } else {
+          // For other errors, return the error
+          console.error(`[${requestId}] Error inserting registration:`, insertError);
+          return new Response(
+            JSON.stringify({ 
+              success: false, 
+              message: "Failed to store registration data", 
+              error: insertError.message 
+            }),
+            { 
+              status: 500, 
+              headers: { ...corsHeaders, "Content-Type": "application/json" } 
+            }
+          );
+        }
+      }
+
+      const registrationId = registrationRecord?.id;
+      console.log(`[${requestId}] Registration created with ID: ${registrationId}`);
+
+      // For group registrations, handle group members
+      if (ticketType === 'student-group' && groupEmails && Array.isArray(groupEmails) && groupEmails.length > 0) {
+        console.log(`[${requestId}] Processing group registration with ${groupEmails.length} members`);
+        
+        // Create a group registration record
+        const { data: groupData, error: groupError } = await supabaseAdmin
+          .from('group_registrations')
+          .insert({
+            lead_name: fullName,
+            lead_email: email,
+            lead_organization: organization || "",
+            ticket_type: ticketType,
+            group_size: groupSize || groupEmails.length + 1,
+            payment_completed: paymentComplete,
+            completed: true
+          })
+          .select('id')
+          .single();
+
+        if (groupError) {
+          console.error(`[${requestId}] Error creating group record:`, groupError);
+        } else if (groupData) {
+          console.log(`[${requestId}] Group record created with ID: ${groupData.id}`);
+          
+          // Add group members
+          for (const emailEntry of groupEmails) {
+            // Handle both string emails and {value: string} objects
+            const memberEmail = typeof emailEntry === 'object' ? 
+              (emailEntry && 'value' in emailEntry ? emailEntry.value : null) : 
+              emailEntry;
+              
+            if (!memberEmail || typeof memberEmail !== 'string' || !memberEmail.includes('@')) {
+              continue; // Skip invalid emails
+            }
+            
+            const { error: memberError } = await supabaseAdmin
+              .from('group_registration_members')
+              .insert({
+                group_id: groupData.id,
+                email: memberEmail,
+                email_verified: false
+              });
+              
+            if (memberError) {
+              console.error(`[${requestId}] Error adding group member ${memberEmail}:`, memberError);
+            }
+          }
+        }
+      }
+
+      // Track the registration email for sending welcome email
+      try {
+        const { error: trackingError } = await supabaseAdmin
+          .from('email_tracking')
+          .insert({
+            email: email,
+            full_name: fullName,
+            ticket_type: ticketType,
+            email_type: 'welcome',
+            status: 'pending',
+            coupon_code: couponCode || null,
+            group_size: groupSize || null
+          });
+          
+        if (trackingError) {
+          console.error(`[${requestId}] Error creating email tracking entry:`, trackingError);
+        } else {
+          console.log(`[${requestId}] Email tracking entry created for welcome email`);
+        }
+      } catch (emailError) {
+        console.error(`[${requestId}] Exception in email tracking:`, emailError);
+      }
+
+      console.log(`[${requestId}] Registration storage completed successfully`);
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          message: "Registration data stored successfully",
+          data: { id: registrationId }
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    } catch (insertError) {
+      // Additional error handling for insert operation
+      console.error(`[${requestId}] Exception during insert:`, insertError);
+      
+      // Check if this might be a duplicate key error
+      if (insertError.message?.includes('duplicate key') || insertError.message?.includes('unique constraint')) {
+        // Handle as duplicate registration
+        const { data: existingRec } = await supabaseAdmin
+          .from('conference_registrations')
+          .select('id')
+          .eq('email', email)
+          .maybeSingle();
+          
+        return new Response(
+          JSON.stringify({ 
+            success: true, 
+            message: "Registration may already exist",
+            data: { 
+              id: existingRec?.id || 'unknown',
+              duplicateDetected: true 
+            } 
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
       return new Response(
         JSON.stringify({ 
           success: false, 
-          message: "Failed to store registration data", 
+          message: "Failed to store registration data due to an error", 
           error: insertError.message 
         }),
         { 
@@ -118,92 +278,6 @@ serve(async (req) => {
         }
       );
     }
-
-    const registrationId = registrationRecord?.id;
-    console.log(`[${requestId}] Registration created with ID: ${registrationId}`);
-
-    // For group registrations, handle group members
-    if (ticketType === 'student-group' && groupEmails && Array.isArray(groupEmails) && groupEmails.length > 0) {
-      console.log(`[${requestId}] Processing group registration with ${groupEmails.length} members`);
-      
-      // Create a group registration record
-      const { data: groupData, error: groupError } = await supabaseAdmin
-        .from('group_registrations')
-        .insert({
-          lead_name: fullName,
-          lead_email: email,
-          lead_organization: organization || "",
-          ticket_type: ticketType,
-          group_size: groupSize || groupEmails.length + 1,
-          payment_completed: paymentComplete,
-          completed: true
-        })
-        .select('id')
-        .single();
-
-      if (groupError) {
-        console.error(`[${requestId}] Error creating group record:`, groupError);
-      } else if (groupData) {
-        console.log(`[${requestId}] Group record created with ID: ${groupData.id}`);
-        
-        // Add group members
-        for (const emailEntry of groupEmails) {
-          // Handle both string emails and {value: string} objects
-          const memberEmail = typeof emailEntry === 'object' ? 
-            (emailEntry && 'value' in emailEntry ? emailEntry.value : null) : 
-            emailEntry;
-            
-          if (!memberEmail || typeof memberEmail !== 'string' || !memberEmail.includes('@')) {
-            continue; // Skip invalid emails
-          }
-          
-          const { error: memberError } = await supabaseAdmin
-            .from('group_registration_members')
-            .insert({
-              group_id: groupData.id,
-              email: memberEmail,
-              email_verified: false
-            });
-            
-          if (memberError) {
-            console.error(`[${requestId}] Error adding group member ${memberEmail}:`, memberError);
-          }
-        }
-      }
-    }
-
-    // Track the registration email for sending welcome email
-    try {
-      const { error: trackingError } = await supabaseAdmin
-        .from('email_tracking')
-        .insert({
-          email: email,
-          full_name: fullName,
-          ticket_type: ticketType,
-          email_type: 'welcome',
-          status: 'pending',
-          coupon_code: couponCode || null,
-          group_size: groupSize || null
-        });
-        
-      if (trackingError) {
-        console.error(`[${requestId}] Error creating email tracking entry:`, trackingError);
-      } else {
-        console.log(`[${requestId}] Email tracking entry created for welcome email`);
-      }
-    } catch (emailError) {
-      console.error(`[${requestId}] Exception in email tracking:`, emailError);
-    }
-
-    console.log(`[${requestId}] Registration storage completed successfully`);
-    return new Response(
-      JSON.stringify({ 
-        success: true, 
-        message: "Registration data stored successfully",
-        data: { id: registrationId }
-      }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
   } catch (error) {
     console.error(`[${requestId}] Unexpected error:`, error);
     return new Response(

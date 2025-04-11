@@ -8,18 +8,21 @@ import StripeStatusCheck from "@/components/conference/payment/StripeStatusCheck
 import { useNavBackground } from "@/hooks/useNavBackground";
 import SaleCountdown from "@/components/conference/SaleCountdown";
 import { isSaleActive } from "@/components/conference/RegistrationFormTypes";
+import { toast } from "@/hooks/use-toast";
 
 /**
  * Conference Registration Page
  * 
  * This page displays the registration form for conference attendees.
  * Features:
+ * - Enhanced error prevention with clear user feedback
  * - Dark mode support with proper color inversion
  * - Mobile responsive design 
  * - Uses a dark navbar for proper contrast
  * - Smooth animations for an engaging UI
- * - Enhanced session cleanup to prevent payment issues
+ * - Enhanced session cleanup to prevent registration issues
  * - Added countdown timer for registration closing
+ * - Improved visual hierarchy and clarity
  */
 const ConferenceRegistration = () => {
   const navigate = useNavigate();
@@ -45,6 +48,24 @@ const ConferenceRegistration = () => {
       console.log("Found stale checkout session on registration page, clearing");
       sessionStorage.removeItem("checkoutSessionId");
       sessionStorage.removeItem("registrationEmail");
+      
+      // Add a toast message to inform the user their previous session was cleared
+      toast({
+        title: "Previous session cleared",
+        description: "Your previous registration session has been cleared. You can start fresh.",
+        variant: "default",
+      });
+    }
+    
+    // Display a warning if user has already registered
+    const registeredEmail = localStorage.getItem("conference_registered_email");
+    if (registeredEmail) {
+      toast({
+        title: "You've already registered",
+        description: `It looks like you've already registered with ${registeredEmail}. Each person can only register once.`,
+        variant: "warning",
+        duration: 8000,
+      });
     }
     
     // Cleanup function to reset attribute when component unmounts
@@ -74,7 +95,7 @@ const ConferenceRegistration = () => {
             className="dark:text-white"
           >
             {/* Always show the countdown regardless of sale status */}
-            <div className="mb-4">
+            <div className="mb-6">
               <SaleCountdown />
             </div>
             
@@ -87,6 +108,13 @@ const ConferenceRegistration = () => {
             {/* Add the Stripe status check component */}
             <div className="mb-6">
               <StripeStatusCheck />
+            </div>
+            
+            <div className="bg-yellow-50 border border-yellow-300 rounded-lg p-4 mb-6 dark:bg-yellow-900/30 dark:border-yellow-800">
+              <h3 className="font-bold text-yellow-800 dark:text-yellow-400 mb-1">Important Note</h3>
+              <p className="text-yellow-700 dark:text-yellow-300">
+                Each email address can only be used for one registration. If you've already registered, please use a different email or contact us for assistance.
+              </p>
             </div>
             
             <ConferenceRegistrationForm />

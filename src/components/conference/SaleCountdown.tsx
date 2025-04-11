@@ -13,6 +13,7 @@ import { formatTimeUnit } from '../countdown/timerUtils';
  * - Shows remaining time in hours, minutes, and seconds
  * - Displays "Sale ended" message when the countdown expires
  * - Shows both the countdown and a closing time message
+ * - Enhanced with more prominent styling and pulsing effect
  * - Matches RAADE branding with urgent styling
  */
 const SaleCountdown = () => {
@@ -29,9 +30,9 @@ const SaleCountdown = () => {
   // Show different states based on whether the registration has ended
   if (timeLeft.expired) {
     return (
-      <div className="bg-red-100 border border-red-300 rounded-lg p-3 flex items-center justify-center">
-        <AlertCircle className="h-5 w-5 mr-2 text-red-600" />
-        <div className="text-red-700 font-bold">
+      <div className="bg-red-100 border-2 border-red-400 rounded-lg p-4 flex items-center justify-center shadow-md">
+        <AlertCircle className="h-6 w-6 mr-3 text-red-600" />
+        <div className="text-red-700 font-bold text-lg">
           Registration has closed. Contact us for assistance.
         </div>
       </div>
@@ -41,20 +42,23 @@ const SaleCountdown = () => {
   // Format the total remaining time in hours (including days converted to hours)
   const totalHours = timeLeft.days * 24 + timeLeft.hours;
   
+  // Add animation classes based on time remaining
+  const isUrgent = totalHours < 3; // Less than 3 hours remaining
+  
   return (
-    <div className="bg-red-50 border border-red-300 rounded-lg p-3 flex flex-col sm:flex-row items-center justify-center gap-2">
+    <div className={`bg-red-50 border-2 ${isUrgent ? 'border-red-500 animate-pulse' : 'border-red-300'} rounded-lg p-4 flex flex-col sm:flex-row items-center justify-center gap-3 shadow-md`}>
       <div className="flex items-center">
-        <AlertCircle className="h-5 w-5 mr-2 text-red-600" />
+        <AlertCircle className="h-6 w-6 mr-2 text-red-600" />
         <div className="text-red-700 font-bold">
           Registration closes today at 11:59 PM CST!
         </div>
       </div>
       
       <div className="flex items-center">
-        <Clock className="h-5 w-5 mr-2 text-red-600" />
+        <Clock className="h-6 w-6 mr-2 text-red-600" />
         <div className="text-red-700 font-bold">
           Time remaining: 
-          <span className="ml-1 font-mono">
+          <span className={`ml-2 font-mono ${isUrgent ? 'text-lg' : ''}`}>
             {totalHours > 9 ? totalHours : `0${totalHours}`}:{formatTimeUnit(timeLeft.minutes)}:{formatTimeUnit(timeLeft.seconds)}
           </span>
         </div>
