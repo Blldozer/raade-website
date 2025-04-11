@@ -17,7 +17,7 @@ interface BasicInformationProps {
  * BasicInformation Component
  * 
  * Handles the collection of basic personal information for conference registration:
- * - Full name with appropriate autocomplete for name fields
+ * - First name and last name fields with appropriate autocomplete
  * - Email address with validation for academic emails
  * - Organization/University with improved autofill
  * - Role/Position with context-specific autocomplete
@@ -39,18 +39,34 @@ const BasicInformation = ({
 }: BasicInformationProps) => {
   return (
     <>
-      <div>
-        <Label htmlFor="fullName">Full Name</Label>
-        <Input
-          id="fullName"
-          name="fullName"
-          placeholder="Enter your full name"
-          autoComplete="name"
-          {...register("fullName")}
-        />
-        {errors.fullName && (
-          <p className="text-red-500 text-sm mt-1">{errors.fullName.message}</p>
-        )}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="firstName">First Name</Label>
+          <Input
+            id="firstName"
+            name="firstName"
+            placeholder="Enter your first name"
+            autoComplete="given-name"
+            {...register("firstName")}
+          />
+          {errors.firstName && (
+            <p className="text-red-500 text-sm mt-1">{errors.firstName.message}</p>
+          )}
+        </div>
+
+        <div>
+          <Label htmlFor="lastName">Last Name</Label>
+          <Input
+            id="lastName"
+            name="lastName"
+            placeholder="Enter your last name"
+            autoComplete="family-name"
+            {...register("lastName")}
+          />
+          {errors.lastName && (
+            <p className="text-red-500 text-sm mt-1">{errors.lastName.message}</p>
+          )}
+        </div>
       </div>
 
       <div>

@@ -31,7 +31,8 @@ export const isSaleActive = (): boolean => {
 
 // Create a Zod schema for the registration form
 export const registrationFormSchema = z.object({
-  fullName: z.string().min(2, "Full name is required"),
+  firstName: z.string().min(2, "First name is required"),
+  lastName: z.string().min(2, "Last name is required"),
   email: z.string().email("Invalid email address"),
   organization: z.string().min(2, "Organization is required"),
   role: z.string().min(2, "Role is required"),
@@ -42,7 +43,8 @@ export const registrationFormSchema = z.object({
   groupEmails: z.array(
     z.object({
       value: z.string().email("Invalid email address"),
-      fullName: z.string().min(1, "Name is required")
+      firstName: z.string().min(1, "First name is required"),
+      lastName: z.string().min(1, "Last name is required")
     }).nullable()
   ).optional(),
   specialRequests: z.string().optional(),
@@ -57,7 +59,8 @@ export type RegistrationFormData = z.infer<typeof registrationFormSchema>;
 
 // Export the default values for the form
 export const defaultFormValues: RegistrationFormData = {
-  fullName: "",
+  firstName: "",
+  lastName: "",
   email: "",
   organization: "",
   role: "",
@@ -68,6 +71,11 @@ export const defaultFormValues: RegistrationFormData = {
   specialRequests: "",
   referralSource: undefined,
   couponCode: ""
+};
+
+// Helper function to get full name from first and last name
+export const getFullName = (firstName: string, lastName: string): string => {
+  return `${firstName} ${lastName}`.trim();
 };
 
 /**

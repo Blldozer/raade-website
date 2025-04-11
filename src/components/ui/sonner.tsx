@@ -31,6 +31,9 @@ const Toaster = ({ ...props }: ToasterProps) => {
             "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
           cancelButton:
             "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
+          // Add custom classNames for warning variant
+          warning:
+            "group-[.toast]:bg-yellow-50 group-[.toast]:text-yellow-900 group-[.toast]:border-yellow-500 dark:group-[.toast]:bg-yellow-900/20 dark:group-[.toast]:text-yellow-200 dark:group-[.toast]:border-yellow-600",
         },
         // Reduce duplicate toasts and prevent notification spam
         duration: 4000,

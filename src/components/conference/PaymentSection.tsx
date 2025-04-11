@@ -1,13 +1,11 @@
 
 import { Button } from "@/components/ui/button";
-import SimpleStripeProvider from "./payment/direct/SimpleStripeProvider";
-import { RegistrationFormData } from "./RegistrationFormTypes";
+import { Card, CardContent } from "@/components/ui/card";
+import { RegistrationFormData, getFullName } from "./RegistrationFormTypes";
+import StripeContainer from "./payment/direct/StripeContainer";
 import RegistrationSummary from "./RegistrationSummary";
-import { useState, useEffect } from "react";
-import SuccessfulPayment from "./payment/SuccessfulPayment";
-import { useNavigate } from "react-router-dom";
-import { Loader2 } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { Loader2, ArrowLeftIcon, PartyPopper } from "lucide-react";
+import { useEffect } from "react";
 
 interface PaymentSectionProps {
   registrationData: RegistrationFormData;
@@ -16,33 +14,58 @@ interface PaymentSectionProps {
   onPaymentError: (error: string) => void;
   onBackClick: () => void;
   couponDiscount?: { type: 'percentage' | 'fixed'; amount: number } | null;
-  totalPrice?: number;
+  totalPrice: number;
   isFullDiscount?: boolean;
   onFreeRegistration?: () => void;
 }
 
+// A helper component for the free registration case
+const FreeRegistrationConfirmation = ({ 
+  onConfirm, 
+  isSubmitting 
+}: { 
+  onConfirm: () => void;
+  isSubmitting: boolean;
+}) => {
+  return (
+    <Card className="border-green-200 bg-green-50 shadow-md dark:bg-green-900/20 dark:border-green-800 mt-8">
+      <CardContent className="p-6">
+        <div className="flex items-center mb-4 text-green-600 dark:text-green-400">
+          <PartyPopper className="h-6 w-6 mr-2" />
+          <h3 className="text-xl font-bold">Free Registration Confirmed!</h3>
+        </div>
+        
+        <p className="mb-6 text-green-700 dark:text-green-300">
+          You're eligible for a free conference registration! Click the button below to complete your registration.
+        </p>
+        
+        <Button
+          onClick={onConfirm}
+          disabled={isSubmitting}
+          className="w-full bg-green-600 hover:bg-green-700 text-white dark:bg-green-600 dark:hover:bg-green-700 dark:text-white"
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            'Complete Free Registration'
+          )}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+};
+
 /**
  * PaymentSection Component
  * 
- * Handles the payment process for conference registration:
- * - Now with support for coupon discounts
- * - Displays registration summary with discounted prices
- * - Uses our simplified direct Stripe integration
- * - Provides consistent back button functionality
- * - Shows payment confirmation screen on success
- * - Handles both partial and full discount coupons
- * - Added timeout recovery for registration navigation
- * - Enhanced error handling for free registrations
- * 
- * @param registrationData - Form data from the registration form
- * @param isSubmitting - Loading state for the form
- * @param onPaymentSuccess - Callback when payment succeeds
- * @param onPaymentError - Callback when payment fails
- * @param onBackClick - Callback to go back to the registration form
- * @param couponDiscount - Applied coupon discount information
- * @param totalPrice - Total price after discounts
- * @param isFullDiscount - Whether the coupon provides 100% discount
- * @param onFreeRegistration - Callback for free registration (100% discount)
+ * Displays the payment section of the registration form:
+ * - Shows a summary of the registration information
+ * - Renders the Stripe payment form if payment is required
+ * - Shows free registration confirmation for 100% off coupons
+ * - Back button to return to edit registration details
  */
 const PaymentSection = ({
   registrationData,
@@ -52,193 +75,65 @@ const PaymentSection = ({
   onBackClick,
   couponDiscount,
   totalPrice,
-  isFullDiscount,
+  isFullDiscount = false,
   onFreeRegistration
 }: PaymentSectionProps) => {
-  const [paymentComplete, setPaymentComplete] = useState(false);
-  const [processingFreeRegistration, setProcessingFreeRegistration] = useState(false);
-  const [registrationStartTime, setRegistrationStartTime] = useState<number | null>(null);
-  const navigate = useNavigate();
   
-  // Process raw form data into a clean array of emails
-  const processedGroupEmails = Array.isArray(registrationData.groupEmails) 
-    ? registrationData.groupEmails
-        .filter(Boolean) // Remove nullish values
-        .map(email => {
-          if (typeof email === 'object' && email !== null && 'value' in email) {
-            return typeof email.value === 'string' ? email.value : '';
-          }
-          return String(email || '');
-        })
-        .filter(email => email.length > 0) // Remove empty strings
-    : [];
-
-  // Auto-recover from registrations that get stuck for too long
   useEffect(() => {
-    if (processingFreeRegistration && registrationStartTime) {
-      const REGISTRATION_TIMEOUT = 20000; // 20 seconds (increased from 15)
-      
-      const timeoutId = setTimeout(() => {
-        // If we're still processing after timeout period, assume there's an issue
-        if (processingFreeRegistration) {
-          console.log("Free registration taking too long, checking for redirect opportunity");
-          
-          // Check if email is in sessionStorage - if so, we might have completed registration
-          // but failed to navigate or update UI state
-          const registeredEmail = sessionStorage.getItem("registrationEmail");
-          
-          if (registeredEmail && registeredEmail === registrationData.email) {
-            console.log("Found registration email in session storage, likely completed successfully");
-            
-            // Assume registration was successful but UI didn't update
-            setProcessingFreeRegistration(false);
-            
-            toast({
-              title: "Registration processed",
-              description: "Your registration appears to have been processed. Redirecting to confirmation page.",
-              variant: "default",
-            });
-            
-            // Navigate to success page
-            setTimeout(() => {
-              navigate("/conference/success");
-            }, 1000);
-          } else {
-            // Registration appears to have actually failed
-            setProcessingFreeRegistration(false);
-            
-            toast({
-              title: "Registration timeout",
-              description: "Your registration is taking longer than expected. Please try again.",
-              variant: "destructive",
-            });
-          }
-        }
-      }, REGISTRATION_TIMEOUT);
-      
-      return () => clearTimeout(timeoutId);
-    }
-  }, [processingFreeRegistration, registrationStartTime, registrationData.email, navigate]);
-
-  const handlePaymentSuccess = () => {
-    // Show payment confirmation screen first
-    setPaymentComplete(true);
-  };
-
-  const handleCompleteFreeRegistration = () => {
-    if (!onFreeRegistration) {
-      console.error("Missing onFreeRegistration callback");
-      return;
-    }
-    
-    setProcessingFreeRegistration(true);
-    setRegistrationStartTime(Date.now());
-    
-    try {
-      // Store registration email before navigating
-      sessionStorage.setItem("registrationEmail", registrationData.email);
-      
-      // Make sure the coupon code is saved in the form data
-      if (registrationData.couponCode === undefined || registrationData.couponCode === null) {
-        console.log("Adding coupon code to registration data before processing");
-        registrationData.couponCode = document.getElementById("coupon-code-value")?.getAttribute("data-value") || "";
-      }
-      
-      // Add a console log for debugging
-      console.log("Starting free registration process for:", registrationData.email, "with coupon:", registrationData.couponCode);
-      
-      // Call the free registration handler
-      onFreeRegistration();
-      
-      // Note: We intentionally don't clear processingFreeRegistration here
-      // It will be cleared either by the successful registration callback
-      // or by the timeout recovery effect
-    } catch (error) {
-      console.error("Error during free registration:", error);
-      setProcessingFreeRegistration(false);
-      setRegistrationStartTime(null);
-      
-      toast({
-        title: "Registration error",
-        description: "There was an error starting your registration. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  if (paymentComplete) {
-    return (
-      <SuccessfulPayment 
-        registrationData={registrationData}
-        onContinue={onPaymentSuccess}
-      />
-    );
-  }
-
+    // Scroll to top when component mounts for better UX
+    window.scrollTo(0, 0);
+  }, []);
+  
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      <Button 
+        variant="ghost" 
+        onClick={onBackClick}
+        className="flex items-center text-gray-600 hover:text-gray-800 mb-4"
+        disabled={isSubmitting}
+      >
+        <ArrowLeftIcon className="h-4 w-4 mr-2" />
+        Back to registration
+      </Button>
+      
       <RegistrationSummary 
         registrationData={registrationData} 
         couponDiscount={couponDiscount}
         totalPrice={totalPrice}
       />
       
-      {isFullDiscount ? (
-        <div className="mt-6">
-          <Button
-            onClick={handleCompleteFreeRegistration}
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-lora
-              transition-colors duration-300"
-            disabled={isSubmitting || processingFreeRegistration}
-          >
-            {isSubmitting || processingFreeRegistration ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Processing Registration...
-              </>
-            ) : (
-              'Complete Free Registration'
-            )}
-          </Button>
-          <p className="text-center text-sm text-green-600 mt-2">
-            Your registration is free with the applied coupon code.
-          </p>
-          
-          {/* Add more context about what's happening during processing */}
-          {processingFreeRegistration && (
-            <p className="text-center text-xs text-gray-500 mt-1 animate-pulse">
-              Please wait while we finalize your registration...
-            </p>
-          )}
-        </div>
-      ) : (
-        <SimpleStripeProvider 
-          ticketType={registrationData.ticketType}
-          email={registrationData.email}
-          fullName={registrationData.fullName}
-          groupSize={registrationData.groupSize}
-          groupEmails={processedGroupEmails}
-          organization={registrationData.organization}
-          role={registrationData.role}
-          specialRequests={registrationData.specialRequests}
-          referralSource={registrationData.referralSource}
-          couponCode={registrationData.couponCode}
-          couponDiscount={couponDiscount}
-          onSuccess={handlePaymentSuccess}
-          onError={onPaymentError}
+      {isFullDiscount && onFreeRegistration ? (
+        <FreeRegistrationConfirmation 
+          onConfirm={onFreeRegistration}
+          isSubmitting={isSubmitting} 
         />
+      ) : (
+        <Card className="border-gray-200 shadow-md dark:border-gray-700 mt-6">
+          <CardContent className="p-6">
+            <StripeContainer
+              ticketType={registrationData.ticketType}
+              email={registrationData.email}
+              firstName={registrationData.firstName}
+              lastName={registrationData.lastName}
+              groupSize={registrationData.groupSize}
+              groupEmails={registrationData.groupEmails}
+              organization={registrationData.organization}
+              role={registrationData.role}
+              specialRequests={registrationData.specialRequests}
+              referralSource={registrationData.referralSource}
+              couponCode={registrationData.couponCode}
+              couponDiscount={couponDiscount}
+              onSuccess={onPaymentSuccess}
+              onError={onPaymentError}
+            />
+          </CardContent>
+        </Card>
       )}
       
-      <Button 
-        variant="outline" 
-        onClick={onBackClick}
-        className="w-full border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-lora
-          dark:border-[#FBB03B] dark:text-[#FBB03B] dark:hover:bg-[#FBB03B] dark:hover:text-white
-          transition-colors duration-300"
-        disabled={isSubmitting || processingFreeRegistration}
-      >
-        Back to Registration Form
-      </Button>
+      {/* Add hidden element to store couponCode for stripe */}
+      {registrationData.couponCode && (
+        <div id="coupon-code-value" data-value={registrationData.couponCode} style={{ display: 'none' }}></div>
+      )}
     </div>
   );
 };

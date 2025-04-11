@@ -1,214 +1,119 @@
-import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
-import Stripe from 'https://esm.sh/stripe@14.21.0';
-import { calculatePaymentAmount } from '../_shared/pricing.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.1';
+
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import Stripe from "https://esm.sh/stripe@12.4.0?target=deno";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
 serve(async (req) => {
+  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
-
-  const requestId = crypto.randomUUID().substring(0, 8);
-  console.log(`[${requestId}] Processing payment intent creation`);
 
   try {
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
       apiVersion: '2023-10-16',
     });
 
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL") || "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "",
-      {
-        auth: {
-          persistSession: false
-        }
-      }
-    );
-
     const requestData = await req.json();
     const {
       ticketType,
       email,
+      firstName,
+      lastName,
       fullName,
       groupSize,
-      groupEmails,
-      organization,
-      role,
-      specialRequests,
-      referralSource,
-      couponCode,
       couponDiscount,
       attemptId,
     } = requestData;
 
-    console.log(`[${requestId}] Payment request for ${email}, coupon: ${couponCode || 'None'}`);
+    // Generate a consistent idempotency key to prevent duplicate charges
+    const idempotencyKey = `payment_${ticketType}_${email}_${attemptId}`;
+    console.log(`Creating payment intent with idempotency key: ${idempotencyKey}`);
 
-    if (!ticketType || !email || !fullName) {
-      console.log(`[${requestId}] Missing required fields`);
+    // Set the price based on ticket type and group size
+    let unitPrice = 0;
+    if (ticketType === 'student') {
+      unitPrice = 35; // Default price for student tickets
+    } else if (ticketType === 'professional') {
+      unitPrice = 60; // Default price for professional tickets
+    } else if (ticketType === 'student-group') {
+      unitPrice = 30; // Default price for student group tickets (per person)
+    }
+
+    // Calculate the total amount
+    let amount = ticketType === 'student-group' && groupSize 
+      ? unitPrice * groupSize * 100 // Group price (convert to cents)
+      : unitPrice * 100; // Individual price (convert to cents)
+
+    // Apply discounts for non-group tickets
+    if (couponDiscount && ticketType !== 'student-group') {
+      if (couponDiscount.type === 'percentage') {
+        const discountAmount = (amount * couponDiscount.amount) / 100;
+        amount = Math.max(0, amount - discountAmount);
+      } else if (couponDiscount.type === 'fixed') {
+        // Convert dollar amount to cents for stripe
+        amount = Math.max(0, amount - (couponDiscount.amount * 100));
+      }
+    }
+
+    // Round to nearest cent (Stripe requires integer)
+    amount = Math.round(amount);
+
+    // If amount is 0 after discount, return an error
+    if (amount <= 0) {
       return new Response(
-        JSON.stringify({ error: 'Missing required fields' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ 
+          error: 'Discount reduces price to zero. Please use the free registration option instead.' 
+        }),
+        { 
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
       );
     }
 
-    let { amount, description, isGroupRegistration } = calculatePaymentAmount(ticketType, groupSize);
-
-    let verifiedDiscount = null;
-    let couponId = null;
-
-    const isGroupTicket = ticketType === 'student-group';
-
-    if (couponCode && !isGroupTicket) {
-      console.log(`[${requestId}] Validating coupon code: ${couponCode}`);
-      
-      const { data: couponData, error: couponError } = await supabaseAdmin
-        .from('coupon_codes')
-        .select('*')
-        .eq('code', couponCode.toUpperCase())
-        .eq('is_active', true)
-        .maybeSingle();
-
-      if (!couponError && couponData) {
-        console.log(`[${requestId}] Coupon found in database:`, couponData);
-        
-        if (couponData.expires_at && new Date(couponData.expires_at) < new Date()) {
-          console.log(`[${requestId}] Coupon has expired`);
-          return new Response(
-            JSON.stringify({ error: 'Coupon has expired' }),
-            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-
-        if (couponData.max_uses !== null && couponData.current_uses >= couponData.max_uses) {
-          console.log(`[${requestId}] Coupon usage limit reached`);
-          return new Response(
-            JSON.stringify({ error: 'Coupon usage limit reached' }),
-            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-
-        const SCHOOL_CODES = ['PVAMU', 'TEXAS', 'TULANE'];
-        if (SCHOOL_CODES.includes(couponCode.toUpperCase())) {
-          const { data: usageData, error: usageError } = await supabaseAdmin
-            .from('conference_registrations')
-            .select('id')
-            .eq('coupon_code', couponCode.toUpperCase())
-            .eq('email', email)
-            .limit(1);
-            
-          if (!usageError && usageData && usageData.length > 0) {
-            console.log(`[${requestId}] Email already used this school code`);
-            return new Response(
-              JSON.stringify({ error: 'You have already used this coupon code' }),
-              { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            );
-          }
-        }
-
-        verifiedDiscount = {
-          type: couponData.discount_type,
-          amount: Number(couponData.discount_amount)
-        };
-        couponId = couponData.id;
-        console.log(`[${requestId}] Verified discount:`, verifiedDiscount);
-      } else if (couponError) {
-        console.error(`[${requestId}] Error validating coupon:`, couponError);
-      }
-    } else if (couponDiscount && !isGroupTicket) {
-      const upperCaseCode = couponDiscount.type === 'percentage' && couponDiscount.amount === 100 
-        ? 'SCHOOL' : 'UNKNOWN';
-      console.log(`[${requestId}] Using discount without code:`, couponDiscount);
-      
-      const { data: anyCoupon, error: anyError } = await supabaseAdmin
-        .from('coupon_codes')
-        .select('*')
-        .eq('discount_type', couponDiscount.type)
-        .eq('discount_amount', couponDiscount.amount.toString())
-        .eq('is_active', true)
-        .limit(1);
-        
-      if (!anyError && anyCoupon && anyCoupon.length > 0) {
-        verifiedDiscount = couponDiscount;
-        couponId = anyCoupon[0].id;
-        console.log(`[${requestId}] Found matching coupon in database:`, anyCoupon[0].code);
-      } else {
-        console.log(`[${requestId}] No matching coupon found for discount:`, couponDiscount);
-        verifiedDiscount = null;
-      }
-    }
-
-    if (verifiedDiscount && !isGroupTicket) {
-      console.log(`[${requestId}] Applying discount to payment amount`);
-      if (verifiedDiscount.type === 'percentage') {
-        const discountAmount = Math.round((amount * verifiedDiscount.amount) / 100);
-        amount = Math.max(0, amount - discountAmount);
-        console.log(`[${requestId}] Applied ${verifiedDiscount.amount}% discount, new amount: ${amount}`);
-      } else {
-        const discountAmount = verifiedDiscount.amount * 100;
-        amount = Math.max(0, amount - discountAmount);
-        console.log(`[${requestId}] Applied $${verifiedDiscount.amount} discount, new amount: ${amount}`);
-      }
-    }
-
-    console.log(`[${requestId}] Creating payment intent for ${amount} cents`);
+    // Create a PaymentIntent with the calculated amount
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency: 'usd',
-      description,
-      receipt_email: email,
       metadata: {
         ticketType,
-        fullName,
         email,
-        organization,
-        role,
-        groupSize: groupSize?.toString() || 'N/A',
-        groupEmails: isGroupRegistration ? JSON.stringify(groupEmails) : 'N/A',
-        specialRequests: specialRequests || 'None',
-        referralSource: referralSource || 'None',
-        couponCode: couponCode || 'None',
-        couponId: couponId || 'None',
-        attemptId: attemptId || '',
+        fullName: fullName || `${firstName} ${lastName}`.trim(),
+        firstName,
+        lastName,
+        groupSize: groupSize?.toString() || '',
+        attemptId
       },
+      receipt_email: email,
+      automatic_payment_methods: {
+        enabled: true,
+      },
+    }, {
+      idempotencyKey
     });
 
-    console.log(`[${requestId}] Payment intent created: ${paymentIntent.id}`);
-
-    if (couponCode && !isGroupTicket) {
-      console.log(`[${requestId}] Incrementing coupon usage for ${couponCode}`);
-      const { error: usageError } = await supabaseAdmin.rpc(
-        'increment_coupon_usage',
-        { coupon_code_param: couponCode.toUpperCase() }
-      );
-      
-      if (usageError) {
-        console.error(`[${requestId}] Error incrementing coupon usage:`, usageError);
-      } else {
-        console.log(`[${requestId}] Successfully incremented coupon usage`);
-      }
-    }
-
-    console.log(`[${requestId}] Returning client secret to frontend`);
+    // Return the client secret to the client
     return new Response(
-      JSON.stringify({
-        clientSecret: paymentIntent.client_secret,
-        amount: paymentIntent.amount,
-        currency: paymentIntent.currency,
-        id: paymentIntent.id,
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ clientSecret: paymentIntent.client_secret }),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
     );
   } catch (error) {
-    console.error(`[${requestId}] Error creating payment intent:`, error);
+    console.error('Error creating payment intent:', error);
+    
     return new Response(
-      JSON.stringify({ error: `Payment processing error: ${error.message}` }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ error: `Payment service error: ${error.message}` }),
+      { 
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
     );
   }
 });

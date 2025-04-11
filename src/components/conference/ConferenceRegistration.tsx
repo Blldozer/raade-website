@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star, ExternalLink, ChevronRight, Clock, AlertTriangle, ArrowRight } from "lucide-react";
+import { Star, ExternalLink, ChevronRight, Clock, AlertTriangle, ArrowRight, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { TICKET_TYPES_ENUM, getTicketPrice, getRegularTicketPrice, isSaleActive, SALE_END_DATE } from "./RegistrationFormTypes";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +14,7 @@ import DonationSection from "./donation/DonationSection";
  * 
  * Displays ticket options for the RAADE conference with their respective pricing and benefits.
  * Optimized for both desktop and mobile viewing with responsive grid layout.
- * Shows sale pricing with original prices strikethrough if sale is active.
+ * Shows urgency message about registration closing today.
  */
 const ConferenceRegistration = () => {
   const navigate = useNavigate();
@@ -44,20 +44,15 @@ const ConferenceRegistration = () => {
   return (
     <section id="registration" className="py-16 px-4 md:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
-        {saleActive ? (
-          <div className="text-center mb-8">
-            <div className="inline-block mb-4 px-4 py-2 bg-red-100 rounded-full">
-              <div className="flex items-center justify-center">
-                <Clock className="h-5 w-5 mr-2 text-red-600 animate-pulse" />
-                <p className="text-red-600 font-bold">LIMITED TIME OFFER - Sale Ends {formattedSaleEndDate}!</p>
-              </div>
+        {/* Registration closing message - always visible */}
+        <div className="text-center mb-8">
+          <div className="inline-block mb-4 px-4 py-2 bg-red-100 rounded-full animate-pulse">
+            <div className="flex items-center justify-center">
+              <AlertCircle className="h-5 w-5 mr-2 text-red-600" />
+              <p className="text-red-600 font-bold">REGISTRATION CLOSES TODAY AT 11:59 PM CST!</p>
             </div>
           </div>
-        ) : (
-          <div className="text-center mb-8">
-            {/* "Conference Registration Open" badge removed as requested */}
-          </div>
-        )}
+        </div>
         
         {/* First row: Title on left (39%), empty space on right (61%) */}
         <div className="flex flex-col lg:flex-row mb-12">
@@ -97,9 +92,7 @@ const ConferenceRegistration = () => {
             className="w-full lg:w-[61%] mt-8 lg:mt-0"
           >
             <p className="text-xl font-lora text-black leading-relaxed max-w-[800px]">
-              {saleActive 
-                ? "Special pricing available for a limited time! Secure your spot at the RAADE 2025 African Development Forum."
-                : "Secure your spot at the RAADE 2025 African Development Forum. Early registration is recommended as space is limited."}
+              <span className="text-red-600 font-bold">Final chance to register!</span> Secure your spot at the RAADE 2025 African Development Forum before registration closes tonight at 11:59 PM.
             </p>
           </motion.div>
         </div>

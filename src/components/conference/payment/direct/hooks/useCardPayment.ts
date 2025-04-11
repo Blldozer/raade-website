@@ -3,13 +3,15 @@ import { useState } from "react";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
 import { StripeCardElementChangeEvent } from "@stripe/stripe-js";
 import { supabase } from "@/integrations/supabase/client";
+import { getFullName } from "@/components/conference/RegistrationFormTypes";
 
 interface UseCardPaymentProps {
   ticketType: string;
   email: string;
-  fullName: string;
+  firstName: string;
+  lastName: string;
   groupSize?: number;
-  groupEmails?: string[];
+  groupEmails?: any[];
   organization?: string;
   role?: string;
   specialRequests?: string;
@@ -24,7 +26,8 @@ interface UseCardPaymentProps {
 export const useCardPayment = ({
   ticketType,
   email,
-  fullName,
+  firstName,
+  lastName,
   groupSize,
   groupEmails = [],
   organization = "",
@@ -93,20 +96,25 @@ export const useCardPayment = ({
       
       console.log("Processing payment with coupon code:", effectiveCouponCode);
       
+      // Generate the full name from first and last name
+      const fullName = getFullName(firstName, lastName);
+      
       // Call our create-direct-payment-intent function
       const { data, error } = await supabase.functions.invoke('create-direct-payment-intent', {
         body: {
           ticketType,
           email,
-          fullName,
+          firstName,
+          lastName,
+          fullName,  // For backward compatibility
           groupSize,
           groupEmails,
           organization,
           role,
           specialRequests,
           referralSource,
-          couponCode: effectiveCouponCode,  // Use the effective coupon code
-          couponDiscount,  // Pass couponDiscount to the edge function
+          couponCode: effectiveCouponCode,
+          couponDiscount,
           attemptId
         }
       });

@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { RegistrationFormData, TICKET_TYPES_ENUM, calculateTotalPrice } from "./RegistrationFormTypes";
+import { RegistrationFormData, TICKET_TYPES_ENUM, calculateTotalPrice, getFullName } from "./RegistrationFormTypes";
 import { formatCurrency } from "@/lib/utils";
 
 interface RegistrationSummaryProps {
@@ -27,7 +27,8 @@ const RegistrationSummary = ({
   couponDiscount,
   totalPrice 
 }: RegistrationSummaryProps) => {
-  const { ticketType, fullName, email, organization, groupSize } = registrationData;
+  const { ticketType, firstName, lastName, email, organization, groupSize } = registrationData;
+  const fullName = getFullName(firstName, lastName);
   
   // Calculate the original price before discounts
   const originalPrice = calculateTotalPrice(
@@ -108,26 +109,7 @@ const RegistrationSummary = ({
                 <span>{formatCurrency(finalPrice)}</span>
               </div>
             )}
-            
-            {ticketType === TICKET_TYPES_ENUM.STUDENT_GROUP && groupSize && (
-              <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 mt-1">
-                <span>Per Person:</span>
-                <span>{formatCurrency(finalPrice / groupSize)}</span>
-              </div>
-            )}
           </div>
-          
-          {registrationData.couponCode && !isGroupTicket && (
-            <div className="mt-2 text-sm font-medium text-green-600 dark:text-green-400">
-              Coupon code applied: {registrationData.couponCode}
-            </div>
-          )}
-          
-          {registrationData.couponCode && isGroupTicket && (
-            <div className="mt-2 text-sm font-medium text-amber-600 dark:text-amber-400">
-              Note: Discounts do not apply to group tickets
-            </div>
-          )}
         </div>
       </CardContent>
     </Card>

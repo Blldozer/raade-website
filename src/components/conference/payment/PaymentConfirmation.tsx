@@ -1,7 +1,7 @@
 
 import React from "react";
 import { CreditCard } from "lucide-react";
-import { RegistrationFormData } from "../RegistrationFormTypes";
+import { RegistrationFormData, getFullName } from "../RegistrationFormTypes";
 import SubmissionConfirmation from "@/components/forms/SubmissionConfirmation";
 
 interface PaymentConfirmationProps {
@@ -34,20 +34,24 @@ const PaymentConfirmation: React.FC<PaymentConfirmationProps> = React.memo(({
     const isGroupRegistration = registrationData.ticketType === "student-group";
     const groupSize = registrationData.groupSize || 0;
     const totalCost = isGroupRegistration ? 30 * groupSize : 0;
+    
+    // Get full name from first and last name
+    const fullName = getFullName(registrationData.firstName, registrationData.lastName);
 
     return {
       ticketTypeFormatted,
       isGroupRegistration,
       groupSize,
-      totalCost
+      totalCost,
+      fullName
     };
-  }, [registrationData.ticketType, registrationData.groupSize]);
+  }, [registrationData.ticketType, registrationData.groupSize, registrationData.firstName, registrationData.lastName]);
   
   // Generate payment confirmation display with stable rendering
   const paymentConfirmation = (
     <div className="text-white/80 font-lora text-left p-4 bg-[#1a1a1a] rounded-md mb-4">
       <h3 className="text-[#FBB03B] mb-2 font-simula">Payment Details:</h3>
-      <p><span className="text-[#FBB03B]/80">Name:</span> {registrationData.fullName}</p>
+      <p><span className="text-[#FBB03B]/80">Name:</span> {paymentDetails.fullName}</p>
       <p><span className="text-[#FBB03B]/80">Email:</span> {registrationData.email}</p>
       <p><span className="text-[#FBB03B]/80">Ticket Type:</span> {paymentDetails.ticketTypeFormatted}</p>
       

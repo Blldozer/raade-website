@@ -1,6 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { RegistrationFormData } from "../../RegistrationFormTypes";
+import { RegistrationFormData, getFullName } from "../../RegistrationFormTypes";
 
 /**
  * Interface for email confirmation response
@@ -28,8 +28,10 @@ export const sendConfirmationEmail = async (
 ): Promise<{ success: boolean; error?: Error }> => {
   try {
     // Build request with all required data
+    const fullName = getFullName(registrationData.firstName, registrationData.lastName);
+    
     const requestData = {
-      fullName: registrationData.fullName,
+      fullName,
       email: registrationData.email,
       ticketType: registrationData.ticketType,
       // Only include groupSize for student-group tickets
