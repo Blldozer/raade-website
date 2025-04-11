@@ -132,8 +132,21 @@ const GroupRegistration = ({ watch, setValue, control, errors }: GroupRegistrati
                   name={`groupMemberName${index + 1}`}
                   type="text"
                   autoComplete={index === 0 ? "name" : `member-name-${index + 1}`}
-                  {...control.register(`groupEmails.${index}.fullName` as const)}
-                  aria-label={`Full name for group member ${index + 1}`}
+                  {...control.register(`groupEmails.${index}.firstName` as const)}
+                  aria-label={`First name for group member ${index + 1}`}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor={`groupMemberLastName${index + 1}`}>Last Name</Label>
+                <Input
+                  placeholder="Last name"
+                  id={`groupMemberLastName${index + 1}`}
+                  name={`groupMemberLastName${index + 1}`}
+                  type="text"
+                  autoComplete={index === 0 ? "family-name" : `member-family-name-${index + 1}`}
+                  {...control.register(`groupEmails.${index}.lastName` as const)}
+                  aria-label={`Last name for group member ${index + 1}`}
                 />
               </div>
               
@@ -158,7 +171,7 @@ const GroupRegistration = ({ watch, setValue, control, errors }: GroupRegistrati
             type="button"
             variant="outline"
             className="w-full"
-            onClick={() => append({ value: "", fullName: "" })}
+            onClick={() => append({ value: "", firstName: "", lastName: "" })}
           >
             <Plus className="h-4 w-4 mr-2" />
             Add Group Member

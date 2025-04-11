@@ -84,9 +84,6 @@ const PaymentSection = ({
     window.scrollTo(0, 0);
   }, []);
   
-  // Create the full name from first and last name
-  const fullName = getFullName(registrationData.firstName, registrationData.lastName);
-  
   return (
     <div className="space-y-8">
       <Button 

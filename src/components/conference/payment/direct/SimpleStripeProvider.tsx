@@ -10,9 +10,10 @@ const stripePromise = loadStripe("pk_live_51QzaGsJCmIJg645X8x5sPqhMAiH4pXBh2e6mb
 interface SimpleStripeProviderProps {
   ticketType: string;
   email: string;
-  fullName: string;
+  firstName: string;
+  lastName: string;
   groupSize?: number;
-  groupEmails?: string[];
+  groupEmails?: any[];
   organization?: string;
   role?: string;
   specialRequests?: string;
@@ -70,7 +71,8 @@ const SimpleStripeProvider = (props: SimpleStripeProviderProps) => {
       <SimpleStripeCheckout 
         ticketType={props.ticketType}
         email={props.email}
-        fullName={props.fullName}
+        firstName={props.firstName}
+        lastName={props.lastName}
         groupSize={props.groupSize}
         groupEmails={props.groupEmails}
         organization={props.organization}

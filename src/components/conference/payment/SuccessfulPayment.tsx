@@ -4,7 +4,7 @@ import ConfettiExplosion from "react-confetti-explosion";
 import { Check } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { RegistrationFormData } from "../RegistrationFormTypes";
+import { RegistrationFormData, getFullName } from "../RegistrationFormTypes";
 import { useEmailConfirmation } from "./EmailConfirmationSender";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -68,6 +68,9 @@ const SuccessfulPayment = ({
     setTimeout(onContinue, 300);
   };
 
+  // Get the full name from first and last name
+  const fullName = getFullName(registrationData.firstName, registrationData.lastName);
+
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -130,7 +133,7 @@ const SuccessfulPayment = ({
                 transition={{ delay: 0.5, duration: 0.4 }}
               >
                 <h3 className="font-bold mb-2 text-lg text-raade-navy dark:text-white font-simula">Registration Details:</h3>
-                <p><span className="font-medium">Name:</span> {registrationData.fullName}</p>
+                <p><span className="font-medium">Name:</span> {fullName}</p>
                 <p><span className="font-medium">Email:</span> {registrationData.email}</p>
                 <p>
                   <span className="font-medium">Ticket Type:</span> {registrationData.ticketType

@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { RegistrationFormData } from "../../RegistrationFormTypes";
 import { format } from "date-fns";
@@ -272,7 +271,10 @@ export class EmailService {
     retryAttempt: number = 0
   ): Promise<EmailSendResponse> {
     // Extract necessary information
-    const { email, fullName, ticketType, groupSize, couponCode } = registrationData;
+    const { email, firstName, lastName, ticketType, groupSize, couponCode } = registrationData;
+    
+    // Get full name from first and last name
+    const fullName = getFullName(firstName, lastName);
     
     // Create email record for tracking
     const emailRecordId = await this.createEmailRecord({
@@ -434,4 +436,8 @@ export class EmailService {
       return null;
     }
   }
+}
+
+function getFullName(firstName: string, lastName: string): string {
+  return `${firstName} ${lastName}`;
 }
