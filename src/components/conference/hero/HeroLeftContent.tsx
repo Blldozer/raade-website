@@ -24,16 +24,7 @@ const HeroLeftContent = () => {
         className="space-y-6"
         style={{ willChange: "transform, opacity" }}
       >
-        {/* Registration closing alert */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="inline-flex items-center bg-red-600/30 px-4 py-2 rounded-full animate-pulse"
-        >
-          <AlertCircle className="h-4 w-4 mr-2 text-white" />
-          <p className="text-white font-bold text-sm md:text-base">Registration closes today at 11:59 PM CST!</p>
-        </motion.div>
+        {/* Registration closing alert - removed as conference has started */}
         
         <motion.p 
           initial={{ opacity: 0, y: -10 }}
@@ -100,10 +91,7 @@ const HeroLeftContent = () => {
             <Users className="text-[#FBB03B] h-4 w-4" />
             <p className="text-white font-lora font-medium">100+ Attendees</p>
           </div>
-          <div className="px-5 py-2.5 bg-red-500/30 backdrop-blur-sm rounded-full flex items-center gap-2 animate-pulse">
-            <Clock className="text-white h-4 w-4" />
-            <p className="text-white font-lora font-medium">Registration Closes Today!</p>
-          </div>
+          {/* Registration closing notification removed as conference has started */}
         </motion.div>
 
         {/* Event details */}
