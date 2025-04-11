@@ -1,4 +1,3 @@
-
 /**
  * Leadership Speakers Data
  * 
@@ -17,10 +16,10 @@ export const leadershipSpeakers: Speaker[] = [
     fullBio: "Peter Gregory Obi is a Nigerian businessman and politician who served as the Governor of Anambra State from 2006 to 2014. Born on July 19, 1961, in Onitsha, Anambra State, he attended Christ the King College and later earned a Bachelor of Philosophy from the University of Nigeria, Nsukka. Obi has an extensive background in business, holding leadership positions in various companies, including serving as the youngest chairman of Fidelity Bank Plc. In 2022, he became the Labour Party's presidential candidate for the 2023 Nigerian general election.",
     expertise: ["Governance", "Business Leadership", "Economic Policy"],
     speaking: {
-      title: "Economic Development in Nigeria: Challenges and Opportunities",
-      description: "A discussion on sustainable economic strategies for Nigeria's future growth.",
-      time: "10:00 AM - 11:00 AM",
-      date: "April 11"
+      title: "Plenary Speech 2: The Governance Revolution",
+      description: "A compelling examination of transformative governance approaches for sustainable development in Africa.",
+      time: "3:20 PM - 3:50 PM",
+      date: "April 12"
     }
   },
   {
@@ -36,28 +35,28 @@ export const leadershipSpeakers: Speaker[] = [
       twitter: "https://twitter.com/obyezeks"
     },
     speaking: {
-      title: "Transparency and Governance in African Development",
-      description: "Insights on promoting transparency and good governance for sustainable development.",
-      time: "1:30 PM - 2:30 PM",
-      date: "April 11"
+      title: "Closing Plenary Speech 3: The Future We Choose",
+      description: "A visionary address on shaping Africa's future through collective action and strategic reforms.",
+      time: "4:30 PM - 5:15 PM",
+      date: "April 12"
     }
   },
   {
     id: "alexander-byrd",
     name: "Dr. Alexander X. Byrd",
-    role: "Vice Provost for Diversity, Equity, and Inclusion",
+    role: "Vice Provost for Access and Institutional Excellence",
     organization: "Rice University",
     imagePlaceholder: "Dr. Byrd",
     bio: "Associate Professor of History specializing in Afro-American history in the Atlantic world.",
-    fullBio: "Dr. Alexander X. Byrd serves as the Vice Provost for Diversity, Equity, and Inclusion at Rice University, a position he has held since July 2020. In this role, he provides strategic leadership for diversity initiatives and coordinates efforts across the campus. He is also an Associate Professor of History at Rice, specializing in Afro-American history, particularly black life in the Atlantic world and the Jim Crow South. His notable work includes the book \"Captives & Voyagers,\" which examines free and forced transatlantic black migration during the American Revolution. Dr. Byrd is a recipient of the 2020 Piper Professor Award and has been honored multiple times with Rice University's George R. Brown Award for Superior Teaching. He earned his bachelor's degree from Rice University and completed his doctorate in History at Duke University.",
-    expertise: ["History", "Diversity & Inclusion", "Education"],
+    fullBio: "Dr. Alexander X. Byrd serves as the Vice Provost for Access and Institutional Excellence (AEI) at Rice University, a position he has held since July 2020. In this role, he provides strategic leadership for access initiatives and coordinates efforts across the campus. He is also an Associate Professor of History at Rice, specializing in Afro-American history, particularly black life in the Atlantic world and the Jim Crow South. His notable work includes the book \"Captives & Voyagers,\" which examines free and forced transatlantic black migration during the American Revolution. Dr. Byrd is a recipient of the 2020 Piper Professor Award and has been honored multiple times with Rice University's George R. Brown Award for Superior Teaching. He earned his bachelor's degree from Rice University and completed his doctorate in History at Duke University.",
+    expertise: ["History", "Access & Institutional Excellence", "Education"],
     social: {
       website: "https://humanities.rice.edu/people/alexander-x-byrd"
     },
     speaking: {
-      title: "Historical Perspectives on African Development",
-      description: "Examining the historical context and its influence on current development challenges.",
-      time: "3:00 PM - 4:00 PM",
+      title: "Opening Address - Reimagining Solutions for Africa's Toughest Challenges",
+      description: "A thought-provoking opening address on innovative approaches to addressing Africa's development challenges.",
+      time: "6:00 PM - 6:30 PM",
       date: "April 11"
     }
   }

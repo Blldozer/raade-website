@@ -1,4 +1,3 @@
-
 import React from "react";
 
 /**
@@ -17,12 +16,12 @@ const ExpertiseTags = ({ expertise }: ExpertiseTagsProps) => {
   
   return (
     <div className="mb-6">
-      <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2 font-montserrat">Expertise</h3>
+      <h3 className="text-sm font-semibold text-raade-navy uppercase tracking-wider mb-2 font-simula">Expertise</h3>
       <div className="flex flex-wrap gap-2">
         {expertise.map((skill, index) => (
           <span 
             key={index} 
-            className="bg-[#FBB03B]/10 text-[#FBB03B] px-3 py-1 rounded-full text-xs font-montserrat"
+            className="bg-[#FBB03B]/10 text-[#FBB03B] px-3 py-1 rounded-full text-xs font-lora"
           >
             {skill}
           </span>

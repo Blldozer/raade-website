@@ -1,4 +1,3 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import SpeakerImage from "./SpeakerImage";
@@ -32,9 +31,9 @@ const SpeakerSidebar = ({ speaker }: SpeakerSidebarProps) => {
         rounded={true}
       />
       
-      <h1 className="text-2xl font-bold text-raade-navy font-montserrat mb-2 mt-4">{speaker.name}</h1>
-      <p className="text-[#FBB03B] font-medium mb-1 font-montserrat">{speaker.role}</p>
-      <p className="text-gray-600 mb-4 font-opensans">{speaker.organization}</p>
+      <h1 className="text-2xl font-bold text-raade-navy font-simula mb-2 mt-4">{speaker.name}</h1>
+      <p className="text-[#FBB03B] font-medium mb-1 font-lora">{speaker.role}</p>
+      <p className="text-gray-600 mb-4 font-lora italic">{speaker.organization}</p>
       
       {speaker.social && (
         <SpeakerSocialLinks 

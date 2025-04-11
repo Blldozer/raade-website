@@ -13,16 +13,16 @@ export const entrepreneurSpeakers: Speaker[] = [
     role: "Co-founder & COO",
     organization: "SunFi",
     imagePlaceholder: "Tomiwa Igun",
-    bio: "Leader in clean energy financial technology, enhancing solar energy access in Africa.",
-    fullBio: "Tomiwa Igun is the Co-founder and Chief Operations Officer of SunFi, a clean energy financial technology platform that enhances sales efficiency for solar installers. In this role, he oversees credit risk management and operations. Prior to founding SunFi in March 2021, Tomiwa co-founded Aspire Power Solutions, focusing on improving energy access in sub-Saharan Africa. He also held managerial positions at The Boston Consulting Group and advisory roles with Fluna. Tomiwa holds an MBA from Harvard Business School, a master's degree in Electrical Engineering from the University of Michigan, and a bachelor's degree in Electrical Engineering from Howard University.",
+    bio: "Leader in clean energy financial technology, passionate about electrifying Africa through innovative solutions.",
+    fullBio: "Tomiwa Igun is passionate about electrifying Africa, as depicted in his 2012 Harvard Business School Annual Portrait project (\"Tell Me, What Is It You Plan To Do With Your One Wild And Precious Life?\") where he laid out a brief basis for this passion. His professional career has revolved around this goal of improving the electrification around Africa. He co-founded SunFi Corporation and serves as Chief Operating Officer. SunFi is a Clean Energy FinTech that provides financing and digital tools to enable distributed clean energy providers in Nigeria to scale clean, affordable, and reliable electricity. SunFi came about after co-founding Aspire Power Solutions, which is a distributed energy provider in Nigeria.\n\nPreviously, he was a Manager within the Grow Africa Team at The Boston Consulting Group (BCG) where he has served several clients providing strategic advisory and executing on energy projects, including in Nigeria and other African countries. Before this, Tomiwa worked at Africa Finance Corporation with a mandate to develop infrastructure projects in Africa. He also co-founded Young African MBAs (YAM), a non-profit helping bridge the gap in Africa's management talent.\n\nTomiwa holds an MBA with Honors from Harvard Business School, M.Sc. Electrical Engineering from University of Michigan, and B.Sc. Electrical Engineering from Howard University. During his time at HBS, he co-chaired the Africa Business Conference, the largest student-run conference focused on Africa. He also co-authored a published Harvard Business School case study on the Privatization of Nigeria's Power Sector.",
     expertise: ["Clean Energy", "Financial Technology", "Sustainable Development"],
     social: {
       linkedin: "https://linkedin.com/in/tomiwaigun"
     },
     speaking: {
-      title: "Clean Energy Solutions for Africa's Development",
-      description: "Exploring sustainable energy models and financing solutions for African markets.",
-      time: "11:00 AM - 12:00 PM",
+      title: "Workshop Session 1: Defining the Opportunity",
+      description: "Interactive workshop on identifying and defining market opportunities in sustainable energy.",
+      time: "11:25 AM - 12:20 PM",
       date: "April 12"
     }
   },
@@ -39,9 +39,9 @@ export const entrepreneurSpeakers: Speaker[] = [
       linkedin: "https://linkedin.com/in/mezuo-nwuneli"
     },
     speaking: {
-      title: "Agricultural Investment Strategies for African Growth",
-      description: "Insights on developing sustainable agricultural investment models in Africa.",
-      time: "1:30 PM - 2:30 PM",
+      title: "Workshop Session 1: Defining the Opportunity",
+      description: "Interactive workshop on identifying opportunities in Africa's agricultural investment landscape.",
+      time: "11:25 AM - 12:20 PM",
       date: "April 12"
     }
   }

@@ -10,20 +10,20 @@ export const financeSpeakers: Speaker[] = [
   {
     id: "yomi-jemibewon",
     name: "Yomi Jemibewon",
-    role: "Co-Founder & Partner",
-    organization: "CardinalStone Partners",
+    role: "Co-Founder & Managing Director",
+    organization: "CardinalStone Capital Advisers",
     imagePlaceholder: "Yomi Jemibewon",
-    bio: "Investment management expert focusing on growth investments in West African businesses.",
-    fullBio: "Yomi Jemibewon is a Co-Founder and Partner at CardinalStone Partners, a West African investment management firm. He has a background in private equity, focusing on growth investments in small and mid-sized businesses in Nigeria and West Africa. Jemibewon holds B.Sc. and M.Sc. degrees in Electrical Engineering from Virginia Tech and an MBA from the Wharton School at the University of Pennsylvania.",
+    bio: "Investment management expert with over two decades of experience in West African private equity and growth investments.",
+    fullBio: "Yomi Jemibewon is a co-Founder and Managing Director of CardinalStone Capital Advisers (CCA), an investment adviser to the CardinalStone Capital Advisers Growth Fund (CCAGF), a $64million West Africa-focused Private Equity fund, targeting high growth SMEs operating in key strategic sectors of the West African economy. He has over 2 decades of investment–related experience spanning strategy, investment execution and business management.\n\nPrior to CCA, Yomi was a Founding Partner and Managing Director of CardinalStone Partners, where he led the Principal Investments Division (PID) while also working alongside other partners to build the broader CardinalStone organization. As head of PID, Yomi drove the formulation of the firm's investment strategy, led deal sourcing, and oversaw transaction execution. In addition, Yomi played a central role in the business advisory and capital raising activities required for the successful execution and management of three of the Group's portfolio investments.\n\nIn addition to his strategy and operations experience, Yomi has a strong financial background, developed as a Vice President on the Investment Banking team at Avante Capital Partners (now Argentil Capital). Prior to that, he spent two years in the New York office of Bain & Company, where he served clients across healthcare, telecom and consumer goods sectors. At Bain, he also spent time in the Private Equity Group, executing strategic due diligence engagements for private equity clients.\n\nYomi began his professional career as a systems design engineer at Motorola Incorporated. He holds a B.Sc. and M.Sc. in Electrical Engineering from Virginia Tech, and an MBA from The Wharton School of the University of Pennsylvania. Yomi is also the author of the book, \"Risk and Return\"; a book which chronicles his return to Nigeria and the entrepreneurial and life journey that ensued thereafter.",
     expertise: ["Investment Management", "Private Equity", "Business Growth"],
     social: {
       linkedin: "https://linkedin.com/in/yomi-jemibewon"
     },
     speaking: {
-      title: "Growth Capital for African Businesses",
-      description: "Strategies for accessing and deploying growth capital in African markets.",
-      time: "10:30 AM - 11:30 AM",
-      date: "April 11"
+      title: "Plenary Speech 1: Unlocking the Vault: New Capital Models for Africa's Market Revolution",
+      description: "A visionary address on innovative capital models to drive Africa's economic growth.",
+      time: "9:55 AM - 10:30 AM",
+      date: "April 12"
     }
   },
   {
@@ -39,29 +39,29 @@ export const financeSpeakers: Speaker[] = [
       linkedin: "https://linkedin.com/in/uzoma-eze"
     },
     speaking: {
-      title: "Legal and Regulatory Framework for African Business",
-      description: "Navigating legal complexities in African business environments.",
-      time: "9:00 AM - 10:00 AM",
-      date: "April 11"
+      title: "Panel: Financing the Impossible",
+      description: "A panel discussion on innovative approaches to financing high-impact ventures in challenging markets.",
+      time: "10:40 AM - 11:20 AM",
+      date: "April 12"
     }
   },
   {
     id: "ismael-fanny",
     name: "Ismaël Fanny",
-    role: "Investment Officer",
+    role: "Agribusiness Investment Officer",
     organization: "International Finance Corporation (IFC)",
     imagePlaceholder: "Ismaël Fanny",
-    bio: "Impact investment professional focusing on funding projects in the Caribbean region.",
-    fullBio: "Ismaël Fanny is an Investment Officer with the International Finance Corporation (IFC), a member of the World Bank Group. In this role, he focuses on impact investments, particularly in the Caribbean region, where he helps fund projects and startups that have a direct positive impact on local communities. Prior to joining IFC, Ismaël gained experience in private equity and entrepreneurship. He holds an MBA from McGill University. Additionally, Ismaël has been featured in IFC's \"90 Seconds With\" series, where he discusses the organization's adaptability and efforts in delivering for clients in Haiti.",
-    expertise: ["Impact Investing", "Development Finance", "Entrepreneurship"],
+    bio: "IFC Agribusiness Investment Officer covering North West and Central Africa, with entrepreneurial experience in West African cashew industry.",
+    fullBio: "Ismael is an Agribusiness Investment Officer, covering North West and Central Africa. He joined IFC in 2019 in the Caribbean region where he led the team's business development and supported the portfolio growth in Haiti and the Eastern Caribbean. He also worked on several IFC's corporate initiatives including the Latin American and Caribbean chapter of the Millennial Resource Group.\n\nBefore joining IFC, Ismael co-founded Kajou, an SME aiming to revamp the cashew industry in West Africa. He is also an actuary by training and worked in this field for several years before focusing on investment.\n\nIsmael was born and raised in Abidjan, Côte d'Ivoire – the pearl of the lagoons! He has an MBA from McGill University in Montreal.\n\nHis hobbies include automotive, cooking, and traveling.",
+    expertise: ["Agribusiness", "Investment", "Entrepreneurship"],
     social: {
       linkedin: "https://linkedin.com/in/ismael-fanny"
     },
     speaking: {
-      title: "Impact Investment Strategies for Development",
-      description: "Leveraging impact investments to drive sustainable development outcomes.",
-      time: "4:30 PM - 5:30 PM",
-      date: "April 11"
+      title: "Workshop Session 1: Defining the Opportunity",
+      description: "An interactive workshop on identifying investment opportunities with social impact potential.",
+      time: "11:25 AM - 12:20 PM",
+      date: "April 12"
     }
   }
 ];
