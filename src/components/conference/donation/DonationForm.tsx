@@ -94,7 +94,7 @@ const DonationForm: React.FC<DonationFormProps> = ({ onPaymentError }) => {
           
           {showCardPayment ? (
             <div className="space-y-6">
-              <h3 className="text-2xl font-semibold mb-6 text-center text-[#274675]">Complete Your Donation</h3>
+              <h3 className="text-2xl font-simula font-semibold mb-6 text-center text-raade-navy">Complete Your Donation</h3>
               
               <DonationSummary 
                 values={submittedValues!}
@@ -113,7 +113,7 @@ const DonationForm: React.FC<DonationFormProps> = ({ onPaymentError }) => {
                     onClick={handleBackToForm}
                     disabled={isLoading}
                     type="button"
-                    className="flex items-center rounded-lg transition-all duration-200 hover:bg-gray-100"
+                    className="flex items-center rounded-lg transition-all duration-200 hover:bg-gray-100 font-lora"
                   >
                     <ArrowLeft className="h-4 w-4 mr-2" />
                     Back
@@ -121,7 +121,7 @@ const DonationForm: React.FC<DonationFormProps> = ({ onPaymentError }) => {
                   
                   <Button
                     type="button"
-                    className="bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-medium rounded-lg shadow-md transition-all duration-200 hover:shadow-lg"
+                    className="bg-[#FBB03B] hover:bg-[#FBB03B]/90 text-white font-medium rounded-lg shadow-md transition-all duration-200 hover:shadow-lg font-lora"
                     disabled={isLoading}
                     onClick={handlePaymentSubmit}
                   >
@@ -133,7 +133,7 @@ const DonationForm: React.FC<DonationFormProps> = ({ onPaymentError }) => {
           ) : (
             <FormProvider {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                <h3 className="text-2xl font-semibold mb-6 text-center text-[#274675]">Make a Donation</h3>
+                <h3 className="text-2xl font-simula font-semibold mb-6 text-center text-raade-navy">Make a Donation</h3>
                 
                 <DonationAmountSelector
                   selectedAmount={selectedAmount}
@@ -167,7 +167,7 @@ const DonationForm: React.FC<DonationFormProps> = ({ onPaymentError }) => {
       
       {/* Mobile Impact Display - Only visible on small screens */}
       <div className="mt-8 md:hidden">
-        <h3 className="text-xl font-semibold mb-4 text-center text-[#274675]">Your Impact</h3>
+        <h3 className="text-xl font-simula font-semibold mb-4 text-center text-raade-navy">Your Impact</h3>
         <DynamicDonationImpact 
           selectedAmount={selectedAmount}
           customAmount={form.watch("customAmount")}

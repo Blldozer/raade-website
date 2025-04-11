@@ -1,4 +1,3 @@
-
 import { Check } from "lucide-react";
 
 interface DonationStepIndicatorProps {
@@ -23,7 +22,7 @@ const DonationStepIndicator = ({ currentStep }: DonationStepIndicatorProps) => {
           }`}>
             {currentStep === 'payment' ? <Check className="h-5 w-5" /> : '1'}
           </div>
-          <span className="ml-2 font-lora">Information</span>
+          <span className="ml-2 font-simula text-raade-navy">Information</span>
         </div>
         <div className={`h-px w-12 mx-4 ${
           currentStep === 'payment' ? 'bg-green-500' : 'bg-gray-300'
@@ -34,7 +33,7 @@ const DonationStepIndicator = ({ currentStep }: DonationStepIndicatorProps) => {
           }`}>
             2
           </div>
-          <span className="ml-2 font-lora">Payment</span>
+          <span className="ml-2 font-simula text-raade-navy">Payment</span>
         </div>
       </div>
     </div>

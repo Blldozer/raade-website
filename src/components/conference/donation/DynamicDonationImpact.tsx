@@ -159,7 +159,7 @@ const DynamicDonationImpact: React.FC<DynamicDonationImpactProps> = ({
   return (
     <div className="h-full flex flex-col">
       <div className="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-100">
-        <h3 className="text-2xl font-bold text-gray-800 mb-3 font-simula">Your Impact</h3>
+        <h3 className="text-2xl font-bold text-raade-navy mb-3 font-simula">Your Impact</h3>
         
         <AnimatePresence mode="wait">
           <motion.div
@@ -171,12 +171,12 @@ const DynamicDonationImpact: React.FC<DynamicDonationImpactProps> = ({
             className="mb-6"
           >
             <div className={`${getBgColor()} rounded-lg p-5 mb-6`}>
-              <h4 className={`font-bold text-xl ${getIconColor()}`}>{impactTier.title}</h4>
-              <p className="text-gray-700 mt-1">{impactTier.description}</p>
+              <h4 className={`font-bold text-xl font-simula text-raade-navy`}>{impactTier.title}</h4>
+              <p className="text-gray-700 mt-1 font-lora">{impactTier.description}</p>
             </div>
             
             <div>
-              <h5 className="font-medium text-gray-800 mb-3">Your donation will help:</h5>
+              <h5 className="font-medium font-simula text-raade-navy mb-3">Your donation will help:</h5>
               <div className="space-y-3">
                 {impactTier.benefits.map((benefit, index) => (
                   <motion.div 
@@ -186,8 +186,8 @@ const DynamicDonationImpact: React.FC<DynamicDonationImpactProps> = ({
                     transition={{ duration: 0.2, delay: index * 0.1 }}
                     className="flex items-start gap-3"
                   >
-                    <CheckCircle className={`h-5 w-5 mt-0.5 ${getIconColor()}`} />
-                    <p className="text-gray-600">{benefit}</p>
+                    <CheckCircle className={`h-5 w-5 mt-0.5 text-[#FBB03B]`} />
+                    <p className="text-gray-600 font-lora">{benefit}</p>
                   </motion.div>
                 ))}
               </div>
@@ -196,7 +196,7 @@ const DynamicDonationImpact: React.FC<DynamicDonationImpactProps> = ({
         </AnimatePresence>
         
         <div className="border-t border-gray-100 pt-4 mt-6">
-          <p className="text-gray-600 text-sm">
+          <p className="text-gray-600 text-sm font-lora italic">
             Thank you for supporting our mission to create sustainable solutions for African development challenges.
           </p>
         </div>
