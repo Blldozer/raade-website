@@ -1,3 +1,4 @@
+
 import * as SibApiV3Sdk from 'sib-api-v3-sdk';
 import ReactDOMServer from 'react-dom/server';
 import RaadeConferenceEmail from '../../../supabase/functions/_shared/email-templates/raade-conference-email';
@@ -54,7 +55,7 @@ export const sendConferenceEmail = async (data: ConferenceEmailData) => {
     const sendEmailPromises = data.recipients.map(async (recipient) => {
       // Render the React component to HTML string
       const emailHtml = ReactDOMServer.renderToString(
-        RaadeConferenceEmail({ name: recipient.name })
+        RaadeConferenceEmail({ recipient: { name: recipient.name, email: recipient.email } })
       );
 
       // Construct email object for Brevo API
@@ -117,7 +118,7 @@ export const createConferenceCampaign = async (
 
     // Render the React component to HTML string with a generic name
     const emailHtml = ReactDOMServer.renderToString(
-      RaadeConferenceEmail({ name: '{FIRSTNAME}' }) // Brevo will replace this with the actual first name
+      RaadeConferenceEmail({ recipient: { name: '{FIRSTNAME}', email: '' } }) // Brevo will replace this with the actual first name
     );
 
     // Create campaign object
@@ -150,5 +151,7 @@ export const createConferenceCampaign = async (
  * @returns HTML string of the email
  */
 export const getConferenceEmailHtml = (name: string = 'Attendee') => {
-  return ReactDOMServer.renderToString(RaadeConferenceEmail({ name }));
+  return ReactDOMServer.renderToString(
+    RaadeConferenceEmail({ recipient: { name, email: '' } })
+  );
 };
