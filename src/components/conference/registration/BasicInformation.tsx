@@ -3,6 +3,7 @@ import { UseFormRegister, FormState, UseFormWatch } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { RegistrationFormData } from "../RegistrationFormTypes";
+import { Info } from "lucide-react";
 
 interface BasicInformationProps {
   register: UseFormRegister<RegistrationFormData>;
@@ -84,7 +85,10 @@ const BasicInformation = ({
           <p className="text-gray-500 text-sm mt-1">Checking email...</p>
         )}
         {emailValidationMessage && !isCheckingEmail && (
-          <p className="text-orange-500 text-sm mt-1">{emailValidationMessage}</p>
+          <div className="flex items-start mt-1 text-sm">
+            <Info className="h-4 w-4 text-amber-500 mr-1 mt-0.5 flex-shrink-0" />
+            <p className="text-amber-600">{emailValidationMessage}</p>
+          </div>
         )}
         {errors.email && (
           <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>

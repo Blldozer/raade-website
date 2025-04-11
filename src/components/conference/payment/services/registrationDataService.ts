@@ -11,28 +11,15 @@ import { toast } from "@/hooks/use-toast";
  * - Implements retry logic with exponential backoff
  * - Handles timeouts and network errors gracefully
  * - Ensures coupon codes are properly stored with registrations
- * - Improves duplicate detection and error handling
  */
 export const storeRegistrationData = async (
   registrationData: RegistrationFormData,
-  maxRetries = 2 // Reduced from 3 to prevent excessive retries
+  maxRetries = 2
 ): Promise<boolean> => {
   let retryCount = 0;
   
   const attemptStoreData = async (): Promise<boolean> => {
     try {
-      // First, check if we've already registered this email (client-side check)
-      const existingEmail = localStorage.getItem("conference_registered_email");
-      if (existingEmail === registrationData.email) {
-        console.log("Email already registered (client-side check):", registrationData.email);
-        toast({
-          title: "Already Registered",
-          description: "You've already registered with this email address. Each person can only register once.",
-          variant: "default", // Changed from "warning" to "default"
-        });
-        return true; // Return success to avoid error messages, but we didn't actually store anything
-      }
-      
       // Process group emails to a clean format
       let processedGroupEmails = [];
       if (registrationData.groupEmails && Array.isArray(registrationData.groupEmails)) {
@@ -80,7 +67,7 @@ export const storeRegistrationData = async (
       sessionStorage.setItem("registrationEmail", registrationData.email);
       
       // Set a timeout for the data storage request
-      const STORAGE_TIMEOUT = 12000; // 12 seconds (reduced from 15)
+      const STORAGE_TIMEOUT = 12000; // 12 seconds
       
       // Create a timeout promise
       const timeoutPromise = new Promise<never>((_, reject) => {
@@ -125,22 +112,6 @@ export const storeRegistrationData = async (
       } else {
         if (data?.success) {
           console.log("Registration data stored successfully:", data);
-          
-          // Check if this was a duplicate detection
-          if (data.data?.duplicateDetected) {
-            console.log("Duplicate registration detected:", data);
-            
-            // Show a toast but we still count this as success to avoid error messages
-            toast({
-              title: "Already Registered",
-              description: "It looks like you've already registered with this email address. Your previous registration is still valid.",
-              variant: "default", // Changed from "warning" to "default"
-            });
-          } else {
-            // Only store in localStorage if this was a genuinely new registration
-            localStorage.setItem("conference_registered_email", registrationData.email);
-          }
-          
           return true;
         } else {
           console.error("Registration storage returned an error:", data);

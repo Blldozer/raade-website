@@ -57,17 +57,6 @@ const ConferenceRegistration = () => {
       });
     }
     
-    // Display a warning if user has already registered
-    const registeredEmail = localStorage.getItem("conference_registered_email");
-    if (registeredEmail) {
-      toast({
-        title: "You've already registered",
-        description: `It looks like you've already registered with ${registeredEmail}. Each person can only register once.`,
-        variant: "default", // Changed from "warning" to "default"
-        duration: 8000,
-      });
-    }
-    
     // Cleanup function to reset attribute when component unmounts
     return () => {
       document.body.removeAttribute('data-nav-background');
@@ -108,13 +97,6 @@ const ConferenceRegistration = () => {
             {/* Add the Stripe status check component */}
             <div className="mb-6">
               <StripeStatusCheck />
-            </div>
-            
-            <div className="bg-yellow-50 border border-yellow-300 rounded-lg p-4 mb-6 dark:bg-yellow-900/30 dark:border-yellow-800">
-              <h3 className="font-bold text-yellow-800 dark:text-yellow-400 mb-1">Important Note</h3>
-              <p className="text-yellow-700 dark:text-yellow-300">
-                Each email address can only be used for one registration. If you've already registered, please use a different email or contact us for assistance.
-              </p>
             </div>
             
             <ConferenceRegistrationForm />
