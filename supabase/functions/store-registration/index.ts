@@ -65,38 +65,6 @@ serve(async (req) => {
       );
     }
 
-    // First check if registration already exists - IMPROVED ROBUSTNESS
-    const { data: existingReg, error: checkError } = await supabaseAdmin
-      .from('conference_registrations')
-      .select('id, email, first_name, last_name, full_name, status')
-      .eq('email', email)
-      .maybeSingle();
-
-    if (checkError) {
-      console.error(`[${requestId}] Error checking existing registration:`, checkError);
-      // Continue despite error - we'll handle duplicate constraint error later if needed
-    }
-
-    if (existingReg) {
-      console.log(`[${requestId}] Registration already exists for ${email}`);
-      
-      // Return a successful response even though we're not creating a new registration
-      // This prevents client-side retries from causing errors
-      return new Response(
-        JSON.stringify({ 
-          success: true, 
-          message: "Registration already exists",
-          data: { 
-            id: existingReg.id,
-            duplicateDetected: true,
-            existingName: existingReg.full_name || `${existingReg.first_name} ${existingReg.last_name}`,
-            status: existingReg.status
-          }
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
     // Insert new registration
     console.log(`[${requestId}] Creating new registration record`);
     try {
@@ -119,44 +87,18 @@ serve(async (req) => {
         .single();
 
       if (insertError) {
-        // Check if this is a unique constraint violation (duplicate email)
-        if (insertError.code === '23505' || insertError.message?.includes('duplicate key value')) {
-          console.log(`[${requestId}] Duplicate email detected during insert: ${email}`);
-          
-          // Get the existing registration to return its ID
-          const { data: existingRecord } = await supabaseAdmin
-            .from('conference_registrations')
-            .select('id')
-            .eq('email', email)
-            .maybeSingle();
-            
-          // Return success with the existing record ID to prevent retries
-          return new Response(
-            JSON.stringify({ 
-              success: true, 
-              message: "Registration already exists",
-              data: { 
-                id: existingRecord?.id || 'unknown',
-                duplicateDetected: true 
-              } 
-            }),
-            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
-        } else {
-          // For other errors, return the error
-          console.error(`[${requestId}] Error inserting registration:`, insertError);
-          return new Response(
-            JSON.stringify({ 
-              success: false, 
-              message: "Failed to store registration data", 
-              error: insertError.message 
-            }),
-            { 
-              status: 500, 
-              headers: { ...corsHeaders, "Content-Type": "application/json" } 
-            }
-          );
-        }
+        console.error(`[${requestId}] Error inserting registration:`, insertError);
+        return new Response(
+          JSON.stringify({ 
+            success: false, 
+            message: "Failed to store registration data", 
+            error: insertError.message 
+          }),
+          { 
+            status: 500, 
+            headers: { ...corsHeaders, "Content-Type": "application/json" } 
+          }
+        );
       }
 
       const registrationId = registrationRecord?.id;
@@ -259,28 +201,6 @@ serve(async (req) => {
     } catch (insertError) {
       // Additional error handling for insert operation
       console.error(`[${requestId}] Exception during insert:`, insertError);
-      
-      // Check if this might be a duplicate key error
-      if (insertError.message?.includes('duplicate key') || insertError.message?.includes('unique constraint')) {
-        // Handle as duplicate registration
-        const { data: existingRec } = await supabaseAdmin
-          .from('conference_registrations')
-          .select('id')
-          .eq('email', email)
-          .maybeSingle();
-          
-        return new Response(
-          JSON.stringify({ 
-            success: true, 
-            message: "Registration may already exist",
-            data: { 
-              id: existingRec?.id || 'unknown',
-              duplicateDetected: true 
-            } 
-          }),
-          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
       
       return new Response(
         JSON.stringify({ 
