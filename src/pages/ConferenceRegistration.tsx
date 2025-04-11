@@ -3,26 +3,18 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
-import ConferenceRegistrationForm from "@/components/conference/ConferenceRegistrationForm";
-import StripeStatusCheck from "@/components/conference/payment/StripeStatusCheck";
 import { useNavBackground } from "@/hooks/useNavBackground";
-import SaleCountdown from "@/components/conference/SaleCountdown";
-import { isSaleActive } from "@/components/conference/RegistrationFormTypes";
-import { toast } from "@/hooks/use-toast";
+import RegistrationClosed from "@/components/conference/RegistrationClosed";
 
 /**
  * Conference Registration Page
  * 
- * This page displays the registration form for conference attendees.
+ * This page displays a message that registration for the conference has closed.
  * Features:
- * - Enhanced error prevention with clear user feedback
  * - Dark mode support with proper color inversion
  * - Mobile responsive design 
  * - Uses a dark navbar for proper contrast
  * - Smooth animations for an engaging UI
- * - Enhanced session cleanup to prevent registration issues
- * - Added countdown timer for registration closing
- * - Improved visual hierarchy and clarity
  */
 const ConferenceRegistration = () => {
   const navigate = useNavigate();
@@ -48,13 +40,6 @@ const ConferenceRegistration = () => {
       console.log("Found stale checkout session on registration page, clearing");
       sessionStorage.removeItem("checkoutSessionId");
       sessionStorage.removeItem("registrationEmail");
-      
-      // Add a toast message to inform the user their previous session was cleared
-      toast({
-        title: "Previous session cleared",
-        description: "Your previous registration session has been cleared. You can start fresh.",
-        variant: "default",
-      });
     }
     
     // Cleanup function to reset attribute when component unmounts
@@ -83,23 +68,10 @@ const ConferenceRegistration = () => {
             transition={{ duration: 0.6 }}
             className="dark:text-white"
           >
-            {/* Always show the countdown regardless of sale status */}
-            <div className="mb-6">
-              <SaleCountdown />
-            </div>
-            
             <h1 className="text-4xl font-bold text-raade-navy mb-4 font-simula dark:text-white">Conference Registration</h1>
-            <p className="text-lg text-gray-600 mb-2 font-lora dark:text-gray-300">
-              Register for the RAADE African Development Forum 2025, taking place on April 11-12.
-            </p>
-            <p className="text-red-600 font-medium mb-6">Registration closes tonight at 11:59 PM. Don't miss out!</p>
             
-            {/* Add the Stripe status check component */}
-            <div className="mb-6">
-              <StripeStatusCheck />
-            </div>
-            
-            <ConferenceRegistrationForm />
+            {/* Replace ConferenceRegistrationForm with RegistrationClosed component */}
+            <RegistrationClosed />
           </motion.div>
         </div>
       </div>
