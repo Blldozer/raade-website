@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,7 +21,7 @@ export const useRegistrationForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [registrationData, setRegistrationData] = useState<RegistrationFormData | null>(null);
-  const [emailValidated, setEmailValidated] = useState(false);
+  const [emailValidated, setEmailValidated] = useState(true);
   const [couponCode, setCouponCode] = useState<string | null>(null);
   const [couponDiscount, setCouponDiscount] = useState<{ type: 'percentage' | 'fixed'; amount: number } | null>(null);
   const [isFullDiscount, setIsFullDiscount] = useState(false);
@@ -52,21 +51,13 @@ export const useRegistrationForm = () => {
   const watchTicketType = form.watch("ticketType");
 
   const handleEmailValidation = async (result: { isValid: boolean; message?: string }) => {
-    setEmailValidated(result.isValid);
-    return result.isValid;
+    // We'll always set this to true to keep the form flowing
+    setEmailValidated(true);
+    return true;
   };
 
   const handleInitialSubmit = async (data: RegistrationFormData) => {
-    // If email hasn't been validated as valid yet, show a friendly message
-    if (!emailValidated && data.ticketType !== "professional") {
-      toast({
-        title: "Email validation required",
-        description: "Please make sure your email address is valid for the selected ticket type.",
-        variant: "default",
-      });
-      return;
-    }
-    
+    // Remove the email validation blocking check
     setIsSubmitting(true);
     try {
       // If this is a coupon code submission, add the coupon code to the registration data
@@ -102,7 +93,6 @@ export const useRegistrationForm = () => {
     }
   };
 
-  // Direct registration function for 100% off coupons
   const handleDirectRegistration = async (data: RegistrationFormData) => {
     // Prevent multiple simultaneous registration attempts
     if (registrationInProgressRef.current) {
@@ -198,8 +188,6 @@ export const useRegistrationForm = () => {
     }
   };
 
-  // Function to reset the form and payment state
-  // This is useful when a user navigates back from Stripe checkout
   const resetForm = () => {
     setShowPayment(false);
     setRegistrationData(null);

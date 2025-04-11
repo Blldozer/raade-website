@@ -27,10 +27,15 @@ serve(async (req) => {
     const { email, ticketType } = await req.json() as EmailValidationRequest;
     
     if (!email) {
+      // Even for missing email, return 200 with an error field instead of 400
       return new Response(
-        JSON.stringify({ error: "Email is required" }),
+        JSON.stringify({ 
+          isValid: false, 
+          error: "Email is required",
+          message: "Email is required" 
+        }),
         { 
-          status: 400, 
+          status: 200, 
           headers: { ...corsHeaders, "Content-Type": "application/json" } 
         }
       );
@@ -40,10 +45,15 @@ serve(async (req) => {
     const domain = email.split('@')[1]?.toLowerCase();
     
     if (!domain) {
+      // Return 200 with error info
       return new Response(
-        JSON.stringify({ error: "Invalid email format" }),
+        JSON.stringify({ 
+          isValid: false, 
+          error: "Invalid email format",
+          message: "Invalid email format" 
+        }),
         { 
-          status: 400, 
+          status: 200, 
           headers: { ...corsHeaders, "Content-Type": "application/json" } 
         }
       );
@@ -65,7 +75,7 @@ serve(async (req) => {
 
     const isKnownInstitution = !!knownDomain;
 
-    // Perform validation logic
+    // Perform validation logic - but still return 200 status
     let isValid = true;
     let message = "";
 
@@ -76,9 +86,9 @@ serve(async (req) => {
     }
     
     // Non-Rice Student tickets require any .edu email
-    else if ((ticketType === "non-rice-student" || ticketType === "student-group") && !isEduEmail) {
+    else if ((ticketType === "non-rice-student" || ticketType === "student-group") && !isEduEmail && !isKnownInstitution) {
       isValid = false;
-      message = "Student tickets require an .edu email address";
+      message = "Student tickets require an .edu email address or an approved educational institution email";
     }
 
     return new Response(
@@ -98,10 +108,15 @@ serve(async (req) => {
   } catch (error) {
     console.error("Error in verify-email-domain function:", error);
     
+    // Return 200 even on server errors, with error info in the response
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        isValid: false, 
+        error: "Server error processing request",
+        message: "An error occurred while validating your email. Please try again."
+      }),
       { 
-        status: 500, 
+        status: 200, 
         headers: { ...corsHeaders, "Content-Type": "application/json" } 
       }
     );
