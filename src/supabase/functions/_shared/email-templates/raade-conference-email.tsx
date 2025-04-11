@@ -133,7 +133,7 @@ const RaadeConferenceEmail: React.FC<RaadeConferenceEmailProps> = ({ recipient }
             lineHeight: "1.6"
           }}>
             <li><strong>4:00 PM - 5:30 PM:</strong> Check-In</li>
-            <li><strong>5:30 PM - 7:30 PM:</strong> Welcome Dinner Reception at the Multicultural Center</li>
+            <li><strong>5:30 PM - 8:30 PM:</strong> Welcome Dinner Reception at the Multicultural Center</li>
           </ul>
         </div>
         

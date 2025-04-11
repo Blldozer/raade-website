@@ -148,7 +148,11 @@ const ScheduleHeader = () => {
           
           <div className="flex items-center bg-white px-5 py-2 rounded-full shadow-sm">
             <Clock className="w-5 h-5 text-[#FBB03B] mr-2" />
-            <span className="font-lora">Day 1: 4:00 PM - 7:30 PM<br/>Day 2: 8:00 AM - 9:00 PM</span>
+            <span className="font-lora">
+              Day 1: 4:00 PM - 8:30 PM
+              <br />
+              Day 2: 8:00 AM - 9:00 PM
+            </span>
           </div>
           
           <div className="flex items-center bg-white px-5 py-2 rounded-full shadow-sm">
