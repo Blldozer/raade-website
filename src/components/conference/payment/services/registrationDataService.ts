@@ -1,6 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { RegistrationFormData } from "../../RegistrationFormTypes";
+import { getFullName, RegistrationFormData } from "../../RegistrationFormTypes";
 import { toast } from "@/hooks/use-toast";
 
 /**
@@ -39,17 +39,26 @@ export const storeRegistrationData = async (
         processedGroupEmails = registrationData.groupEmails
           .filter(Boolean)
           .map(email => {
-            if (typeof email === 'object' && email !== null && 'value' in email) {
-              return email.value;
+            if (typeof email === 'object' && email !== null) {
+              return {
+                email: email.value || '',
+                firstName: email.firstName || '',
+                lastName: email.lastName || ''
+              };
             }
-            return String(email || '');
+            return null;
           })
-          .filter(email => email.length > 0);
+          .filter(item => item !== null && item.email.length > 0);
       }
+      
+      // Generate the full name from firstName and lastName
+      const fullName = getFullName(registrationData.firstName, registrationData.lastName);
       
       // Build request data
       const requestData = {
-        fullName: registrationData.fullName,
+        firstName: registrationData.firstName,
+        lastName: registrationData.lastName,
+        fullName: fullName, // For backward compatibility
         email: registrationData.email,
         organization: registrationData.organization || "",
         role: registrationData.role || "",

@@ -1,6 +1,5 @@
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 import { usePaymentAmount } from "./hooks/usePaymentAmount";
 import CardForm from "./components/CardForm";
@@ -10,15 +9,16 @@ import PaymentError from "./components/PaymentError";
 interface SimpleStripeCheckoutProps {
   ticketType: string;
   email: string;
-  fullName: string;
+  firstName: string;
+  lastName: string;
   groupSize?: number;
-  groupEmails?: string[];
+  groupEmails?: any[];
   organization?: string;
   role?: string;
   specialRequests?: string;
   referralSource?: string;
-  couponCode?: string;  // Add the couponCode prop
-  couponDiscount?: { type: 'percentage' | 'fixed'; amount: number } | null;  // Add the couponDiscount prop
+  couponCode?: string;
+  couponDiscount?: { type: 'percentage' | 'fixed'; amount: number } | null;
   onSuccess: () => void;
   onError: (error: string) => void;
 }
@@ -35,15 +35,16 @@ interface SimpleStripeCheckoutProps {
 const SimpleStripeCheckout = ({
   ticketType,
   email,
-  fullName,
+  firstName,
+  lastName,
   groupSize,
   groupEmails = [],
   organization = "",
   role = "",
   specialRequests = "",
   referralSource = "",
-  couponCode = "",  // Add default value
-  couponDiscount = null,  // Add default value
+  couponCode = "",
+  couponDiscount = null,
   onSuccess,
   onError
 }: SimpleStripeCheckoutProps) => {
@@ -69,15 +70,16 @@ const SimpleStripeCheckout = ({
   } = useCardPayment({
     ticketType,
     email,
-    fullName,
+    firstName,
+    lastName,
     groupSize,
     groupEmails,
     organization,
     role,
     specialRequests,
     referralSource,
-    couponCode,  // Pass couponCode to useCardPayment
-    couponDiscount,  // Pass couponDiscount to useCardPayment
+    couponCode,
+    couponDiscount,
     onSuccess,
     onError: setErrorMessage,
     attemptId

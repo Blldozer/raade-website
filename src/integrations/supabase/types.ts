@@ -34,9 +34,11 @@ export type Database = {
           dietary_requirements: string | null
           email: string
           email_verified: boolean | null
+          first_name: string | null
           from_known_institution: boolean | null
           full_name: string
           id: string
+          last_name: string | null
           organization: string
           payment_method: string | null
           role: string
@@ -52,9 +54,11 @@ export type Database = {
           dietary_requirements?: string | null
           email: string
           email_verified?: boolean | null
+          first_name?: string | null
           from_known_institution?: boolean | null
           full_name: string
           id?: string
+          last_name?: string | null
           organization: string
           payment_method?: string | null
           role: string
@@ -70,9 +74,11 @@ export type Database = {
           dietary_requirements?: string | null
           email?: string
           email_verified?: boolean | null
+          first_name?: string | null
           from_known_institution?: boolean | null
           full_name?: string
           id?: string
+          last_name?: string | null
           organization?: string
           payment_method?: string | null
           role?: string
@@ -306,10 +312,12 @@ export type Database = {
           email: string
           email_type: string
           failure_reason: string | null
+          first_name: string | null
           full_name: string
           group_size: number | null
           id: string
           is_known_institution: boolean | null
+          last_name: string | null
           last_retry_at: string | null
           metadata: Json | null
           retry_count: number
@@ -324,10 +332,12 @@ export type Database = {
           email: string
           email_type: string
           failure_reason?: string | null
+          first_name?: string | null
           full_name: string
           group_size?: number | null
           id?: string
           is_known_institution?: boolean | null
+          last_name?: string | null
           last_retry_at?: string | null
           metadata?: Json | null
           retry_count?: number
@@ -342,10 +352,12 @@ export type Database = {
           email?: string
           email_type?: string
           failure_reason?: string | null
+          first_name?: string | null
           full_name?: string
           group_size?: number | null
           id?: string
           is_known_institution?: boolean | null
+          last_name?: string | null
           last_retry_at?: string | null
           metadata?: Json | null
           retry_count?: number
@@ -394,28 +406,34 @@ export type Database = {
           created_at: string
           email: string
           email_verified: boolean
+          first_name: string | null
           from_known_institution: boolean | null
           full_name: string | null
           group_id: string
           id: string
+          last_name: string | null
         }
         Insert: {
           created_at?: string
           email: string
           email_verified?: boolean
+          first_name?: string | null
           from_known_institution?: boolean | null
           full_name?: string | null
           group_id: string
           id?: string
+          last_name?: string | null
         }
         Update: {
           created_at?: string
           email?: string
           email_verified?: boolean
+          first_name?: string | null
           from_known_institution?: boolean | null
           full_name?: string | null
           group_id?: string
           id?: string
+          last_name?: string | null
         }
         Relationships: [
           {
@@ -434,6 +452,8 @@ export type Database = {
           group_size: number
           id: string
           lead_email: string
+          lead_first_name: string | null
+          lead_last_name: string | null
           lead_name: string
           lead_organization: string
           payment_completed: boolean
@@ -445,6 +465,8 @@ export type Database = {
           group_size: number
           id?: string
           lead_email: string
+          lead_first_name?: string | null
+          lead_last_name?: string | null
           lead_name: string
           lead_organization: string
           payment_completed?: boolean
@@ -456,6 +478,8 @@ export type Database = {
           group_size?: number
           id?: string
           lead_email?: string
+          lead_first_name?: string | null
+          lead_last_name?: string | null
           lead_name?: string
           lead_organization?: string
           payment_completed?: boolean
@@ -667,12 +691,14 @@ export type Database = {
           created_at: string | null
           email: string | null
           email_verified: boolean | null
+          first_name: string | null
           from_known_institution: boolean | null
           full_name: string | null
           group_id: string | null
           group_size: number | null
           id: string | null
           is_group_leader: boolean | null
+          last_name: string | null
           organization: string | null
           registrant_type: string | null
           role: string | null

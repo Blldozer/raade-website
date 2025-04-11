@@ -33,7 +33,9 @@ serve(async (req) => {
     // Get registration data from request body
     const registrationData = await req.json();
     const {
-      fullName,
+      firstName,
+      lastName,
+      fullName,  // For backward compatibility
       email,
       organization,
       role,
@@ -49,7 +51,7 @@ serve(async (req) => {
     console.log(`[${requestId}] Processing registration for ${email}, ticket type: ${ticketType}`);
 
     // Validate required fields
-    if (!fullName || !email || !ticketType) {
+    if (!firstName || !lastName || !email || !ticketType) {
       console.log(`[${requestId}] Missing required fields`);
       return new Response(
         JSON.stringify({ 
@@ -66,7 +68,7 @@ serve(async (req) => {
     // First check if registration already exists - IMPROVED ROBUSTNESS
     const { data: existingReg, error: checkError } = await supabaseAdmin
       .from('conference_registrations')
-      .select('id, email, full_name, status')
+      .select('id, email, first_name, last_name, full_name, status')
       .eq('email', email)
       .maybeSingle();
 
@@ -87,7 +89,7 @@ serve(async (req) => {
           data: { 
             id: existingReg.id,
             duplicateDetected: true,
-            existingName: existingReg.full_name,
+            existingName: existingReg.full_name || `${existingReg.first_name} ${existingReg.last_name}`,
             status: existingReg.status
           }
         }),
@@ -101,7 +103,9 @@ serve(async (req) => {
       const { data: registrationRecord, error: insertError } = await supabaseAdmin
         .from('conference_registrations')
         .insert({
-          full_name: fullName,
+          first_name: firstName,
+          last_name: lastName,
+          full_name: fullName || `${firstName} ${lastName}`.trim(), // For backward compatibility
           email: email,
           organization: organization || "",
           role: role || "",
@@ -166,7 +170,9 @@ serve(async (req) => {
         const { data: groupData, error: groupError } = await supabaseAdmin
           .from('group_registrations')
           .insert({
-            lead_name: fullName,
+            lead_first_name: firstName,
+            lead_last_name: lastName,
+            lead_name: fullName || `${firstName} ${lastName}`.trim(), // For backward compatibility
             lead_email: email,
             lead_organization: organization || "",
             ticket_type: ticketType,
@@ -183,11 +189,16 @@ serve(async (req) => {
           console.log(`[${requestId}] Group record created with ID: ${groupData.id}`);
           
           // Add group members
-          for (const emailEntry of groupEmails) {
-            // Handle both string emails and {value: string} objects
-            const memberEmail = typeof emailEntry === 'object' ? 
-              (emailEntry && 'value' in emailEntry ? emailEntry.value : null) : 
-              emailEntry;
+          for (const member of groupEmails) {
+            // Handle both string emails and object members
+            if (!member || typeof member !== 'object') {
+              continue; // Skip invalid members
+            }
+            
+            const memberEmail = member.email || (member.value ? member.value : null);
+            const memberFirstName = member.firstName || '';
+            const memberLastName = member.lastName || '';
+            const memberFullName = `${memberFirstName} ${memberLastName}`.trim();
               
             if (!memberEmail || typeof memberEmail !== 'string' || !memberEmail.includes('@')) {
               continue; // Skip invalid emails
@@ -198,6 +209,9 @@ serve(async (req) => {
               .insert({
                 group_id: groupData.id,
                 email: memberEmail,
+                first_name: memberFirstName,
+                last_name: memberLastName,
+                full_name: memberFullName, // For backward compatibility
                 email_verified: false
               });
               
@@ -214,7 +228,9 @@ serve(async (req) => {
           .from('email_tracking')
           .insert({
             email: email,
-            full_name: fullName,
+            first_name: firstName,
+            last_name: lastName,
+            full_name: fullName || `${firstName} ${lastName}`.trim(), // For backward compatibility
             ticket_type: ticketType,
             email_type: 'welcome',
             status: 'pending',

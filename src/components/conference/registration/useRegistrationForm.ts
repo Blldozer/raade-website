@@ -2,8 +2,7 @@ import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/hooks/use-toast";
-import { registrationFormSchema, RegistrationFormData, TICKET_TYPES_ENUM } from "../RegistrationFormTypes";
-import { supabase } from "@/integrations/supabase/client";
+import { getFullName, registrationFormSchema, RegistrationFormData, TICKET_TYPES_ENUM } from "../RegistrationFormTypes";
 import { useNavigate } from "react-router-dom";
 import { storeRegistrationData } from "../payment/services/registrationDataService";
 
@@ -35,7 +34,8 @@ export const useRegistrationForm = () => {
     resolver: zodResolver(registrationFormSchema),
     defaultValues: {
       ticketType: TICKET_TYPES_ENUM.STUDENT,
-      fullName: "",
+      firstName: "",
+      lastName: "",
       email: "",
       organization: "",
       role: "",
@@ -207,7 +207,8 @@ export const useRegistrationForm = () => {
     setIsFullDiscount(false);
     form.reset({
       ticketType: TICKET_TYPES_ENUM.STUDENT,
-      fullName: "",
+      firstName: "",
+      lastName: "",
       email: "",
       organization: "",
       role: "",
