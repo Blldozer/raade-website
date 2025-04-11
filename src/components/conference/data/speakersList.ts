@@ -1,4 +1,3 @@
-
 /**
  * Main Speakers List
  * 
@@ -9,6 +8,7 @@ import { Speaker } from "./types/Speaker";
 import { leadershipSpeakers } from "./speakers/leadershipSpeakers";
 import { entrepreneurSpeakers } from "./speakers/entrepreneurSpeakers";
 import { financeSpeakers } from "./speakers/financeSpeakers";
+import { academicSpeakers } from "./speakers/academicSpeakers";
 
 /**
  * Helper function to get a speaker by ID from any category
@@ -25,7 +25,7 @@ const getSpeakerById = (id: string, speakerArrays: Speaker[][]) => {
 };
 
 // Arrays to search through
-const allSpeakerArrays = [leadershipSpeakers, entrepreneurSpeakers, financeSpeakers];
+const allSpeakerArrays = [leadershipSpeakers, entrepreneurSpeakers, financeSpeakers, academicSpeakers];
 
 /**
  * Complete list of all conference speakers
@@ -41,4 +41,5 @@ export const speakersList: Speaker[] = [
   getSpeakerById("tomiwa-igun", allSpeakerArrays)!, // 6. Tomiwa sixth
   getSpeakerById("ismael-fanny", allSpeakerArrays)!, // 7. Ismael seventh
   getSpeakerById("uzoma-alexander-eze", allSpeakerArrays)!, // 8. Uzoma eighth
+  getSpeakerById("june-madete", allSpeakerArrays)!, // 9. Dr. Madete ninth
 ].filter(Boolean); // Remove any undefined speakers (safety check)

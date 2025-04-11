@@ -10,39 +10,62 @@ export const entrepreneurSpeakers: Speaker[] = [
   {
     id: "tomiwa-igun",
     name: "Tomiwa Igun",
-    role: "Co-founder & COO",
-    organization: "SunFi",
+    role: "Founder & CEO",
+    organization: "SunFi Corporation",
     imagePlaceholder: "Tomiwa Igun",
-    bio: "Leader in clean energy financial technology, passionate about electrifying Africa through innovative solutions.",
-    fullBio: "Tomiwa Igun is passionate about electrifying Africa, as depicted in his 2012 Harvard Business School Annual Portrait project (\"Tell Me, What Is It You Plan To Do With Your One Wild And Precious Life?\") where he laid out a brief basis for this passion. His professional career has revolved around this goal of improving the electrification around Africa. He co-founded SunFi Corporation and serves as Chief Operating Officer. SunFi is a Clean Energy FinTech that provides financing and digital tools to enable distributed clean energy providers in Nigeria to scale clean, affordable, and reliable electricity. SunFi came about after co-founding Aspire Power Solutions, which is a distributed energy provider in Nigeria.\n\nPreviously, he was a Manager within the Grow Africa Team at The Boston Consulting Group (BCG) where he has served several clients providing strategic advisory and executing on energy projects, including in Nigeria and other African countries. Before this, Tomiwa worked at Africa Finance Corporation with a mandate to develop infrastructure projects in Africa. He also co-founded Young African MBAs (YAM), a non-profit helping bridge the gap in Africa's management talent.\n\nTomiwa holds an MBA with Honors from Harvard Business School, M.Sc. Electrical Engineering from University of Michigan, and B.Sc. Electrical Engineering from Howard University. During his time at HBS, he co-chaired the Africa Business Conference, the largest student-run conference focused on Africa. He also co-authored a published Harvard Business School case study on the Privatization of Nigeria's Power Sector.",
-    expertise: ["Clean Energy", "Financial Technology", "Sustainable Development"],
+    bio: "Pioneer in clean energy financing solutions for Africa with experience at Boston Consulting Group.",
+    fullBio: "Tomiwa Igun is passionate about electrifying Africa, as highlighted in Harvard Business School's Annual Portrait Project. He is the Founder and CEO of SunFi Corporation, which provides financing and digital tools for clean energy providers across Africa to increase access to sustainable and reliable electricity.\n\nPrior to founding SunFi, Tomiwa worked at The Boston Consulting Group (BCG) and the Africa Finance Corporation (AFC). At AFC, he financed infrastructure projects across Africa, including a 5,000 MW thermal power program and a 60 MW wind farm in Djibouti. He also co-founded Young African MBAs (YAM), a network to strengthen the pipeline of global business talent from Africa.\n\nTomiwa earned his MBA from Harvard Business School (with Honors), his M.Sc. in Automotive Systems Engineering from the University of Michigan, and his B.Sc. in Mechanical Engineering from Howard University. While at HBS, he led the Africa Business Conference, which gathered over 1,500 professionals focused on business in Africa. He was also a co-author of a Harvard Business School case study on Nigeria's Power Sector Privatization.",
+    expertise: ["Clean Energy Financing", "Infrastructure Development", "African Entrepreneurship"],
     social: {
-      linkedin: "https://linkedin.com/in/tomiwaigun"
+      linkedin: "https://linkedin.com/in/tomiwa-igun"
     },
     speaking: {
       title: "Workshop Session 1: Defining the Opportunity",
-      description: "Interactive workshop on identifying and defining market opportunities in sustainable energy.",
+      description: "An interactive workshop on identifying opportunities in energy access and business development across Africa, featuring the case study 'Harnessing the Sun: Market-Creating Innovations for Rural Electrification in Niger'.",
       time: "11:25 AM - 12:20 PM",
       date: "April 12"
-    }
+    },
+    additionalSessions: [
+      {
+        title: "Panel: From Prototype to Phenomenon",
+        role: "Panelist",
+        time: "2:30 PM - 3:10 PM",
+        date: "April 12"
+      }
+    ]
   },
   {
     id: "mezuo-nwuneli",
     name: "Mezuo Nwuneli",
     role: "Co-Founder & Managing Partner",
-    organization: "Sahel Capital",
+    organization: "Sahel Capital Partners",
     imagePlaceholder: "Mezuo Nwuneli",
-    bio: "Agribusiness investment expert with focus on the agricultural sector in West Africa.",
-    fullBio: "Mezuo Nwuneli is the Co-Founder and Managing Partner of Sahel Capital, an agribusiness-focused private investment firm. With over 25 years of experience in corporate finance, investment banking, and private equity, he has concentrated on the agricultural sector in West Africa since 2010. Nwuneli serves on the boards of various companies and is recognized as an Eisenhower Fellow and an Archbishop Tutu Fellow. He holds an MBA from Harvard Business School and a B.Sc. in Industrial Management from Carnegie Mellon University.",
-    expertise: ["Agribusiness", "Private Equity", "Investment"],
+    bio: "Agricultural investment expert and Managing Partner of Sahel Capital focused on sustainable food systems.",
+    fullBio: "Mezuo Nwuneli is the Co-Founder and Managing Partner of Sahel Capital Partners, a leading food and agriculture-focused private equity firm in West Africa. He manages the firm's investments in food production, processing, and distribution businesses. Prior to founding Sahel Capital, Mezuo worked with private equity firms including Actis LLP and South Africa Infrastructure Fund Managers, as well as Oceanic Capital, and SecTrust (now part of Afrinvest). He earned an MBA from Harvard Business School and a B.Sc. in Industrial Management from Carnegie Mellon University, with a minor in Economics.",
+    expertise: ["Agricultural Investment", "Food Security", "Private Equity"],
     social: {
       linkedin: "https://linkedin.com/in/mezuo-nwuneli"
     },
     speaking: {
       title: "Workshop Session 1: Defining the Opportunity",
-      description: "Interactive workshop on identifying opportunities in Africa's agricultural investment landscape.",
+      description: "An interactive workshop on identifying opportunities in nutrition and agriculture for sustainable food systems in Africa, featuring the case study 'From Indigenous Crops to Nutritional Wealth: Market-Creating Innovations for Burkina Faso'.",
       time: "11:25 AM - 12:20 PM",
       date: "April 12"
-    }
+    },
+    additionalSessions: [
+      {
+        title: "Workshop Session 1: Defining the Opportunity",
+        role: "Workshop Leader - Energy Access & Business Track",
+        description: "A focused workshop on business opportunities in improving energy access across Africa.",
+        time: "11:25 AM - 12:20 PM",
+        date: "April 12"
+      },
+      {
+        title: "Panel: Financing the Impossible",
+        role: "Panelist",
+        time: "10:40 AM - 11:20 AM",
+        date: "April 12"
+      }
+    ]
   }
 ];

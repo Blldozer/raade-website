@@ -1,4 +1,3 @@
-
 /**
  * Finance Speakers Data
  * 
@@ -21,10 +20,18 @@ export const financeSpeakers: Speaker[] = [
     },
     speaking: {
       title: "Plenary Speech 1: Unlocking the Vault: New Capital Models for Africa's Market Revolution",
-      description: "A visionary address on innovative capital models to drive Africa's economic growth.",
+      description: "A visionary address on innovative capital models to drive Africa's economic growth, followed by participation in the 'Financing the Impossible' panel discussion.",
       time: "9:55 AM - 10:30 AM",
       date: "April 12"
-    }
+    },
+    additionalSessions: [
+      {
+        title: "Panel: Financing the Impossible",
+        role: "Panelist",
+        time: "10:40 AM - 11:20 AM",
+        date: "April 12"
+      }
+    ]
   },
   {
     id: "uzoma-alexander-eze",
@@ -40,10 +47,18 @@ export const financeSpeakers: Speaker[] = [
     },
     speaking: {
       title: "Panel: Financing the Impossible",
-      description: "A panel discussion on innovative approaches to financing high-impact ventures in challenging markets.",
+      description: "A panel discussion on innovative approaches to financing high-impact ventures in challenging markets, alongside Yomi Jemibewon, Ismael Fanny, and Mezuo Nwuneli.",
       time: "10:40 AM - 11:20 AM",
       date: "April 12"
-    }
+    },
+    additionalSessions: [
+      {
+        title: "Panel: From Prototype to Phenomenon",
+        role: "Panelist",
+        time: "2:30 PM - 3:10 PM",
+        date: "April 12"
+      }
+    ]
   },
   {
     id: "ismael-fanny",
@@ -59,9 +74,18 @@ export const financeSpeakers: Speaker[] = [
     },
     speaking: {
       title: "Workshop Session 1: Defining the Opportunity",
-      description: "An interactive workshop on identifying investment opportunities with social impact potential.",
+      description: "An interactive workshop on identifying investment opportunities in finance, with a focus on innovative funding models for African development, featuring the case study 'Bridging the Finance Gap: Innovative Financial Systems for Senegal's Missing Middle'.",
       time: "11:25 AM - 12:20 PM",
       date: "April 12"
-    }
+    },
+    additionalSessions: [
+      {
+        title: "Panel: Financing the Impossible",
+        role: "Panelist",
+        description: "A panel discussion on innovative approaches to financing high-impact ventures in challenging markets.",
+        time: "10:40 AM - 11:20 AM",
+        date: "April 12"
+      }
+    ]
   }
 ];

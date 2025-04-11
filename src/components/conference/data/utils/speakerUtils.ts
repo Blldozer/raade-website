@@ -1,8 +1,8 @@
-
 import { Speaker } from "../types/Speaker";
 import { leadershipSpeakers } from "../speakers/leadershipSpeakers";
 import { entrepreneurSpeakers } from "../speakers/entrepreneurSpeakers";
 import { financeSpeakers } from "../speakers/financeSpeakers";
+import { academicSpeakers } from "../speakers/academicSpeakers";
 
 /**
  * Get a speaker by their ID across all categories
@@ -15,7 +15,8 @@ export const getSpeakerById = (id: string): Speaker | undefined => {
   const allSpeakers = [
     ...leadershipSpeakers,
     ...entrepreneurSpeakers,
-    ...financeSpeakers
+    ...financeSpeakers,
+    ...academicSpeakers
   ];
   
   // Find speaker with matching ID

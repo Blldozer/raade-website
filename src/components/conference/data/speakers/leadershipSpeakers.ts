@@ -9,34 +9,38 @@ export const leadershipSpeakers: Speaker[] = [
   {
     id: "peter-obi",
     name: "Peter Obi",
-    role: "Former Governor of Anambra State",
-    organization: "Labour Party",
+    role: "Former Governor",
+    organization: "Anambra State, Nigeria",
     imagePlaceholder: "Peter Obi",
-    bio: "Nigerian businessman and politician who served as the Governor of Anambra State from 2006 to 2014.",
-    fullBio: "Peter Gregory Obi is a Nigerian businessman and politician who served as the Governor of Anambra State from 2006 to 2014. Born on July 19, 1961, in Onitsha, Anambra State, he attended Christ the King College and later earned a Bachelor of Philosophy from the University of Nigeria, Nsukka. Obi has an extensive background in business, holding leadership positions in various companies, including serving as the youngest chairman of Fidelity Bank Plc. In 2022, he became the Labour Party's presidential candidate for the 2023 Nigerian general election.",
-    expertise: ["Governance", "Business Leadership", "Economic Policy"],
+    bio: "Nigerian economist, politician, and businessman who served as Governor of Anambra State from 2006 to 2014.",
+    fullBio: "Peter Obi is a Nigerian politician, entrepreneur, and businessman who served as Governor of Anambra State, Nigeria from 2006 to 2014. Before his political career, Obi built a successful business career, including serving as a chairman of Fidelity Bank. He is known for his prudent management of resources and his emphasis on education and economic development. As Governor, he was recognized for leaving a substantial surplus in the state's treasury after his tenure, a rarity in Nigerian politics. Obi has been a prominent voice advocating for good governance, accountability, and economic reform in Nigeria. He holds a degree in Philosophy from the University of Nigeria, Nsukka, and has completed executive educational programs at institutions including Harvard Business School, London School of Economics, Columbia Business School, and Lagos Business School.",
+    expertise: ["Political Leadership", "Economic Development", "Good Governance"],
+    social: {
+      twitter: "https://twitter.com/PeterObi"
+    },
     speaking: {
       title: "Plenary Speech 2: The Governance Revolution",
-      description: "A compelling examination of transformative governance approaches for sustainable development in Africa.",
+      description: "A compelling address on the importance of transparent governance in driving sustainable development in Africa.",
       time: "3:20 PM - 3:50 PM",
       date: "April 12"
     }
   },
   {
     id: "oby-ezekwesili",
-    name: "Obiageli \"Oby\" Ezekwesili",
-    role: "Former Minister & World Bank VP",
-    organization: "Transparency International Co-founder",
-    imagePlaceholder: "Oby Ezekwesili",
-    bio: "Economic policy expert renowned for advocacy in transparency, accountability, and good governance.",
-    fullBio: "Obiageli \"Oby\" Ezekwesili is a Nigerian economic policy expert renowned for her advocacy in transparency, accountability, good governance, and human capital development. She co-founded Transparency International and served as its Director for Africa from 1994 to 1999. Ezekwesili held prominent positions in the Nigerian government, including Minister of Solid Minerals (2005–2006) and Minister of Education (2006–2007). She also served as Vice President for the Africa Region at the World Bank from 2007 to 2012. Ezekwesili holds a bachelor's degree from the University of Nigeria, Nsukka, a master's in International Law and Diplomacy from the University of Lagos, and a Master of Public Administration from Harvard Kennedy School. She is a chartered accountant and has been instrumental in various initiatives, including the #BringBackOurGirls movement.",
-    expertise: ["Economic Policy", "Transparency & Governance", "Education"],
+    name: "Obiageli Ezekwesili",
+    role: "Former Minister of Education",
+    organization: "Federal Republic of Nigeria",
+    imagePlaceholder: "Obiageli Ezekwesili",
+    bio: "Economic policy expert and former Vice President of the World Bank's Africa division.",
+    fullBio: "Dr. Obiageli \"Oby\" Ezekwesili is a renowned economic policy expert, former Minister of Education of Nigeria, and former Vice President of the World Bank's Africa division. She was a key founder of Transparency International, the global anti-corruption body, and has been at the forefront of anti-corruption initiatives in Nigeria. As Minister of Solid Minerals and later Education, she implemented significant reforms. Dr. Ezekwesili also led the #BringBackOurGirls campaign, advocating for the rescue of schoolgirls kidnapped by Boko Haram. She is a Senior Economic Advisor for the Africa Economic Development Policy Initiative and has received numerous international awards for her work on economic reforms, transparency, and anti-corruption.",
+    expertise: ["Economic Policy", "Education Reform", "Anti-corruption"],
     social: {
-      twitter: "https://twitter.com/obyezeks"
+      twitter: "https://twitter.com/obyezeks",
+      linkedin: "https://linkedin.com/in/obiageli-ezekwesili"
     },
     speaking: {
       title: "Closing Plenary Speech 3: The Future We Choose",
-      description: "A visionary address on shaping Africa's future through collective action and strategic reforms.",
+      description: "A powerful closing address on Africa's path forward through innovation, transparency, and collaborative leadership.",
       time: "4:30 PM - 5:15 PM",
       date: "April 12"
     }
@@ -58,6 +62,15 @@ export const leadershipSpeakers: Speaker[] = [
       description: "A thought-provoking opening address on innovative approaches to addressing Africa's development challenges.",
       time: "6:00 PM - 6:30 PM",
       date: "April 11"
-    }
+    },
+    additionalSessions: [
+      {
+        title: "Workshop Session 1: Defining the Opportunity",
+        role: "Workshop Leader - History and Policy Track",
+        description: "An interactive workshop exploring the historical context and policy implications for development in Africa, featuring the case study 'Exploring Mali's Development Through a Historical Lens'.",
+        time: "11:25 AM - 12:20 PM",
+        date: "April 12"
+      }
+    ]
   }
 ];

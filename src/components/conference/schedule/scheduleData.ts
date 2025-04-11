@@ -93,7 +93,7 @@ export const scheduleDay2: ScheduleEvent[] = [
     description: "",
     location: "Breakout Rooms",
     type: "workshop",
-    speaker: "Workshop Leaders: Ismaël Ouale Fanny, Tomiwa Igun, Dr. Alexander Byrd, Mezuo Nwuneli"
+    speaker: "Workshop Leaders: Ismaël Ouale Fanny, Tomiwa Igun, Dr. Alexander Byrd, Dr. June Madete, Mezuo Nwuneli"
   },
   {
     time: "12:30 PM - 1:25 PM",
