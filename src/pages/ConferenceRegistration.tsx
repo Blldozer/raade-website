@@ -63,7 +63,7 @@ const ConferenceRegistration = () => {
       toast({
         title: "You've already registered",
         description: `It looks like you've already registered with ${registeredEmail}. Each person can only register once.`,
-        variant: "warning",
+        variant: "default", // Changed from "warning" to "default"
         duration: 8000,
       });
     }

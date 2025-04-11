@@ -13,8 +13,9 @@ export type ToastProps = {
   title?: React.ReactNode;
   description?: React.ReactNode;
   action?: ToastActionElement;
-  variant?: "default" | "destructive";
+  variant?: "default" | "destructive" | "warning"; // Added "warning" to valid variants
   id?: string;
+  duration?: number; // Added support for custom duration
 };
 
 /**
@@ -28,19 +29,21 @@ export type ToastProps = {
  * @returns Object with toast id, dismiss and update methods
  */
 const toast = (props: ToastProps) => {
-  const { title, description, variant, id } = props;
+  const { title, description, variant, id, duration } = props;
   
   // Create a unique ID for the toast if one isn't provided
   const toastId = id || `${String(title)}-${Date.now()}`;
   
   // Choose the right method based on variant
-  const method = variant === "destructive" ? "error" : "default";
+  const method = variant === "destructive" ? "error" : 
+                 variant === "warning" ? "warning" : "default";
   
   // Use sonner's toast function with proper fallbacks
   if (typeof sonnerToast[method] === 'function') {
     return sonnerToast[method](String(title || ''), {
       id: toastId,
       description,
+      duration: duration,
       // Add custom styling based on variant if needed
       style: method === "error" 
         ? { 
@@ -54,7 +57,8 @@ const toast = (props: ToastProps) => {
     console.warn(`Toast variant "${method}" not supported, falling back to default`);
     return sonnerToast(String(title || ''), {
       id: toastId,
-      description
+      description,
+      duration: duration
     });
   }
 };

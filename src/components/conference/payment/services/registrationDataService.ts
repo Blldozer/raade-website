@@ -28,7 +28,7 @@ export const storeRegistrationData = async (
         toast({
           title: "Already Registered",
           description: "You've already registered with this email address. Each person can only register once.",
-          variant: "warning",
+          variant: "default", // Changed from "warning" to "default"
         });
         return true; // Return success to avoid error messages, but we didn't actually store anything
       }
@@ -125,7 +125,7 @@ export const storeRegistrationData = async (
             toast({
               title: "Already Registered",
               description: "It looks like you've already registered with this email address. Your previous registration is still valid.",
-              variant: "warning",
+              variant: "default", // Changed from "warning" to "default"
             });
           } else {
             // Only store in localStorage if this was a genuinely new registration
