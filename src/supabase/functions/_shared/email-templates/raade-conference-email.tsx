@@ -23,6 +23,14 @@ const RaadeConferenceEmail: React.FC<RaadeConferenceEmailProps> = ({ recipient }
   // Afterparty ticket link
   const afterpartyTicketLink = "https://tempo.live/nobystanders-rodeo-rave?fbclid=PAZXh0bgNhZW0CMTEAAae2ev8Po0pccjO8dUsYvpVWh4Cx0wXdsrWZhTvSZ5Z2F9jcxxDWAiLk7IJyeQ_aem_XORKYyvyKJMpuER_ejI3AQ";
   
+  // Updated map link
+  const mapLink = "https://www.google.com/maps/@29.7140224,-95.4071855,6577m/data=!3m1!1e3!4m2!11m1!2sffLW6mNLS1e5_CpBOQ8sMA?entry=ttu&g_ep=EgoyMDI1MDQwOC4wIKXMDSoASAFQAw%3D%3D";
+  
+  // Social media links
+  const instagramLink = "https://www.instagram.com/rice_aade/";
+  const linkedInLink = "https://www.linkedin.com/company/rice-association-for-african-development/posts/?feedView=all";
+  const websiteLink = "https://rice-raade.com";
+  
   return (
     <div style={{ 
       fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
@@ -32,6 +40,69 @@ const RaadeConferenceEmail: React.FC<RaadeConferenceEmailProps> = ({ recipient }
       color: "#333",
       lineHeight: "1.6"
     }}>
+      {/* Correction Notice */}
+      <div style={{
+        marginBottom: "30px",
+        padding: "15px",
+        backgroundColor: "#f8f8f8",
+        borderLeft: `4px solid ${raadeGold}`,
+        borderRadius: "4px"
+      }}>
+        <p style={{ 
+          fontSize: "16px", 
+          lineHeight: "1.5",
+          fontFamily: "Georgia, serif",
+          margin: "0 0 15px 0",
+          fontWeight: "bold",
+          color: raadeNavy
+        }}>
+          Dear Conference Attendee,
+        </p>
+        <p style={{ 
+          fontSize: "16px", 
+          lineHeight: "1.5",
+          fontFamily: "Georgia, serif",
+          margin: "0 0 15px 0"
+        }}>
+          I'm sending this follow-up email to ensure everyone has the correct information for the upcoming RAADE African Development Forum. Some of you may have received an earlier version with an incorrect link to our campus locations.
+        </p>
+        <p style={{ 
+          fontSize: "16px", 
+          lineHeight: "1.5",
+          fontFamily: "Georgia, serif",
+          margin: "0 0 15px 0"
+        }}>
+          The version below contains the corrected link to our RAADE Forum Locations map. If you received my previous email, please use this updated information instead.
+        </p>
+        <p style={{ 
+          fontSize: "16px", 
+          lineHeight: "1.5",
+          fontFamily: "Georgia, serif",
+          margin: "0 0 15px 0"
+        }}>
+          We apologize for any confusion and look forward to welcoming you to Rice University today!
+        </p>
+        <p style={{ 
+          fontSize: "16px", 
+          lineHeight: "1.5",
+          fontFamily: "Georgia, serif",
+          margin: "0",
+          fontWeight: "bold"
+        }}>
+          Here is the link: <a 
+            href={mapLink}
+            style={{
+              color: raadeNavy,
+              textDecoration: "underline"
+            }}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            RAADE Forum Locations
+          </a>
+        </p>
+      </div>
+
       {/* Email Header */}
       <div style={{ textAlign: "center", marginBottom: "30px" }}>
         <div style={{ 
@@ -224,7 +295,7 @@ const RaadeConferenceEmail: React.FC<RaadeConferenceEmailProps> = ({ recipient }
         <p style={{ margin: "15px 0" }}>
           To help you navigate campus easily, we've created a custom Google Maps guide highlighting all conference locations: 
           <a 
-            href="https://maps.app.goo.gl"
+            href={mapLink}
             style={{
               color: raadeNavy,
               textDecoration: "underline",
@@ -353,10 +424,10 @@ const RaadeConferenceEmail: React.FC<RaadeConferenceEmailProps> = ({ recipient }
           margin: "10px 0",
           lineHeight: "1.6"
         }}>
-          <li>Follow our journey on Instagram: <a href="https://instagram.com/rice_aade" style={{ color: raadeNavy, fontWeight: "bold" }}>@rice_aade</a></li>
+          <li>Follow our journey on Instagram: <a href={instagramLink} style={{ color: raadeNavy, fontWeight: "bold" }}>@rice_aade</a></li>
           <li>We post the most updates on here! Make sure that you are keeping up to date with our page throughout the forum!</li>
-          <li>Connect with us on LinkedIn: <a href="https://www.linkedin.com/company/rice-association-for-african-development" style={{ color: raadeNavy, fontWeight: "bold" }}>Rice Association for African Development</a></li>
-          <li>Explore our website: <a href="https://rice-raade.com" style={{ color: raadeNavy, fontWeight: "bold" }}>rice-raade.com</a></li>
+          <li>Connect with us on LinkedIn: <a href={linkedInLink} style={{ color: raadeNavy, fontWeight: "bold" }}>Rice Association for African Development</a></li>
+          <li>Explore our website: <a href={websiteLink} style={{ color: raadeNavy, fontWeight: "bold" }}>{websiteLink.replace("https://", "")}</a></li>
         </ul>
         
         <p style={{ margin: "15px 0" }}>

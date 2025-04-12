@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import RaadeConferenceEmail from '../supabase/functions/_shared/email-templates/raade-conference-email';
+import RaadeWorkshopEmail from '../supabase/functions/_shared/email-templates/raade-workshop-email';
 import ReactDOMServer from 'react-dom/server';
 
-const EmailExportPage = () => {
+const WorkshopEmailExportPage = () => {
   const [copied, setCopied] = useState(false);
   const [templateType, setTemplateType] = useState('preview');
   
@@ -24,12 +24,12 @@ const EmailExportPage = () => {
       };
       
       htmlContent = ReactDOMServer.renderToStaticMarkup(
-        <RaadeConferenceEmail recipient={brevoRecipient} />
+        <RaadeWorkshopEmail recipient={brevoRecipient} />
       );
     } else {
       // For preview, use the sample data
       htmlContent = ReactDOMServer.renderToStaticMarkup(
-        <RaadeConferenceEmail recipient={sampleRecipient} />
+        <RaadeWorkshopEmail recipient={sampleRecipient} />
       );
     }
 
@@ -39,7 +39,7 @@ const EmailExportPage = () => {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CORRECTION: RAADE Forum Location Links - Please Read</title>
+  <title>RAADE Forum 2025: Workshop Selection & Case Studies</title>
 </head>
 <body>
   ${htmlContent}
@@ -57,8 +57,8 @@ const EmailExportPage = () => {
     const a = document.createElement('a');
     a.href = url;
     a.download = templateType === 'brevo' ? 
-      'raade-forum-correction-brevo-variables.html' : 
-      'raade-forum-correction.html';
+      'raade-workshop-email-brevo-variables.html' : 
+      'raade-workshop-email.html';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -80,11 +80,11 @@ const EmailExportPage = () => {
 
   return (
     <div className="container mx-auto py-10 px-4">
-      <h1 className="text-3xl font-simula font-bold text-raade-navy mb-6">Email Template Export</h1>
+      <h1 className="text-3xl font-simula font-bold text-raade-navy mb-6">Workshop Email Template Export</h1>
       
       <div className="mb-8">
         <p className="text-lg font-lora mb-4">
-          Preview the RAADE African Development Forum correction email template below and export it to an HTML file
+          Preview the RAADE Forum workshop selection email template below and export it to an HTML file
           that can be uploaded to your Brevo dashboard.
         </p>
         
@@ -147,7 +147,7 @@ const EmailExportPage = () => {
           <li>Go to "Email Templates" and click "Create a template"</li>
           <li>Choose "Import HTML" and upload the exported file (or paste copied HTML)</li>
           <li>Make sure your contact list includes a "FIRSTNAME" field for each recipient</li>
-          <li>Set the email subject line to: <strong>CORRECTION: RAADE Forum Location Links - Please Read</strong></li>
+          <li>Set the email subject line to: <strong>RAADE Forum 2025: Workshop Selection & Case Studies</strong></li>
           <li>Save the template in Brevo to use in your campaigns</li>
         </ol>
       </div>
@@ -155,18 +155,17 @@ const EmailExportPage = () => {
       <div className="border-2 p-4 rounded-lg">
         <h2 className="text-xl font-simula mb-4 text-raade-navy">Preview:</h2>
         <div className="bg-gray-100 p-3 mb-4 rounded">
-          <p className="font-bold">Subject: CORRECTION: RAADE Forum Location Links - Please Read</p>
+          <p className="font-bold">Subject: RAADE Forum 2025: Workshop Selection & Case Studies</p>
         </div>
         <div className="overflow-auto" style={{ maxHeight: '600px' }}>
           {templateType === 'preview' ? (
-            <RaadeConferenceEmail recipient={sampleRecipient} />
+            <RaadeWorkshopEmail recipient={sampleRecipient} />
           ) : (
             <div className="p-4 bg-gray-100 rounded">
               <p className="mb-4"><strong>Brevo Version:</strong> Shows dynamic variables that will be replaced</p>
               <p>
                 <strong>Hello {'{{ contact.FIRSTNAME }}'}!</strong><br/><br/>
-                I can't tell you how excited our entire team is to welcome you to the RAADE African Development Forum at Rice University! 
-                There's something special about bringing together minds passionate about African development...
+                We're thrilled to have you join us for what promises to be an impactful and inspiring weekend at Rice University...
               </p>
               <p className="mt-4 text-sm text-gray-500">
                 (Export this version to get the complete template with all Brevo variables)
@@ -178,14 +177,14 @@ const EmailExportPage = () => {
       
       <div className="mt-8 text-center">
         <a 
-          href="/workshop-email-export" 
+          href="/email-export" 
           className="inline-block px-5 py-3 bg-gray-100 rounded-lg text-gray-700 font-medium"
         >
-          Go to Workshop Email Template
+          Go to Conference Email Template
         </a>
       </div>
     </div>
   );
 };
 
-export default EmailExportPage;
+export default WorkshopEmailExportPage;
