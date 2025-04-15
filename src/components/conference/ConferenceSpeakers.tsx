@@ -80,11 +80,11 @@ const ConferenceSpeakers = () => {
                 <div className="aspect-square bg-gray-200 relative overflow-hidden">
                   {/* Speaker image with improved positioning */}
                   <img 
-                    src={`/Speaker Images/${speaker.id}.jpg`} 
+                    src={`/Speaker Images/${speaker.id === "oby-ezekwesili" ? "oby-ezekwesili2" : speaker.id === "ismael-fanny" ? "ismael-fanny2" : speaker.id === "june-madete" ? "june-madete2" : speaker.id}.jpg`} 
                     alt={speaker.name}
                     onError={(e) => {
                       // Try jpeg if jpg not found
-                      (e.target as HTMLImageElement).src = `/Speaker Images/${speaker.id}.jpeg`;
+                      (e.target as HTMLImageElement).src = `/Speaker Images/${speaker.id === "oby-ezekwesili" ? "oby-ezekwesili2" : speaker.id === "ismael-fanny" ? "ismael-fanny2" : speaker.id === "june-madete" ? "june-madete2" : speaker.id}.jpeg`;
                       (e.target as HTMLImageElement).onerror = (e2) => {
                         // Fallback to placeholder if neither image format works
                         const target = e.target as HTMLImageElement;
