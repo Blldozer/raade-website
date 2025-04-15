@@ -57,7 +57,7 @@ export const scheduleDay2: ScheduleEvent[] = [
     type: "break"
   },
   {
-    time: "9:00 AM - 9:30 AM",
+    time: "9:30 AM - 9:50 AM",
     title: "Opening Experience",
     description: "",
     location: "Hudspeth Auditorium",
