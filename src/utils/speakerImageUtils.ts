@@ -1,4 +1,3 @@
-
 /**
  * Utility functions to manage speaker image display and positioning
  */
@@ -21,6 +20,7 @@ export const getSpeakerImagePosition = (speakerId: string): string => {
     "oby-ezekwesili": "object-cover object-[center_40%]",
     "bunmi-akinyemiju": "object-cover object-[center_30%]",
     "yomi-jemibewon": "object-cover object-[center_30%]",
+    "idris-bello": "object-cover object-[center_top]",
     // Default positioning for others
     "default": "object-cover object-[center_center]"
   };
