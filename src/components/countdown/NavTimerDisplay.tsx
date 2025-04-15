@@ -49,6 +49,11 @@ const NavTimerDisplay = ({
     };
   }, [isExpanded, dropdownRef]);
 
+  // Hide Live Now if conference has ended
+  const now = new Date();
+  const conferenceEnd = new Date('2025-04-12T23:59:59-05:00');
+  if (now > conferenceEnd) return null;
+
   if (timeLeft.expired) {
     return (
       <div className={cn("font-alegreyasans font-bold", colors.accent, className)}>

@@ -9,6 +9,11 @@ import EnhancedCountdown from './conference/EnhancedCountdown';
 gsap.registerPlugin(ScrollTrigger);
 
 const ConferencePromo = () => {
+  // Hide the promo section if conference has ended (after April 12, 2025)
+  const now = new Date();
+  const conferenceEnd = new Date('2025-04-12T23:59:59-05:00');
+  if (now > conferenceEnd) return null;
+
   const sectionRef = useRef<HTMLDivElement>(null);
   
   // Set data attribute for navigation background color
