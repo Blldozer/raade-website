@@ -64,14 +64,6 @@ export const scheduleDay2: ScheduleEvent[] = [
     type: "ceremony"
   },
   {
-    time: "9:35 AM - 9:50 AM",
-    title: "Welcome Address",
-    description: "",
-    location: "Hudspeth Auditorium",
-    type: "keynote",
-    speaker: "Paul Cherkuri"
-  },
-  {
     time: "9:55 AM - 10:30 AM",
     title: "Plenary Speech 1: Unlocking the Vault: New Capital Models for Africa's Market Revolution",
     description: "",
@@ -122,7 +114,7 @@ export const scheduleDay2: ScheduleEvent[] = [
     description: "",
     location: "Hudspeth Auditorium, Glasscock School of Continuing Studies",
     type: "panel",
-    speaker: "Moderator: Favour Williams | Panelists: Tomiwa Igun, Idris Bello, Uzoma Eze"
+    speaker: "Moderator: Favour Williams | Panelists: Tomiwa Igun, Idris Bello, Uzoma Eze, Dr. June Madete"
   },
   {
     time: "3:10 PM - 3:20 PM",

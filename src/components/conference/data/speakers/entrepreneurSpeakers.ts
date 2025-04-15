@@ -80,9 +80,9 @@ export const entrepreneurSpeakers: Speaker[] = [
       linkedin: "https://www.linkedin.com/in/idrisayodejibello"
     },
     speaking: {
-      title: "Keynote: Innovation and Investment in Africa's Tech Ecosystem",
-      description: "A deep dive into the transformative potential of African startups and the role of strategic investment in driving continental innovation.",
-      time: "10:00 AM - 11:00 AM",
+      title: "Panel: From Prototype to Phenomenon",
+      description: "Panelist: Scaling What Works — From Prototype to Phenomenon",
+      time: "2:30 PM - 3:10 PM",
       date: "April 12"
     }
   }
