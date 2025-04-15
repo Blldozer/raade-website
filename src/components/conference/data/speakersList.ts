@@ -32,14 +32,15 @@ const allSpeakerArrays = [leadershipSpeakers, entrepreneurSpeakers, financeSpeak
  * Arranged in the specific display order requested
  */
 export const speakersList: Speaker[] = [
-  // Ordered according to client request
-  getSpeakerById("oby-ezekwesili", allSpeakerArrays)!, // 1. Obiageli first
-  getSpeakerById("peter-obi", allSpeakerArrays)!, // 2. Obi second
-  getSpeakerById("yomi-jemibewon", allSpeakerArrays)!, // 3. Yomi third
-  getSpeakerById("mezuo-nwuneli", allSpeakerArrays)!, // 4. Mezuo fourth
-  getSpeakerById("alexander-byrd", allSpeakerArrays)!, // 5. Dr. Byrd fifth
-  getSpeakerById("tomiwa-igun", allSpeakerArrays)!, // 6. Tomiwa sixth
-  getSpeakerById("ismael-fanny", allSpeakerArrays)!, // 7. Ismael seventh
-  getSpeakerById("uzoma-alexander-eze", allSpeakerArrays)!, // 8. Uzoma eighth
-  getSpeakerById("june-madete", allSpeakerArrays)!, // 9. Dr. Madete ninth
+  // Keep existing order, and add Idris Bello near the end
+  getSpeakerById("oby-ezekwesili", allSpeakerArrays)!,
+  getSpeakerById("peter-obi", allSpeakerArrays)!,
+  getSpeakerById("yomi-jemibewon", allSpeakerArrays)!,
+  getSpeakerById("mezuo-nwuneli", allSpeakerArrays)!,
+  getSpeakerById("alexander-byrd", allSpeakerArrays)!,
+  getSpeakerById("tomiwa-igun", allSpeakerArrays)!,
+  getSpeakerById("ismael-fanny", allSpeakerArrays)!,
+  getSpeakerById("uzoma-alexander-eze", allSpeakerArrays)!,
+  getSpeakerById("june-madete", allSpeakerArrays)!,
+  getSpeakerById("idris-bello", allSpeakerArrays)!, // Added Idris Bello
 ].filter(Boolean); // Remove any undefined speakers (safety check)

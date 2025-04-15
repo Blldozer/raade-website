@@ -1,4 +1,3 @@
-
 /**
  * Entrepreneur Speakers Data
  * 
@@ -67,5 +66,24 @@ export const entrepreneurSpeakers: Speaker[] = [
         date: "April 12"
       }
     ]
+  },
+  {
+    id: "idris-bello",
+    name: "Idris Ayodeji Bello",
+    role: "Founding Partner",
+    organization: "LoftyInc Capital",
+    imagePlaceholder: "Idris Bello",
+    bio: "Pioneering venture capitalist and Afropreneur investing in Africa's most promising tech startups.",
+    fullBio: "Idris Ayodeji Bello, a self-described Afropreneur, is the Founding Partner at LoftyInc Capital, an Africa-focused early-stage venture capital firm that has played a pioneering role in the continent's tech startup ecosystem—establishing local tech hubs and angel investment networks.\n\nOver the past decade, Idris has led investments in more than 150 of Africa's fastest-growing startups through LoftyInc, including notable names such as Andela, Flutterwave, and Moove. He earned his Executive MBA from Rice University, where he was honored as both a 2011 Jones Scholar and Jones Citizen, and received the Sallyport Award for leadership and community service.\n\nIdris also holds an MSc in Global Health from the University of Oxford, and is a Kauffman Fellow, underscoring his deep commitment to innovation and entrepreneurship across Africa.",
+    expertise: ["Venture Capital", "Tech Entrepreneurship", "African Innovation"],
+    social: {
+      linkedin: "https://www.linkedin.com/in/idrisayodejibello"
+    },
+    speaking: {
+      title: "Keynote: Innovation and Investment in Africa's Tech Ecosystem",
+      description: "A deep dive into the transformative potential of African startups and the role of strategic investment in driving continental innovation.",
+      time: "10:00 AM - 11:00 AM",
+      date: "April 12"
+    }
   }
 ];
