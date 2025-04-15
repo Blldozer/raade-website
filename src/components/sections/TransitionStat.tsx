@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from 'react';
 import CountUp from 'react-countup';
 import { ArrowDown } from 'lucide-react';
@@ -125,13 +124,12 @@ const TransitionStat = () => {
       <div className="absolute -left-20 bottom-20 w-80 h-80 rounded-full bg-white/10 blur-3xl pointer-events-none section-background"></div>
       
       {/* Main content */}
-      <div ref={contentRef} className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
-        <div className="space-y-6 md:space-y-8">
-          <div className="text-4xl md:text-7xl lg:text-8xl font-bold text-white mb-4 md:mb-8 font-alegreyasans rounded-3xl stat-counter px-2 md:px-0 mx-auto">
-            By 2050, <span className="text-raade-gold-start"><CountUp end={25} duration={2.5} /></span>% of people
-            <br className="md:inline hidden" /><span className="md:hidden"> </span>will be African.
+      <div ref={contentRef} className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center text-center z-10 min-h-[60vh]">
+        <div className="space-y-6 md:space-y-8 w-full flex flex-col justify-center items-center">
+          <div className="text-4xl md:text-7xl lg:text-8xl font-bold text-white mb-4 md:mb-8 font-alegreyasans rounded-3xl stat-counter px-2 md:px-0 mx-auto w-full flex justify-center items-center">
+            By 2050, 25% of people will be African.
           </div>
-          <p className="text-xl md:text-3xl text-white/80 max-w-3xl mx-auto font-merriweather content-element px-4 leading-relaxed">
+          <p className="text-xl md:text-3xl text-white/80 max-w-3xl mx-auto font-merriweather content-element px-4 leading-relaxed w-full flex justify-center items-center">
             The systems we build today will shape their tomorrow.
           </p>
         </div>
