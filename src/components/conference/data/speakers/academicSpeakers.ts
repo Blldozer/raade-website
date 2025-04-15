@@ -20,6 +20,15 @@ export const academicSpeakers: Speaker[] = [
       description: "Interactive workshop focusing on opportunities in medicine and technology for African development, featuring the case study 'Mobility & Medicine: Creating Sustainable Healthcare Delivery Models in Chad'.",
       time: "11:25 AM - 12:20 PM",
       date: "April 12"
-    }
+    },
+    additionalSessions: [
+      {
+        title: "Panel: From Prototype to Phenomenon",
+        role: "Panelist",
+        description: "Scaling What Works — From Prototype to Phenomenon",
+        time: "2:30 PM - 3:10 PM",
+        date: "April 12"
+      }
+    ]
   }
 ];
