@@ -1,3 +1,4 @@
+
 /**
  * Main Speakers List
  * 
@@ -32,15 +33,14 @@ const allSpeakerArrays = [leadershipSpeakers, entrepreneurSpeakers, financeSpeak
  * Arranged in the specific display order requested
  */
 export const speakersList: Speaker[] = [
-  // Keep existing order, and add Idris Bello near the end
   getSpeakerById("oby-ezekwesili", allSpeakerArrays)!,
   getSpeakerById("peter-obi", allSpeakerArrays)!,
   getSpeakerById("yomi-jemibewon", allSpeakerArrays)!,
   getSpeakerById("mezuo-nwuneli", allSpeakerArrays)!,
   getSpeakerById("alexander-byrd", allSpeakerArrays)!,
   getSpeakerById("tomiwa-igun", allSpeakerArrays)!,
-  getSpeakerById("ismael-fanny", allSpeakerArrays)!,
   getSpeakerById("uzoma-alexander-eze", allSpeakerArrays)!,
+  getSpeakerById("idris-bello", allSpeakerArrays)!,
   getSpeakerById("june-madete", allSpeakerArrays)!,
-  getSpeakerById("idris-bello", allSpeakerArrays)!, // Added Idris Bello
+  getSpeakerById("ismael-fanny", allSpeakerArrays)!,
 ].filter(Boolean); // Remove any undefined speakers (safety check)
