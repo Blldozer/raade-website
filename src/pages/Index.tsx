@@ -1,4 +1,3 @@
-
 import React, { Suspense } from 'react';
 import { lazy } from 'react';
 import Hero from "@/components/hero/Hero";
@@ -66,12 +65,14 @@ const Index = () => {
           <Hero />
         </SectionWrapper>
         
-        {/* Each section gets its own error boundary and suspense boundary */}
+        {/* Conference Promo section removed for now. To re-enable, uncomment below: */}
+        {/*
         <SectionWrapper id="conference-promo" background="light">
           <Suspense fallback={<SectionLoadingFallback />}>
             <ConferencePromo />
           </Suspense>
         </SectionWrapper>
+        */}
         
         <SectionWrapper id="transition-stat" background="dark">
           <Suspense fallback={<SectionLoadingFallback />}>
