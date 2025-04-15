@@ -55,6 +55,11 @@ const EnhancedCountdown = () => {
     </div>
   ));
 
+  // Hide LIVE NOW if conference has ended
+  const now = new Date();
+  const conferenceEnd = new Date('2025-04-12T23:59:59-05:00');
+  if (now > conferenceEnd) return null;
+
   return (
     <motion.div 
       initial={{ opacity: 1 }}
