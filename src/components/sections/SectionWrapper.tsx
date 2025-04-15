@@ -1,4 +1,3 @@
-
 import React from 'react';
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { cn } from '@/lib/utils';
@@ -40,7 +39,7 @@ const SectionWrapper = ({
     // Return minimal fallback that won't crash
     return (
       <section 
-        className={cn("relative w-full min-h-screen", className)}
+        className={cn("relative w-full min-h-screen p-0 m-0", className)}
         id={id} 
         data-section
         data-background={background}
@@ -70,7 +69,7 @@ const SectionWrapper = ({
     return (
       <section 
         ref={sectionRef}
-        className={cn("relative w-full min-h-screen", className)}
+        className={cn("relative w-full min-h-screen p-0 m-0", className)}
         id={id} 
         data-section
         data-background={background}
@@ -96,7 +95,7 @@ const SectionWrapper = ({
     
     return (
       <section 
-        className={cn("relative w-full min-h-screen", className)}
+        className={cn("relative w-full min-h-screen p-0 m-0", className)}
         id={id} 
         data-section
         data-background={background}
