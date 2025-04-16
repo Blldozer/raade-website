@@ -1,4 +1,3 @@
-
 /**
  * Main Speakers List
  * 
@@ -43,4 +42,5 @@ export const speakersList: Speaker[] = [
   getSpeakerById("idris-bello", allSpeakerArrays)!,
   getSpeakerById("june-madete", allSpeakerArrays)!,
   getSpeakerById("ismael-fanny", allSpeakerArrays)!,
+  getSpeakerById("ijeoma-anadu-okoli", allSpeakerArrays)!,
 ].filter(Boolean); // Remove any undefined speakers (safety check)

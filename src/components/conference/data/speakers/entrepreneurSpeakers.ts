@@ -79,5 +79,33 @@ export const entrepreneurSpeakers: Speaker[] = [
       time: "2:30 PM - 3:10 PM",
       date: "April 12"
     }
+  },
+  {
+    id: "ijeoma-anadu-okoli",
+    name: "Ijeoma Anadu Okoli",
+    role: "Co-Founder & CEO",
+    organization: "Umu Igbo Unite (UIU)",
+    imagePlaceholder: "Ijeoma Anadu Okoli",
+    bio: "Distinguished entrepreneur, author, and business executive; co-founder of UIU and My Native Tree, dedicated to global business operations, community empowerment, and cultural preservation.",
+    fullBio: `Ijeoma Anadu Okoli is a distinguished entrepreneur, author, and business executive renowned for her transformative impact in global business operations, community empowerment, and cultural preservation. As the Co-Founder and CEO of Umu Igbo Unite (UIU), a leading non-profit organization, she has been instrumental in uniting Igbo professionals across the diaspora, fostering cultural identity, and promoting professional development.
+
+In addition to her leadership at UIU, Ijeoma is the visionary behind My Native Tree, a digital platform dedicated to helping families document and preserve their heritage through photos, stories, and recipes. This initiative reflects her commitment to bridging personal passions with professional expertise, ensuring that family legacies are cherished and passed down through generations.
+
+Ijeoma's corporate acumen is evident in her specialization in global business operations, where she excels in enhancing operational efficiencies and refining corporate strategies. Her holistic approach to leadership and strategy has positioned her as a key influencer in both the corporate and non-profit sectors.
+
+Beyond her professional endeavors, Ijeoma is a passionate advocate for women's health, particularly in raising awareness about endometriosis. Her forthcoming devotional, "The Gift of Surrender – Journeying through Endometriosis When All Hope is Lost," aims to provide guidance and hope to women navigating this challenging condition.
+
+A proud Nigerian-American, Ijeoma co-created 'Ije the World Traveler,' a platform dedicated to preserving the Igbo language and culture. Her multifaceted contributions to business, culture, and health advocacy exemplify her unwavering commitment to driving meaningful change and empowering communities worldwide.`,
+    expertise: ["Entrepreneurship", "Cultural Preservation", "Business Operations", "Women's Health Advocacy"],
+    social: {
+      linkedin: "https://www.linkedin.com/in/ijeomaanaduokoli/"
+    },
+    speaking: {
+      title: "Fireside Chat with Dr. Oby Ezekwesili",
+      description: "A live fireside chat hosted by Ijeoma Anadu Okoli with Dr. Oby Ezekwesili, immediately following Dr. Ezekwesili's keynote.",
+      time: "5:15 PM - 5:35 PM",
+      date: "April 12"
+    },
+    additionalSessions: []
   }
 ];
