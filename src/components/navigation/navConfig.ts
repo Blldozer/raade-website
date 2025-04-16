@@ -1,4 +1,3 @@
-
 /**
  * Type definitions for navigation items
  */
@@ -48,8 +47,9 @@ const mainNavItems: NavItem[] = [
       { name: "Why Attend", href: "/conference#why-attend" },
       { name: "Speakers", href: "/conference#speakers" },
       { name: "Schedule", href: "/conference#schedule" }, // Added schedule link
+      { name: "Sponsors", href: "/conference#sponsorship" }, // Added sponsors link
       { name: "Register Now", href: "/conference/register", highlight: true }, // Registration link
-      { name: "Donate", href: "/conference#donation", highlight: false } // Added donation link
+      { name: "Donate", href: "/conference#donation", highlight: false }, // Added donation link
     ]
   }
 ];
