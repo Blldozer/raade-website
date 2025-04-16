@@ -147,7 +147,15 @@ export const scheduleDay2: ScheduleEvent[] = [
     speaker: "Obiageli Ezekwesili"
   },
   {
-    time: "5:15 PM - 5:25 PM",
+    time: "5:15 PM - 5:35 PM",
+    title: "Fireside Chat with Dr. Oby Ezekwesili",
+    description: "An engaging conversation exploring key themes from Dr. Ezekwesili's keynote and her vision for Africa's future.",
+    location: "Hudspeth Auditorium, Glasscock School of Continuing Studies",
+    type: "fireside",
+    speaker: "Host: Ijeoma Anadu Okoli | Guest: Dr. Obiageli Ezekwesili"
+  },
+  {
+    time: "5:35 PM - 5:45 PM",
     title: "Commitment Session",
     description: "",
     location: "Hudspeth Auditorium, Glasscock School of Continuing Studies",

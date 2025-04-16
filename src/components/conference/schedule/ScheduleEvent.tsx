@@ -97,6 +97,13 @@ const ScheduleEvent = ({ event, index }: ScheduleEventProps) => {
           textColor: "text-pink-700",
           icon: "✨"
         };
+      case "fireside":
+        return {
+          borderColor: "#FF9800",
+          bgColor: "bg-orange-100",
+          textColor: "text-orange-700",
+          icon: "🔥"
+        };
       default:
         return {
           borderColor: "#9E9E9E",
