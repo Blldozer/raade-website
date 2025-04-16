@@ -52,13 +52,7 @@ export const entrepreneurSpeakers: Speaker[] = [
       date: "April 12"
     },
     additionalSessions: [
-      {
-        title: "Workshop Session 1: Defining the Opportunity",
-        role: "Workshop Leader - Energy Access & Business Track",
-        description: "A focused workshop on business opportunities in improving energy access across Africa.",
-        time: "11:25 AM - 12:20 PM",
-        date: "April 12"
-      },
+      
       {
         title: "Panel: Financing the Impossible",
         role: "Panelist",

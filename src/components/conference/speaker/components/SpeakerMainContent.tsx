@@ -1,4 +1,3 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -104,10 +103,9 @@ const SpeakerMainContent = ({ speaker }: SpeakerMainContentProps) => {
       )}
       
       <div className="mt-8">
-        <Button 
-          variant="outline" 
+        <Button
+          onClick={() => window.location.href = '/conference#speakers'}
           className="border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-lora"
-          onClick={() => navigate("/conference#speakers")}
         >
           View All Speakers
         </Button>

@@ -56,52 +56,51 @@ const SpeakingSession = ({
   const sessionLocation = location || getDefaultLocation(date);
   
   return (
-    <div className={compact ? "mb-4" : "mb-8"}>
-      {!compact && <h2 className="text-2xl font-bold mb-4 text-raade-navy font-simula">Speaking At</h2>}
-      <Card className={`border-[#FBB03B]/20 ${compact ? 'shadow-sm' : 'shadow'}`}>
-        <CardContent className={compact ? "pt-4 pb-4 px-4" : "pt-6"}>
-          <h3 className={`${compact ? 'text-lg' : 'text-xl'} font-bold mb-2 text-raade-navy font-simula`}>
-            {title}
-          </h3>
-          
-          {role && (
-            <div className="inline-flex items-center px-2.5 py-0.5 mb-3 rounded-full text-xs font-medium bg-[#274675]/10 text-[#274675]">
-              <User className="mr-1 h-3 w-3" />
-              {role}
-            </div>
-          )}
-          
-          {description && (
-            <p className={`text-gray-600 ${compact ? 'mb-3 text-sm' : 'mb-4'} font-lora italic`}>
-              {description}
-            </p>
-          )}
-          
-          <div className="flex flex-wrap gap-4 items-center text-sm">
-            {date && (
-              <div className="flex items-center text-gray-500">
-                <Calendar className="mr-2 h-4 w-4 text-[#FBB03B]" />
-                <span className="font-lora">{formattedDate}</span>
+    <>
+      {title && (
+        <div className={compact ? "mb-4" : "mb-8"}>
+          {!compact && <h2 className="text-2xl font-bold mb-4 text-raade-navy font-simula">Speaking At</h2>}
+          <Card className={`border-[#FBB03B]/20 ${compact ? 'shadow-sm' : 'shadow'}`}>
+            <CardContent className={compact ? "pt-4 pb-4 px-4" : "pt-6"}>
+              <h3 className={`${compact ? 'text-lg' : 'text-xl'} font-bold mb-2 text-raade-navy font-simula`}>
+                {title}
+              </h3>
+              {role && (
+                <div className="inline-flex items-center px-2.5 py-0.5 mb-3 rounded-full text-xs font-medium bg-[#274675]/10 text-[#274675]">
+                  <User className="mr-1 h-3 w-3" />
+                  {role}
+                </div>
+              )}
+              {description && (
+                <p className={`text-gray-600 ${compact ? 'mb-3 text-sm' : 'mb-4'} font-lora italic`}>
+                  {description}
+                </p>
+              )}
+              <div className="flex flex-wrap gap-4 items-center text-sm">
+                {date && (
+                  <span className="inline-flex items-center">
+                    <Calendar className="mr-1 h-4 w-4 text-[#FBB03B]" />
+                    {formattedDate}
+                  </span>
+                )}
+                {time && (
+                  <span className="inline-flex items-center">
+                    <Clock className="mr-1 h-4 w-4 text-[#FBB03B]" />
+                    {time}
+                  </span>
+                )}
+                {sessionLocation && (
+                  <span className="inline-flex items-center">
+                    <MapPin className="mr-1 h-4 w-4 text-[#FBB03B]" />
+                    {sessionLocation}
+                  </span>
+                )}
               </div>
-            )}
-            
-            {time && (
-              <div className="flex items-center text-gray-500">
-                <Clock className="mr-2 h-4 w-4 text-[#FBB03B]" />
-                <span className="font-lora">{time}</span>
-              </div>
-            )}
-            
-            {sessionLocation && (
-              <div className="flex items-center text-gray-500">
-                <MapPin className="mr-2 h-4 w-4 text-[#FBB03B]" />
-                <span className="font-lora">{sessionLocation}</span>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+    </>
   );
 };
 
