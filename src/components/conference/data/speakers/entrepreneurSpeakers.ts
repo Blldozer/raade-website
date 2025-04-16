@@ -9,7 +9,7 @@ export const entrepreneurSpeakers: Speaker[] = [
   {
     id: "tomiwa-igun",
     name: "Tomiwa Igun",
-    role: "Founder & CEO",
+    role: "Founder & COO",
     organization: "SunFi Corporation",
     imagePlaceholder: "Tomiwa Igun",
     bio: "Pioneer in clean energy financing solutions for Africa with experience at Boston Consulting Group.",

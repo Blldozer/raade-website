@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import SpeakerProfile from "@/components/conference/speaker/SpeakerProfile";

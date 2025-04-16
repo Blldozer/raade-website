@@ -142,6 +142,16 @@ const Footer = () => {
             </Button>
           </div>
         </div>
+
+        <div className="w-full text-center mt-8">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-2">
+            <span className="text-gray-500 font-lora text-sm">Special thanks to our high-visibility sponsor:</span>
+            <a href="https://wazobiaafricankitchen.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 hover:underline">
+              <img src="/sponsors/Wazobia-Market-Logo-small-logo.png" alt="Wazobia African Market Logo" className="h-6 w-auto object-contain inline" />
+              <span className="font-simula text-raade-navy font-bold text-base">Wazobia African Market</span>
+            </a>
+          </div>
+        </div>
       </div>
     </footer>
   );

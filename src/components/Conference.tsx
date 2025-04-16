@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -10,6 +9,7 @@ import ConferenceRegistration from "./conference/ConferenceRegistration";
 import ConferenceFinalCta from "./conference/ConferenceFinalCta";
 import ConferenceSpeakers from "./conference/ConferenceSpeakers";
 import ConferenceSchedule from "./conference/ConferenceSchedule";
+import ConferenceSponsors from "./conference/ConferenceSponsors";
 
 /**
  * Conference component - Main container for all conference-related sections
@@ -65,6 +65,11 @@ const Conference = () => {
       {/* Schedule Section - Unhidden */}
       <section id="schedule">
         <ConferenceSchedule />
+      </section>
+      
+      {/* Sponsors Section */}
+      <section id="sponsors">
+        <ConferenceSponsors />
       </section>
       
       {/* Registration Options */}
