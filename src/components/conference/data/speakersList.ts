@@ -40,7 +40,7 @@ export const speakersList: Speaker[] = [
   getSpeakerById("tomiwa-igun", allSpeakerArrays)!,
   getSpeakerById("uzoma-alexander-eze", allSpeakerArrays)!,
   getSpeakerById("idris-bello", allSpeakerArrays)!,
-  getSpeakerById("june-madete", allSpeakerArrays)!,
   getSpeakerById("ismael-fanny", allSpeakerArrays)!,
+  getSpeakerById("june-madete", allSpeakerArrays)!,
   getSpeakerById("ijeoma-anadu-okoli", allSpeakerArrays)!,
 ].filter(Boolean); // Remove any undefined speakers (safety check)

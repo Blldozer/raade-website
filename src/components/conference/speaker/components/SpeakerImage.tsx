@@ -25,13 +25,17 @@ const SpeakerImage = ({ speakerId, name, imagePlaceholder, rounded = true }: Spe
     <div className={`aspect-square bg-gray-200 ${roundedClass} relative overflow-hidden`}>
       <img 
         src={`/Speaker Images/${
-          speakerId === "ijeoma-anadu-okoli" ? "ijeoma-okoli" : speakerId
+          speakerId === "ijeoma-anadu-okoli" ? "ijeoma-okoli" : 
+          speakerId === "ismael-fanny" ? "ismael-fanny2" : 
+          speakerId
         }.jpg`} 
         alt={name}
         onError={(e) => {
           // Try jpeg if jpg not found
           (e.target as HTMLImageElement).src = `/Speaker Images/${
-            speakerId === "ijeoma-anadu-okoli" ? "ijeoma-okoli" : speakerId
+            speakerId === "ijeoma-anadu-okoli" ? "ijeoma-okoli" : 
+            speakerId === "ismael-fanny" ? "ismael-fanny" : 
+            speakerId
           }.jpeg`;
           (e.target as HTMLImageElement).onerror = (e2) => {
             // Fallback to placeholder if neither image format works
