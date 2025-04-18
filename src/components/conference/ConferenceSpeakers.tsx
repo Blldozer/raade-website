@@ -71,8 +71,12 @@ const ConferenceSpeakers = () => {
             <motion.div
               key={index}
               className="scroll-animate"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              whileHover={{ 
+                scale: 1.03, 
+                transition: { duration: 0.2 } 
+              }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
@@ -81,7 +85,7 @@ const ConferenceSpeakers = () => {
                   {/* Speaker image with improved positioning */}
                   <img 
                     src={`/Speaker Images/${
-                      speaker.id === "oby-ezekwesili" ? "oby-ezekwesili2" : 
+                      speaker.id === "oby-ezekwesili" ? "obiageli-ezekwesili" : 
                       speaker.id === "ismael-fanny" ? "ismael-fanny2" : 
                       speaker.id === "june-madete" ? "june-madete2" : 
                       speaker.id === "ijeoma-anadu-okoli" ? "ijeoma-okoli" : 
@@ -91,7 +95,7 @@ const ConferenceSpeakers = () => {
                     onError={(e) => {
                       // Try jpeg if jpg not found
                       (e.target as HTMLImageElement).src = `/Speaker Images/${
-                        speaker.id === "oby-ezekwesili" ? "oby-ezekwesili2" : 
+                        speaker.id === "oby-ezekwesili" ? "obiageli-ezekwesili" : 
                         speaker.id === "ismael-fanny" ? "ismael-fanny2" : 
                         speaker.id === "june-madete" ? "june-madete2" : 
                         speaker.id === "ijeoma-anadu-okoli" ? "ijeoma-okoli" : 
