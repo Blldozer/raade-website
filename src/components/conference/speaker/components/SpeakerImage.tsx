@@ -1,4 +1,3 @@
-
 import React from "react";
 import { getSpeakerImagePosition, createImageFallback } from "@/utils/speakerImageUtils";
 
@@ -25,11 +24,15 @@ const SpeakerImage = ({ speakerId, name, imagePlaceholder, rounded = true }: Spe
   return (
     <div className={`aspect-square bg-gray-200 ${roundedClass} relative overflow-hidden`}>
       <img 
-        src={`/Speaker Images/${speakerId}.jpg`} 
+        src={`/Speaker Images/${
+          speakerId === "ijeoma-anadu-okoli" ? "ijeoma-okoli" : speakerId
+        }.jpg`} 
         alt={name}
         onError={(e) => {
           // Try jpeg if jpg not found
-          (e.target as HTMLImageElement).src = `/Speaker Images/${speakerId}.jpeg`;
+          (e.target as HTMLImageElement).src = `/Speaker Images/${
+            speakerId === "ijeoma-anadu-okoli" ? "ijeoma-okoli" : speakerId
+          }.jpeg`;
           (e.target as HTMLImageElement).onerror = (e2) => {
             // Fallback to placeholder if neither image format works
             const target = e.target as HTMLImageElement;

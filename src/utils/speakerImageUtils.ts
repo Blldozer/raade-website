@@ -21,6 +21,7 @@ export const getSpeakerImagePosition = (speakerId: string): string => {
     "bunmi-akinyemiju": "object-cover object-[center_30%]",
     "yomi-jemibewon": "object-cover object-[center_30%]",
     "idris-bello": "object-cover object-[center_top]",
+    "ijeoma-anadu-okoli": "object-cover object-[center_30%]",
     // Default positioning for others
     "default": "object-cover object-[center_center]"
   };

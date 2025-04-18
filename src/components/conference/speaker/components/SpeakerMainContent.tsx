@@ -21,13 +21,16 @@ const SpeakerMainContent = ({ speaker }: SpeakerMainContentProps) => {
   const navigate = useNavigate();
   
   // Split bio into paragraphs for better readability
-  const bioParagraphs = (speaker.fullBio || speaker.bio).split("\n\n").filter(Boolean);
+  const bioParagraphs = React.useMemo(() => {
+    return (speaker.fullBio || speaker.bio).split("\n\n").filter(Boolean);
+  }, [speaker.fullBio, speaker.bio]);
   
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
+      className="will-change-transform"
     >
       <h2 className="text-2xl font-bold mb-4 text-raade-navy font-simula flex items-center">
         <BookOpen className="mr-2 text-[#FBB03B]" size={24} />
