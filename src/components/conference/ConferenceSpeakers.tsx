@@ -85,9 +85,9 @@ const ConferenceSpeakers = () => {
                   {/* Speaker image with improved positioning */}
                   <img 
                     src={`/Speaker Images/${
-                      speaker.id === "oby-ezekwesili" ? "obiageli-ezekwesili" : 
-                      speaker.id === "ismael-fanny" ? "ismael-fanny2" : 
-                      speaker.id === "june-madete" ? "june-madete2" : 
+                      speaker.id === "oby-ezekwesili" ? "oby-ezekwesili" : 
+                      speaker.id === "ismael-fanny" ? "ismael-fanny" : 
+                      speaker.id === "june-madete" ? "june-madete" : 
                       speaker.id === "ijeoma-anadu-okoli" ? "ijeoma-okoli" : 
                       speaker.id
                     }.jpg`} 
@@ -95,9 +95,9 @@ const ConferenceSpeakers = () => {
                     onError={(e) => {
                       // Try jpeg if jpg not found
                       (e.target as HTMLImageElement).src = `/Speaker Images/${
-                        speaker.id === "oby-ezekwesili" ? "obiageli-ezekwesili" : 
-                        speaker.id === "ismael-fanny" ? "ismael-fanny2" : 
-                        speaker.id === "june-madete" ? "june-madete2" : 
+                        speaker.id === "oby-ezekwesili" ? "oby-ezekwesili" : 
+                        speaker.id === "ismael-fanny" ? "ismael-fanny" : 
+                        speaker.id === "june-madete" ? "june-madete" : 
                         speaker.id === "ijeoma-anadu-okoli" ? "ijeoma-okoli" : 
                         speaker.id
                       }.jpeg`;
