@@ -27,6 +27,7 @@ const SpeakerImage = ({ speakerId, name, imagePlaceholder, rounded = true }: Spe
         src={`/Speaker Images/${
           speakerId === "ijeoma-anadu-okoli" ? "ijeoma-okoli" : 
           speakerId === "ismael-fanny" ? "ismael-fanny2" : 
+          speakerId === "oby-ezekwesili2" ? "obiageli-ezekwesili" : 
           speakerId
         }.jpg`} 
         alt={name}
@@ -35,6 +36,7 @@ const SpeakerImage = ({ speakerId, name, imagePlaceholder, rounded = true }: Spe
           (e.target as HTMLImageElement).src = `/Speaker Images/${
             speakerId === "ijeoma-anadu-okoli" ? "ijeoma-okoli" : 
             speakerId === "ismael-fanny" ? "ismael-fanny" : 
+            speakerId === "oby-ezekwesili2" ? "obiageli-ezekwesili" : 
             speakerId
           }.jpeg`;
           (e.target as HTMLImageElement).onerror = (e2) => {
