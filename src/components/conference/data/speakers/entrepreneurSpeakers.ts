@@ -109,7 +109,7 @@ A proud Nigerian-American, Ijeoma co-created 'Ije the World Traveler,' a platfor
     additionalSessions: []
   },
   {
-    id: "uzoma-eze",
+    id: "uzoma-alexander-eze",
     name: "Uzoma Eze",
     role: "Attorney & Finance Professional",
     organization: "Eze & Associates",
