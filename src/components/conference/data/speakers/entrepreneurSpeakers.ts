@@ -111,37 +111,37 @@ A proud Nigerian-American, Ijeoma co-created 'Ije the World Traveler,' a platfor
   {
     id: "uzoma-alexander-eze",
     name: "Uzoma Eze",
-    role: "Attorney & Finance Professional",
-    organization: "Eze & Associates",
+    role: "Partner & Chair of Corporate, Tax & Texas Litigation",
+    organization: "Romano Law",
     imagePlaceholder: "Uzoma Eze",
     bio: "Corporate and employment attorney, finance professional, and Certified Public Accountant (CPA) with expertise in U.S. regulatory compliance, cross-border taxation, and financial planning and analysis (FP&A).",
-    fullBio: `Uzoma is a corporate and employment attorney, finance professional, and Certified Public Accountant (CPA), offering extensive expertise in representing multinational corporations across diverse legal and financial sectors.  His practice encompasses corporate finance, U.S. regulatory compliance, cross-border taxation, financial planning and analysis (FP&A), treasury management, complex financial accounting, bankruptcy restructuring, and aviation law.
+    fullBio: `Uzoma is a corporate and employment attorney, finance professional, and Certified Public Accountant with over 18 years of global legal practice across Africa, the UK, New York, and Texas. He specializes in corporate finance, U.S. regulatory compliance, cross-border taxation, and financial management for multinational corporations.
 
-A recognized authority in anti-money laundering (AML), mobile payment regulations, and asset forfeiture defense, Uzoma has a proven track record of advising clients on compliance and regulatory issues, particularly within the African Diaspora remittance sector.  He is highly skilled in navigating complex regulatory frameworks and defending financial institutions against enforcement actions.  His experience also extends to advising on mobile payment platforms and ensuring compliance with U.S. and international regulatory standards.  Furthermore, Uzoma is adept at handling asset forfeiture cases, helping clients recover assets and defend against government seizures.  His ability to combine technical knowledge with strategic defense ensures that clients are fully prepared to meet the challenges posed by these regulatory areas.  He has also been appointed as an expert by U.S. federal courts in cases involving cyberfraud between Africa and the USA.
+As a recognized authority in anti-money laundering, mobile payment regulations, and asset forfeiture defense, Uzoma has successfully advised clients on complex compliance issues, particularly within the African Diaspora remittance sector. He has been appointed as an expert by U.S. federal courts in cases involving cyberfraud between Africa and the USA.
 
-Uzoma’s comprehensive understanding of bankruptcy law allows him to advise clients through the intricate processes of restructuring, liquidation, and insolvency.  He has successfully guided companies in financial distress, helping them navigate the complexities of U.S. bankruptcy law while also preserving valuable assets.  In addition to bankruptcy, Uzoma offers expert counsel on converting business structures, particularly the transition from LLCs to C-Corporations, and the tax implications associated with such changes.  His expertise also spans mergers and acquisitions, where he advises on structuring deals, due diligence, and regulatory compliance to ensure smooth transitions and value preservation during corporate transactions.
+His comprehensive understanding of bankruptcy law enables him to guide companies through restructuring, liquidation, and insolvency while preserving valuable assets. Uzoma also provides expert counsel on business structure conversions, mergers and acquisitions, and serves as fractional general counsel to businesses seeking high-level legal expertise without the overhead of a full-time attorney.
 
-Uzoma also provides fractional general counsel services to businesses in need of high-level legal expertise without the overhead of a full-time in-house attorney.  His role as a strategic partner enables companies to address complex legal matters with flexibility and efficiency.  Additionally, Uzoma brings specialized knowledge in aviation law, advising clients in the airline industry on regulatory compliance, international treaties, aircraft financing, and dispute resolution.  His extensive understanding of both the legal and business facets of aviation positions him as a valuable advisor to airlines, manufacturers, and aviation service providers.
+Uzoma represents clients in both federal and state courts, handling employment disputes and litigation with strategic precision that stems from his acute attention to litigation implications in corporate agreements. His early career in maritime, finance, and oil and gas industries began at Shearman & Sterling, LLP, where he advised multinational clients including Merrill Lynch and Bank of America.
 
-Uzoma represents clients in both federal and state courts, handling a wide array of employment-related legal matters.  With extensive experience in Texas and New York City, he is skilled at navigating the complexities of employment disputes, whether representing employees or employers.
-
-Uzoma is also widely regarded for his acute attention to litigation implications in corporate agreements.  His strategic approach to drafting and negotiating agreements ensures clients are well-positioned to avoid disputes or, when necessary, prevail in litigation.  This pragmatic blend of legal insight and business acumen has earned him a reputation for delivering results-driven solutions.
-
-With over 18 years of legal practice across Africa, the UK, New York, and Texas, Uzoma offers a comprehensive and nuanced understanding of global business law.  His expertise in tax, finance, bankruptcy, and corporate law enables him to act as both a trusted advisor and a relentless advocate for clients, whether in boardrooms or courtrooms.
-
-Born in Lagos and educated in Imo State, Uzoma’s early career in maritime, finance, and oil and gas industries laid a solid foundation for his legal expertise.  He began his career as an Associate Attorney at Shearman & Sterling, LLP, where he provided legal counsel on mergers and acquisitions, bankruptcy, bank financing, capital markets transactions, and asset securitizations for top-tier multinational clients, including Merrill Lynch, Bank of America, Credit Suisse, and John Deere.
-
-Uzoma holds dual citizenship in the U.S. and Nigeria, which gives him a global perspective and commitment to fostering international business relations across borders.`,
+Born in Lagos and educated in Imo State, Uzoma holds dual citizenship in the U.S. and Nigeria, giving him a unique global perspective that benefits clients seeking international business solutions.`,
     expertise: ["Corporate Law", "Finance", "Bankruptcy", "Aviation Law", "Employment Law"],
     social: {
       linkedin: "https://www.linkedin.com/in/uzomaeze/"
     },
     speaking: {
-      title: "Workshop Session 2: Navigating Regulatory Frameworks",
-      description: "An interactive workshop on navigating regulatory frameworks in Africa, featuring the case study 'Regulatory Compliance in the African Diaspora Remittance Sector'.",
-      time: "2:30 PM - 3:10 PM",
+      title: "Panel: Financing the Impossible",
+      description: "A panel discussion exploring innovative financial models and capital strategies for funding ambitious ventures in African markets.",
+      time: "10:40 AM - 11:20 AM",
       date: "April 12"
     },
-    additionalSessions: []
+    additionalSessions: [
+      {
+        title: "Panel: From Prototype to Phenomenon",
+        description: "Panelists share strategies and insights for scaling early-stage prototypes into widely adopted solutions across African markets.",
+        time: "2:30 PM - 3:10 PM",
+        date: "April 12",
+        role: "Panelist"
+      }
+    ]
   }
 ];
