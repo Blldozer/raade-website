@@ -30,6 +30,40 @@ export const getSpeakerImagePosition = (speakerId: string): string => {
 };
 
 /**
+ * Image version mapping to force cache-busting when images are updated
+ * Increment these values when updating images for specific speakers
+ */
+export const speakerImageVersions: Record<string, number> = {
+  // Speakers with updated images - increment these values when updating their images
+  "oby-ezekwesili": 2,  // Updated April 2025
+  "ismael-fanny": 2,    // Updated April 2025
+  "june-madete": 2,     // Updated April 2025
+  // Default version for other speakers
+  "default": 1
+};
+
+/**
+ * Gets the speaker image URL with cache-busting version parameter
+ * 
+ * @param speakerId - The unique identifier for the speaker
+ * @param extension - The image file extension (jpg, jpeg, png)
+ * @returns The full image URL with version parameter for cache-busting
+ */
+export const getSpeakerImageUrl = (speakerId: string, extension: string): string => {
+  const normalizedId = 
+    speakerId === "oby-ezekwesili" ? "oby-ezekwesili" : 
+    speakerId === "ismael-fanny" ? "ismael-fanny" : 
+    speakerId === "june-madete" ? "june-madete" : 
+    speakerId === "ijeoma-anadu-okoli" ? "ijeoma-okoli" : 
+    speakerId;
+  
+  // Get the version for this speaker or use default
+  const version = speakerImageVersions[speakerId] || speakerImageVersions.default;
+  
+  return `/Speaker Images/${normalizedId}.${extension}?v=${version}`;
+};
+
+/**
  * Creates a fallback element when speaker images fail to load
  * 
  * @param speakerId - The unique identifier for the speaker

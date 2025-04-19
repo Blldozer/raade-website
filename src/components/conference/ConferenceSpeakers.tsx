@@ -4,7 +4,7 @@ import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { speakersList } from "./data/speakersData";
 import { Link } from "react-router-dom";
-import { getSpeakerImagePosition, createImageFallback } from "@/utils/speakerImageUtils";
+import { getSpeakerImagePosition, createImageFallback, getSpeakerImageUrl } from "@/utils/speakerImageUtils";
 
 /**
  * ConferenceSpeakers Component
@@ -82,35 +82,27 @@ const ConferenceSpeakers = () => {
             >
               <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow h-full flex flex-col">
                 <div className="aspect-square bg-gray-200 relative overflow-hidden">
-                  {/* Speaker image with improved positioning */}
+                  {/* Speaker image with improved positioning and cache busting */}
                   <img 
-                    src={`/Speaker Images/${
-                      speaker.id === "oby-ezekwesili" ? "oby-ezekwesili" : 
-                      speaker.id === "ismael-fanny" ? "ismael-fanny" : 
-                      speaker.id === "june-madete" ? "june-madete" : 
-                      speaker.id === "ijeoma-anadu-okoli" ? "ijeoma-okoli" : 
-                      speaker.id
-                    }.jpg`} 
+                    src={getSpeakerImageUrl(speaker.id, 'jpg')}
                     alt={speaker.name}
                     onError={(e) => {
                       // Try jpeg if jpg not found
-                      (e.target as HTMLImageElement).src = `/Speaker Images/${
-                        speaker.id === "oby-ezekwesili" ? "oby-ezekwesili" : 
-                        speaker.id === "ismael-fanny" ? "ismael-fanny" : 
-                        speaker.id === "june-madete" ? "june-madete" : 
-                        speaker.id === "ijeoma-anadu-okoli" ? "ijeoma-okoli" : 
-                        speaker.id
-                      }.jpeg`;
+                      (e.target as HTMLImageElement).src = getSpeakerImageUrl(speaker.id, 'jpeg');
                       (e.target as HTMLImageElement).onerror = (e2) => {
-                        // Fallback to placeholder if neither image format works
+                        // Try png if jpeg not found
                         const target = e.target as HTMLImageElement;
-                        target.src = "";
-                        target.alt = speaker.imagePlaceholder;
-                        target.style.display = "none";
-                        (target.parentElement as HTMLElement).innerHTML = createImageFallback(
-                          speaker.id, 
-                          speaker.imagePlaceholder
-                        );
+                        target.src = getSpeakerImageUrl(speaker.id, 'png');
+                        target.onerror = (e3) => {
+                          // Fallback to placeholder if no image format works
+                          target.src = "";
+                          target.alt = speaker.imagePlaceholder;
+                          target.style.display = "none";
+                          (target.parentElement as HTMLElement).innerHTML = createImageFallback(
+                            speaker.id, 
+                            speaker.imagePlaceholder
+                          );
+                        };
                       };
                     }}
                     className={`w-full h-full ${getSpeakerImagePosition(speaker.id)}`}
