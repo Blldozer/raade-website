@@ -31,9 +31,9 @@ const SpeakerSidebar = ({ speaker }: SpeakerSidebarProps) => {
         rounded={true}
       />
       
-      <h1 className="text-2xl font-bold text-raade-navy font-simula mb-2 mt-4">{speaker.name}</h1>
+      <h1 className="text-2xl font-bold text-white font-simula mb-2 mt-4">{speaker.name}</h1>
       <p className="text-[#FBB03B] font-medium mb-1 font-lora">{speaker.role}</p>
-      <p className="text-gray-600 mb-4 font-lora italic">{speaker.organization}</p>
+      <p className="text-gray-300 mb-4 font-lora italic">{speaker.organization}</p>
       
       {speaker.social && (
         <SpeakerSocialLinks 

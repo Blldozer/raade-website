@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getSpeakerById } from "../data/speakersData";
@@ -39,7 +38,7 @@ const SpeakerProfile = () => {
   }
 
   return (
-    <div className="bg-white min-h-screen pt-24 pb-16">
+    <div className="bg-black min-h-screen pt-24 pb-16">
       <div className="max-w-4xl mx-auto px-4">
         <BackButton />
 

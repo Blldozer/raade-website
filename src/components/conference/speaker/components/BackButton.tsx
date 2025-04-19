@@ -14,7 +14,7 @@ const BackButton = () => {
   return (
     <Button 
       variant="ghost" 
-      className="flex items-center mb-8 text-raade-navy hover:text-[#FBB03B]"
+      className="flex items-center mb-8 text-white hover:text-[#FBB03B]"
       onClick={() => navigate("/conference#speakers-section")}
     >
       <ArrowLeft className="mr-2 h-4 w-4" />

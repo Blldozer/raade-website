@@ -59,24 +59,24 @@ const SpeakingSession = ({
     <>
       {title && (
         <div className={compact ? "mb-4" : "mb-8"}>
-          {!compact && <h2 className="text-2xl font-bold mb-4 text-raade-navy font-simula">Speaking At</h2>}
-          <Card className={`border-[#FBB03B]/20 ${compact ? 'shadow-sm' : 'shadow'}`}>
+          {!compact && <h2 className="text-2xl font-bold mb-4 text-white font-simula">Speaking At</h2>}
+          <Card className={`border-[#FBB03B]/20 bg-black/60 backdrop-blur-sm ${compact ? 'shadow-sm' : 'shadow'}`}>
             <CardContent className={compact ? "pt-4 pb-4 px-4" : "pt-6"}>
-              <h3 className={`${compact ? 'text-lg' : 'text-xl'} font-bold mb-2 text-raade-navy font-simula`}>
+              <h3 className={`${compact ? 'text-lg' : 'text-xl'} font-bold mb-2 text-white font-simula`}>
                 {title}
               </h3>
               {role && (
-                <div className="inline-flex items-center px-2.5 py-0.5 mb-3 rounded-full text-xs font-medium bg-[#274675]/10 text-[#274675]">
+                <div className="inline-flex items-center px-2.5 py-0.5 mb-3 rounded-full text-xs font-medium bg-[#FBB03B]/20 text-[#FBB03B]">
                   <User className="mr-1 h-3 w-3" />
                   {role}
                 </div>
               )}
               {description && (
-                <p className={`text-gray-600 ${compact ? 'mb-3 text-sm' : 'mb-4'} font-lora italic`}>
+                <p className={`text-gray-300 ${compact ? 'mb-3 text-sm' : 'mb-4'} font-lora italic`}>
                   {description}
                 </p>
               )}
-              <div className="flex flex-wrap gap-4 items-center text-sm">
+              <div className="flex flex-wrap gap-4 items-center text-sm text-gray-200">
                 {date && (
                   <span className="inline-flex items-center">
                     <Calendar className="mr-1 h-4 w-4 text-[#FBB03B]" />

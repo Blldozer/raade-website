@@ -32,16 +32,16 @@ const SpeakerMainContent = ({ speaker }: SpeakerMainContentProps) => {
       transition={{ duration: 0.5, delay: 0.2 }}
       className="will-change-transform"
     >
-      <h2 className="text-2xl font-bold mb-4 text-raade-navy font-simula flex items-center">
+      <h2 className="text-2xl font-bold mb-4 text-white font-simula flex items-center">
         <BookOpen className="mr-2 text-[#FBB03B]" size={24} />
         About
       </h2>
       
-      <div className="prose max-w-none mb-8 font-lora text-gray-700">
+      <div className="prose max-w-none mb-8 font-lora text-gray-300">
         {bioParagraphs.map((paragraph, index) => (
           <div key={index} className="mb-4">
             <p className="leading-relaxed">{paragraph}</p>
-            {index < bioParagraphs.length - 1 && <div className="my-4 border-b border-gray-100"></div>}
+            {index < bioParagraphs.length - 1 && <div className="my-4 border-b border-gray-700"></div>}
           </div>
         ))}
       </div>
@@ -49,7 +49,7 @@ const SpeakerMainContent = ({ speaker }: SpeakerMainContentProps) => {
       {/* Expertise section with improved styling */}
       {speaker.expertise && speaker.expertise.length > 0 && (
         <div className="mb-8">
-          <h3 className="text-lg font-bold mb-3 text-raade-navy font-simula flex items-center">
+          <h3 className="text-lg font-bold mb-3 text-white font-simula flex items-center">
             <Award className="mr-2 text-[#FBB03B]" size={20} />
             Areas of Expertise
           </h3>
@@ -57,7 +57,7 @@ const SpeakerMainContent = ({ speaker }: SpeakerMainContentProps) => {
             {speaker.expertise.map((area, index) => (
               <span 
                 key={index} 
-                className="px-3 py-1.5 bg-gray-50 text-gray-700 rounded-full text-sm font-medium border border-gray-200"
+                className="px-3 py-1.5 bg-black/60 text-gray-200 rounded-full text-sm font-medium border border-gray-700"
               >
                 {area}
               </span>
@@ -69,7 +69,7 @@ const SpeakerMainContent = ({ speaker }: SpeakerMainContentProps) => {
       {/* Primary speaking session */}
       {speaker.speaking && (
         <div className="mb-6">
-          <h3 className="text-lg font-bold mb-3 text-raade-navy font-simula flex items-center">
+          <h3 className="text-lg font-bold mb-3 text-white font-simula flex items-center">
             <Calendar className="mr-2 text-[#FBB03B]" size={20} />
             Featured Session
           </h3>
@@ -82,33 +82,31 @@ const SpeakerMainContent = ({ speaker }: SpeakerMainContentProps) => {
         </div>
       )}
       
-      {/* Additional sessions if present */}
+      {/* Additional speaking sessions */}
       {speaker.additionalSessions && speaker.additionalSessions.length > 0 && (
-        <div className="mb-6">
-          <h3 className="text-lg font-bold mb-3 text-raade-navy font-simula flex items-center">
+        <div className="mb-8">
+          <h3 className="text-lg font-bold mb-3 text-white font-simula flex items-center">
             <Bookmark className="mr-2 text-[#FBB03B]" size={20} />
-            Additional Engagements
+            Additional Sessions
           </h3>
           <div className="space-y-4">
             {speaker.additionalSessions.map((session, index) => (
               <SpeakingSession 
                 key={index}
                 title={session.title}
-                description={session.description || `${speaker.name} will participate as a ${session.role} in this session.`}
+                description={session.description}
                 date={session.date}
                 time={session.time}
-                role={session.role}
-                compact={true}
               />
             ))}
           </div>
         </div>
       )}
       
-      <div className="mt-8">
+      <div className="mt-10">
         <Button
-          onClick={() => window.location.href = '/conference#speakers-section'}
-          className="border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-lora"
+          onClick={() => navigate("/conference#speakers-section")}
+          className="bg-[#FBB03B] hover:bg-[#FBB03B]/80 text-raade-navy font-bold"
         >
           View All Speakers
         </Button>
