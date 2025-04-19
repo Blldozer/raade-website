@@ -107,7 +107,7 @@ const SpeakerMainContent = ({ speaker }: SpeakerMainContentProps) => {
       
       <div className="mt-8">
         <Button
-          onClick={() => window.location.href = '/conference#speakers'}
+          onClick={() => window.location.href = '/conference#speakers-section'}
           className="border-[#FBB03B] text-[#FBB03B] hover:bg-[#FBB03B] hover:text-white font-lora"
         >
           View All Speakers
