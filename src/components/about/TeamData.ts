@@ -67,18 +67,6 @@ export const teamMembers = [
     position: "Finance Officer"
   },
   {
-    name: "Temilade Oluwasesin",
-    classYear: "'26",
-    position: "Logistics Manager",
-    linkedin: "https://www.linkedin.com/in/temilade-oluwasesin-521979227/"
-  },
-  {
-    name: "Rose Oyoo",
-    classYear: "'26",
-    position: "Logistics Manager",
-    linkedin: "https://www.linkedin.com/in/rose-oyoo/"
-  },
-  {
     name: "Kene Okereke",
     classYear: "'28",
     position: "Tech Officer",
