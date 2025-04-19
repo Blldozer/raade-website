@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useLayoutEffect, ReactNode, createContext } from "react";
 import { useLocation } from "react-router-dom";
 import { useResponsive } from "@/hooks/useResponsive";
@@ -102,10 +101,11 @@ export const NavigationProvider = ({
     // Update background when the light/dark detection changes
     useEffect(() => {
       // Only update if still mounted and only if we're not overriding with forceDarkMode
-      if (isMounted && initialProps.forceDarkMode === undefined) {
+      // Added condition to prevent setting the same value repeatedly (causing infinite loop)
+      if (isMounted && initialProps.forceDarkMode === undefined && isDarkBackground !== !isLightBackground) {
         setIsDarkBackground(!isLightBackground);
       }
-    }, [isLightBackground, initialProps.forceDarkMode, isMounted]);
+    }, [isLightBackground, initialProps.forceDarkMode, isMounted, isDarkBackground]);
     
     // Handle scroll events to update visibility and scroll state
     // Use a named function for the event listener to ensure proper cleanup
